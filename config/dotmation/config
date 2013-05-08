@@ -1,0 +1,20 @@
+
+repo "~/dotrepos"                  # where to put all these files
+
+github "jtprince/dotfiles" do      # stored in ~/dotrepos/jtprince/dotfiles
+  dir 'config' do
+    dot 'Xresources'               # symlink ~/.Xresources
+    dot 'Xresources', '.Xdefaults' # symlink ~/.Xdefaults -> Xresources
+    dot 'zsh/zshenv'               # symlink ~/.zshenv
+
+    xdg 'dunstrc'                  # symlink ~/.config/dunstrc
+    xdg 'zsh'                      # symlink ~/.config/zsh
+    xdg 'i3/config', 'i3/'         # symlink ~/.config/i3/config
+  end
+end
+
+github "robbyrussel/oh-my-zsh" do
+  xdg .                            # symlink ~/.config/oh-my-zsh
+end
+
+
