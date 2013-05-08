@@ -43,6 +43,6 @@ fi
 popd
 
 
-if [ -f initialize.rb ]; then
-    ./initialize.rb
+if [ -f manage.rb ]; then
+    ./manage.rb install
 fi

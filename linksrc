@@ -1,0 +1,10 @@
+
+xdg jtprince/dotfiles profile
+
+github "jtprince/dotfiles" do
+    subdir "config" do
+        dotfile "profile"
+        dotfile "zsh/zshenv"
+        xdg "zsh"
+    end
+end
