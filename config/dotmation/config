@@ -1,5 +1,5 @@
 
-repo "~/dotrepos"                  # where to put all these files
+repo "spec/testfiles/tmp/dotrepos" # where to put all these files
 
 github "jtprince/dotfiles" do      # stored in ~/dotrepos/jtprince/dotfiles
   dir 'config' do
