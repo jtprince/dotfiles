@@ -4,6 +4,8 @@ repo_cache "~/src/remote_dotfiles"
 github "jtprince/dotfiles/config" do
 
   cfg 'dotmation'
+  
+  cfg 'alias'
 
   dot 'profile'
 

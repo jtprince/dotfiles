@@ -5,6 +5,7 @@ if [ "$1" != "late" ]; then
     start-pulseaudio-x11
     #eval `dbus-launch --sh-syntax --exit-with-session`
     dunst -config ~/.config/dunstrc &
+    echo "trying to run xmodmap"
     xmodmap ~/.config/xmodmap
     thunar --daemon &
     gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
