@@ -1,5 +1,5 @@
 
-cache_dir "~/src/remote_dotfiles"
+repo_cache "~/src/remote_dotfiles"
 
 github "jtprince/dotfiles" do
   dot 'Xresources'
