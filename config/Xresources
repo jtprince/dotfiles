@@ -1,0 +1,21 @@
+
+Xcursor.theme: DMZ-White
+! Xcursor.theme: core
+! Xcursor.theme: handhelds
+! Xcursor.theme: redglass
+! Xcursor.theme: whiteglass
+! Xcursor.theme: DMZ-Black
+
+! make sure to mirror settings in ~/.gtkrc-2.0 and in ~/.config/fontconfig/fonts.conf
+! link to ~/.Xresources until you are certain you can change to
+! XDG_CONFIG_HOME style directory...
+! Also, until I'm satisfied I *don't* need it, I'm softlinking to ~/.Xdefaults
+! which was the old-school way to do this.
+! Windows 7: smaller: 96, medium: 120, larger: 150
+Xft.dpi: 96
+Xft.antialias: true
+Xft.hinting: true
+! hintslight hintmedium hintfull
+Xft.hintstyle: hintslight
+Xft.rgba: rgb
+! Xft.lcdfilter: lcddefault

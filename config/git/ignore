@@ -1,0 +1,10 @@
+
+*.swp
+bin/obiwarp-linux
+passwds_logins
+bin/youtube-dl
+pdfx/Languages/PDFXVW_SI.xml
+pdfx/Languages/PDFXVW_TR.xml
+.vim/colors
+.vim/.netrwhist
+Gemfile.lock

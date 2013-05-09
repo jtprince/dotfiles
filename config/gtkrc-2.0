@@ -1,0 +1,73 @@
+#include "/usr/share/themes/Clearlooks/gtk-2.0/gtkrc"
+#
+#style "user-font" {
+#	#font_name = "Sans 8"
+#	font_name = "Deja Vu Sans 8"
+#}
+#
+#widget_class "*" style "user-font"
+#
+##gtk-font-name="Sans 8"
+#gtk-font-name="Deja Vu Sans 8"
+#
+#include "/home/jtprince/.gtkrc.mine"
+
+# should match to ~/.config/gtk-3.0
+
+#sudo add-apt-repository ppa:noobslab/themes
+#sudo apt-get update
+#sudo apt-get install zukiwi
+include "/usr/share/themes/zukiwi/gtk-2.0/gtkrc"
+
+# base theme
+# sudo apt-get install gnome-themes-standard
+#include "/usr/share/themes/Adwaita/gtk-2.0/gtkrc"
+
+# also thinking about these:
+# Ambiance or Radiance
+# sudo apt-get install light-themes 
+# include "/usr/share/themes/Radiance/gtk-2.0/gtkrc"
+
+# also trying Human:
+# sudo apt-get install human-theme
+# include "/usr/share/themes/Human/gtk-2.0/gtkrc"
+
+# color overrides
+# gtk_color_scheme = "selected_bg_color:#3465A4"
+#style "colors" {
+#  bg[SELECTED]   = @selected_bg_color
+#  base[ACTIVE]   = @selected_bg_color
+#  base[SELECTED] = @selected_bg_color
+#}
+#class "*" style "colors"
+
+# fonts
+style "Sans" {
+    font_name = "Sans 10"
+}
+widget_class "*" style "Sans"
+gtk-font-name = "Sans 10"
+
+# sounds
+gtk-enable-event-sounds = 1
+
+# icons
+gtk-icon-theme-name = "Humanity"
+
+# fonts
+# see http://bbs.archlinux.org/viewtopic.php?pid=693878#p693878
+#     http://library.gnome.org/devel/gtk/2.17/GtkSettings.html
+# should match settings in ~/.Xdefaults and/or ~/.Xresources [which I keep identical by soft link]
+gtk-xft-dpi       = 96
+gtk-xft-antialias = 1
+gtk-xft-hinting   = 1
+#gtk-xft-hintstyle = hintfull
+gtk-xft-hintstyle = hintslight
+gtk-xft-rgba      = rgb
+#gtk-xft-lcdfilter = lcddefault
+
+# toolbars
+# GTK_TOOLBAR_ICONS GTK_TOOLBAR_TEXT TK_TOOLBAR_BOTH GTK_TOOLBAR_BOTH_HORIZ
+gtk-toolbar-style = GTK_TOOLBAR_ICONS
+gtk-toolbar-icon-size = GTK_ICON_SIZE_SMALL_TOOLBAR
+

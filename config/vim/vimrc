@@ -1,0 +1,198 @@
+" John T. Prince
+
+set nocompatible      " vim, not vi (first because of side-effects)
+
+" Environment
+set directory=~/tmp,/tmp
+set backupdir=~/tmp,/tmp
+set viminfo+=n$XDG_CACHE_HOME/vim/viminfo
+set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
+let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc"
+
+" SIZE ======================================================================
+
+if has('gui_running')
+  set lines=60
+  set columns=80
+endif
+
+" FONT ======================================================================
+
+if has("win32")
+    set guifont=Andale_Mono:h8
+else
+    set guifont=Deja\ Vu\ Sans\ Mono\ 10
+"    set guifont=Inconsolata\ Medium\ 10
+endif
+
+" ENABLE plugins ============================================================
+
+filetype on           " Enable filetype detection
+filetype indent on    " Enable filetype-specific indenting
+filetype plugin on    " Enable filetype-specific plugins
+
+" BASIC CONFIG ==============================================================
+
+set visualbell t_vb= " turn off error beep/flash
+set mousehide   " Hide the mouse when typing text
+set ch=1        " Make command line one line high
+set backspace=indent,eol,start  " trying this out
+set ts=4        " tabstop # of spaces that <Tab> in file counts when displaying
+set sw=4        " shiftwidth (?)
+set tw=78       " always limit text width to 78
+set autoindent  " uses indent from the previous line
+set sts=4       " soft tab stop (for indentation >> << and <TAB>) (adds spaces)
+set expandtab   " use spaces instead of tab (Ctrl-V<Tab> for real tab)
+set ruler       " shows line and col number
+set fo=l        " autoformating (l - long lines not broken on insert)
+set printoptions=paper:letter
+set guioptions-=m " remove the menu bar
+set guioptions-=T " remove the gui toolbar
+set gcr=a:blinkon0 "Disable cursor blink
+set autoread    " Reload files changed outside vim
+set hidden      " buffers can exist in bkg w/o window
+set history=1000 " size of command history
+
+" search ====================================================================
+
+set hls		         " Highlight search pattern matches
+set viminfo='100,f1  " Save up to 100 marks, enable capital marks
+
+" swap files ================================================================
+
+set nobackup    " no ~ files
+set noswapfile  " no .file.swp files
+set nowb        " no automatic write backup
+
+" persistent undo ===========================================================
+" Keep undo history across sessions, by storing in file.
+" Only works all the time.
+
+silent !mkdir ~/tmp/.vim-backups > /dev/null 2>&1
+set undodir=~/tmp/.vim-backups
+set undofile
+
+" LANGUAGE EXTENSIONS =======================================================
+" markdown
+augroup mkd
+  autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:>
+augroup END
+" yaml
+autocmd BufRead *.yml set ts=2 sw=2 sts=2
+autocmd BufRead *.yaml set ts=2 sw=2 sts=2
+" make
+au FileType make setlocal noexpandtab   " turn off et for makefiles
+
+" pathogen.vim ==============================================================
+
+call pathogen#infect()
+
+" vim slime  ================================================================
+
+let g:slime_target = "tmux"
+" use default for socket name
+" : - current window
+" :3 - 3rd window, current pane (zero indexed??)
+" :3.2 - 3rd window, jth pane, (zero indexed??)
+
+" minibufexpl.vim =======================================================
+
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1
+let g:miniBufExplTabWrap = 1 " make tabs show complete (no broken on two lines)
+
+" FOLDING =======================================================
+
+set foldenable          " Turn on folding
+set foldmethod=indent   " Make folding indent sensitive
+set foldlevel=100       " Don't autofold anything (but can still fold manually)
+set foldopen-=search    " don't open folds when you search into them
+set foldopen-=undo      " don't open folds when you undo stuff 
+" NOTE--> zM closes all folds and zR opens all folds
+" NOTE--> zo opens the fold you are on
+
+" FIX TYPOS =======================================================
+
+iab varibale variable
+iab varibales variables
+iab pritn print
+iab pirnt print
+iab serach search
+iab boolena boolean
+ 
+" *************************************************************************** 
+" LEFT-HANDED NAVIGATION
+" s (go left) g (go right) d (go down) f (go up) 
+" h = s  k = d  j = g
+noremap s h
+noremap g l
+noremap d k
+noremap f j
+
+noremap h g
+noremap l s
+noremap k d
+noremap j f
+
+noremap hh gg
+
+" ****************************************************************
+" NERD_comment
+" visualize something, hit 'comma, pound'
+vmap ,# ,cc
+
+" ****************************************************************
+" SWAP things around
+" For example, to swap "apple" and "orange" in the line below:
+"         int apple, lemon, orange;
+" 1. Delete "apple", using (for example) dw
+" 2. Visually select "orange"
+" 3. Press CTRL-X
+vnoremap <C-X> <Esc>`.``gvP``P
+
+function WordWrap()
+    set formatoptions+=l
+    set lbr
+endfunction
+
+function NoWordWrap()
+    set formatoptions-=l
+    set nolbr
+endfunction
+":call WordWrap()
+" [there has got to be a cleaner way to do this...]
+
+" ****************************************************************
+" COPY & PASTE using the external clipboard
+" F2-cut, F3-copy, F4-paste
+" cut
+map <F2> "+x
+" copy to global buffer (to paste outside of vim)
+map <F3> "+y
+" paste from clipboard
+imap <F4> <Esc>"+gP 
+map <F4> "+gP 
+
+" ****************************************************************
+" insert a debuggin line
+map <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
+imap <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
+  
+" *************************************************************************** 
+" COLOR CONFIG
+
+syntax enable             " Enable syntax highlighting
+if has('gui_running')
+    set background=light
+    " colorscheme solarized
+    colorscheme jtplight
+else
+    set background=dark
+    colorscheme tortejtp
+    " colorscheme 256-grayvim
+    " colorscheme murphyjtp
+    " colorscheme desertjtp
+    " colorscheme defaultjtp
+endif

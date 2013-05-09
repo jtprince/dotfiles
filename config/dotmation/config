@@ -1,17 +1,32 @@
 
 repo_cache "~/src/remote_dotfiles"
 
-github "jtprince/dotfiles" do
+github "jtprince/dotfiles/config" do
+
+  cfg 'dotmation'
+
   dot 'Xresources'
   dot 'Xresources', '.Xdefaults'
+
+  cfg 'git'
+
+  dot 'git/config', '.gitconfig'
+  dot 'git/ignore', '.gitignore'
   
-  #dot 'Xresources'
-  #dot 'Xresources', '.Xdefaults'
+  dot 'gtkrc-2.0'
+  cfg 'gtk-3.0'
+
+  cfg 'vim'
+
   #dot 'zsh/zshenv'
 
   #cfg 'dunstrc'
   #cfg 'zsh'
   #cfg 'i3/config', 'i3/'
+end
+
+github "jtprince/dotfiles/bin" do
+  ln '.'
 end
 
 #github "robbyrussel/oh-my-zsh" do
