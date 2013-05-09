@@ -1,0 +1,90 @@
+% $Id$
+
+% Purpose: Preamble for course lecture notes
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: none
+
+% Usage:
+% \usepackage{lct} % Preamble for course lecture notes
+% fxm: 20000405 Foiltex seems unable to handle tables which have
+% >{\raggedright}p{2in}<{} -style formats in final column
+
+% Standard packages
+\usepackage{ifpdf} % Define \ifpdf
+\ifpdf % We are running PDFLaTeX
+\usepackage[pdftex]{graphicx} % Defines \includegraphics*
+\pdfcompresslevel=9
+\usepackage{thumbpdf} % Generate thumbnails
+\else % We are not running PDFLaTeX
+\usepackage{graphicx} % Defines \includegraphics*
+\fi % endif PDFLaTeX
+\usepackage{array} % Table and array extensions, e.g., column formatting
+\usepackage[usenames]{color} % usenames allows, e.g., ``ForestGreen''
+\usepackage[dayofweek]{datetime} % \xxivtime, \ordinal
+\usepackage{natbib} % \cite commands from aguplus
+\usepackage{longtable} % Multi-page tables, e.g., acronyms and symbols
+\usepackage{mdwlist} % Compact list formats \itemize*, \enumerate*
+%\usepackage[figuresright]{rotating} % Allows sideways figures and tables
+\usepackage{url} % Typeset URLs and e-mail addresses
+
+% Personal packages
+\usepackage{csz} % Library of personal definitions
+\usepackage{abc} % Alphabet as three letter macros
+\usepackage{dmn} % Dimensional units
+\usepackage{chm} % Chemistry
+\usepackage{dyn} % Fluid dynamics
+\usepackage{aer} % Aerosol physics
+\usepackage{rt} % Radiative transfer
+\usepackage{psd} % Particle size distributions
+\usepackage{smn} % Seminars
+\input{jgr_abb} % JGR-sanctioned journal abbreviations
+
+% hyperref is last package since it redefines other packages' commands
+% hyperref options, assumed true unless =false is specified:
+% backref       List citing sections after bibliography entries
+% breaklinks    Wrap links onto newlines
+% colorlinks    Use colored text for links, not boxes
+% hyperindex    Link index to text
+% plainpages=false Suppress warnings caused by duplicate page numbers
+% pdftex        Conform to pdftex conventions
+% fxm: Hyperref breaks foil rotation
+\csznote{
+\ifpdf % We are running PDFLaTeX
+\usepackage[backref,breaklinks,colorlinks,linkcolor=blue,urlcolor=blue,hyperindex,plainpages=false,pdftex]{hyperref} % Hyper-references
+\pdfcompresslevel=9
+\else % We are not running PDFLaTeX
+\usepackage[backref,breaklinks,colorlinks,linkcolor=blue,urlcolor=blue,hyperindex,plainpages=false]{hyperref} % Hyper-references
+\fi % endif PDFLaTeX
+} % end csznote
+
+% Margins set to allow ESS footer and page number
+% To revert to normal, set \topmargin 0.0in, \textheight 9.0in, \textwidth 6.5in
+\topmargin -0.25in \headheight 0pt \headsep 0pt
+\textheight 9.5in \textwidth 7.0in
+\oddsidemargin 0.0in \evensidemargin 0.0in
+\marginparwidth 0pt \marginparsep 0pt
+\footskip 0pt
+\footnotesep=0pt
+
+% FoilTeX macros
+\rightfooter{\thepage} % Pagenumber is the default
+\leftheader{} % Appears upper left
+\rightheader{} % Appears upper right
+
+% Commands specific to lectures
+\newcommand{\bluestar}{\textcolor{blue}{$^{*}$}}
+\newcommand{\greenstar}{\textcolor{green}{$^{*}$}}
+\newcommand{\redstar}{\textcolor{red}{$^{*}$}}

@@ -1,0 +1,11 @@
+
+
+# first, you need to find the apps!
+# Gnome puts them here
+/usr/share/applications
+
+Also, they are here:
+~/.local/share/applications
+
+And perhaps here:
+~/Desktop

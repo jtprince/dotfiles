@@ -1,0 +1,73 @@
+# echo "*** sourcing .profile"
+
+#####################################################
+# ENVIRONMENT
+#####################################################
+
+# not technically necessary since this is the default
+export XDG_CONFIG_HOME="$HOME/.config"
+
+# xfce4-terminal currently has bug in Ubuntu preventing
+# it from propogating the TERM variable properly.
+# gnome-terminal will support 256 colors with this:
+export TERM="xterm-256color"
+
+# https://wiki.archlinux.org/index.php/GNOME_Keyring
+export SSH_AUTH_SOCK
+export GPG_AGENT_INFO
+export GNOME_KEYRING_CONTROL
+export GNOME_KEYRING_PID
+
+export EDITOR=vim
+export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
+export INTERF=/etc/network/interfaces
+export WINEPREFIX="$HOME/.wine"
+#export WINEARCH="win32"
+
+# see ~/env/ls_colors.txt
+export LS_COLORS="*.zip=1;31:ex=1;32:*.z=1;31:*.Z=1;31:*.gz=1;31:*.bz2=1;31:*.tgz=1;31:*.tar=31:*.png=1;35:*.jpg=1;35"
+
+# fixes the gvim ubuntu window manager bug
+#export UBUNTU_MENUPROXY=0
+
+# turn off bell
+# xset b off
+
+xset fp+ ~/.config/fontconfig/fonts.conf
+
+GPG_TTY=`tty`
+export GPG_TTY
+
+# supercomputers
+export SUPER="jtp25@ssh.fsl.byu.edu"
+export SUPERSCP="jtp25@scp.fsl.byu.edu"
+export BIGMEM="jtp25@bigmemssh.fsl.byu.edu"
+export KELSOIP="192.168.101.82"
+
+# is this really necessary??
+# export RBENV_GEMSET_FILE="${HOME}/.rbenv-gemsets"
+
+#####################################################
+# PATHS and SIMILAR
+#####################################################
+
+export MANPATH=$MANPATH:$HOME/man:/usr/dt/man:/usr/share/man:/usr/local/man:/usr/X11R6/man
+export LD_LIBRARY_PATH=$HOME/usr/lib:$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/usr/local/sys/os/glnx86:/usr/local/j3d/lib/i386:/usr/local/extern/lib/glnx86:.
+export PKG_CONFIG_PATH=$HOME/usr/lib/pkgconfig:/usr/lib/pkgconfig
+export TEXINPUTS=$TEXINPUTS:$HOME/.config/latex/inputs
+export BSTINPUTS=$HOME/.config/latex/bst
+
+# init PATH on Xubuntu 12.10 "/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+
+#echo "$PATH" >> "/home/jtprince/INITIAL_PATH.txt"
+export PATH=$HOME/bin:$HOME/usr/bin:$PATH:/usr/bin/X11
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+
+#####################################################
+# LOAD BASHRC
+#####################################################
+
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi

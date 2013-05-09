@@ -1,0 +1,71 @@
+% $Id$
+
+% Purpose: Commands specific to seminar presentations and pdfscreen
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <zender at uci dot edu>
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: pdfscreen.sty
+
+% Usage:
+% \usepackage{smn} % Seminar configuration for pdfscreen
+
+% Font sizes:
+%{\tiny tiny}
+%{\scriptsize scriptsize}
+%{\footnotesize footnotesize}
+%{\small small}
+%{\normalsize normalsize}
+%{\large large}
+%{\Large Large}
+%{\LARGE LARGE}
+%{\huge huge}
+%{\Huge Huge}
+
+\newcommand{\pdfscreen}{\texttt{\small\color{section1}pdfscreen}\xspace} % Pretty format for pdfscreen string
+
+% Float placement
+% NB: Placement of figures is very sensitive to \textfraction
+\renewcommand\textfraction{0.0} % Minimum fraction of page that is text
+\setcounter{totalnumber}{73} % Maximum number of floats per page
+\setcounter{topnumber}{73} % Maximum number of floats at top of page
+\setcounter{dbltopnumber}{73} % Maximum number of floats at top of two-column page
+\setcounter{bottomnumber}{73} % Maximum number of floats at bottom of page
+\renewcommand\topfraction{1.0} % Maximum fraction of top of page occupied by floats
+\renewcommand\dbltopfraction{1.0} % Maximum fraction of top of two-column page occupied by floats
+\renewcommand\bottomfraction{1.0} % Maximum fraction of bottom of page occupied by floats
+\renewcommand\floatpagefraction{1.0} % Fraction of float page filled with floats
+\renewcommand\dblfloatpagefraction{1.0} % Fraction of double column float page filled with floats
+
+% Screen geometry
+\begin{screen}
+% These commands are all defined by pdfscreen
+%\margins{0.65in}{0.65in}{0.65in}{0.65in} % Left, right, top, bottom margins
+\margins{0.40in}{0.40in}{0.40in}{0.40in} % Left, right, top, bottom margins
+%\emblema{logoLUC.png} % Location of graphic file for pdfscreen navigation panel
+\screensize{6.25in}{8in} % Screen dimensions of PDF output
+\urlid{http://www.ess.uci.edu/~zender} % Homepage button in navigation panel points here
+\changeoverlay % Cycle through default overlays, repeating every tenth section
+\paneloverlay{but.pdf} % Overlay for navigation panel
+%\overlay{ipcc_ar3_rad_frc} % Overlay for screen area
+\def\pfill{\vskip6pt}
+\end{screen}
+
+% Commands performed only in print section
+\begin{print}
+\notesname{Notes:} % String appearing in notes ovals adjacent to slides
+% Redefine section formatting in print mode
+\makeatletter
+\def\@seccntformat#1{\llap{\scshape\color{section\thesection@level}\csname the#1\endcsname.\hspace*{6pt}}}
+\makeatother
+\end{print}

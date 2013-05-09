@@ -1,0 +1,65 @@
+general {
+       colors = false
+       interval = 5
+}
+
+order += "disk /"
+order += "disk /home/jtprince"
+order += "wireless eth1"
+order += "battery 0"
+order += "load"
+order += "time"
+
+disk "/" {
+       format = "/ %free"
+}
+
+disk "/home/jtprince" {
+       format = "jtprince %free"
+}
+
+wireless eth1 {
+#      format_up = "W: (%quality at %essid, %bitrate) %ip"
+       format_up = "W (%quality %bitrate) %ip"
+       format_down = "W down"
+}
+
+battery 0 {
+       format = "%status %percentage %remaining"
+       path = "/sys/class/power_supply/BAT1/uevent"
+}
+
+load {
+       format = "LOAD %5min"
+}
+
+time {
+       format = "%Y-%m-%d %I:%M %P | "
+}
+
+
+#order += "ipv6"
+#order += "run_watch DHCP"
+#order += "run_watch VPN"
+#order += "ethernet eth0"
+#order += "cpu_temperature 0"
+
+#ethernet eth0 {
+#       # if you use %speed, i3status requires the cap_net_admin capability
+#       format_up = "E: %ip (%speed)"
+#       format_down = "E: down"
+#}
+
+#run_watch DHCP {
+#       pidfile = "/var/run/dhclient*.pid"
+#}
+
+#run_watch VPN {
+#       pidfile = "/var/run/vpnc/pid"
+#}
+
+#cpu_temperature 0 {
+#       format = "T: %degrees °C"
+#}
+
+

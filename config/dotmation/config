@@ -5,11 +5,12 @@ github "jtprince/dotfiles/config" do
 
   cfg 'dotmation'
 
+  dot 'profile'
+
   dot 'Xresources'
   dot 'Xresources', '.Xdefaults'
 
   cfg 'git'
-
   dot 'git/config', '.gitconfig'
   dot 'git/ignore', '.gitignore'
   
@@ -18,19 +19,36 @@ github "jtprince/dotfiles/config" do
 
   cfg 'vim'
 
-  #dot 'zsh/zshenv'
+  ln 'zsh/zshenv', '.zshenv'
+  cfg 'zsh'
 
-  #cfg 'dunstrc'
-  #cfg 'zsh'
-  #cfg 'i3/config', 'i3/'
+  cfg 'fontconfig'
+
+  # this is not really doing what I want at the moment!
+  # debug this in dotmation
+  #ln 'latex/texmf'
+  #cfg 'latex/bst', 'latex/'
+  #cfg 'latex/inputs', 'latex/'
+
+  dot 'pryrc'
+  dot 'irbrc'
+
+  cfg 'dunstrc'
+  cfg 'i3/config', 'i3/'
+end
+
+github "jtprince/dotfiles/config/latex" do
+  ln 'texmf'
+  cfg 'bst', 'latex/'
+  cfg 'inputs', 'latex/'
 end
 
 github "jtprince/dotfiles/bin" do
   ln '.'
 end
 
-#github "robbyrussel/oh-my-zsh" do
-#  xdg .                            # symlink ~/.config/oh-my-zsh
-#end
+github "robbyrussell/oh-my-zsh" do
+  cfg '.'
+end
 
 

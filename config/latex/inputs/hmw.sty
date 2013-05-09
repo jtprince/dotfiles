@@ -1,0 +1,92 @@
+% $Id$
+
+% Purpose: Preamble for course homework
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: none
+
+% Usage:
+% \usepackage{hmw} % Preamble for course homework
+
+% Standard packages
+\usepackage{ifpdf} % Define \ifpdf
+\ifpdf % We are running PDFLaTeX
+\usepackage[pdftex]{graphicx} % Defines \includegraphics*
+\pdfcompresslevel=9
+\usepackage{thumbpdf} % Generate thumbnails
+\usepackage{epstopdf} % Convert .eps, if found, to .pdf when required
+\else % We are not running PDFLaTeX
+\usepackage{graphicx} % Defines \includegraphics*
+\fi % endif PDFLaTeX
+\usepackage{amsmath} % \subequations, \eqref, \align
+\usepackage{array} % Table and array extensions, e.g., column formatting
+\usepackage[dayofweek]{datetime} % \xxivtime, \ordinal
+\usepackage{enumerate} % Manipulate \enumerate environment
+\usepackage{mdwlist} % Compact list formats \itemize*, \enumerate*
+\usepackage{natbib} % \cite commands from aguplus
+\usepackage{url} % Typeset URLs and e-mail addresses
+\usepackage{longtable} % Multi-page tables, e.g., acronyms and symbols
+\usepackage{lscape} % Landscape environment
+\usepackage{textcomp} % Text companion symbols (nicer \texttrademark, \textregistered, \textonehalf)
+
+% hyperref is last package since it redefines other packages' commands
+% hyperref options, assumed true unless =false is specified:
+% backref       List citing sections after bibliography entries
+% baseurl       Make all URLs in document relative to this
+% bookmarksopen Unknown
+% breaklinks    Wrap links onto newlines
+% colorlinks    Use colored text for links, not boxes
+% hyperindex    Link index to text
+% plainpages=false Suppress warnings caused by duplicate page numbers
+% pdftex        Conform to pdftex conventions
+\ifpdf % We are running PDFLaTeX
+\usepackage[backref,breaklinks,colorlinks,citecolor=blue,linkcolor=blue,urlcolor=blue,hyperindex,plainpages=false,pdftex]{hyperref} % Hyper-references
+\pdfcompresslevel=9
+\else % We are not running PDFLaTeX
+\usepackage[backref,breaklinks,colorlinks,citecolor=blue,linkcolor=blue,urlcolor=blue,hyperindex,plainpages=false]{hyperref} % Hyper-references
+\fi % endif PDFLaTeX
+
+% Personal packages
+\usepackage{csz} % Library of personal definitions
+\usepackage{abc} % Alphabet as three letter macros
+\usepackage{dmn} % Dimensional units
+\usepackage{chm} % Commands generic to chemistry
+\usepackage{hyp} % Hyphenation exception list
+\usepackage{dyn} % Commands generic to fluid dynamics
+\usepackage{aer} % Commands specific to aerosol physics
+\usepackage{rt} % Commands specific to radiative transfer
+\usepackage{psd} % Particle size distributions
+ 
+% Margins
+\topmargin 0in \headheight 0pt \headsep 0pt
+\textheight 9in \textwidth 6.5in
+\oddsidemargin 0in \evensidemargin 0in
+\marginparwidth 0pt \marginparsep 0pt
+\footskip 0pt
+\footnotesep=0pt
+
+% Float placement
+% NB: Placement of figures is very sensitive to \textfraction
+\renewcommand\textfraction{0.0} % Minimum fraction of page that is text
+\setcounter{totalnumber}{73} % Maximum number of floats per page
+\setcounter{topnumber}{73} % Maximum number of floats at top of page
+\setcounter{dbltopnumber}{73} % Maximum number of floats at top of two-column page
+\setcounter{bottomnumber}{73} % Maximum number of floats at bottom of page
+\renewcommand\topfraction{1.0} % Maximum fraction of top of page occupied by floats
+\renewcommand\dbltopfraction{1.0} % Maximum fraction of top of two-column page occupied by floats
+\renewcommand\bottomfraction{1.0} % Maximum fraction of bottom of page occupied by floats
+\renewcommand\floatpagefraction{1.0} % Fraction of float page filled with floats
+\renewcommand\dblfloatpagefraction{1.0} % Fraction of double column float page filled with floats
+

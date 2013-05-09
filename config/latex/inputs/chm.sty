@@ -1,0 +1,552 @@
+% $Id$
+
+% Purpose: Commands specific to chemistry
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: dchem.sty
+
+% Usage:
+% \usepackage{chm} % Chemistry
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{ \ProvidesPackage{chm}[2002/03/06
+  v1.55 Chemistry]
+} % end ProvidesPackage
+
+% Chemical species
+\usepackage{dchem} % Chemistry macros of Donald Arsenau
+% There is more than one way to titrate a cat:
+% \chm macro of Donald Arsenau dchem.sty package
+%\newcommand{\OdOd}{\chm{O_{2}{\cdot}O_{2}}}
+% \chemical macro is taken from KoD95 p. 192
+%\newcommand{\OdOd}{\mbox{\chemical{O_{2}{\cdot}O_{2}}}}
+% No fancy macros at all
+%\newcommand{\OdOd}{\mbox{\mathrm{O}_{2} \cdot \mathrm{O}_{2}}}
+
+% Many species names are single-letter dimensional abbreviations
+% Re-define these macros where necessary so chemical use takes precedence
+\providecommand{\C}{\chm{C}}\renewcommand{\C}{\chm{C}} % [chm] Carbon (C is also Celsius in dmn.sty)
+\providecommand{\F}{\chm{F}}\renewcommand{\F}{\chm{F}} % [chm] Fluorine
+\providecommand{\K}{\chm{K}}\renewcommand{\K}{\chm{K}} % [chm] Potassium
+\newcommand{\AldOt}{\chm{Al_{2}O_{3}}} % [chm] Alumina surface
+\newcommand{\Al}{\chm{Al}} % [chm] Aluminum
+\newcommand{\Ar}{\chm{Ar}} % [chm] Argon
+\newcommand{\A}{\chm{A}} % [chm] Generic species A
+\newcommand{\gasidx}{i} % [idx] Generic species i
+\newcommand{\AB}{\chm{AB}} % [chm] Generic species AB composed of molecule A and molecule B
+\newcommand{\Ba}{\chm{Ba}} % [chm] Barium
+\newcommand{\BrCl}{\chm{BrCl}} % [chm] Bromine chloride
+\newcommand{\Br}{\chm{Br}} % [chm] Bromine
+\newcommand{\BrO}{\chm{BrO}} % [chm] Bromine Oxide
+\newcommand{\B}{\chm{B}} % [chm] Generic species B
+\newcommand{\BC}{\chm{BC}} % [chm] Black Carbon
+\newcommand{\CClq}{\chm{CCl_{4}}} % (?)
+\newcommand{\CCly}{\chm{CCl_{y}}} % [chm] Organic chlorine
+\newcommand{\CFCldCFdCl}{\chm{CFCl_{2}CF_{2}Cl}} % [chm] CFC-113
+\newcommand{\CFClt}{\chm{CFCl_{3}}} % [chm] CFC-11
+\newcommand{\CFtBr}{\chm{CF_{3}Br}} % [chm] fxm
+\newcommand{\CFdCld}{\chm{CF_{2}Cl_{2}}} % [chm] CFC-12
+\newcommand{\CFdHCl}{\chm{CF_{2}HCl}} % [chm] CFC-22
+\newcommand{\CHq}{\chm{CH_{4}}} % [chm] Methane 
+\newcommand{\CHtCl}{\chm{CH_{3}Cl}} % (?)
+\newcommand{\COdCOd}{\chm{CO_{2}{\cdot}CO_{2}}} % [chm] Binary CO2 complex
+\newcommand{\COdHdO}{\chm{CO_{2}{\cdot}H_{2}O}} % [chm] Hydrated carbon dioxide
+\newcommand{\COdttl}{\chm{CO_{2}^{\Sigma}}} % [chm] Total dissolved carbon dioxide
+\newcommand{\COd}{\chm{CO_{2}}} % [chm] Carbon dioxide
+\newcommand{\COt}{\chm{CO_{3}}} % [chm] Carbon trioxide
+\newcommand{\COtdm}{\chm{CO_{3}^{2-}}} % [chm] Carbonate ion
+\newcommand{\COtdp}{\chm{CO_{3}^{2+}}} % [chm] Carbonate
+\newcommand{\CO}{\chm{CO}} % [chm] Carbon Monoxide
+\newcommand{\CSd}{\chm{CS_{2}}} % [chm] Carbon disulfide
+\newcommand{\CaCOt}{\chm{CaCO_{3}}} % [chm] Calcium carbonate
+\newcommand{\CaNOtd}{\chm{Ca(NO_{3})_{2}}} % [chm] Calcium nitrate
+\newcommand{\CaSOq}{\chm{CaSO_{4}}} % [chm] Calcium sulfate
+\newcommand{\CaSOqdm}{\chm{CaSO_{4}^{2-}}} % [chm] Calcium sulfate
+\newcommand{\CaSOt}{\chm{CaSO_{3}}} % [chm] Calcium sulfite
+\newcommand{\Cadp}{\chm{Ca^{2+}}} % [chm] Calcium ion
+\newcommand{\Ca}{\chm{Ca}} % [chm] Calcium
+\newcommand{\CdHq}{\chm{C_{2}H_{4}}} % fxm
+\newcommand{\CdHs}{\chm{C_{2}H_{6}}} % fxm
+\newcommand{\ClNOd}{\chm{ClNO_{2}}} % [chm] Chlorine nitrite
+\newcommand{\ClONOd}{\chm{ClONO_{2}}} % [chm] Chlorine nitrate
+\newcommand{\ClOd}{\chm{ClO_{2}}} % [chm] Chlorine dioxide
+\newcommand{\ClOx}{\chm{ClO_{x}}} % [chm] Oxides of chlorine
+\newcommand{\ClO}{\chm{ClO}} % [chm] Chlorine oxide (?)
+\newcommand{\CldOd}{\chm{Cl_{2}O_{2}}} % [chm] Chlorine dioxide (?)
+\newcommand{\CldO}{\chm{Cl_{2}O}} % [chm] Chlorine oxide
+\newcommand{\Cld}{\chm{Cl_{2}}} % [chm] Molecular chlorine
+\newcommand{\Cly}{\chm{Cl_{y}}} % [chm] Inorganic chlorine
+\newcommand{\Cl}{\chm{Cl}} % [chm] Atomic chlorine
+\newcommand{\Cu}{\chm{Cu}} % [chm] Copper
+\newcommand{\DMS}{\chm{CH_{3}SCH_{3}}} % [chm] Dimethyl sulfide
+\newcommand{\FeIII}{\chm{Fe(III)}} % [chm] Ferric iron compounds
+\newcommand{\FeII}{\chm{Fe(II)}} % [chm] Ferrous iron compounds
+\newcommand{\FedOt}{\chm{Fe_{2}O_{3}}} % [chm] Iron oxide???
+\newcommand{\Fedp}{\chm{Fe^{2+}}} % [chm] Ferrous iron
+\newcommand{\FeDI}{\chm{Fe_{\mathrm{DI}}}} % [chm] Iron in de-ionized water
+\newcommand{\Feocn}{\chm{Fe_{\mathrm{ocn}}}} % [chm] Iron in ocean water
+\newcommand{\Fetp}{\chm{Fe^{3+}}} % [chm] Ferric iron
+\newcommand{\Fe}{\chm{Fe}} % [chm] Iron
+\newcommand{\Ge}{\chm{Ge}} % [chm] Germanium
+\newcommand{\HCOtm}{\chm{HCO_{3}^{-}}} % [chm] Bicarbonate ion
+\newcommand{\HCl}{\chm{HCl}} % [chm] Hydrogen chloride, Hydrocloric acid
+\newcommand{\HdCOt}{\chm{H_{2}CO_{3}}} % [chm] Hydrogen carbonate?
+\newcommand{\He}{\chm{He}} % [chm] Helium
+\newcommand{\HNOd}{\chm{HNO_{2}}} % [chm] Nitrous acid 
+\newcommand{\HNOq}{\chm{HNO_{4}}} % [chm] Peroxynitric acid
+\newcommand{\HNOtHdO}{\chm{HNO_{3}{\cdot}H_{2}O}} % [chm] Hydrated nitric acid
+\newcommand{\HNOtaq}{\chm{HNO_{3\ aq}}} % [chm] Aqueous nitric acid
+\newcommand{\HNOtg}{\chm{HNO_{3 g}}} % [chm] Gas phase nitric acid
+\newcommand{\HNOtttl}{\chm{HNO_{3}^{\Sigma}}} % [chm] Total dissolved nitric acid
+\newcommand{\HNOt}{\chm{HNO_{3}}} % [chm] Nitric acid
+\newcommand{\HOCl}{\chm{HOCl}} % [chm] Hypochlorous acid
+\newcommand{\HOdNOd}{\chm{HO_{2}NO_{2}}} % [chm] 
+\newcommand{\HOdm}{\chm{HO_{2}^{-}}} % [chm] Hydroperoxyl ion
+\newcommand{\HOd}{\chm{HO_{2}}} % [chm] Hydroperoxyl
+\newcommand{\HOx}{\chm{HO_{x}}} % [chm] Hydrogen radicals SeP97 p. 171
+\newcommand{\HSOqaq}{\chm{HSO_{4\ aq}^{-}}}% [chm] Aqueous bisulfate ion
+\newcommand{\HSOqmaq}{\chm{HSO_{4\ aq}^{-}}} % [chm] Aqueous bisulfate ion SeP87 p. 57
+\newcommand{\HSOqm}{\chm{HSO_{4}^{-}}} % [chm] Bisulfate ion SeP97 p. 57
+\newcommand{\HSOtmaq}{\chm{HSO_{3\ aq}^{-}}} % [chm] Aqueous bisulfite ion
+\newcommand{\HSOtm}{\chm{HSO_{3}^{-}}} % [chm] Bisulfite ion
+\newcommand{\Hd}{\chm{H_{2}}} % [chm] Hydrogen gas
+\newcommand{\HdOHdO}{\chm{(H_{2}O)_{2}}} % [chm] Water dimer
+\newcommand{\HdONd}{\chm{H_{2}ON_{2}}} % [chm] Water-nitrogen dimer
+\newcommand{\HdOOd}{\chm{H_{2}OO_{2}}} % [chm] Water-oxygen dimer
+\newcommand{\HdOdHdO}{\chm{H_{2}O_{2}{\cdot}H_{2}O}} % [chm] Hydrated hydrogen peroxide
+\newcommand{\HdOdaq}{\chm{H_{2}O_{2\ aq}}} % [chm] Aqueous hydrogen peroxide
+\newcommand{\HdOdmr}{\chm{(H_{2}O)_{2}}} % [chm] Water dimer
+\newcommand{\HdOdttl}{\chm{H_{2}O_{2}^{\Sigma}}} % [chm] Total dissolved hydrogen peroxide
+\newcommand{\HdOd}{\chm{H_{2}O_{2}}} % [chm] Hydrogen peroxide
+\newcommand{\HdOn}{\chm{(H_{2}O)_n}} % [chm] Water polymer
+\newcommand{\HdO}{\chm{H_{2}O}} % [chm] Water
+\newcommand{\HdSOq}{\chm{H_{2}SO_{4}}} % [chm] Sulfuric acid
+\newcommand{\HtPOq}{\chm{H_{3}PO_{4}}} % [chm] Phosphoric acid
+\newcommand{\HdSOt}{\chm{H_{2}SO_{3}}} % [chm] ?
+\newcommand{\HdS}{\chm{H_{2}S}} % [chm] Hydrogen sulfide
+\newcommand{\Hp}{\chm{H^{+}}} % [chm] Hydrogen ion
+\newcommand{\HxOy}{\chm{H_{x}O_{y}}} % [chm] O3+HO2+H2O2
+\newcommand{\lctm}{\chm{e^{-}}} % [chm] Electron
+\newcommand{\NMHC}{\chm{NMHC}} % [chm] Electron
+\newcommand{\Hu}{\chm{H}} % [chm] Hydrogen (H is reserved)
+\newcommand{\KBr}{\chm{KBr}} % [chm] Potassium bromide
+\newcommand{\KCl}{\chm{KCl}} % [chm] Potassium chloride
+\newcommand{\LiNOt}{\chm{LiNO_{3}}} % [chm] Lithium nitrate
+\newcommand{\Li}{\chm{Li}} % [chm] Lithium
+\newcommand{\LNOd}{\chm{LNO_{2}}} % [chm] Lightning-produced Nitrogen dioxide
+\newcommand{\LNOx}{\chm{LNO_{x}}} % [chm] Lightning-produced oxides of Nitrogen
+\newcommand{\MSA}{\chm{CH_{3}SO_{3}H}} % [chm] Methane sulfonic acid
+\newcommand{\Mg}{\chm{Mg}} % [chm] Magnesium
+\newcommand{\MgO}{\chm{MgO}} % [chm] Magnesium Oxide
+\newcommand{\CaO}{\chm{CaO}} % [chm] Calcium Oxide
+\newcommand{\MgSOq}{\chm{MgSO_{4}}} % [chm] Magnesium sulfate
+\newcommand{\MnII}{\chm{Mn(II)}} % [chm] Manganese compounds 
+\newcommand{\Mndp}{\chm{Mn^{2+}}} % [chm] Manganese
+\newcommand{\Mn}{\chm{Mn}} % [chm] Manganese
+\newcommand{\M}{\chm{M}} % [chm] Generic species M
+\newcommand{\Ne}{\chm{Ne}} % [chm] Neon
+\newcommand{\NHqCl}{\chm{NH_{4}Cl}} % [chm] Ammonium chloride
+\newcommand{\NHqHSOq}{\chm{NH_{4}HSO_{4}}} % [chm] Ammonium bisulfate
+\newcommand{\NHqNOt}{\chm{NH_{4}NO_{3}}} % [chm] Ammonium nitrate
+\newcommand{\NHqOH}{\chm{NH_{4}OH}} % [chm] Hydrated ammonia alternative formula
+\newcommand{\NHqdSOq}{\chm{(NH_{4})_{2}SO_{4}}} % [chm] Ammonium sulfate
+\newcommand{\NHqp}{\chm{NH_{4}^{+}}} % [chm] Ammonium ion
+\newcommand{\NHqtHSOqd}{\chm{(NH_{4})_{3}H(SO_{4})_{2}}} % [chm] Letovicite
+\newcommand{\NHqttl}{\chm{NH_{4}^{\Sigma}}} % [chm] Total dissolved ammonia alternate notation
+\newcommand{\NHq}{\chm{NH_{4}}} % [chm] Ammonium
+\newcommand{\NHtHdO}{\chm{NH_{3}{\cdot}H_{2}O}} % [chm] Hydrated ammonia
+\newcommand{\NHtttl}{\chm{NH_{3}^{\Sigma}}} % [chm] Total dissolved ammonia
+\newcommand{\NHt}{\chm{NH_{3}}} % [chm] Ammonia
+\newcommand{\NOdm}{\chm{NO_{2}^{-}}} % [chm] Nitrogen dioxide ion
+\newcommand{\NOd}{\chm{NO_{2}}} % [chm] Nitrogen dioxide
+\newcommand{\NOtm}{\chm{NO_{3}^{-}}} % [chm] Nitrate radical
+\newcommand{\NOt}{\chm{NO_{3}}} % [chm] Nitrate (Nitrogen trioxide?)
+\newcommand{\NOx}{\chm{NO_{x}}} % [chm] Oxides of nitrogen = NO + NO2
+\newcommand{\NOy}{\chm{NO_{y}}} % [chm] Reactive odd nitrogen = NOx + N2O5 + HNO3 + NO3 + HNO4 + HONO + PAN. NOy does not include N2O or NH3 SeP97 p. 71
+\newcommand{\NO}{\chm{NO}} % [chm] Nitric oxide
+\newcommand{\Hg}{\chm{Hg}} % [chm] Mercury
+\newcommand{\NaBr}{\chm{NaBr}} % [chm] Sodium bromide
+\newcommand{\NaCl}{\chm{NaCl}} % [chm] Sodium chloride
+\newcommand{\NaHSOq}{\chm{NaHSO_{4}}} % [chm] Sodium bisulfate
+\newcommand{\NaNOd}{\chm{NaNO_{2}}} % [chm] Sodium nitrite
+\newcommand{\NaNOt}{\chm{NaNO_{3}}} % [chm] Sodium nitrate
+\newcommand{\NadSOq}{\chm{Na_{2}SO_{4}}} % [chm] Sodium sulfate
+\newcommand{\Na}{\chm{Na}} % [chm] Sodium
+\newcommand{\NdD}{\chm{N({}^2D)}} % [chm] Atomic nitrogen doublet D state
+\newcommand{\NdNd}{\chm{N_{2}{\cdot}N_{2}}} % [chm] Nitrogen
+\newcommand{\NdOOt}{\chm{N_{2}O{\cdot}O_{3}}}
+\newcommand{\NdOc}{\chm{N_{2}O_{5}}} % [chm] Dinitrogen pentoxide
+\newcommand{\NdO}{\chm{N_{2}O}} % [chm] Nitrous oxide
+\newcommand{\Nd}{\chm{N_{2}}} % [chm] Nitrogen
+\newcommand{\NqS}{\chm{N({}^4S)}} % [chm] Atomic nitrogen quadruplet S state
+\newcommand{\N}{\chm{N}} % [chm] Nitrogen
+\newcommand{\OCS}{\chm{OCS}} % [chm] Carbonyl sulfide
+\newcommand{\OClO}{\chm{OClO}} % [chm] Chlorine dioxide
+\newcommand{\OHm}{\chm{OH^{-}}} % [chm] Hydroxide ion
+\newcommand{\OH}{\chm{OH}} % [chm] Hydroxyl radical
+\newcommand{\OdAr}{\chm{O_{2}{\cdot}Ar}} % [chm] Oxygen-Argon complex
+\newcommand{\OdCHq}{\chm{O_{2}{\cdot}CH_{4}}} % [chm] Oxygen-methane complex
+\newcommand{\OdCOd}{\chm{O_{2}{\cdot}CO_{2}}} % [chm] Oxygen-carbon dioxide complex
+\newcommand{\OdHdO}{\chm{O_{2}{\cdot}H_{2}O}} % [chm] Oxygen-water complex
+\newcommand{\OdNd}{\chm{O_{2}{\cdot}N_{2}}} % [chm] Oxygen-nitrogen complex
+\newcommand{\OdOd}{\chm{O_{2}{\cdot}O_{2}}} % [chm] Oxygen-oxygen complex
+\newcommand{\OdX}{\chm{O_{2}{\cdot}X}} % [chm] Oxygen-X complex
+\newcommand{\OdsDg}{\chm{O_{2}({}^1\Delta_\mathrm{g})}} % [chm] Molecular oxygen singlet delta g
+\newcommand{\OdtSgm}{\chm{O_{2}({}^3\Sigma_\mathrm{g}^{-})}} % [chm] Molecular oxygen triplet sigma g minus
+\newcommand{\Od}{\chm{O_{2}}} % [chm] Molecular oxygen
+\newcommand{\Oq}{\chm{O_{4}}} % [chm] Oxygen dimer
+\newcommand{\OsD}{\chm{O({}^1D)}} % [chm] Atomic oxygen singlet D state
+\newcommand{\OtP}{\chm{O({}^3P)}} % [chm] Atomic oxygen triplet D state
+\newcommand{\Ot}{\chm{O_{3}}} % [chm] Ozone
+\newcommand{\Ou}{\chm{O}} % [chm] Atomic oxygen (\O is Scandinavian O slash)
+\newcommand{\Pu}{\chm{P}} % [chm] Atomic phosphorous (\P is paragraph symbol)
+\newcommand{\PdOc}{\chm{P_{2}O_{5}}} % [chm] Phosphate
+\newcommand{\Ox}{\chm{O_{x}}} % [chm] Odd oxygen
+\newcommand{\PAN}{\chm{PAN}} % [chm] Peroxyacetyl nitrate 
+\newcommand{\CXII}{\chm{^{12}C}} % [chm] Carbon 12
+\newcommand{\UCCXXXV}{\chm{^{235}U}} % [chm] Uranium 235
+\newcommand{\UCCXXXVIII}{\chm{^{238}U}} % [chm] Uranium 238
+\newcommand{\CXIII}{\chm{^{13}C}} % [chm] Carbon 13
+\newcommand{\CXIV}{\chm{^{14}C}} % [chm] Carbon 14
+\newcommand{\OXVI}{\chm{^{16}O}} % [chm] Oxygen 16
+\newcommand{\OXVIII}{\chm{^{18}O}} % [chm] Oxygen 18
+\newcommand{\HII}{\chm{^{2}H}} % [chm] Hydrogen 2
+\newcommand{\PbCCX}{\chm{^{210}Pb}} % [chm] Lead 210
+\newcommand{\Pb}{\chm{Pb}} % [chm] Lead
+\newcommand{\RnCCXXII}{\chm{^{222}Rn}} % [chm] Radon 222
+\newcommand{\HF}{\chm{HF}} % [chm] Hydrogen Fluoride, Hydrofluoric acid
+\newcommand{\HBr}{\chm{HBr}} % [chm] Hydrogen Bromide
+\newcommand{\HI}{\chm{HI}} % [chm] Hydrogen Iodide
+\newcommand{\Ra}{\chm{Ra}} % [chm] Radon
+\newcommand{\Rb}{\chm{Rb}} % [chm] Rubidium
+\newcommand{\SIV}{\chm{S(IV)}} % [chm] Sulfur compounds \SOq + \SOtdm SeP97 p. 56
+\newcommand{\SFs}{\chm{SF_{6}}} % [chm] Sulfur hexafluoride
+\newcommand{\SOdHdO}{\chm{SO_{2}{\cdot}H_{2}O}} % [chm] Hydrated sulfur dioxide
+\newcommand{\SOdttl}{\chm{SO_{2}^{\Sigma}}} % [chm] Total dissolved sulfur dioxide
+\newcommand{\SOd}{\chm{SO_{2}}} % [chm] Sulfur dioxide
+\newcommand{\SOqdm}{\chm{SO_{4}^{2-}}} % [chm] Sulfate ion
+\newcommand{\SOq}{\chm{SO_{4}}} % [chm] Sulfate
+\newcommand{\SOtdm}{\chm{SO_{3}^{2-}}} % [chm] Sulfite ion
+\newcommand{\SOt}{\chm{SO_{3}}} % [chm] Sulfite (sulfur trioxide?)
+\newcommand{\SOx}{\chm{SO_{x}}} % [chm] SO2 + sulfate DCZ96 p. 22869
+\newcommand{\SVI}{\chm{S(VI)}} % [chm] Sulfur compounds \HdSOq + \SOqdm SeP97 p. 56
+\newcommand{\SiOd}{\chm{SiO_{2}}} % [chm] Silicon dioxide
+\newcommand{\Si}{\chm{Si}} % [chm] Silicon
+\newcommand{\Ti}{\chm{Ti}} % [chm] Titanium
+\newcommand{\TiOd}{\chm{TiO_{2}}} % [chm] Titanium oxide
+\newcommand{\Sr}{\chm{Sr}} % [chm] Strontium
+\newcommand{\XO}{\chm{XO}} % [chm] Chemical species XO
+\newcommand{\XY}{\chm{X{\cdot}Y}} % [chm] Chemical complex of X and Y
+\newcommand{\X}{\chm{X}} % [chm] Chemical species X
+\newcommand{\Y}{\chm{Y}} % [chm] Chemical species Y
+
+% General nomenclature
+% 0.5 Minerals
+\newcommand{\dolomite}{\chm{\Ca\Mg[\COt]_{2}}} % [chm] Dolomite HaC01b p. 2475 Tbl. 2
+\newcommand{\orthoclase}{\chm{\K[\Al\Si_{3}\Ou_{8}]}} % [chm] Orthoclase HaC01b p. 2475 Tbl. 2
+\newcommand{\chlorite}{\chm{(\Fe,\Mg)_{\nnn-\ppp}\discretionary{}{}{}(\Fe,\Al)_{2\ppp}\discretionary{}{}{}\Si_{4-\ppp}{\cdot}\discretionary{}{}{}\xxx\HdO, \nnn \approx 5, \ppp \approx 0.5\mbox{--}2}} % [chm] Chlorite HaC01b p. 2475 Tbl. 2
+\newcommand{\feldspar}{\chm{\M\Al(\Al,\Si)_{3}\Ou_{3}}} % [chm] Feldspar
+\newcommand{\gypsum}{\chm{Ca SO_{4}{\cdot}2H_{2}O}} % [chm] Gypsum
+\newcommand{\goethite}{\chm{\alpha-Fe^{3+} O(OH)}} % [chm] Goethite
+\newcommand{\hematite}{\chm{Fe_{2} O_{3}}} % [chm] Hematite
+\newcommand{\illite}{\chm{\K_{\yyy}(\Al,\Mg,\Fe)_{2}\discretionary{}{}{}(\Al_{\yyy},\Si_{4-\yyy}\discretionary{}{}{}\Ou_{10}\discretionary{}{}{}(\OH)_{2}}} % [chm] Illite
+\newcommand{\illiteb}{\chm{\K\Al_{2}\discretionary{}{}{}[\Al\Si_{3}\Ou_{10}]\discretionary{}{}{}(\OH)_{2}}} % [chm] Illite HaC01b p. 2475 Tbl. 2
+\newcommand{\kaolinite}{\chm{\Al_{2} \Si_{2} \Ou_{5} (\OH)_{4}}} % [chm] Kaolinite
+\newcommand{\mica}{\chm{(\K,\Na,\Ca)\discretionary{}{}{}(\Mg,\Fe,\Li,\Al)_{2,3}\discretionary{}{}{}(\Al,\Si)_{4}\discretionary{}{}{}\Ou_{10}\discretionary{}{}{}(\OH,\F)_{2}}} % [chm] Mica
+\newcommand{\montmorillonite}{\chm{(\Na,\Ca_{0.5})_{0.33}\discretionary{}{}{}(\Al,\Mg)_{2}\discretionary{}{}{}\Si_{4}\Ou_{10}\discretionary{}{}{}(\OH)_{2}{\cdot}\discretionary{}{}{}n\HdO}} % [chm] Montmorillonite
+\newcommand{\montmorilloniteb}{\chm{\Ca\mmm(\Mg[\Si_{4}\Ou_{10}]\discretionary{}{}{}(\OH_{2}) \times \ppp(\Al,\Fe)_{2}[\Si_{4}\Ou_{10}]; \mmm : \ppp = 0.8\mbox{--}0.9{\cdot}\discretionary{}{}{}\nnn\HdO}} % [chm] Montmorillonite HaC01b p. 2475 Tbl. 2
+\newcommand{\opal}{\chm{\Si \Ou_{2} (\HdO)_{n}}} % [chm] Opal
+\newcommand{\quartz}{\chm{\Si \Ou_{2}}} % [chm] Quartz
+\newcommand{\palygorskite}{\chm{(\Mg,\Al)_{2}\discretionary{}{}{}[\OH|\Si_{4}\Ou_{10}]{\cdot}\discretionary{}{}{}2\HdO+\discretionary{}{}{}2\HdO}} % [chm] Smectite HaC01b p. 2475 Tbl. 2
+\newcommand{\smectite}{\chm{\Mg_{3}\discretionary{}{}{}[\Si_{4}\Ou_{10}]\discretionary{}{}{}(\OH)_{2}}} % [chm] Smectite HaC01b p. 2475 Tbl. 2
+
+% 0. Provided commands
+\providecommand{\actcff}{a}\renewcommand{\actcff}{a} % Activity coefficient
+\providecommand{\cntsbs}{\ensuremath{\mathrm{c}}}\renewcommand{\cntsbs}{\ensuremath{\mathrm{c}}} % [sbs] Continuum subscript
+\providecommand{\dff}{D}\renewcommand{\dff}{D} % [m2 s-1] Diffusivity
+\providecommand{\dns}{\rho}\renewcommand{\dns}{\rho} % [kg m-3] Density
+\providecommand{\kndnbr}{\mathrm{Kn}}\renewcommand{\kndnbr}{\mathrm{Kn}} % [frc] Knudsen number
+\providecommand{\kntsbs}{\ensuremath{\mathrm{k}}}\renewcommand{\kntsbs}{\ensuremath{\mathrm{k}}} % [sbs] Kinetic subscript
+\providecommand{\mfp}{\lambda}\renewcommand{\mfp}{\lambda} % [m] Mean free path
+\providecommand{\mssaer}{m}\renewcommand{\mssaer}{m} % [kg] Aerosol mass
+\providecommand{\prc}{\ensuremath{J}}\renewcommand{\prc}{\ensuremath{J}} % [s-1] Photolysis rate coefficient
+\providecommand{\rds}{r}\renewcommand{\rds}{r} % [m] Radius
+\providecommand{\sltsbs}{\ensuremath{\mathrm{s}}}\renewcommand{\sltsbs}{\ensuremath{\mathrm{s}}} % [sbs] Saltation or solute (dry) subscript
+\providecommand{\ttlsbs}{\mathrm{t}}\renewcommand{\ttlsbs}{\mathrm{t}} % [sbs] Total subscript
+\providecommand{\vprsbs}{\mathrm{v}}\renewcommand{\vprsbs}{\mathrm{v}} % [sbs] Vapor subscript
+\providecommand{\xsxabs}{\ensuremath{\alpha}}\renewcommand{\xsxabs}{\ensuremath{\alpha}} % [m2] Absorption cross-section
+
+% 1. Primary commands
+\newcommand{\BETsbs}{\mathrm{BET}} % [sbs] BET Subscript
+\newcommand{\KEprm}{\chm{KE^{\prime}}} % [J] Kinetic Energy of molecule
+\newcommand{\KE}{\chm{KE}} % [J] Kinetic Energy of molecule
+\newcommand{\chmphz}[2]{#1(#2)} % Append phase notation to chemical
+\newcommand{\chmsfc}{(\sigma)} % [sbs] Chemical subscript for surface phase
+\newcommand{\cplfct}{\ensuremath{\lambda}} % [frc] Coupling factor
+\newcommand{\dmtcll}{\sigma} % [m] Collision diameter
+\newcommand{\dryairsbs}{\mathrm{d}} % [sbs] Dry air subscript
+\newcommand{\drysbs}{\mathrm{d}} % [sbs] Dry subscript
+\newcommand{\eqmcst}{K} % Equilibrium constant
+\newcommand{\epsHdO}{\epsilon} % [frc] Ratio of MMW_H2O/MMW_dry
+\newcommand{\ffcsbs}{*} % [sbs] Effective (Henry's law) subscript
+\newcommand{\frcfsh}{\ensuremath{\epsilon}} % [frc] Forcing efficiency
+\newcommand{\gascst}{R} % [J kg-1 K-1] Specific gas constant
+\newcommand{\hchsbs}{\ensuremath{\mbox{\scriptsize H}}} % [sbs] Heterogeneous chemistry subscript
+\newcommand{\hnr}{H} % [mol atm-1] Henry's Law coefficient
+\newcommand{\kppdryair}{\kappa} % (0.286 = 2/7) [frc] Constant in potential temperature IrG81 p. 25, Tre922 p. 72
+\newcommand{\lqdprn}{\mathrm{(l)}} % Chemical subscript for liquid phase
+\newcommand{\mlcwgt}{\ensuremath{\mathcal{M}}} % [kg mol-1] Molecular weight % fxm: Change \mlcwgt usage to \mmw
+\newcommand{\mll}{X} % [mol kg-1] Molality
+\newcommand{\mlrcnc}{c} % [mol m-3] Molar concentration
+\newcommand{\mmw}{\ensuremath{\mathcal{M}}} % [kg mol-1] Mean molecular weight
+\newcommand{\molfrc}{N} % [frc] Molar fraction
+\newcommand{\molnbr}{n} % [mol] Number of moles
+\newcommand{\mssacmcff}{\alpha} % Mass accomodation coefficient
+\newcommand{\mssrat}{m} % [frc] Ratio of molecular weights
+\newcommand{\mssuptcff}{\gamma} % [frc] Mass uptake coefficient
+\newcommand{\mstairsbs}{\mathrm{w}} % [sbs] Moist air subscript
+\newcommand{\mssmlc}{\ensuremath{\mss}} % [kg mlc-1] Mass of single molecule
+\newcommand{\npc}{\ensuremath{N}} % [# m-2] Number path column
+\newcommand{\nslsbs}{\mathrm{u}} % [sbs] Insoluble subscript
+\newcommand{\pH}{\chm{pH}} % [frc] -log_10[H+] [mol L-1]
+\newcommand{\pchsbs}{\ensuremath{\mbox{\scriptsize P}}} % [sbs] Photochemistry subscript
+\newcommand{\prsprtwtr}{e} % [Pa] Partial vapor pressure of water
+\newcommand{\sfccrcaspsph}{R_{G}} % [m2 m-2] Surface area correction from aspherical to spherical USP01 p. 18062
+\newcommand{\sldprn}{\mathrm{(s)}} % [sbs] Chemical subscript for solid phase
+\newcommand{\slnsbs}{\mathrm{s}} % [sbs] Solution subscript
+\newcommand{\spcvlm}{v} % [m3 kg-1] Specific volume
+\newcommand{\vnthff}{i} % van't Hoff factor
+\newcommand{\vprprn}{\mathrm{(g)}} % [sbs] Chemical subscript for vapor phase
+\newcommand{\wtrsbs}{\mathrm{w}} % [sbs] Water subscript
+
+% 2. Derived commands fxm: why are there two sections of derived commands?
+\newcommand{\actcffHdO}{\actcff_{\HdO}} % Activity coefficient of H2O
+\newcommand{\actcffwtr}{\actcff_{\wtrsbs}} % Activity coefficient of water
+\newcommand{\cncAB}{\cnc_{\AB}} % [# m-3] Concentration of species AB
+\newcommand{\cncA}{\cnc_{\A}} % [# m-3] Concentration of species A
+\newcommand{\cncB}{\cnc_{\B}} % [# m-3] Concentration of species B
+\newcommand{\cncNOd}{\cnc_{\NOd}} % [mlc m-3] Concentration of NO2
+\newcommand{\cplHNOt}{\ensuremath{\cplfct_{\HNOt}}} % [frc] Coupling factor for HNO3
+\newcommand{\cplOH}{\ensuremath{\cplfct_{\OH}}} % [frc] Coupling factor for OH
+\newcommand{\cplOt}{\ensuremath{\cplfct_{\Ot}}} % [frc] Coupling factor for O3
+\newcommand{\dffAB}{\dff_{\A \B}} % [m2 s-1] Diffusivity of species A in atmosphere of B
+\newcommand{\dffA}{\dff_{\A}} % [m2 s-1] Diffusivity of species A
+\newcommand{\dffBB}{\dff_{\B \B}} % [m2 s-1] Diffusivity of species B in atmosphere of B
+\newcommand{\dffHdOair}{\dff_{\HdO}} % [m2 s-1] Diffusivity of H2O in air
+\newcommand{\dfflqdA}{\dff_{\A, \lqdprn}} % [m2 s-1] Liquid phase diffusivity
+\newcommand{\dfflqd}{\dff_{\lqdprn}} % [m2 s-1] Liquid phase diffusivity of species A
+\newcommand{\dffvpr}{\dff_{\vprsbs}} % [m2 s-1] Vapor diffusivity
+\newcommand{\dlthchfrc}{\ensuremath{\delta_{\hchsbs}}} % [frc] Fractional heterogeneous forcing
+\newcommand{\dlthch}{\ensuremath{\Delta_{\hchsbs}}} % [frc] Heterogeneous forcing
+\newcommand{\dltpchfrc}{\ensuremath{\delta_{\pchsbs}}} % [frc] Fractional photochemical forcing
+\newcommand{\dltpch}{\ensuremath{\Delta_{\pchsbs}}} % [frc] Photochemical forcing
+\newcommand{\dltpph}{\ensuremath{\Delta_{\pchsbs+\hchsbs}}} % [frc] Coupled forcing
+\newcommand{\dlt}{\Delta} % Change
+\newcommand{\dnsA}{\dns_{\A}} % [kg m-3] Mass density of species A
+\newcommand{\dnsCOd}{\dns_{\COd}} % [kg m-3] Mass density of CO2
+\newcommand{\dnsHdO}{\dns_{\HdO}} % [kg m-3] Mass density of H2O
+\newcommand{\dnsidx}{\dns_{\gasidx}} % [kg m-3] Mass density of species A
+\newcommand{\flxnbrA}{\flx_{\A}} % [# m-2 s-1] Number flux of species A
+\newcommand{\frcfshOt}{\ensuremath{\frcfsh_{\Ot}}} % [frc] O3 forcing efficiency 
+\newcommand{\frcfshhch}{\ensuremath{\frcfsh_{\hchsbs}}} % [frc] Heterogeneous forcing efficiency
+\newcommand{\frcfshpch}{\ensuremath{\frcfsh_{\pchsbs}}} % [frc] Photochemical forcing efficiency
+\newcommand{\frcfshpph}{\ensuremath{\frcfsh_{\pchsbs+\hchsbs}}} % [frc] Coupled forcing efficiency
+\newcommand{\gascstA}{\gascst_{\A}} % [J kg-1 K-1] Specific gas constant of species A
+\newcommand{\gascstavg}{\bar{\gascst}} % [J kg-1 K-1] Mean specific gas constant
+\newcommand{\gascstdryair}{\gascst_{\dryairsbs}} % [J kg-1 K-1] Specific gas constant of dry air
+\newcommand{\gascstidx}{\gascst_{\gasidx}} % [J kg-1 K-1] Specific gas constant of species i
+\newcommand{\gascstunv}{\gascst^{*}} % [J mol-1 K-1] Universal gas constant
+\newcommand{\gascstvpr}{\gascst_{\vprsbs}} % [J kg-1 K-1] Specific gas constant of vapor
+\newcommand{\gascstwtr}{\gascst_{\wtrsbs}} % [J kg-1 K-1] Specific gas constant of pure water
+\newcommand{\kndnbrAB}{\kndnbr_{\A \B}} % [frc] Knudsen number of A in atmosphere of B
+\newcommand{\mfpAB}{\mfp_{\A \B}} % [m] Mean free path of A in atmosphere of B
+\newcommand{\mfpA}{\mfp_{\A}} % [m] Mean free path of A
+\newcommand{\mfpBB}{\mfp_{\B \B}} % [m] Mean free path of B in atmosphere of B
+\newcommand{\mfpatm}{\mfp} % [m] Mean free path of atmosphere
+\newcommand{\mlcflxA}{\mlcflx_{\A}} % [# m-2 s-1] Number flux of molecules of species A
+\newcommand{\mlcflxcntmax}{\mlcflxcnt^{\mathrm{max}}} % [# m-2 s-1] Maximum number flux of molecules in continuum regime
+\newcommand{\mlcflxcnt}{\mlcflx_{\cntsbs}} % [# m-2 s-1] Number flux of molecules in continuum regime
+\newcommand{\mlcflxkntmax}{\mlcflxknt^{\mathrm{max}}} % [# m-2 s-1] Maximum number flux of molecules in kinetic regime
+\newcommand{\mlcflxknt}{\mlcflx_{\kntsbs}} % [# m-2 s-1] Number flux of molecules in kinetic regime
+\newcommand{\mlcflxstrcnt}{\mlcflxstr_{\cntsbs}} % [# m-2 s-1] Number flux of molecules, uncorrected, continuum regime
+\newcommand{\mlcflxstrknt}{\mlcflxstr_{\kntsbs}} % [# m-2 s-1] Number flux of molecules, uncorrected, kinetic regime
+\newcommand{\mlcflxstr}{\mlcflx^{\strsbs}} % [# m-2 s-1] Number flux of molecules, uncorrected
+\newcommand{\mlcflxtldA}{\tilde{\mlcflx}_{\A}} % [# m-2 s-1] Areal flux of molecules of species A
+\newcommand{\mlcflxtldcnt}{\tilde{\mlcflx}_{\cntsbs}} % [# m-2 s-1] Areal flux of molecules in continuum regime
+\newcommand{\mlcflxtld}{\tilde{\mlcflx}} % [# m-2 s-1] Areal flux of molecules
+\newcommand{\mlcflx}{J} % [# m-2 s-1] Number flux of molecules
+\newcommand{\mlcspd}{v} % [m s-1] Molecular speed
+\newcommand{\mmrA}{\mmr_{\A}} % [kg kg-1] Mass mixing ratio of species A
+\newcommand{\mmrHdO}{\mmr_{\HdO}} % [kg kg-1] Mass mixing ratio of H2O
+\newcommand{\mmrBC}{\mmr_{\BC}} % [kg kg-1] Mass mixing ratio of BC
+\newcommand{\mmrCa}{\mmr_{\Ca}} % [kg kg-1] Mass mixing ratio of Ca
+\newcommand{\mmrdst}{\mmr_{\mathrm{dust}}} % [kg kg-1] Mass mixing ratio of dust
+\newcommand{\mmwavg}{\ensuremath{\bar{\mmw}}} % [kg mol-1] Mean mean molecular weight
+\newcommand{\molfrcHdO}{\molfrc_{\HdO}} % [frc] Molar fraction of H2O
+\newcommand{\molnbrslt}{\molnbr_{\sltsbs}} % [mol] Number of moles of (dry) solute
+\newcommand{\molnbrwtr}{\molnbr_{\wtrsbs}} % [mol] Number of moles of liquid water
+\newcommand{\mssaerCadp}{\mssaer_{\Cadp}} % [kg] Mass of Ca++ in aerosol
+\newcommand{\mssaerCa}{\mssaer_{\Ca}} % [kg] Mass of Ca in aerosol
+\newcommand{\mssaerHdO}{\mssaer_{\HdO}} % [kg] Mass of H2O in aerosol
+\newcommand{\mssaerNHqp}{\mssaer_{\NHqp}} % [kg] Mass of NH4+ in aerosol
+\newcommand{\mssaerNHq}{\mssaer_{\NHq}} % [kg] Mass of NH4 in aerosol
+\newcommand{\mssaerNOtm}{\mssaer_{\NOtm}} % [kg] Mass of NO3- in aerosol
+\newcommand{\mssaerNOt}{\mssaer_{\NOt}} % [kg] Mass of NO3 in aerosol
+\newcommand{\mssaerSOqdm}{\mssaer_{\SOqdm}} % [kg] Mass of SO4-- in aerosol
+\newcommand{\mssaerSOq}{\mssaer_{\SOq}} % [kg] Mass of SO4 in aerosol
+\newcommand{\mssaerdry}{\mssaer_{\drysbs}} % [kg] Dry mass of aerosol (soluble + insoluble)
+\newcommand{\mssaernsl}{\mssaer_{\nslsbs}} % [kg] Insoluble mass of aerosol
+\newcommand{\mssaerslt}{\mssaer_{\sltsbs}} % [kg] Mass of (dry) solute
+\newcommand{\mssaerttl}{\mssaer_{\ttlsbs}} % [kg] Total mass of aerosol (dry + wet)
+\newcommand{\mssaerwtr}{\mssaer_{\wtrsbs}} % [kg] Mass of water in aerosol
+\newcommand{\msscncCa}{\ensuremath{\msscnc_{\Ca}}} % [kg m-3] Mass concentration of Ca
+\newcommand{\msscncdst}{\ensuremath{\msscnc_{\mathrm{dust}}}} % [kg m-3] Mass concentration of dust
+\newcommand{\mssuptcffBET}{\mssuptcff^{\BETsbs}} % [frc] Initial mass uptake coefficient corrected for BET area HaC01a p. 3104 (ix)
+\newcommand{\mssuptcffcrc}{\mssuptcff^{\strsbs}} % [frc] Initial mass uptake coefficient corrected for multiple collision by aspherical particles USP01 p. 18060 Tbl. 4
+\newcommand{\mssuptcffnotHNOt}{\mssuptcff_{0,\HNOt}} % [frc] Mass uptake coefficient for HNO3, initial
+\newcommand{\mssuptcffnot}{\mssuptcff_{0}} % [frc] Mass uptake coefficient, initial
+\newcommand{\npcOt}{\ensuremath{\npc_{\Ot}}} % [# m-2] Number path column of O3
+\newcommand{\npcair}{\ensuremath{\npc_{\mathrm{\scriptsize air}}}} % [# m-2] Number path column of air
+\newcommand{\pprA}{\ppr_{\A}} % [Pa] Partial pressure of species A
+\newcommand{\rdsdry}{\rds_{\drysbs}} % [m] Dry radius of aerosol
+\newcommand{\rdswet}{\rds} % [m] Wet radius of aerosol
+\newcommand{\sfcBET}{\sfc^{\BETsbs}} % [m2] BET surface area HaC01a p. 3104 (ix)
+\newcommand{\spcvlmwtr}{\spcvlm_{\wtrsbs}} % [m3 kg-1] Specific volume of water
+\newcommand{\vlcmlcA}{\vlc_{\A}} % [m s-1] Molecular velocity of species A
+\newcommand{\vlcmlcOd}{\vlc_{\Od}} % [m s-1] Molecular velocity of O2
+\newcommand{\vlcmlcOt}{\vlc_{\Ot}} % [m s-1] Molecular velocity of O3
+\newcommand{\vlcmlcavgA}{\bar{\vlc}_{\A}} % [m s-1] Mean molecular velocity of species A
+\newcommand{\vlcmlcavgOd}{\bar{\vlc}_{\Od}} % [m s-1] Mean molecular velocity of O2
+\newcommand{\vlcmlcavgOt}{\bar{\vlc}_{\Od}} % [m s-1] Mean molecular velocity of O3
+\newcommand{\vmrA}{\vmr_{\A}} % [mol mol-1] Volume mixing ratio of species A
+\newcommand{\vmrCOd}{\vmr_{\COd}} % [mol mol-1] Volume mixing ratio of CO2
+\newcommand{\vmrHdO}{\vmr_{\HdO}} % [mol mol-1] Volume mixing ratio of H2O
+\newcommand{\vmrOd}{\vmr_{\Od}} % [mol mol-1] Volume mixing ratio of O2
+\newcommand{\vmrNd}{\vmr_{\Nd}} % [mol mol-1] Volume mixing ratio of N2
+\newcommand{\vmrAr}{\vmr_{\Ar}} % [mol mol-1] Volume mixing ratio of Ar
+
+% 2. Derived commands
+\newcommand{\Alqd}{\A_{\lqdprn}} % Generic species A liquid phase
+\newcommand{\Asld}{\A_{\sldprn}} % Generic species A solid phase
+\newcommand{\Avpr}{\A_{\vprprn}} % Generic species A vapor phase
+\newcommand{\dltOt}{\dlt \Ot} % Change in Ozone
+\newcommand{\dltnth}{\dlt \nrgnth} % [J] Change in enthalpy
+\newcommand{\dmtcllA}{\dmtcll_{\! \A}} % [m] Collision diameter of A
+\newcommand{\dmtcllB}{\dmtcll_{\! \B}} % [m] Collision diameter of B
+\newcommand{\dmtcllNd}{\dmtcll_{\! \Nd}} % [m] Collision diameter of N2
+\newcommand{\dmtcllOd}{\dmtcll_{\! \Od}} % [m] Collision diameter of O2
+\newcommand{\dmtcllair}{\dmtcll_{\mathrm{air}}} % [m] Mean collision diameter of air molecules
+\newcommand{\dmtcllavg}{\bar{\dmtcll}} % [m] Collision diameter
+\newcommand{\eqmcstHdOprm}{\eqmcst_{\HdO}^{\prime}} % Equilibrium constant of H2O prime
+\newcommand{\eqmcstHdO}{\eqmcst_{\HdO}} % Equilibrium constant of H2O
+\newcommand{\hnrA}{\hnr_{\! \A}} % Henry's Law coefficient of A
+\newcommand{\hnrB}{\hnr_{\! \B}} % Henry's Law coefficient of B
+\newcommand{\hnrCOd}{\hnr_{\COd}} % Henry's Law coefficient of CO2
+\newcommand{\hnrHNOt}{\hnr_{\HNOt}} % Henry's Law coefficient of HNO3
+\newcommand{\hnrHdOd}{\hnr_{\HdOd}} % Henry's Law coefficient of H2O2
+\newcommand{\hnrNHt}{\hnr_{\NHt}} % Henry's Law coefficient of NH3
+\newcommand{\hnrNOt}{\hnr_{\NOt}} % Henry's Law coefficient of NO3
+\newcommand{\hnrSOd}{\hnr_{\SOd}} % Henry's Law coefficient of SO2
+\newcommand{\hnrffcCOd}{\hnr_{\COd}^{\ffcsbs}} % Effective Henry's Law coefficient of CO2
+\newcommand{\hnrffcHNOt}{\hnr_{\HNOt}^{\ffcsbs}} % Effective Henry's Law coefficient of HNO3
+\newcommand{\hnrffcHdOd}{\hnr_{\HdOd}^{\ffcsbs}} % Effective Henry's Law coefficient of H2O2
+\newcommand{\hnrffcNHt}{\hnr_{\NHt}^{\ffcsbs}} % Effective Henry's Law coefficient of NH3
+\newcommand{\hnrffcSIV}{\hnr_{\SIV}^{\ffcsbs}} % Effective Henry's Law coefficient of S(IV)
+\newcommand{\hnrffc}{\hnr^{\ffcsbs}} % Effective Henry's Law coefficient
+\newcommand{\mllAbrk}{[\mll_{\! \A}]} % [mol kg-1] Molality of A, bracketed
+\newcommand{\mllA}{\mll_{\! \A}} % [mol kg-1] Molality of A
+\newcommand{\mllBbrk}{[\mll_{\! \B}]} % [mol kg-1] Molality of B, bracketed
+\newcommand{\mllB}{\mll_{\! \B}} % [mol kg-1] Molality of B
+\newcommand{\mllHNOtbrk}{[\mll_{\HNOt}]} % [mol kg-1] Molality of HNO3, bracketed
+\newcommand{\mllHNOt}{\mll_{\HNOt}} % [mol kg-1] Molality of HNO3
+\newcommand{\mmwA}{\mmw_{\A}} % [kg mol-1] Mean molecular weight of A
+\newcommand{\mmwB}{\mmw_{\B}} % [kg mol-1] Mean molecular weight of B
+\newcommand{\mmwCOd}{\mmw_{\COd}} % [kg mol-1] Mean molecular weight of CO2
+\newcommand{\mmwHNOt}{\mmw_{\HNOt}} % [kg mol-1] Mean molecular weight of HNO3
+\newcommand{\mmwHdO}{\mmw_{\HdO}} % [kg mol-1] Mean molecular weight of H2O
+\newcommand{\mmwdryair}{\mmw_{\dryairsbs}} % [kg mol-1] Mean molecular weight of dry air
+\newcommand{\mmwmstair}{\mmw_{\mstairsbs}} % [kg mol-1] Mean molecular weight of moist air
+\newcommand{\mmwvpr}{\mmw_{\vprsbs}} % [kg mol-1] Mean molecular weight of water vapor
+\newcommand{\mssdryair}{\ensuremath{\mss_{\dryairsbs}}} % [kg] Mass of dry air
+\newcommand{\mssHdO}{\ensuremath{\mss_{\HdO}}} % [kg] Mass of H2O
+\newcommand{\mssvpr}{\ensuremath{\mss_{\vprsbs}}} % [kg] Mass of water vapor
+\newcommand{\mssidx}{\mss_{\gasidx}} % [kg] Partial mass of ith species
+\newcommand{\mssratAB}{\mssrat_{\A \B}} % Ratio of mmw A to mmw of B
+\newcommand{\mssuptcffHNOt}{\mssuptcff_{\HNOt}} % [frc] Mass uptake coefficient for HNO3
+\newcommand{\mssuptcffNOd}{\mssuptcff_{\NOd}} % [frc] Mass uptake coefficient for NO2
+\newcommand{\mssuptcffNOt}{\mssuptcff_{\NOt}} % [frc] Mass uptake coefficient for NO3
+\newcommand{\mssuptcffOt}{\mssuptcff_{\Ot}} % [frc] Mass uptake coefficient for O3
+\newcommand{\mssuptcffX}{\mssuptcff_{\X}} % [frc] Mass uptake coefficient for X
+\newcommand{\mssuptcffOH}{\mssuptcff_{\OH}} % [frc] Mass uptake coefficient for OH
+\newcommand{\mssuptcffdff}{\Gamma_{\mathrm{dff}}} % [frc] Mass uptake coefficient, gas phase diffusion limit
+\newcommand{\mssuptcffrxn}{\Gamma_{\mathrm{rxn}}} % [frc] Mass uptake coefficient, reaction limit
+\newcommand{\mssuptcffsol}{\Gamma_{\mathrm{sol}}} % [frc] Mass uptake coefficient, solubility limit
+\newcommand{\mssuptcffttl}{\mssuptcff_{\mathrm{ttl}}} % [frc] Total mass uptake coefficient
+\newcommand{\nrgnthA}{\nrgnth_{\! \A}} % [J] Enthalpy of A
+\newcommand{\nrgnthB}{\nrgnth_{\! \B}} % [J] Enthalpy of B
+\newcommand{\nrgnthHNOt}{\nrgnth_{\HNOt}} % [J] Enthalpy of HNO3
+\newcommand{\prcNOd}{\prc_{\NOd}} % [s-1] Photodissociation rate coefficient of NO2
+\newcommand{\prcOsD}{\prc_{\OsD}} % [s-1] Photodissociation rate coefficient of O1D
+\newcommand{\prcOt}{\prc_{\Ot}} % [s-1] Photodissociation rate coefficient of O3
+\newcommand{\prsprt}{\prs} % [Pa] Partial pressure
+\newcommand{\qntyldNOd}{\qntyld_{\NOd}} % [frc] Quantum yield of NO2
+\newcommand{\vlmHdO}{\ensuremath{\vlm_{\HdO}}} % [m3] Volume of H2O
+\newcommand{\vlmpsh}{\vlm} % [m3] Partial volume
+\newcommand{\xsxabsHdOHdO}{\xsxabs_{\HdOHdO}} % [m2 mlc-1] Absorption cross section of water dimer
+\newcommand{\xsxabsNOd}{\xsxabs_{\NOd}} % [m2 mlc-1] Absorption cross section of NO2
+
+% 3. Doubly-derived commands
+\newcommand{\dlthchOt}{\ensuremath{\dlthch \Ot}} % [frc] Heterogeneous forcing of O3
+\newcommand{\dltnthA}{\Delta \nrgnth_{\! \A}} % Change in enthalpy of A
+\newcommand{\dltnthB}{\Delta \nrgnth_{\! \B}} % Change in enthalpy of B
+\newcommand{\dltnthHNOt}{\Delta \nrgnth_{\HNOt}} % Change in enthalpy of HNO3
+\newcommand{\dltpphOt}{\ensuremath{\dltpph \Ot}} % [frc] Coupled forcing of O3
+\newcommand{\dmmridx}{\dmmr_{\gasidx}} % [kg kg-1] Dry mass mixing ratio of ith species
+\newcommand{\dmmrHdO}{\dmmr_{\HdO}} % [kg kg-1] Dry mass mixing ratio of H2O
+\newcommand{\dmtcllavgAB}{\dmtcllavg_{\A \B}} % [m] Mean collision diameter of A and B
+\newcommand{\mmridx}{\mmr_{\gasidx}} % [kg kg-1] Mass mixing ratio of ith species
+\newcommand{\molfrcidx}{\molfrc_{\gasidx}} % [mol] Molar fraction of ith species (same as vmr)
+\newcommand{\molnbridx}{\molnbr_{\gasidx}} % [mol] Molar abundance of ith species
+\newcommand{\mssuptcffcrcHNOt}{\mssuptcffcrc_{\HNOt}} % [frc] Mass uptake coefficient for HNO3, corrected for asphericity
+\newcommand{\prsprtA}{\prsprt_{\! \A}} % [Pa] Partial pressure of A
+\newcommand{\prsprtB}{\prsprt_{\! \B}} % [Pa] Partial pressure of B
+\newcommand{\prsprtCOd}{\prsprt_{\COd}} % [Pa] Partial pressure of CO2
+\newcommand{\prsprtHNOt}{\prsprt_{\HNOt}} % [Pa] Partial pressure of HNO3
+\newcommand{\prsprtHdOd}{\prsprt_{\HdOd}} % [Pa] Partial pressure of H2O2
+\newcommand{\prsprtHdOinf}{\prsprt_{\HdO,\infty}} % [Pa] Vapor pressure far from particle
+\newcommand{\prsprtHdOsfc}{\prsprt_{\HdO,\mathrm{\sfc}}} % [Pa] Vapor pressure at particle surface
+\newcommand{\prsprtHdO}{\prsprt_{\HdO}} % [Pa] Partial pressure of H2O
+\newcommand{\prsprtNHt}{\prsprt_{\NHt}} % [Pa] Partial pressure of NH3
+\newcommand{\prsprtSOd}{\prsprt_{\SOd}} % [Pa] Partial pressure of SO2
+\newcommand{\prsprtidx}{\prsprt_{\gasidx}} % [Pa] Partial pressure of ith species
+\newcommand{\prsprtinf}{\prsprt_{\infty}} % [Pa] Partial pressure far from particle
+\newcommand{\prsprtlqd}{\prsprt_{\lqdsbs}} % [Pa] Partial pressure of liquid phase
+\newcommand{\prsprtsfc}{\prsprt_{\mathrm{\sfc}}} % [Pa] Partial pressure at particle surface
+\newcommand{\prsprtvpr}{\prsprt_{\vprsbs}} % [Pa] Partial pressure of vapor phase
+\newcommand{\vlmpshidx}{\vlmpsh_{\gasidx}} % [m3] Partial volume of ith species
+\newcommand{\vmridx}{\vmr_{\gasidx}} % [mol mol-1] Volume mixing ratio of ith species
+
+% 4. Trebly-derived commands
+\newcommand{\prsprtwtrsat}{\ensuremath{\tilde{\prsprtwtr}}} % [Pa] Saturated vapor pressure of water
+\newcommand{\prsprtvprsat}{\ensuremath{\tilde{\prsprtvpr}}} % [Pa] Saturated vapor pressure of vapor phase
+\newcommand{\prsprtHdOsat}{\ensuremath{\tilde{\prsprt}_{\HdO}}} % [Pa] Saturated vapor pressure of H2O
+\newcommand{\dlthchHNOtOt}{\ensuremath{\dlthch^{\HNOt} \Ot}} % [frc] Heterogeneous forcing of O3 by HNO3 uptake
+\newcommand{\dlthchHOdOt}{\ensuremath{\dlthch^{\HOd} \Ot}} % [frc] Heterogeneous forcing of O3 by HO2 uptake
+\newcommand{\dlthchNOdOt}{\ensuremath{\dlthch^{\NOd} \Ot}} % [frc] Heterogeneous forcing of O3 by NO2 uptake
+\newcommand{\dlthchNOtOt}{\ensuremath{\dlthch^{\NOt} \Ot}} % [frc] Heterogeneous forcing of O3 by NO3 uptake
+\newcommand{\dlthchNdOcOt}{\ensuremath{\dlthch^{\NdOc} \Ot}} % [frc] Heterogeneous forcing of O3 by N2O5 uptake
+\newcommand{\dlthchOHOt}{\ensuremath{\dlthch^{\OH} \Ot}} % [frc] Heterogeneous forcing of O3 by OH uptake
+\newcommand{\dlthchOtOt}{\ensuremath{\dlthch^{\Ot} \Ot}} % [frc] Heterogeneous forcing of O3 by O3 uptake
+\newcommand{\dlthchXOt}{\ensuremath{\dlthch^{\X} \Ot}} % [frc] Heterogeneous forcing of O3 by X uptake

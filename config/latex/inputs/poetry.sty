@@ -1,0 +1,83 @@
+% $Id$
+
+% Purpose: Preamble for poetry
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, wants to improve it
+% with the help of your suggestions, improvements, bug-reports, and patches.
+% Charlie Zender <zender at uci dot edu>
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: none
+
+% Usage:
+% \usepackage{poetry} % Preamble for poetry
+
+% Standard packages
+\usepackage{ifpdf} % Define \ifpdf
+\ifpdf % We are running PDFLaTeX
+\pdfcompresslevel=9
+\usepackage{thumbpdf} % Generate thumbnails
+\usepackage{epstopdf} % Convert .eps, if found, to .pdf when required
+\fi % endif PDFLaTeX
+\usepackage{url} % Typeset URLs and e-mail addresses
+
+% hyperref is last package since it redefines other packages' commands
+% hyperref options, assumed true unless =false is specified:
+% backref       List citing sections after bibliography entries
+% baseurl       Make all URLs in document relative to this
+% bookmarksopen Unknown
+% breaklinks    Wrap links onto newlines
+% colorlinks    Use colored text for links, not boxes
+% hyperindex    Link index to text
+% plainpages=false Suppress warnings caused by duplicate page numbers
+% pdftex        Conform to pdftex conventions
+% Colors used when colorlinks=true:
+% linkcolor     Color for normal internal links
+% anchorcolor   Color for anchor text
+% citecolor     Color for bibliographic citations in text
+% filecolor     Color for URLs which open local files
+% menucolor     Color for Acrobat menu items
+% pagecolor     Color for links to other pages
+% urlcolor      Color for linked URLs
+\ifpdf % We are running PDFLaTeX
+\usepackage[colorlinks,linkcolor=blue,urlcolor=blue,pdftex]{hyperref}
+%\usepackage[backref,breaklinks,colorlinks,hyperindex,linkcolor=blue,urlcolor=blue,plainpages=false,pdftex]{hyperref} % Hyper-references
+\pdfcompresslevel=9
+\else % We are not running PDFLaTeX
+\usepackage[colorlinks,linkcolor=blue,urlcolor=blue]{hyperref}
+%\usepackage[backref,breaklinks,colorlinks,hyperindex,linkcolor=blue,urlcolor=blue,plainpages=false]{hyperref} % Hyper-references
+\fi % endif PDFLaTeX
+
+% Personal packages
+ 
+% Margins
+
+% Float placement
+
+% Commands which must be executed in preamble
+\newfont{\poetfont}{cmdunh10 at 12pt}
+\pagestyle{myheadings}
+\setlength{\textwidth}{7.0in}
+\topmargin = -0.25in
+\def\ptrhdr{Poetry by \href{http://dust.ess.uci.edu/poetry}{Charlie Zender}}
+\markboth{\ptrhdr}{\ptrhdr}
+
+% 1. Primary commands
+\newcommand{\csznote}[1]{} % [sng]
+
+\csznote{
+% Copyright statement stolen from RMS:
+% May be appropriate for poetry?
+Copyright \copyright\ 2009 Charlie Zender
+Verbatim copying and distribution of this entire article are permitted
+worldwide without royalty in any medium provided this notice is
+preserved.
+} % end csznote

@@ -1,0 +1,715 @@
+% $Id$
+
+% Purpose: Commands specific to aerosol physics
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: abc.sty, dyn.sty
+
+% Usage:
+% \usepackage{aer} % Aerosol physics
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{
+\ProvidesPackage{aer}[2002/09/22 v1.91 Aerosol physics]
+} % end ProvidesPackage
+
+% 1. Primary commands
+\providecommand{\cntsbs}{\ensuremath{\mathrm{c}}}\renewcommand{\cntsbs}{\ensuremath{\mathrm{c}}} % [sbs] Continuum subscript
+\providecommand{\kntsbs}{\ensuremath{\mathrm{k}}}\renewcommand{\kntsbs}{\ensuremath{\mathrm{k}}} % [sbs] Kinetic subscript
+\providecommand{\mpc}{\ensuremath{M}}\renewcommand{\mpc}{\ensuremath{M}} % [kg m-2] Mass path column
+\providecommand{\sltsbs}{\ensuremath{\mathrm{s}}}\renewcommand{\sltsbs}{\ensuremath{\mathrm{s}}} % [sbs] Saltation or solute (dry) subscript
+\providecommand{\snkidx}{\ensuremath{j}}\renewcommand{\snkidx}{\ensuremath{j}} % [idx] Sink index
+\providecommand{\snknbr}{\ensuremath{J}}\renewcommand{\snknbr}{\ensuremath{J}} % [nbr] Sink number
+\providecommand{\srcidx}{\ensuremath{i}}\renewcommand{\srcidx}{\ensuremath{i}} % [idx] Source index
+\providecommand{\srcnbr}{\ensuremath{I}}\renewcommand{\srcnbr}{\ensuremath{I}} % [nbr] Source number
+\providecommand{\vprsbs}{\ensuremath{\mathrm{v}}}\renewcommand{\vprsbs}{\ensuremath{\mathrm{v}}} % [sbs] Vapor subscript
+\providecommand{\vrtsbs}{\ensuremath{\mathrm{v}}}\renewcommand{\vrtsbs}{\ensuremath{\mathrm{v}}} % [sbs] Vertical subscript (conflicts with virtual subscript in tdy.sty)
+ 
+\newcommand{\CAPE}{\ensuremath{\mbox{CAPE}}} % [J m-2] Convectively Available Potential Energy
+\newcommand{\LFC}{\ensuremath{\mbox{LFC}}} % [m] Level of Free Convection
+\newcommand{\BF}{\ensuremath{\mbox{BF}}} % [frc] Burned Fraction
+\newcommand{\FL}{\ensuremath{\mbox{FL}}} % [kg C m-2] Fuel load
+\newcommand{\CC}{\ensuremath{\mbox{CC}}} % [frc] Combustion completeness
+\newcommand{\LCL}{\ensuremath{\mbox{LCL}}} % [m] Lifting Condensation Level
+\newcommand{\LNB}{\ensuremath{\mbox{LNB}}} % [m] Level of Neutral Buoyancy
+\newcommand{\CIN}{\ensuremath{\mbox{CIN}}} % [J m-2] Convective Inhibition
+\newcommand{\SSA}{\ensuremath{\mbox{SSA}}} % [m2 kg-1] Specific surface area
+\newcommand{\AOD}{\ensuremath{\mathrm{AOD}}} % [frc] Aerosol Optical Depth
+\newcommand{\NDVI}{\ensuremath{\mathrm{NDVI}}} % [frc] Normalize Difference Vegetation Index
+\newcommand{\Bodele}{Bod\'{e}l\'{e}} % [lcn] Bodele depression (WTM03 p. 300)
+\newcommand{\SCE}{\mbox{\textrm{SCE}}} % [m2] Snow Cover Extent
+\newcommand{\CCN}{\mbox{\textrm{CCN}}} % [trm] Cloud Condensation Nuclei
+\newcommand{\PFT}{\mbox{\textrm{PFT}}} % [trm] Plant Functional Type
+\newcommand{\adssbs}{\ensuremath{\mathrm{a}}} % [sbs] Adsorption subscript
+\newcommand{\aersbs}{\ensuremath{\mathrm{a}}} % [sbs] Aerodynamic subscript
+\newcommand{\areaidx}{\ensuremath{\Lambda}} % Area index
+\newcommand{\atmsbs}{\ensuremath{\mathrm{a}}} % [sbs] Atmospheric subscript
+\newcommand{\binidx}{\ensuremath{i}} % [idx] Bin index
+\newcommand{\blksbs}{\ensuremath{\mathrm{b}}} % [sbs] Bulk subscript
+\newcommand{\bltcst}{\ensuremath{k}} % [J K-1] Boltzmann's constant
+\newcommand{\bmbprm}{\ensuremath{\beta}} % Bombardment parameter
+\newcommand{\brndffsbs}{\ensuremath{\mathrm{BD}}} % [sbs] Brownian diffusion subscript
+\newcommand{\bwnrat}{\ensuremath{B}} % [frc] Bowen Ratio
+\newcommand{\cffdrggrv}{\ensuremath{C_{D}}} % Drag coefficient
+\newcommand{\cff}{\ensuremath{c}} % Coefficient
+\newcommand{\cldfrc}{\ensuremath{A}} % [frc] Cloud fraction
+\newcommand{\cllfsh}{\ensuremath{E}} % [frc] Collision efficiency
+\newcommand{\cndtrm}{\ensuremath{k}} % [W m-1 K-1] Thermal conductivity
+\newcommand{\cnpsbs}{\ensuremath{\mathrm{c}}} % [sbs] Canopy subscript
+\newcommand{\cplsbs}{\ensuremath{\mathrm{c}}} % [sbs] Capillary subscript
+\newcommand{\crpsbs}{\ensuremath{\mathrm{c}}} % [sbs] Creep subscript
+\newcommand{\crtsbs}{\ensuremath{\mathrm{c}}} % [sbs] Critical subscript
+\newcommand{\cst}{\ensuremath{C}} % [frc] Constant
+\newcommand{\dffbrn}{\ensuremath{\mathcal{D}_{B}}} % [m2 s-1] Brownian diffusivity
+\newcommand{\dffedd}{\ensuremath{\epsilon}} % [m2 s-1] Eddy diffusion coefficient
+\newcommand{\dfftrm}{\ensuremath{\kappa}} % [m2 s-1] Thermal diffusivity
+\newcommand{\dpssbs}{\ensuremath{d}} % [sbs] Deposition
+\newcommand{\drgsbs}{\ensuremath{\mathrm{D}}} % [sbs] Drag subscript
+\newcommand{\dstnthsbs}{\ensuremath{\mathrm{A}}} % [sbs] Anthropogenic dust subscript
+\newcommand{\dstnth}{\ensuremath{\mathrm{DA}}} % [trm] Anthropogenic dust
+\newcommand{\dstntrsbs}{\ensuremath{\mathrm{N}}} % [sbs] Natural dust subscript
+\newcommand{\dstntr}{\ensuremath{\mathrm{DN}}} % [trm] Natural dust
+\newcommand{\dstprdfsh}{\ensuremath{\Pi}} % Dust production efficiency
+\newcommand{\dstsbs}{\ensuremath{\mathrm{d}}} % [sbs] Dust subscript
+\newcommand{\elrcst}{\ensuremath{\gamma}} % [frc] Euler's constant (0.57722...)
+\newcommand{\eqmsbs}{\ensuremath{\mathrm{e}}} % [sbs] Equilibrium subscript
+\newcommand{\eqvsbs}{\ensuremath{\mathrm{E}}} % [sbs] Equivalent subscript
+\newcommand{\rdbfct}{\ensuremath{S}} % [frc] Erodibility factor
+\newcommand{\fctipc}{\ensuremath{I}} % Interparticle cohesion factor
+\newcommand{\fdgfct}{\ensuremath{T}} % [frc] Fudge factor
+\newcommand{\flxfrc}{\ensuremath{G}} % [W m-2] Forcing flux
+\newcommand{\flxltn}{\ensuremath{L}} % [W m-2] Latent heat flux
+\newcommand{\flxmsshrz}{\ensuremath{Q}} % [kg m-1 s-1] Horizontal mass flux
+\newcommand{\flxmssvrt}{\ensuremath{F}} % [kg m-2 s-1] Vertical mass flux
+\newcommand{\flxnbrvrt}{\ensuremath{N^{\uparrow}}} % Vertical number flux
+\newcommand{\flxnet}{\ensuremath{N}} % [W m-2] Net heat flux
+\newcommand{\flxpcp}{\ensuremath{P}} % [kg m-2 s-1] Precipitation flux
+\newcommand{\flxsns}{\ensuremath{H}} % [W m-2] Sensible heat flux
+\newcommand{\flxvpr}{\ensuremath{E}} % [kg m-2 s-1] Vapor flux
+\newcommand{\frcprm}{\ensuremath{K}} % Force parameter
+\newcommand{\frcsbs}{\ensuremath{*}} % [sbs] Friction subscript
+\newcommand{\frsbs}{\ensuremath{\mathrm{f}}} % [sbs] Fire subscript
+\newcommand{\frcthrdrg}{\ensuremath{H_{d}}} % [frc] Wind friction threshold drag inhibition 
+\newcommand{\frcthrncrdrg}{\ensuremath{f_{d}}} % [frc] Drag partition increase to wind friction threshold
+\newcommand{\frcthrncrwtr}{\ensuremath{f_{w}}} % [frc] Moisture increase in wind friction threshold
+\newcommand{\frcthrwet}{\ensuremath{H_{w}}} % [frc] Wind friction threshold moisture inhibition 
+\newcommand{\frdnbr}{\ensuremath{\mathrm{Fr}}} % [frc] Froude number
+\newcommand{\frp}{\ensuremath{\mbox{FRP}}} % [W] Fire radiative power
+\newcommand{\fshfct}{\ensuremath{c_{\epsilon}}} % Efficiency factor
+\newcommand{\fsnsbs}{\ensuremath{\mathrm{f}}} % [sbs] Fusion subscript
+\newcommand{\gmmfnc}{\ensuremath{\Gamma}} % [frc] Gamma function
+\newcommand{\rmnztafnc}{\ensuremath{\zeta}} % [frc] Riemann zeta function
+\newcommand{\gndfrc}{\ensuremath{A}} % [frc] Bare ground fraction
+\newcommand{\grvsbs}{\ensuremath{\mathrm{W}}} % [sbs] Gravity subscript
+\newcommand{\gstsbs}{\ensuremath{\mathrm{g}}} % [sbs] Geostrophic subscript
+\newcommand{\gwc}{\ensuremath{w}} % [kg kg-1] Gravimetric water content
+\newcommand{\heatsbs}{\ensuremath{\mathrm{h}}} % [sbs] Heat subscript
+\newcommand{\hgtvgt}{\ensuremath{\mathrm{h}}} % [m] Vegetation height
+\newcommand{\hgtzpd}{\ensuremath{D}} % [m] Zero plane displacement height
+\newcommand{\hgtrfrmnszpd}{\ensuremath{D}} % [m] Reference minus zero plane displacement height
+\newcommand{\hrzsbs}{\ensuremath{\mathrm{h}}} % [sbs] Horizontal subscript
+\newcommand{\hrzvrtprpfct}{\ensuremath{\alpha}} % [m-1] Ratio of vertical dust flux to streamwise saltation flux
+\newcommand{\htg}{\ensuremath{q}} % [J s-1] Heating
+\newcommand{\hvyfnc}{\ensuremath{H}} % [frc] Heavyside step function
+\newcommand{\ipcsbs}{\ensuremath{C}} % [sbs] Interparticle cohesion subscript
+\newcommand{\lai}{\ensuremath{L}} % [m2 m-2] Leaf area index
+\newcommand{\lftsbs}{\ensuremath{\mathrm{L}}} % [sbs] Lift subscript
+\newcommand{\lkfrc}{\ensuremath{\gndfrc_{\lksbs}}} % [frc] Lake-covered ground fraction
+\newcommand{\lksbs}{\ensuremath{\mathrm{l}}} % [sbs] Lake subscript
+\newcommand{\lmnsbs}{\ensuremath{\mathrm{b}}} % [sbs] Laminar subscript
+\newcommand{\lpsrt}{\ensuremath{\Gamma}} % [K m-1] Lapse rate
+\newcommand{\mblbsnfct}{\ensuremath{S}} % [frc] Sediment availability factor
+\newcommand{\mblfrc}{\ensuremath{\gndfrc_{\mblsbs}}} % [frc] Fraction of ground suitable for mobilization
+\newcommand{\mblsbs}{\ensuremath{\mathrm{m}}} % [sbs] Mobilization subscript
+\newcommand{\mdpsbs}{\ensuremath{\mathrm{atm}}} % [sbs] Midlayer subscript
+\newcommand{\mdnsbs}{\ensuremath{\mathrm{m}}} % [sbs] Median subscript
+\newcommand{\mmnfrc}{\ensuremath{M}} % Moment of force
+\newcommand{\mmnnbr}{\ensuremath{n}} % [nbr] Moment number (of function)
+\newcommand{\mmnsbs}{\ensuremath{\mathrm{m}}} % [sbs] Momentum subscript
+\newcommand{\mmrvpr}{\ensuremath{q}} % [kg kg-1] Mass mixing ratio of vapor
+\newcommand{\mnolng}{\ensuremath{L}} % [m] Monin-Obukhov length
+\newcommand{\scllng}{\ensuremath{L}} % [m] Length scale
+\newcommand{\mnrfnc}{\ensuremath{\chi}} % [frc] Soil mineralogy function
+\newcommand{\mpcsbs}{\ensuremath{\mathrm{MPC}}} % [sbs] Impaction subscript
+\newcommand{\mrsplmfnc}{\ensuremath{\mathrm{MP}}} % [fnc] Marshall-Palmer distribution function
+\newcommand{\msh}{\ensuremath{E}} % [kg m-2 s-1] Mass emission flux
+\newcommand{\msrsbs}{\ensuremath{\mathrm{m}}} % [sbs] Measured subscript
+\newcommand{\mstsbs}{\ensuremath{\mathrm{w}}} % [sbs] Moist subscript
+\newcommand{\nclsbs}{\ensuremath{\mathrm{n}}} % [sbs] Nucleation or inclusion subscript
+\newcommand{\mtxsbs}{\ensuremath{\mathrm{m}}} % [sbs] Matrix subscript
+\newcommand{\nglpck}{\ensuremath{\alpha}} % [rdn] Packing angle
+\newcommand{\nrgbnd}{\ensuremath{\psi}} % [J] Binding energy
+\newcommand{\ntcsbs}{\ensuremath{\mathrm{NTC}}} % [sbs] Interception subscript
+\newcommand{\ntnpcp}{\ensuremath{I}} % [mm hr-1] Rainfall intensity
+\newcommand{\ntrsbs}{\ensuremath{\mathrm{n}}} % [sbs] Neutral subscript
+\newcommand{\nvrsbs}{\ensuremath{\mathrm{i}}} % [sbs] Inversion subscript
+\newcommand{\ocnsbs}{\ensuremath{\mathrm{o}}} % [sbs] Oceanic subscript
+\newcommand{\optsbs}{\ensuremath{0}} % [sbs] Optimal subscript
+\newcommand{\pclnbr}{\ensuremath{\mathrm{Pe}}} % [frc] Peclet number
+\newcommand{\pcpsbs}{\ensuremath{\mathrm{P}}} % [sbs] Precipitation subscript
+\newcommand{\pct}{\ensuremath{\%}} % [sbs] Percentage subscript
+\newcommand{\ppn}{\ensuremath{P}} % [#] Population
+\newcommand{\prbfnc}{\ensuremath{p}} % [frc] Probability function
+\newcommand{\prtprswtr}{\ensuremath{e}} % [Pa] Partial pressure of water vapor
+\newcommand{\psdsbs}{\ensuremath{\mathrm{p}}} % [sbs] Pseudo subscript
+\newcommand{\sdmsbs}{\ensuremath{\mathrm{s}}} % [sbs] Sediment subscript
+\newcommand{\crssbs}{\ensuremath{\mathrm{c}}} % [sbs] Crustal subscript
+\newcommand{\qvpr}{\ensuremath{q}} % [kg kg-1] Specific humidity
+\newcommand{\rdnsbs}{\ensuremath{\mathrm{r}}} % [sbs] Radiant heating subscript
+\newcommand{\rdsght}{\ensuremath{\rds_{80}}} % [m] Radius at 80% relative humidity
+\newcommand{\rdsprt}{\ensuremath{R_{\prtsbs}}} % [m] Particle radius
+\newcommand{\rfrsbs}{\ensuremath{\mathrm{r}}} % [sbs] Reference subscript
+\newcommand{\rgh}{\ensuremath{z}} % [m] Roughness length
+\newcommand{\rshsbs}{\ensuremath{\mathrm{I}}} % [sbs] Inertia subscript
+\newcommand{\rsh}{\ensuremath{I}} % Inertia
+\newcommand{\rss}{\ensuremath{r}} % Resistance
+\newcommand{\rsv}{\ensuremath{R}} % [J m-2] Erosivity DYO01
+\newcommand{\rxr}{\ensuremath{k}} % Reaction rate
+\newcommand{\rylfnc}{\ensuremath{R}} % Rayleigh distribution function
+\newcommand{\ryltailfnc}{\ensuremath{\mathrm{Rt}}} % Rayleigh tail distribution function
+\newcommand{\rynnbr}{\ensuremath{\mathrm{Re}}} % Reynolds number
+\newcommand{\rchnbr}{\ensuremath{\mathrm{Ri}}} % Gradient Richardson number
+\newcommand{\rchnbrflx}{\ensuremath{\mathrm{Rf}}} % Flux Richardson number
+\newcommand{\sai}{\ensuremath{S}} % [m2 m-2] Stem area index
+\newcommand{\satsbs}{\ensuremath{\mathrm{s}}} % [sbs] Saturation subscript
+\newcommand{\sblsbs}{\ensuremath{\mathrm{s}}} % [sbs] Sublimation subscript
+\newcommand{\scvcff}{\ensuremath{\Lambda}} % [s-1] Scavenging coefficient
+\newcommand{\scvfsh}{\ensuremath{\eta}} % [frc] Scavenging efficiency
+\newcommand{\sfcfrcslt}{\ensuremath{E}} % [frc] Surface fraction susceptible to saltation
+\newcommand{\sfcsbs}{\ensuremath{\mathrm{s}}} % [sbs] Surface subscript
+\newcommand{\sfctns}{\ensuremath{\sigma}} % Surface tension
+\newcommand{\shmnbr}{\ensuremath{\mathrm{Sc}}} % [frc] Schmidt number
+\newcommand{\shrnbr}{\ensuremath{\mathrm{Sh}}} % [frc] Sherwood number
+\newcommand{\sldsbs}{\ensuremath{\mathrm{s}}} % [sbs] Solid subscript
+\newcommand{\slpcrc}{\ensuremath{C_{c}}} % [frc] Slip correction factor
+\newcommand{\smlfnc}{\ensuremath{\phi}} % Similarity function
+\newcommand{\smpxpn}{\ensuremath{b}} % Exponent in soil matric potential parameterization
+\newcommand{\smp}{\ensuremath{\psi}} % Soil matric potential
+\newcommand{\snssbs}{\ensuremath{\mathrm{h}}} % [sbs] Sensible heating subscript
+\newcommand{\snwfrc}{\ensuremath{\gndfrc_{\snwsbs}}} % [frc] Snow-covered ground fraction
+\newcommand{\snwhgt}{\ensuremath{h}} % [m] Snow height
+\newcommand{\snwsbs}{\ensuremath{\mathrm{s}}} % [sbs] Snow subscript
+\newcommand{\soisbs}{\ensuremath{\mathrm{s}}} % [sbs] Soil subscript
+\newcommand{\sslsbs}{\ensuremath{\mathrm{ss}}} % [sbs] Sea salt subscript
+\newcommand{\stbprm}{\ensuremath{\zeta}} % Stability parameter
+\newcommand{\stbstc}{\ensuremath{s}} % [s-2] Static stability parameter
+\newcommand{\stcfsh}{\ensuremath{\xi}} % Sticking (retention) efficiency
+\newcommand{\stddvn}{\ensuremath{\sigma}} % Standard deviation
+\newcommand{\stknbr}{\ensuremath{\mathrm{St}}} % [frc] Stokes number
+\newcommand{\strsbs}{\ensuremath{*}} % [sbs] Saturation or Star subscript
+\newcommand{\swlfnc}{\ensuremath{S}} % [frc] Soil swelling function
+\newcommand{\thrsbs}{\ensuremath{\mathrm{t}}} % [sbs] Threshold subscript
+\newcommand{\dmsbs}{\ensuremath{2\,\mathrm{m}}} % [sbs] 2-m subscript
+\newcommand{\tptptn}{\ensuremath{\theta}} % [K] Potential temperature
+\newcommand{\trbsbs}{\ensuremath{\mathrm{t}}} % [sbs] Turbulence subscript
+\newcommand{\trmsbs}{\ensuremath{\mathrm{t}}} % [sbs] Thermal subscript
+\newcommand{\vai}{\ensuremath{V}} % [m2 m-2] Vegetation area index
+\newcommand{\vgtfrc}{\ensuremath{\gndfrc_{\vgtsbs}}} % [frc] Vegetated ground fraction
+\newcommand{\vlcvrt}{\ensuremath{w}} % [m s-1] Vertical velocity
+\newcommand{\vntcff}{\ensuremath{f}} % Ventilation coefficient
+\newcommand{\vonkrmcst}{\ensuremath{k}} % [frc] Von Karman constant
+\newcommand{\vprflx}{\ensuremath{E}} % Vapor flux
+\newcommand{\vscdyn}{\ensuremath{\mu}} % [kg m-1 s-1] Dynamic viscosity of air
+\newcommand{\vscknm}{\ensuremath{\nu}} % [m2 s-1] Kinematic viscosity of air
+\newcommand{\vscrat}{\ensuremath{\omega}} % [frc] Ratio of liquid H2O viscosity to atmospheric dynamic viscosity
+\newcommand{\vwcrel}{\ensuremath{s}} % [frc] Relative volumetric water content
+\newcommand{\vwc}{\ensuremath{\theta}} % [m3 m-3] Volumetric water content
+\newcommand{\wblfnc}{\ensuremath{W}} % [sbs] Weibull distribution function
+\newcommand{\wblscl}{\ensuremath{c}} % [m s-1] Weibull distribution scale parameter
+\newcommand{\wblshp}{\ensuremath{k}} % [frc] Weibull distribution shape parameter
+\newcommand{\wndfrcfshfrc}{\ensuremath{f_{e}}} % [frc] Efficient fraction of wind friction velocity
+\newcommand{\wndfrcrat}{\ensuremath{R}} % [frc] Ratio of threshold friction speed to friction speed
+\newcommand{\wndfrcu}{\ensuremath{u}} % Wind friction speed symbol
+\newcommand{\wndmrd}{\ensuremath{v}} % [m s-1] Meridional wind component
+\newcommand{\wndstr}{\ensuremath{\tau}} % Wind stress
+\newcommand{\wndpwr}{\ensuremath{E}} % [W m-2] Wind power density
+\newcommand{\wndvrt}{\ensuremath{w}} % [m s-1] Vertical wind component
+\newcommand{\wndhrz}{\ensuremath{u}} % [m s-1] Horizontal wind speed
+\newcommand{\wndznl}{\ensuremath{u}} % [m s-1] Zonal wind component
+\newcommand{\wtlsbs}{\ensuremath{\mathrm{w}}} % [sbs] Wetland subscript
+\newcommand{\xchcff}{\ensuremath{C}} % [frc] Exchange coefficient
+\newcommand{\zpdmmn}{\ensuremath{D}} % [m] Zero plane displacement height momentum
+\newcommand{\xpnssa}{\ensuremath{\kappa}} % [frc] Specfic surface area exponent LTD04, FlZ06
+
+% 2. Derived commands
+\newcommand{\sdnuuu}{\ensuremath{\sdn_{\uuu}}} % [m s-1] Standard deviation of zonal wind
+\newcommand{\sdnvvv}{\ensuremath{\sdn_{\vvv}}} % [m s-1] Standard deviation of meridional wind
+\newcommand{\sdnwww}{\ensuremath{\sdn_{\www}}} % [m s-1] Standard deviation of vertical wind
+\newcommand{\trblng}{\ensuremath{\scllng_{\epsilon}}} % [m] Turbulence length scale
+\newcommand{\RHdcr}{\ensuremath{\RH^{\downarrow}}} % [frc] Relative humidity decreasing
+\newcommand{\RHice}{\ensuremath{\RH_{\icesbs}}} % [frc] Relative humidity w/r/t ice water
+\newcommand{\RHinf}{\ensuremath{\RH_{\infty}}} % [frc] Relative humidity far from particle
+\newcommand{\RHlqd}{\ensuremath{\RH_{\lqdsbs}}} % [frc] Relative humidity w/r/t liquid water
+\newcommand{\RHmin}{\ensuremath{\RH_{\min}}} % [frc] Minimum relative humidity 
+\newcommand{\RHncr}{\ensuremath{\RH^{\uparrow}}} % [frc] Relative humidity increasing
+\newcommand{\RHsfc}{\ensuremath{\RH_{\sfc}}} % [frc] Relative humidity at particle surface
+\newcommand{\RHstr}{\ensuremath{\RH^{\strsbs}}} % [frc] Relative humidity accounting for curvature
+\newcommand{\RHthr}{\ensuremath{\RH_{\thrsbs}}} % [frc] Threshhold relative humidity
+\newcommand{\bwneqm}{\ensuremath{\bwnrat_{\eqmsbs}}} % [frc] Equilibrium Bowen Ratio
+\newcommand{\cffdrg}{\ensuremath{C_{\drgsbs}}} % Coefficient of drag
+\newcommand{\cfflft}{\ensuremath{C_{\lftsbs}}} % Coefficient of lift 
+\newcommand{\clcfshofpcpprt}{\ensuremath{\clcfsh(\dmtpcp,\dmtprt)}} % Collision efficiency between precipitation and aerosol
+\newcommand{\clcfsh}{\ensuremath{\tilde{\cllfsh}}} % [frc] Collection efficiency
+\newcommand{\cllfshbrndff}{\ensuremath{\cllfsh_{\brndffsbs}}} % Collision efficiency due to Brownian diffusion
+\newcommand{\cllfshmpc}{\ensuremath{\cllfsh_{\mpcsbs}}} % Collision efficiency due to Impaction
+\newcommand{\cllfshntc}{\ensuremath{\cllfsh_{\ntcsbs}}} % Collision efficiency due to Interception
+\newcommand{\cllfshofpcpprt}{\ensuremath{\cllfsh(\dmtpcp,\dmtprt)}} % Collision efficiency between precipitation and aerosol
+\newcommand{\cncaer}{\ensuremath{\cnc}} % Concentration of aerosol
+\newcommand{\cncdryair}{\ensuremath{\cnc_{\mathrm{air}}}} % Concentration of dry air molecules
+\newcommand{\cncinf}{\ensuremath{\cnc_{\infty}}} % Concentration far from surface
+\newcommand{\cncsfc}{\ensuremath{\cnc_{\sfc}}} % Concentration at surface
+\newcommand{\cncslt}{\ensuremath{\cnc_{\sltsbs}}} % Saltator concentration
+\newcommand{\cndtrmair}{\ensuremath{\cndtrm_{\atmsbs}}} % [W m-1 K-1] Thermal conductivity of air
+\newcommand{\cndtrmice}{\ensuremath{\cndtrm_{\icesbs}}} % [W m-1 K-1] Thermal conductivity of ice
+\newcommand{\cndtrmsnw}{\ensuremath{\cndtrm_{\snwsbs}}} % [W m-1 K-1] Thermal conductivity of snow
+\newcommand{\cstnrgbnd}{\ensuremath{c_{\nrgbnd}}} % Nondimensional length scale of binding energy
+\newcommand{\cstslt}{\ensuremath{c_{\sltsbs}}} % Parameter in streamwise saltation eqn
+\newcommand{\dalr}{\ensuremath{\lpsrt_{\drysbs}}} % [K m-1] Dry adiabatic lapse rate
+\newcommand{\dddaer}{\ensuremath{\ddd_{\prtsbs}}} % [m] Diameter of aerosol
+\newcommand{\dfftrmair}{\ensuremath{\dfftrm_{\atmsbs}}} % [m2 s-1] Thermal diffusivity of air
+\newcommand{\dltdmt}{\ensuremath{\Delta \dmt}} % [m] Change in diameter
+\newcommand{\dlthgt}{\ensuremath{\Delta \hgt}} % [m] Change in height
+\newcommand{\dltnrg}{\ensuremath{\Delta \nrg}} % [J] Change in energy
+\newcommand{\dltrds}{\ensuremath{\Delta \rds}} % [m] Change in radius
+\newcommand{\dlttm}{\ensuremath{\Delta \tm}} % [s] Change in time
+\newcommand{\dlttptptnvrt}{\ensuremath{\Delta\tptptn_{\!\vrtsbs}}} % [K] Virtual potential temperature change from reference height to surface
+\newcommand{\dmmrsat}{\ensuremath{\dmmr_{\satsbs}}} % [kg kg-1] % Saturated dry mass mixing ratio
+\newcommand{\dmtaer}{\ensuremath{\dmt_{\prtsbs}}} % [m] Diameter of aerosol
+\newcommand{\dmtdst}{\ensuremath{\dmt_{\dstsbs}}} % [m] Diameter of dust
+\newcommand{\dmtnmawet}{\ensuremath{\dmtnma^{\prime}}} % [m] Number median diameter analytic of wetted aerosol
+\newcommand{\dmtopt}{\ensuremath{\dmt_{\optsbs}}} % [m] Optimal diameter for saltation
+\newcommand{\dmtpcp}{\ensuremath{\DDD_{\pcpsbs}}} % [m] Diameter of raindrop
+\newcommand{\dmtprt}{\ensuremath{\dmt_{\prtsbs}}} % [m] Diameter of particle
+\newcommand{\dmtrat}{\ensuremath{\tilde{\dmt}}} % [frc] Ratio of collectee to collector sizes
+\newcommand{\dmtslt}{\ensuremath{\dmt_{\sltsbs}}} % [m] Diameter of saltator
+\newcommand{\dmttld}{\ensuremath{\tilde{\dmt}}} % [frc] Non-dimensionalized diameter
+\newcommand{\dnsaer}{\ensuremath{\dns_{\aersbs}}} % [kg m-3] Aerosol density
+\newcommand{\dnsatm}{\ensuremath{\dns}} % [kg m-3] Atmospheric density
+\newcommand{\dnsblkdry}{\ensuremath{\dns_{\blksbs,\drysbs}}} % [kg m-3] Bulk soil density, dry
+\newcommand{\dnsblk}{\ensuremath{\dns_{\blksbs}}} % [kg m-3] Bulk soil density
+\newcommand{\dnsdry}{\ensuremath{\dns_{\drysbs}}} % [kg m-3] Density of dry aerosol or soil
+\newcommand{\dnslqd}{\ensuremath{\dns_{\lqdsbs}}} % [kg m-3] Density of liquid water
+\newcommand{\dnsmtx}{\ensuremath{\dns_{\mtxsbs}}} % [kg m-3] Matrix density
+\newcommand{\dnsncl}{\ensuremath{\dns_{\nclsbs}}} % [kg m-3] Inclusion density
+\newcommand{\dnspcp}{\ensuremath{\dns_{\pcpsbs}}} % [kg m-3] Precipitation density
+\newcommand{\dnsprtdry}{\ensuremath{\dns_{\prtsbs,\drysbs}}} % [kg m-3] Soil particle density, dry
+\newcommand{\dnsprt}{\ensuremath{\dns_{\prtsbs}}} % [kg m-3] Particle density
+\newcommand{\dnssld}{\ensuremath{\dns_{\sldsbs}}} % [kg m-3] Density of solid water
+\newcommand{\dnssln}{\ensuremath{\dns_{\slnsbs}}} % [kg m-3] Density of aqueous solution
+\newcommand{\dnssnw}{\ensuremath{\dns_{\snwsbs}}} % [kg m-3] Bulk density of snow
+\newcommand{\dnsvprdlt}{\ensuremath{\Delta \dns_{\vprsbs}}} % [kg m-3] Gradient of water vapor
+\newcommand{\dnsvprinf}{\ensuremath{\dns_{\vprsbs,\infty}}} % [kg m-3] Density of water vapor far from particle
+\newcommand{\dnsvprrds}{\ensuremath{\dns_{\vprsbs,\rds}}} % [kg m-3] Density of water vapor at particle surface
+\newcommand{\dnsvprsat}{\ensuremath{\dns_{\vprsbs,\satsbs}}} % [kg m-3] Saturated density of water vapor
+\newcommand{\dnsvpr}{\ensuremath{\dns_{\vprsbs}}} % [kg m-3] Density of water vapor
+\newcommand{\dnswtr}{\ensuremath{\dns_{\wtrsbs}}} % [kg m-3] Density of liquid water
+\newcommand{\dstmssofprttm}{\ensuremath{\dstmss(\dmtprt,\tm)}} % [kg m-3 m-1] Mass distribution of Dp, t
+\newcommand{\dstmssofprt}{\ensuremath{\dstmss(\dmtprt)}} % [kg m-3 m-1] Mass distribution of Dp
+\newcommand{\dstnbrofprt}{\ensuremath{\dstnbr(\dmtprt)}} % [# m-3 m-1] Number distribution of Dp
+\newcommand{\dstnthonesbs}{\ensuremath{\dstnthsbs_{1}}} % [sbs] Anthropogenic dust of the first kind subscript
+\newcommand{\dstnthone}{\ensuremath{\dstnth_\mathrm{1}}} % [trm] Anthropogenic dust of the first kind
+\newcommand{\dstnththrsbs}{\ensuremath{\dstnthsbs_{3}}} % [sbs] Anthropogenic dust of the third kind subscript
+\newcommand{\dstnththr}{\ensuremath{\dstnth_\mathrm{3}}} % [trm] Anthropogenic dust of the third kind
+\newcommand{\dstnthtwosbs}{\ensuremath{\dstnthsbs_{2}}} % [sbs] Anthropogenic dust of the second kind subscript
+\newcommand{\dstnthtwo}{\ensuremath{\dstnth_\mathrm{2}}} % [trm] Anthropogenic dust of the second kind
+\newcommand{\dstslt}{\ensuremath{\dst_{\sltsbs}}} % Saltator distribution
+\newcommand{\flxdps}{\ensuremath{\flxmssvrt_{\dpssbs}}} % Generic deposition flux
+\newcommand{\flxmmn}{\ensuremath{\wndstr}} % Momentum flux
+\newcommand{\flxmsshrzcrp}{\ensuremath{\flxmsshrz_{\crpsbs}}} % [kg m-1 s-1] Streamwise mass flux from creep
+\newcommand{\flxmsshrzdst}{\ensuremath{\flxmsshrz_{\dstsbs}}} % [kg m-1 s-1] Streamwise mass flux of dust
+\newcommand{\flxmsshrzslt}{\ensuremath{\flxmsshrz_{\sltsbs}}} % [kg m-1 s-1] Streamwise saltation mass flux
+\newcommand{\flxmsshrzttl}{\ensuremath{\flxmsshrz_{\hrzsbs}}} % [kg m-1 s-1] Streamwise mass flux from creep 
+\newcommand{\flxmsspcp}{\ensuremath{\flxpcp_{\mss}}} % [kg m-2 s-1] Precipitation mass flux
+\newcommand{\flxmssvrtdstj}{\ensuremath{\flxmssvrt_{\dstsbs,j}}} % [kg m-2 s-1] Vertical mass flux of dust in bin j
+\newcommand{\flxmssvrtdstnot}{\ensuremath{\flxmssvrt_{\dstsbs,0}}} % [kg m-2 s-1] Vertical mass flux of dust, idealized surface
+\newcommand{\flxmssvrtdst}{\ensuremath{\flxmssvrt_{\dstsbs}}} % [kg m-2 s-1] Vertical mass flux of dust
+\newcommand{\flxmssvrtslt}{\ensuremath{\flxmssvrt_{\sltsbs}}} % [kg m-2 s-1] Vertical mass flux of saltators
+\newcommand{\flxmssvrtssl}{\ensuremath{\flxmssvrt_{\sslsbs}}} % [kg m-2 s-1] Vertical mass flux of sea salt
+\newcommand{\flxnbrvrtdst}{\ensuremath{\flxnbrvrt_{\dstsbs}}} % Vertical dust number flux of dust
+\newcommand{\flxnbrvrtslt}{\ensuremath{\flxnbrvrt_{\sltsbs}}} % Vertical dust number flux of saltators
+\newcommand{\flxnbrvrtssl}{\ensuremath{\flxnbrvrt_{\sslsbs}}} % Vertical dust number flux of sea salt
+\newcommand{\flxvlmpcp}{\ensuremath{\flxpcp_{\hgt}}} % [m s-1] Precipitation volume flux
+\newcommand{\frcads}{\ensuremath{\frc_{\adssbs}}} % Force due to adsorption
+\newcommand{\frccpl}{\ensuremath{\frc_{\cplsbs}}} % Force due to capillarity
+\newcommand{\frcdrg}{\ensuremath{\frc_{\drgsbs}}} % Force due to drag
+\newcommand{\frcgrv}{\ensuremath{\frc_{\grvsbs}}} % Force due to gravity 
+\newcommand{\frcipc}{\ensuremath{\frc_{\ipcsbs}}} % Force due to interparticle cohesion
+\newcommand{\frclft}{\ensuremath{\frc_{\lftsbs}}} % Force due to lift 
+\newcommand{\frcprmdrg}{\ensuremath{\frcprm_{\drgsbs}}} % Drag force parameter
+\newcommand{\frcprmlft}{\ensuremath{\frcprm_{\lftsbs}}} % Lift force parameter
+\newcommand{\frcprmrsh}{\ensuremath{\frcprm_{\rshsbs}}} % Rotational inertia parameter
+\newcommand{\grvsfc}{\ensuremath{\grv_{\sfcsbs}}} % [m s-2] Surface gravity 
+\newcommand{\gsdwet}{\ensuremath{\sigma_{g}^{\prime}}} % [frc] Geometric standard deviation of wetted aerosol
+\newcommand{\gwceqvthr}{\ensuremath{\tilde{\gwc}_{\thrsbs}}} % [frc] Equivalent threshold moisture content
+\newcommand{\gwcpct}{\ensuremath{\gwc^{\pct}}} % [kg kg-1] Gravimetric water content in percent
+\newcommand{\gwcsat}{\ensuremath{\gwc_{\satsbs}}} % [kg kg-1] Gravimetric water content at saturation
+\newcommand{\gwcthrmax}{\ensuremath{\gwc_{T}}} % [kg kg-1] Gravimetric water content threshold at which erosion ceases
+\newcommand{\gwcthrmin}{\ensuremath{\gwc_{\thrsbs}}} % [kg kg-1] Gravimetric water content threshold at which erosion diminishes
+\newcommand{\hgtatm}{\ensuremath{\hgt}} % [m] Atmospheric height
+\newcommand{\hgtlvt}{\ensuremath{\hgt}} % [m] Elevation
+\newcommand{\hgtmdp}{\ensuremath{\hgt_{\mdpsbs}}} % [m] Midlayer height
+\newcommand{\hgtnvr}{\ensuremath{\hgt_{\nvrsbs}}} % [m] Height of capping inversion
+\newcommand{\hgtrfr}{\ensuremath{\hgt_{\rfrsbs}}} % [m] Reference height
+\newcommand{\hgtsfc}{\ensuremath{\hgt_{\sfcsbs}}} % [m] Surface height
+\newcommand{\hgtslt}{\ensuremath{\hgt_{\sltsbs}}} % [m] Height of saltation layer
+\newcommand{\hgttld}{\ensuremath{\tilde{\hgt}}} % [frc] Non-dimensionalized height
+\newcommand{\htgltn}{\ensuremath{\htg_{\ltnsbs}}} % [J s-1] Latent heating
+\newcommand{\htgmss}{\ensuremath{\htg^{\msssbs}}} % [W kg-1] Heating per unit mass
+\newcommand{\htgprt}{\ensuremath{\htg_{\prtsbs}}} % [J s-1] Particle heating
+\newcommand{\htgrdn}{\ensuremath{\htg_{\rdnsbs}}} % [J s-1] Radiant heating
+\newcommand{\htgsns}{\ensuremath{\htg_{\snssbs}}} % [J s-1] Sensible heating
+\newcommand{\htgvlm}{\ensuremath{\htg^{\vlmsbs}}} % [W m-3] Heating per unit volume
+\newcommand{\malr}{\ensuremath{\lpsrt_{\mstsbs}}} % [K m-1] Moist adiabatic lapse rate
+\newcommand{\mlmic}{\ensuremath{\bar{\mu}}} % Mean linear mass increase coefficient
+\newcommand{\mmndrg}{\ensuremath{\mmnfrc_{\drgsbs}}} % Moment due to drag
+\newcommand{\mmngrv}{\ensuremath{\mmnfrc_{\grvsbs}}} % Moment due to gravity
+\newcommand{\mmnipc}{\ensuremath{\mmnfrc_{\ipcsbs}}} % Moment due to interparticle cohesion
+\newcommand{\mmnlft}{\ensuremath{\mmnfrc_{\lftsbs}}} % Moment due to lift
+\newcommand{\mmnrsh}{\ensuremath{\mmnfrc_{\rshsbs}}} % Moment due to inertia
+\newcommand{\mmraer}{\ensuremath{\mmr}} % [kg kg-1] Mass mixing ratio of aerosol
+\newcommand{\mmrvprdlt}{\ensuremath{\Delta \mmrvpr}} % [kg kg-1] Change in vapor mixing ratio
+\newcommand{\mmrvprprm}{\ensuremath{\mmrvpr^{\prime}}} % [kg kg-1] Fluctuating vapor mixing ratio
+\newcommand{\mmrvprrfr}{\ensuremath{\mmrvpr_{\rfrsbs}}} % [kg kg-1] Vapor mixing ratio at reference height
+\newcommand{\mmrvprsfc}{\ensuremath{\mmrvpr_{\sfcsbs}}} % [kg kg-1] Vapor mixing ratio at surface
+\newcommand{\mpcCOd}{\ensuremath{\mpc_{\COd}}} % [kg m-2] Mass path column, CO2
+\newcommand{\mpcHdO}{\ensuremath{\mpc_{\HdO}}} % [kg m-2] Mass path column, H2O
+\newcommand{\mpcdst}{\ensuremath{\mpc}} % [kg m-2] Mass path column, dust
+\newcommand{\mshdst}{\ensuremath{\msh}} % [kg m-2 s-1] Dust mass emission flux
+\newcommand{\mssair}{\ensuremath{\mss_{\atmsbs}}} % [kg] Mass of air
+\newcommand{\mssatm}{\ensuremath{\mss_{\atmsbs}}} % [kg] Mass of atmosphere
+\newcommand{\mssblkdry}{\ensuremath{\mss_{\blksbs,\drysbs}}} % [kg] Bulk soil mass, dry
+\newcommand{\mssblk}{\ensuremath{\mss_{\blksbs}}} % [kg] Bulk soil mass
+\newcommand{\mssdry}{\ensuremath{\mss_{\drysbs}}} % [kg] Mass of dry air
+\newcommand{\mssdst}{\ensuremath{\mss_{\dstsbs}}} % [kg] Mass of a dust particle
+\newcommand{\mssfrccly}{\ensuremath{\mssfrc_{\mathrm{clay}}}} % [frc] Mass fraction of clay particles
+\newcommand{\mssfrcslt}{\ensuremath{\mssfrc_{\mathrm{silt}}}} % [frc] Mass fraction of silt particles
+\newcommand{\mssfrcsnd}{\ensuremath{\mssfrc_{\mathrm{sand}}}} % [frc] Mass fraction of sand particles
+\newcommand{\mssfrcsnk}{\ensuremath{\mssfrc_{\snkidx}}} % [frc] Mass fraction in sink
+\newcommand{\mssmtx}{\ensuremath{\mss_{\mtxsbs}}} % [kg] Matrix mass
+\newcommand{\mssncl}{\ensuremath{\mss_{\nclsbs}}} % [kg] Inclusion mass
+\newcommand{\mssnrm}{\ensuremath{\underbar{\mss}}} % Normalized mass
+\newcommand{\mssocn}{\ensuremath{\mss_{\ocnsbs}}} % [kg] Mass of ocean
+\newcommand{\mssprtdry}{\ensuremath{\mss_{\prtsbs,\drysbs}}} % [kg] Soil particle mass, dry
+\newcommand{\mssprt}{\ensuremath{\mss_{\prtsbs}}} % [# m-3] Particle mass concentration 
+\newcommand{\mssscvaer}{\ensuremath{\dot{\mssfnc}}} % [kg s-1] Rate of mass scavenging
+\newcommand{\mssslt}{\ensuremath{\mss_{\sltsbs}}} % Mass of a saltating particle
+\newcommand{\msssoidry}{\ensuremath{\mss_{\soisbs,\drysbs}}} % [kg] Mass of dry soil
+\newcommand{\msssoimst}{\ensuremath{\mss_{\soisbs,\mstsbs}}} % [kg] Mass of moist soil
+\newcommand{\msssoi}{\ensuremath{\mss_{\soisbs}}} % [kg] Mass of soil
+\newcommand{\msswtr}{\ensuremath{\mss_{\wtrsbs}}} % [kg] Mass of water
+\newcommand{\nbrprt}{\ensuremath{\nbr_{\prtsbs}}} % [# m-3] Particle number concentration 
+\newcommand{\nbrscvaer}{\ensuremath{\dot{\cncfnc}}} % [# s-1] Rate of particle collection, including aerodynamic effects
+\newcommand{\nbrscvgmt}{\ensuremath{\dot{\cncfnc}_{\ggg}}} % [# s-1] Rate of particle collection, geometric approximation
+\newcommand{\nclmtxsbs}{\ensuremath{\nclsbs/\mtxsbs}} % [sbs] Inclusion to matrix ratio subscript
+\newcommand{\nclttlsbs}{\ensuremath{}} % [sbs] Inclusion to total ratio subscript
+\newcommand{\tke}{\ensuremath{\mathrm{TKE}}} % [J] Turbulent Kinetic Energy
+\newcommand{\nrgend}{\ensuremath{\nrg_{1}}} % [J] Kinetic energy at impact
+\newcommand{\nrgprd}{\ensuremath{\nrg_{2}}} % [J] Kinetic energy of products
+\newcommand{\nrgsrt}{\ensuremath{\nrg_{0}}} % [J] Kinetic energy at uplift
+\newcommand{\nthfctone}{\ensuremath{\nthfct_{1}}} % [frc] Anthropogenic emission factor of the first kind
+\newcommand{\nthfctthr}{\ensuremath{\nthfct_{3}}} % [frc] Mass emission flux, anthropogenic dust of the third kind
+\newcommand{\nthfcttwo}{\ensuremath{\nthfct_{2}}} % [frc] Anthropogenic emission factor of the second kind
+\newcommand{\palr}{\ensuremath{\lpsrt_{\psdsbs}}} % [K m-1] Pseudo-adiabatic lapse rate
+\newcommand{\pdfmrsplm}{\ensuremath{\pdffnc_{\mrsplmfnc}}} % Probability density function for Marshall-Palmer distribution
+\newcommand{\pdfryltail}{\ensuremath{\pdffnc_{\ryltailfnc}}} % Probability density function for Rayleigh tail distribution
+\newcommand{\pdfryl}{\ensuremath{\pdffnc_{\rylfnc}}} % Probability density function for Rayleigh distribution
+\newcommand{\pdfwbl}{\ensuremath{\pdffnc_{\wblfnc}}} % Probability density function for Weibull distribution
+\newcommand{\pdfwnd}{\ensuremath{\pdffnc(\wndspd)}} % PDF of wind speed
+\newcommand{\ppndot}{\ensuremath{\dot{\ppn}}} % [# s-1] Rate of population change
+\newcommand{\ppnnot}{\ensuremath{\ppn_{0}}} % [#] Initial population
+\newcommand{\prbidx}{\ensuremath{\prbfnc_{\binidx}}} % [frc] ith probability 
+\newcommand{\prsSTP}{\ensuremath{\prs_{0}}} % [Pa] Standard pressure
+\newcommand{\prsatm}{\ensuremath{\prs}} % [Pa] Atmospheric pressure
+\newcommand{\prsdlt}{\ensuremath{\Delta \prs}} % [Pa] Change in pressure
+\newcommand{\prslqd}{\ensuremath{\prs_{\lqdsbs}}} % [Pa] Liquid pressure
+\newcommand{\prsmdp}{\ensuremath{\prs_{\mdpsbs}}} % [Pa] Pressure at midlayer
+\newcommand{\prssfc}{\ensuremath{\prs_{\sfcsbs}}} % [Pa] Pressure at surface
+\newcommand{\prsttl}{\ensuremath{\prs_{\ttlsbs}}} % [Pa] Total pressure
+\newcommand{\prsxcs}{\ensuremath{P}} % [Pa] Pressure excess of liquid phase relative to vapor
+\newcommand{\psibar}{\ensuremath{\bar{\psi}}} % Time-mean component of psi
+\newcommand{\psiheat}{\ensuremath{\psi_{\heatsbs}}} % Stability correction for heat
+\newcommand{\psimmn}{\ensuremath{\psi_{\mmnsbs}}} % Stability correction for momentum
+\newcommand{\psiprm}{\ensuremath{\psi^{\prime}}} % Fluctuating component of psi
+\newcommand{\psivpr}{\ensuremath{\psi_{\vprsbs}}} % Stability correction for vapor
+\newcommand{\qvpratmstr}{\ensuremath{\qvpr_{\atmsbs}^{\strsbs}}} % [kg kg-1] Saturation specific humidity in atmosphere
+\newcommand{\qvpratm}{\ensuremath{\qvpr_{\atmsbs}}} % [kg kg-1] Specific humidity of atmosphere
+\newcommand{\qvprmdp}{\ensuremath{\qvpr_{\mdpsbs}}} % [kg kg-1] Specific humidity at midlayer
+\newcommand{\qvprsat}{\ensuremath{\qvpr_{\satsbs}}} % [kg kg-1] Saturation specific humidity
+\newcommand{\qvprsfcstr}{\ensuremath{\qvpr_{\sfcsbs}^{\strsbs}}} % [kg kg-1] Saturation specific humidity at surface
+\newcommand{\qvprsfc}{\ensuremath{\qvpr_{\sfcsbs}}} % [kg kg-1] Specific humidity at surface
+\newcommand{\qvprstr}{\ensuremath{\qvpr^{\strsbs}}} % [kg kg-1] Saturation specific humidity
+\newcommand{\rdbfctcrs}{\ensuremath{\rdbfct_{\crssbs}}} % [frc] Erodibility factor, crustal
+\newcommand{\rdbfctiii}{\ensuremath{\rdbfct_{\iii}}} % [frc] Erodibility factor at point i
+\newcommand{\rdbfctnot}{\ensuremath{\rdbfct_{0}}} % [frc] Erodibility factor, uniform
+\newcommand{\rdbfctsdm}{\ensuremath{\rdbfct_{\sdmsbs}}} % [frc] Erodibility factor, sediment
+\newcommand{\rdsmtx}{\ensuremath{\rds_{\mtxsbs}}} % [m] Matrix radius
+\newcommand{\rdsncl}{\ensuremath{\rds_{\nclsbs}}} % [m] Inclusion radius
+\newcommand{\rghheat}{\ensuremath{\rgh_{0,\heatsbs}}} % [m] Roughness length for heat
+\newcommand{\rghmmnmbl}{\ensuremath{\rgh_{0,\mmnsbs}}} % [m] Roughness length for momentum for erodible surfaces
+\newcommand{\rghmmnnonslt}{\ensuremath{\rgh_{0,0}}} % [m] Roughness length for momentum for non-saltating surfaces
+\newcommand{\rghmmnslt}{\ensuremath{\rgh_{0,\sltsbs}}} % [m] Roughness length for momentum for saltating surfaces
+\newcommand{\rghmmnsmt}{\ensuremath{\rgh_{0,\mmnsbs}^{s}}} % [m] Smooth roughness length for momentum
+\newcommand{\rghmmn}{\ensuremath{\rgh_{0,\mmnsbs}}} % [m] Roughness length for momentum
+\newcommand{\rghvpr}{\ensuremath{\rgh_{0,\vprsbs}}} % [m] Roughness length for vapor
+\newcommand{\rssaer}{\ensuremath{\rss_{\aersbs}}} % Aerodynamic resistance
+\newcommand{\rsscnp}{\ensuremath{\rss_{\cnpsbs}}} % Canopy resistance
+\newcommand{\rssdps}{\ensuremath{\rss_{\dpssbs}}} % Total resistance to dry deposition
+\newcommand{\rssheat}{\ensuremath{\rss_{\heatsbs}}} % Resistance to heat transfer
+\newcommand{\rsslmn}{\ensuremath{\rss_{\lmnsbs}}} % Laminar resistance
+\newcommand{\rssmmn}{\ensuremath{\rss_{\mmnsbs}}} % Resistance to momentum transfer
+\newcommand{\rssvpr}{\ensuremath{\rss_{\vprsbs}}} % Resistance to vapor transfer
+\newcommand{\rxrsfcttl}{\ensuremath{K}} % Total surface reaction rate
+\newcommand{\rxrsfc}{\ensuremath{\rxr}} % Surface reaction rate
+\newcommand{\rynnbrfrcthr}{\ensuremath{\rynnbr_{\frcsbs t}}} % Friction Reynolds number
+\newcommand{\rynnbrfrc}{\ensuremath{\rynnbr_{\frcsbs}}} % Friction Reynolds number
+\newcommand{\rynnbrgrv}{\ensuremath{\rynnbr}} % Reynolds number at terminal velocity
+\newcommand{\scvcffbarofprt}{\ensuremath{\bar{\scvcff}(\dmtprt)}} % [m-1] Scavenging coefficient of diameter, precipitation normalized
+\newcommand{\scvcffbar}{\ensuremath{\bar{\scvcff}}} % [m-1] Scavenging coefficient, precipitation normalized
+\newcommand{\scvcffmssavgbar}{\ensuremath{\bar{\scvcff}_{\mss}}} % [m-1] Mass mean scavenging coefficient, precipitation normalized
+\newcommand{\scvcffmssavg}{\ensuremath{\scvcff_{\mss}}} % [s-1] Mass mean scavenging coefficient
+\newcommand{\scvcffnbravgbar}{\ensuremath{\bar{\scvcff}_{\nbr}}} % [m-1] Number mean scavenging coefficient, precipitation normalized
+\newcommand{\scvcffnbravg}{\ensuremath{\scvcff_{\nbr}}} % [s-1] Number mean scavenging coefficient
+\newcommand{\scvcffnclmssavgbar}{\ensuremath{\bar{\scvcff}_{\mss}^{\nclsbs}}} % [m-1] Mass mean nucleation scavenging coefficient
+\newcommand{\scvcffofprt}{\ensuremath{\scvcff(\dmtprt)}} % [s-1] Scavenging coefficient of diameter
+\newcommand{\scvfshmssavg}{\ensuremath{\scvfsh_{\mss}}} % [frc] Mass mean scavenging efficiency
+\newcommand{\scvfshnbravg}{\ensuremath{\scvfsh_{\nbr}}} % [frc] Number mean scavenging efficiency
+\newcommand{\scvfshofprt}{\ensuremath{\scvfsh(\dmtprt)}} % [frc] Scavenging efficiency of diameter
+\newcommand{\sfcbnd}{\ensuremath{\Omega}} % Surface boundary area
+\newcommand{\sfctnswtrlqd}{\ensuremath{\sfctns}} % Surface tension of liquid water
+\newcommand{\shmnbrtrm}{\ensuremath{\shmnbr_{\trmsbs}}} % Schmidt number for thermal diffusion
+\newcommand{\shmnbrvpr}{\ensuremath{\shmnbr_{\vprsbs}}} % Schmidt number for vapor diffusion
+\newcommand{\smlfncheat}{\ensuremath{\smlfnc_{\heatsbs}}} % Similarity function for heat
+\newcommand{\smlfncmmn}{\ensuremath{\smlfnc_{\mmnsbs}}} % Similarity function for momentum
+\newcommand{\smlfncvpr}{\ensuremath{\smlfnc_{\vprsbs}}} % Similarity function for vapor
+\newcommand{\smpsat}{\ensuremath{\smp_{\satsbs}}} % Soil matric potential at saturation
+\newcommand{\snwhgtlqd}{\ensuremath{\snwhgt_{\lqdsbs}}} % [m] Snow height, equivalent liquid water
+\newcommand{\snwhgtthr}{\ensuremath{\snwhgt_{\thrsbs}}} % [m] Geometric snow thickness for 100% coverage
+\newcommand{\stbprmheat}{\ensuremath{\zeta_{\heatsbs}}} % Stability parameter for heat
+\newcommand{\stbprmmmn}{\ensuremath{\zeta_{\mmnsbs}}} % Stability parameter for momentum
+\newcommand{\stbprmvpr}{\ensuremath{\zeta_{\vprsbs}}} % Stability parameter for vapor
+\newcommand{\stddvnavg}{\ensuremath{\bar{\stddvn}}} % Mean standard deviation
+\newcommand{\stkcrc}{\ensuremath{C_{\stknbr}}} % [frc] Stokes' settling speed correction factor
+\newcommand{\stknbrcrt}{\ensuremath{\stknbr^{*}}} % [frc] Critical Stokes number
+\newcommand{\stknbrrlt}{\ensuremath{\stknbr}} % [frc] Stokes number of relative flow
+\newcommand{\swlfncofgwcmnr}{\ensuremath{\swlfnc(\gwc,\mnrfnc)}} % [frc] Soil swelling function of gwc, chi
+\newcommand{\taucnt}{\ensuremath{\tau_{\mathrm{\cntsbs}}}} % [s] Timescale for continuum diffusion
+\newcommand{\taudff}{\ensuremath{\tau_{\mathrm{dg}}}} % [s] Timescale for gas phase diffusion
+\newcommand{\tauhtg}{\ensuremath{\tau_{\mathrm{h}}}} % [s] Relaxation timescale for particle heating
+\newcommand{\tauknt}{\ensuremath{\tau_{\mathrm{kn}}}} % [s] Timescale for kinetic transfer
+\newcommand{\tauntf}{\ensuremath{\tau_{\mathrm{i}}}} % [s] Timescale for interfacial transfer
+\newcommand{\taurlxtld}{\ensuremath{\tilde{\tau}_{\mathrm{r}}}} % [frc] Dimensionless relaxation timescale
+\newcommand{\taurlx}{\ensuremath{\tau_{\mathrm{r}}}} % [s] Relaxation timescale
+\newcommand{\tauttl}{\ensuremath{\tau_{\mathrm{t}}}} % [s] Total timescale
+\newcommand{\tmsnw}{\ensuremath{\tm_{\snwsbs}}} % [s] Time since snowfall
+\newcommand{\tmssa}{\ensuremath{\tau_{\snwsbs}}} % [s] Specfic surface area timescale LTD04, FlZ06
+\newcommand{\tmtld}{\ensuremath{\tilde{\tm}}} % [s] Time transpose
+\newcommand{\tptaer}{\ensuremath{\tpt_{\aersbs}}} % [K] Aerodynamic temperature
+\newcommand{\tptatm}{\ensuremath{\tpt_{\atmsbs}}} % [K] Atmospheric temperature
+\newcommand{\tptcls}{\ensuremath{\tpt_{c}}} % [C] Temperature in Celsius
+\newcommand{\tptdltnot}{\ensuremath{\Delta_{0} \tpt}} % [K] Initial temperature difference
+\newcommand{\tptdlt}{\ensuremath{\Delta \tpt}} % [K] Temperature difference
+\newcommand{\tptdm}{\ensuremath{\tpt_{\dmsbs}}} % [K] 2-m Air temperature
+\newcommand{\tptfrzpnt}{\ensuremath{\tpt_{0}}} % [K] Freezing point of water
+\newcommand{\tptgrd}{\ensuremath{\dfr\tpt/\dfr\hgt}} % [K m-1] Temperature gradient
+\newcommand{\tptinf}{\ensuremath{\tpt_{\infty}}} % [K] Temperature far from particle
+\newcommand{\tptmdp}{\ensuremath{\tpt_{\mdpsbs}}} % [K] Temperature at midlayer
+\newcommand{\tptprm}{\ensuremath{\tpt^{\prime}}} % [K] Fluctuating temperature
+\newcommand{\tptprt}{\ensuremath{\tpt_{\prtsbs}}} % [K] Particle temperature
+\newcommand{\tptptndlt}{\ensuremath{\Delta \tptptn}} % [K] Change in potential temperature
+\newcommand{\tptptneqv}{\ensuremath{\tptptn_{\eqvsbs}}} % [K] Equivalent potential temperature
+\newcommand{\tptptnmdp}{\ensuremath{\tptptn_{\mdpsbs}}} % [K] Potential temperature at midlayer
+\newcommand{\tptptnprm}{\ensuremath{\tptptn^{\prime}}} % [K] Fluctuating potential temperature
+\newcommand{\tptptnsfc}{\ensuremath{\tptptn_{\sfcsbs}}} % [K] Potential temperature at surface
+\newcommand{\tptptnvrtrfr}{\ensuremath{\tptptn_{\!\vrtsbs\rfrsbs}}} % [K] Virtual potential temperature at reference height
+\newcommand{\tptptnvrtsfc}{\ensuremath{\tptptn_{\!\vrtsbs\sfcsbs}}} % [K] Virtual potential temperature at surface
+\newcommand{\tptptnvrtstr}{\ensuremath{\tptptn_{\!\vrtsbs\strsbs}}} % [K] Virtual potential temperature star
+\newcommand{\tptptnvrt}{\ensuremath{\tptptn_{\!\vrtsbs}}} % [K] Virtual potential temperature
+\newcommand{\tptrad}{\ensuremath{\tpt_{\r}}} % [K] Radiative temperature
+\newcommand{\tptrfr}{\ensuremath{\tpt_{\rfrsbs}}} % [K] Temperature at reference height
+\newcommand{\tptsfc}{\ensuremath{\tpt_{\sfcsbs}}} % [K] Temperature at surface
+\newcommand{\tptsnw}{\ensuremath{\tpt_{\snwsbs}}} % [K] Temperature of snowpack
+\newcommand{\tpttrppnt}{\ensuremath{\tpt_{T}}} % [K] Triple point of water
+\newcommand{\tptvrtavg}{\ensuremath{\bar{\tptvrt}}} % [K] Virtual temperature, mean 
+\newcommand{\uuuend}{\ensuremath{\uuu_{1}}} % [m s-1] Streamwise speed at impact
+\newcommand{\uuuprd}{\ensuremath{\uuu_{2}}} % [m s-1] Streamwise speed of products
+\newcommand{\uuusrt}{\ensuremath{\uuu_{0}}} % [m s-1] Streamwise speed at uplift
+\newcommand{\vaithr}{\ensuremath{\vai_{\thrsbs}}} % [m2 m-2] Vegetation area index threshold
+\newcommand{\vlcdpsmssavg}{\ensuremath{\bar{\vlc}_{\dpssbs,\mss}}} % [m s-1] Mass mean dry deposition velocity
+\newcommand{\vlcdpsnbravg}{\ensuremath{\bar{\vlc}_{\dpssbs,\nbr}}} % [m s-1] Number mean dry deposition velocity
+\newcommand{\vlcdps}{\ensuremath{\vlc_{\dpssbs}}} % [m s-1] Dry deposition velocity
+\newcommand{\vlcgrvpcp}{\ensuremath{\VVV_{\grv}}} % [m s-1] Gravitational settling velocity of precipitation
+\newcommand{\vlcgrvprt}{\ensuremath{\vlcgrv}} % [m s-1] Gravitational settling velocity of particle
+\newcommand{\vlcgrv}{\ensuremath{\vlc_{\grv}}} % [m s-1] Gravitational settling velocity
+\newcommand{\vlcmlc}{\ensuremath{\vlc_{\mlcsbs}}} % [m s-1] Molecular velocity
+\newcommand{\vlcocn}{\ensuremath{\spd_{\ocnsbs}}} % [m s-1] Oceanic surface current speed
+\newcommand{\vlcrlt}{\ensuremath{\spd_{r}}} % [m s-1] Relative velocity
+\newcommand{\vlcstk}{\ensuremath{\spd_{\stknbr}}} % [m s-1] Stokes' settling velocity
+\newcommand{\vlctrb}{\ensuremath{\vlc_{\trbsbs}}} % [m s-1] Turbulent deposition velocity
+\newcommand{\vlcvrtbar}{\ensuremath{\bar{\vlcvrt}}} % [m s-1] Vertical velocity, time-mean
+\newcommand{\vlcvrtprm}{\ensuremath{\vlcvrt^{\prime}}} % [m s-1] Vertical velocity, fluctuating
+\newcommand{\vlmair}{\ensuremath{\vlm_{\atmsbs}}} % [m3] Volume of air
+\newcommand{\vlmblkdry}{\ensuremath{\vlm_{\blksbs,\drysbs}}} % [m3] Bulk volume of soil, dry
+\newcommand{\vlmblk}{\ensuremath{\vlm_{\blksbs}}} % [m3] Bulk soil volume
+\newcommand{\vlmclc}{\ensuremath{\vlm_{\ccc}}} % [m3 s-1] Geometric collection volume
+\newcommand{\vlmfrcspc}{\ensuremath{\vlmfrc_{\spcidx}}} % [frc] Volume fraction of species i
+\newcommand{\vlmmtx}{\ensuremath{\vlm_{\mtxsbs}}} % [m] Matrix volume
+\newcommand{\vlmncl}{\ensuremath{\vlm_{\nclsbs}}} % [m] Inclusion volume
+\newcommand{\vlmprtdry}{\ensuremath{\vlm_{\prtsbs,\drysbs}}} % [m3] Volume of soil particles, dry
+\newcommand{\vlmprt}{\ensuremath{\vlm_{\prtsbs}}} % [m3] Volume of soil particles
+\newcommand{\vlmwtr}{\ensuremath{\vlm_{\wtrsbs}}} % [m3] Volume of water
+\newcommand{\vntmss}{\ensuremath{\vntcff_{\msssbs}}} % Mass ventilation coefficient
+\newcommand{\vnttrm}{\ensuremath{\vntcff_{\trmsbs}}} % Thermal ventilation coefficient
+\newcommand{\vscdynHdO}{\ensuremath{\mu_{\HdO}}} % [kg m-1 s-1] Dynamic viscosity of liquid H2O
+\newcommand{\vscdynatm}{\ensuremath{\mu_{\atmsbs}}} % [kg m-1 s-1] Dynamic viscosity of atmosphere
+\newcommand{\vwcads}{\ensuremath{\vwc_{\adssbs}}} % [m3 m-3] Volumetric water content contributing to adsorptive forces
+\newcommand{\vwccpl}{\ensuremath{\vwc_{\cplsbs}}} % [m3 m-3] Volumetric water content contributing to capillary forces
+\newcommand{\vwcdry}{\ensuremath{\vwc_{\dry}}} % [m3 m-3] Dry volumetric water content 
+\newcommand{\vwcopt}{\ensuremath{\vwc_{\optsbs}}} % [m3 m-3] Optimal volumetric water content 
+\newcommand{\vwcpct}{\ensuremath{\vwc^{\pct}}} % [m3 m-3] Volumetric water content in percent
+\newcommand{\vwcsat}{\ensuremath{\vwc_{\satsbs}}} % [m3 m-3] Volumetric water content at saturation
+\newcommand{\vwcthr}{\ensuremath{\vwc_{\thrsbs}}} % [m3 m-3] Volumetric water content threshold
+\newcommand{\wblsclmdp}{\ensuremath{\wblscl_{\mdpsbs}}} % [frc] Weibull distribution scale parameter, midpoint height
+\newcommand{\wblsclrfr}{\ensuremath{\wblscl_{\rfrsbs}}} % [frc] Weibull distribution scale parameter, reference height
+\newcommand{\wblshpmdp}{\ensuremath{\wblshp_{\mdpsbs}}} % [frc] Weibull distribution shape parameter, midpoint height
+\newcommand{\wblshprfr}{\ensuremath{\wblshp_{\rfrsbs}}} % [frc] Weibull distribution shape parameter, reference height
+\newcommand{\wblshpvarprm}{\ensuremath{\cst_{\wblshp}}} % [frc] Weibull shape-variability parameter
+\newcommand{\wndcnvscl}{\ensuremath{\www_{\frcsbs}}} % [m s-1] Convective velocity scale
+\newcommand{\wndflx}{\ensuremath{\wndspd_{\fff}}} % [m s-1] Flux wind speed
+\newcommand{\wndninety}{\ensuremath{\wndspd_{90}}} % [m s-1] Ninetieth percentile wind speed
+\newcommand{\wndfrcbar}{\ensuremath{\bar{\wndfrcu}_{\frcsbs}}} % [m s-1] Mean wind friction speed
+\newcommand{\wndfrcnonslt}{\ensuremath{\wndfrcu_{\frcsbs,0}}} % [m s-1] Wind friction speed in non-saltating environment
+\newcommand{\wndfrcslt}{\ensuremath{\wndfrcu_{\frcsbs,\sltsbs}}} % [m s-1] Wind friction speed for saltation
+\newcommand{\wndfrcthrdry}{\ensuremath{\wndfrcu_{\frcsbs \thrsbs d}}} % [m s-1] Threshold wind friction speed dry soil
+\newcommand{\wndfrcthrimp}{\ensuremath{\wndfrcu_{\frcsbs \thrsbs i}}} % [m s-1] Threshold impact wind friction speed
+\newcommand{\wndfrcthrmin}{\ensuremath{\wndfrcu_{\frcsbs \thrsbs 0}}} % [m s-1] Minimum threshold wind friction speed
+\newcommand{\wndfrcthrwet}{\ensuremath{\wndfrcu_{\frcsbs \thrsbs w}}} % [m s-1] Threshold wind friction speed wet soil
+\newcommand{\wndfrcthr}{\ensuremath{\wndfrcu_{\frcsbs \thrsbs}}} % [m s-1] Threshold wind friction speed
+\newcommand{\wndfrc}{\ensuremath{\wndfrcu_{\frcsbs}}} % [m s-1] Wind friction speed
+\newcommand{\wndgst}{\ensuremath{\wndspd_{\gstsbs}}} % [m s-1] Geostrophic wind speed
+\newcommand{\wndhrzsbs}{\ensuremath{\wndspd_{\hrzsbs}}} % [m s-1] Horizontal wind component
+\newcommand{\wndmrdmdp}{\ensuremath{\wndmrd_{\mdpsbs}}} % [m s-1] Meridional wind component at midlayer
+\newcommand{\wndmrdprm}{\ensuremath{\wndmrd^{\prime}}} % [m s-1] Fluctuating meridional wind component
+\newcommand{\wndmrdsfc}{\ensuremath{\wndmrd_{\sfcsbs}}} % [m s-1] Meridional wind component at surface
+\newcommand{\wndntr}{\ensuremath{\wndspd^{\ntrsbs}}} % [m s-1] Wind speed in neutral conditions
+\newcommand{\wndrfrbar}{\ensuremath{\bar{\wndspd}_{\rfrsbs}}} % [m s-1] Mean wind speed at reference height
+\newcommand{\wndrfrntr}{\ensuremath{\wndspd_{\rfrsbs}^{\ntrsbs}}} % [m s-1] Wind speed at 10 meters neutral conditions
+\newcommand{\wndrfr}{\ensuremath{\wndspd_{\rfrsbs}}} % [m s-1] Wind speed at reference height
+\newcommand{\wndsfc}{\ensuremath{\wndspd_{\sfcsbs}}} % [m s-1] Wind speed at surface
+\newcommand{\wndspdatm}{\ensuremath{\wndspd_{\atmsbs}}} % [m s-1] Atmospheric windspeed
+\newcommand{\wndspdbar}{\ensuremath{\bar{\wndspd}}} % [m s-1] Mean wind speed
+\newcommand{\wndspdcrt}{\ensuremath{\wndspd_{\crtsbs}}} % [m s-1] Critical wind speed
+\newcommand{\wndspddlt}{\ensuremath{\Delta \wndspd}} % [m s-1] Change in wind speed
+\newcommand{\wndspdidx}{\ensuremath{\wndspd_{\binidx}}} % [m s-1] ith wind speed
+\newcommand{\wndspdmdn}{\ensuremath{\tilde{\wndspd}}} % [m s-1] Median wind speed
+\newcommand{\wndspdone}{\ensuremath{\wndspd_{1}}} % [m s-1] Wind speed one
+\newcommand{\wndspdprm}{\ensuremath{\wndspd^{\prime}}} % [m s-1] Fluctuating wind speed
+\newcommand{\wndspdslt}{\ensuremath{\wndspd}} % [m s-1] Wind speed for saltation
+\newcommand{\wndspdthr}{\ensuremath{\wndspd_{\thrsbs}}} % [m s-1] Threshold wind speeod
+\newcommand{\wndspdtwo}{\ensuremath{\wndspd_{2}}} % [m s-1] Wind speed two
+\newcommand{\wndstratm}{\ensuremath{\wndstr_{\atmsbs}}} % Surface wind stress due to atmosphere
+\newcommand{\wndstrslt}{\ensuremath{\wndstr_{p}}} % Surface wind stress due to saltators
+\newcommand{\wndstrvec}{\ensuremath{\vec{\wndstr}}} % Vector wind stress
+\newcommand{\wndstrx}{\ensuremath{\wndstr_{x}}} % Zonal wind stress
+\newcommand{\wndstry}{\ensuremath{\wndstr_{y}}} % Meridional wind stress
+\newcommand{\wndtenntr}{\ensuremath{\wndspd_{10}^{\ntrsbs}}} % [m s-1] Wind speed at 10 meters neutral conditions
+\newcommand{\wndtenthr}{\ensuremath{\wndspd_{10,{\thrsbs}}}} % [m s-1] Threshold wind speed at 10 meters
+\newcommand{\wndten}{\ensuremath{\wndspd_{10}}} % [m s-1] Wind speed at 10 meters
+\newcommand{\wndvec}{\ensuremath{\vec{\wnd}}} % [m s-1] Wind speed
+\newcommand{\wndvrtbar}{\ensuremath{\bar{\wndvrt}}} % [m s-1] Mean vertical wind component
+\newcommand{\wndvrtprm}{\ensuremath{\wndvrt^{\prime}}} % [m s-1] Fluctuating vertical wind component
+\newcommand{\wndznlmdp}{\ensuremath{\wndznl_{\mdpsbs}}} % [m s-1] Zonal wind component at midlayer
+\newcommand{\wndznlprm}{\ensuremath{\wndznl^{\prime}}} % [m s-1] Fluctuating zonal wind component
+\newcommand{\wndznlsfc}{\ensuremath{\wndznl_{\sfcsbs}}} % [m s-1] Zonal wind component at surface
+\newcommand{\wtlfrc}{\ensuremath{\gndfrc_{\wtlsbs}}} % [frc] Wetland-covered ground fraction
+\newcommand{\wwwend}{\ensuremath{\www_{1}}} % [m s-1] Vertical speed at impact
+\newcommand{\wwwprd}{\ensuremath{\www_{2}}} % [m s-1] Vertical speed of products
+\newcommand{\wwwsrt}{\ensuremath{\www_{0}}} % [m s-1] Vertical speed at uplift
+\newcommand{\xchcffheat}{\ensuremath{\xchcff_{\heatsbs}}} % [frc] Exchange coefficient for heat
+\newcommand{\xchcffmmnntr}{\ensuremath{\xchcff_{\mmnsbs}^{\ntrsbs}}} % Neutral exchange coefficient for momentum
+\newcommand{\xchcffmmnrfr}{\ensuremath{\xchcff_{\mmnsbs,\rfrsbs}}} % [frc] Exchange coefficient for momentum at 10 m
+\newcommand{\xchcffmmnten}{\ensuremath{\xchcff_{\mmnsbs,10}}} % [frc] Exchange coefficient for momentum at 10 m
+\newcommand{\xchcffmmn}{\ensuremath{\xchcff_{\mmnsbs}}} % [frc] Exchange coefficient for momentum
+\newcommand{\xchcffvpr}{\ensuremath{\xchcff_{\vprsbs}}} % [frc] Exchange coefficient for vapor
+\newcommand{\xsanrm}{\ensuremath{\underbar{\xsa}}} % Normalized cross-sectional area
+\newcommand{\xxxbar}{\ensuremath{\bar{\xxx}}} % Time-mean component of x
+\newcommand{\xxxprm}{\ensuremath{\xxx^{\prime}}} % Fluctuating component of x
+\newcommand{\xxxthr}{\ensuremath{\xxx_{\thrsbs}}} % Threshold value of x
+
+% 3. Doubly-derived commands
+\newcommand{\rghmmnstr}{\ensuremath{\rghmmn^{\strsbs}}} % [m] Roughness length for momentum, alternate
+\newcommand{\cffdrgstr}{\ensuremath{\cffdrg^{\strsbs}}} % Coefficient of drag, alternate
+\newcommand{\varuuu}{\ensuremath{\sdnuuu^{2}}} % [m2 s-2] Variance of zonal wind
+\newcommand{\varvvv}{\ensuremath{\sdnvvv^{2}}} % [m2 s-2] Variance of meridional wind
+\newcommand{\varwww}{\ensuremath{\sdnwww^{2}}} % [m2 s-2] Variance of vertical wind
+\newcommand{\dlttptsfc}{\ensuremath{\Delta \tptsfc}} % [K] Temperature change at surface
+\newcommand{\mssfrcnclmtx}{\ensuremath{\mssfrc_{\nclmtxsbs}}} % [frc] Mass fraction of particle inclusion to particle matrix
+\newcommand{\rdsfrcnclmtx}{\ensuremath{\rdsfrc_{\nclmtxsbs}}} % [frc] Radius fraction of particle inclusion to particle matrix
+\newcommand{\vlmfrcnclmtx}{\ensuremath{\vlmfrc_{\nclmtxsbs}}} % [frc] Volume fraction of particle inclusion to particle matrix
+\newcommand{\mssfrcnclttl}{\ensuremath{\mssfrc_{\nclttlsbs}}} % [frc] Mass fraction of particle inclusion to total particle
+\newcommand{\rdsfrcnclttl}{\ensuremath{\rdsfrc_{\nclttlsbs}}} % [frc] Radius fraction of particle inclusion to total particle
+\newcommand{\vlmfrcnclttl}{\ensuremath{\vlmfrc_{\nclttlsbs}}} % [frc] Volume fraction of particle inclusion to total particle
+\newcommand{\mpcdstntr}{\ensuremath{\mpcdst_{\dstntrsbs}}} % [kg m-2] Mass path column, natural dust
+\newcommand{\mpcdstnth}{\ensuremath{\mpcdst_{\dstnthsbs}}} % [kg m-2] Mass path column, anthropogenic dust
+\newcommand{\mpcdstnthone}{\ensuremath{\mpcdst_{\dstnthonesbs}}} % [kg m-2] Mass path column, anthropogenic dust of the first kind
+\newcommand{\mpcdstnthtwo}{\ensuremath{\mpcdst_{\dstnthtwosbs}}} % [kg m-2] Mass path column, anthropogenic dust of the second kind
+\newcommand{\mpcdstnththr}{\ensuremath{\mpcdst_{\dstnththrsbs}}} % [kg m-2] Mass path column, anthropogenic dust of the third kind
+\newcommand{\mshdstntr}{\ensuremath{\mshdst_{\dstntrsbs}}} % [kg m-2 s-1] Mass emission flux, natural dust
+\newcommand{\mshdstnth}{\ensuremath{\mshdst_{\dstnthsbs}}} % [kg m-2 s-1] Mass emission flux, anthropogenic dust
+\newcommand{\mshdstnthone}{\ensuremath{\mshdst_{\dstnthonesbs}}} % [kg m-2 s-1] Mass emission flux, anthropogenic dust of the first kind
+\newcommand{\mshdstnthtwo}{\ensuremath{\mshdst_{\dstnthtwosbs}}} % [kg m-2 s-1] Mass emission flux, anthropogenic dust of the second kind
+\newcommand{\mshdstnththr}{\ensuremath{\mshdst_{\dstnththrsbs}}} % [kg m-2 s-1] Mass emission flux, anthropogenic dust of the third kind
+\newcommand{\dltmssnrm}{\ensuremath{\Delta \underbar{\mss}}} % Change in normalized mass
+\newcommand{\dltxsanrm}{\ensuremath{\Delta \underbar{\xsa}}} % Change in normalized cross-sectional area
+\newcommand{\dltxsa}{\ensuremath{\Delta \xsa}} % Change in cross-sectional area
+\newcommand{\flxmssdps}{\ensuremath{\flxdps^{\msssbs}}} % [kg m-2 s-1] Dry deposition mass flux
+\newcommand{\flxmsshrzbar}{\ensuremath{\bar{\flxmsshrz}}} % Mean horizontal dust flux 
+\newcommand{\flxmsspcpofdmt}{\ensuremath{\flxmsspcp(\dmtpcp)}} % [kg m2 s-1 m-1] Spectral precipitation mass flux of Dp
+\newcommand{\flxnbrdps}{\ensuremath{\flxdps^{\nbrsbs}}} % [# m-2 s-1] Dry deposition number flux
+\newcommand{\flxvlmpcpdlt}{\ensuremath{\Delta \flxvlmpcp}} % [m] Precipitation accumulated during Delta t
+\newcommand{\flxvlmpcpofdmt}{\ensuremath{\flxvlmpcp(\dmtpcp)}} % [m s-1 m-1] Spectral precipitation volume flux of Dp
+\newcommand{\mssfrcclypct}{\ensuremath{\mssfrccly^{\pct}}} % [cg kg-1] % Mass percentage of clay particles
+\newcommand{\mssfrcclyprm}{\ensuremath{\mssfrccly^{\prime}}} % [kg kg-1] Constrained mass fraction of clay particles 
+\newcommand{\mssfrcsltpct}{\ensuremath{\mssfrcslt^{\pct}}} % [cg kg-1] Mass percentage of silt particles
+\newcommand{\mssfrcsndpct}{\ensuremath{\mssfrcsnd^{\pct}}} % [cg kg-1] Mass percentage of sand particles
+\newcommand{\mssscvaerofprt}{\ensuremath{\mssscvaer(\dmtprt)}} % [kg m-3 s-1] Rate of particle mass collection, including aerodynamic effects, of d
+\newcommand{\nbrscvaerofpcpprt}{\ensuremath{\nbrscvaer(\dmtpcp,\dmtprt)}} % [# s-1] Rate of particle collection, including aerodynamic effects, by D of d
+\newcommand{\nbrscvaerofprt}{\ensuremath{\nbrscvaer(\dmtprt)}} % [# m-3 s-1] Rate of particle number collection, including aerodynamic effects, of d
+\newcommand{\nbrscvgmtofpcpprt}{\ensuremath{\nbrscvgmt(\dmtpcp,\dmtprt)}} % [# s-1] Rate of particle collection, geometric approximation, by D of d
+\newcommand{\prsprtwtrsatlqd}{\ensuremath{\prsprtwtrsat_{\lqdsbs}}} % [Pa] Saturated vapor pressure of water w/r/t liquid
+\newcommand{\prsprtwtrsatice}{\ensuremath{\prsprtwtrsat_{\icesbs}}} % [Pa] Saturated vapor pressure of water w/r/t ice
+\newcommand{\prsprtwtrsatinf}{\ensuremath{\prsprtwtrsat_{\infty}}} % Saturated vapor pressure of water far from aerosol surface
+\newcommand{\prsprtwtrsatsfc}{\ensuremath{\prsprtwtrsat_{\sfc}}} % Saturated vapor pressure of water at aerosol surface
+\newcommand{\prsprtwtrsatnot}{\ensuremath{\prsprtwtrsat_{0}}} % Saturated vapor pressure of water at initial temperature
+\newcommand{\tptptnvrtavg}{\ensuremath{\overline{\tptptnvrt}}} % [K] Virtual potential temperature, mean
+\newcommand{\tptptnavg}{\ensuremath{\overline{\tptptn}}} % [K] Potential temperature, mean
+\newcommand{\wndhrzavg}{\ensuremath{\overline{\wndhrzavg}}} % [m s-1] Horizontal wind speed, mean
+\newcommand{\tptptnvrtprm}{\ensuremath{\tptptnvrt^{\prime}}} % [K] Virtual potential temperature, fluctuating component
+\newcommand{\vlcdpsofdmt}{\ensuremath{\vlcdps(\dmt)}} % [m s-1] Dry deposition velocity of D
+\newcommand{\vlcgrvofdmt}{\ensuremath{\vlcgrv(\dmt)}} % [m s-1] Gravitational settling velocity of D
+\newcommand{\gwcthrminpct}{\ensuremath{\gwcthrmin^{\pct}}} % [kg kg-1] Gravimetric water content threshold percentage at which erosion diminishes
+\newcommand{\vwcthrpct}{\ensuremath{\vwcthr^{\pct}}} % [m3 m-3] Volumetric water content threshold percentage at which erosion diminishes
+\newcommand{\wndfrcsltthr}{\ensuremath{\wndfrcthr}} % [m s-1] Threshold wind friction speed for saltation
+\newcommand{\wndfrcdlt}{\ensuremath{\Delta \wndfrc}} % [m s-1] Increase in wind friction speed due to Owen effect
+\newcommand{\wndfrcthrdmt}{\ensuremath{\wndfrcthr(\dmt)}} % [m s-1] Threshold wind friction speed of D
+\newcommand{\wndhrzprm}{\ensuremath{\wndhrz^{\prime}}} % [m s-1] Fluctuating horizontal wind component
+\newcommand{\wndspddps}{\ensuremath{\mathrm{\wndten}}} % [m s-1] Reference windspeed used in dry deposition
+\newcommand{\wndspdsltthr}{\ensuremath{\wndspdslt_{\thrsbs}}} % [m s-1] Threshold wind speed for saltation
+
+% 4. Trebly-derived commands
+\newcommand{\flxmssdpsofdmt}{\ensuremath{\flxmssdps(\dmt)}} % [kg m-2 s-1] Spectral dry deposition mass flux of D
+\newcommand{\flxnbrdpsofdmt}{\ensuremath{\flxnbrdps(\dmt)}} % [# m-2 s-1] Spectral dry deposition mass flux of D
+\newcommand{\wndvrtprmtptptnvrtprmavg}{\ensuremath{\overline{\wndvrtprm\tptptnvrtprm}}} % [m K s-1] Eddy heat flux (virtual potential temperature form)
+\newcommand{\wndvrtprmwndhrzprmavg}{\ensuremath{\overline{\wndvrtprm\wndhrzprm}}} % [m2 s-2] Eddy specific momentum flux
+\newcommand{\wndvrtprmmmrvprprmavg}{\ensuremath{\overline{\wndvrtprm\mmrvprprm}}} % [m kg s-1 kg-1] Eddy moisture

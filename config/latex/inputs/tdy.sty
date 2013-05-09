@@ -1,0 +1,147 @@
+% $Id$
+
+% Purpose: Commands pertaining to thermodynamics
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Notes: 
+% Should \ltn be replaced by \nrgltn everywhere?
+% For uppercase state variables, e.g., U, are units J or J mol-1 or J m-3?
+% Or does it matter?
+% Hydrologist subdivide soil water potential energy into
+% gravitational, osmotic, and pressure components.
+% Use nrgptnsoi for all soil-water-specific terms
+% To an atmospheric physicist, potential energy means gravitational potential energy
+% To be precise and safe, use nrgptngrv for atmospheric potential energy
+
+% Usage:
+% \usepackage{tdy} % Thermodynamics
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{
+\ProvidesPackage{tdy}[2002/09/22 v1.24 Thermodynamics]
+} % end ProvidesPackage
+
+% 0. Provided commands
+\providecommand{\cnc}{\ensuremath{N}}\renewcommand{\cnc}{\ensuremath{N}} % [# m-3] Concentration
+\providecommand{\dns}{\ensuremath{\rho}}\renewcommand{\dns}{\ensuremath{\rho}} % [kg m-3] Density
+\providecommand{\mmr}{\ensuremath{q}}\renewcommand{\mmr}{\ensuremath{q}} % [kg kg-1] Mass mixing ratio
+\providecommand{\ppr}{\ensuremath{p}}\renewcommand{\ppr}{\ensuremath{p}} % [Pa] Partial pressure
+\providecommand{\vmr}{\ensuremath{\chi}}\renewcommand{\vmr}{\ensuremath{\chi}} % [mol mol-1] Volume mixing ratio
+\providecommand{\vlmsbs}{\ensuremath{\mathrm{v}}}\renewcommand{\vlmsbs}{\ensuremath{\mathrm{v}}} % [sbs] Volume subscript
+\providecommand{\vrtsbs}{\ensuremath{\mathrm{v}}}\renewcommand{\vrtsbs}{\ensuremath{\mathrm{v}}} % [sbs] Virtual subscript (conflicts with vertical subscript in aer.sty)
+
+% 1. Primary commands
+\newcommand{\dmmr}{\ensuremath{r}} % [kg kg-1] Dry mass mixing ratio
+\newcommand{\dwpsbs}{\ensuremath{\mathrm{d}}} % [sbs] Dew point subscript
+\newcommand{\heatcpc}{\ensuremath{C}} % [J mol-1 K-1] Heat capacity
+\newcommand{\icesbs}{\ensuremath{\mathrm{i}}} % [sbs] Ice subscript
+\newcommand{\lqdsbs}{\ensuremath{\mathrm{l}}} % [sbs] Liquid subscript
+\newcommand{\ltnsbs}{\ensuremath{\mathrm{l}}} % [sbs] Latent heating subscript
+\newcommand{\ltn}{\ensuremath{L}} % [J] Latent heat of transformation
+\newcommand{\nrgape}{\ensuremath{A}} % [J] Available potential energy
+\newcommand{\nthdry}{\ensuremath{D_{H}}} % [J] Dry static enthalpy
+\newcommand{\nthmst}{\ensuremath{J_{H}}} % [J] Moist static enthalpy
+\newcommand{\nrgdry}{\ensuremath{D}} % [J] Dry static energy
+\newcommand{\nrggbb}{\ensuremath{G}} % [J] Gibbs free energy
+\newcommand{\nrggnd}{\ensuremath{G}} % [J] Energy sunk to ground
+\newcommand{\nrgheat}{\ensuremath{Q}} % [J] Heat energy
+\newcommand{\nrgchm}{\ensuremath{C}} % [J] Chemical energy
+\newcommand{\nrghlm}{\ensuremath{F}} % [J] Helmholtz free energy
+\newcommand{\nrgknt}{\ensuremath{K}} % [J] Kinetic energy
+\newcommand{\nrgltn}{\ensuremath{L}} % [J] Latent heat energy
+\newcommand{\nrgmst}{\ensuremath{J}} % [J] Moist static energy
+\newcommand{\nrgrdn}{\ensuremath{R}} % [J] Radiant energy
+\newcommand{\nrgnth}{\ensuremath{H}} % [J] Enthalpy
+\newcommand{\nrgntr}{\ensuremath{U}} % [J] Internal energy
+\newcommand{\nrgptngrv}{\ensuremath{\Phi}} % [J] Gravitational potential energy
+\newcommand{\nrgptngrvspc}{\ensuremath{\phi}} % [J kg-1] Specific gravitational potential energy (MakeLowercase does not work on Greek alphabet)
+\newcommand{\nrgptnsoi}{\ensuremath{\Phi}} % [J] Potential energy of soil water
+\newcommand{\nrgptn}{\ensuremath{U}} % [J] Potential energy
+\newcommand{\nrgwrk}{\ensuremath{W}} % [J] Work
+\newcommand{\nrg}{\ensuremath{E}} % [kg m2 s-2] [J] Energy
+\newcommand{\ntp}{\ensuremath{S}} % [J K-1] Entropy
+\newcommand{\prs}{\ensuremath{p}} % [Pa] Pressure
+\newcommand{\tpt}{\ensuremath{T}} % [K] Temperature
+\newcommand{\prssbs}{\ensuremath{\mathrm{p}}} % [sbs] Pressure subscript
+
+% 2. Derived commands
+\newcommand{\heatcpcspc}{\MakeLowercase{\mathrm{\heatcpc}}} % [J kg-1 K-1] Specific heat capacity
+\newcommand{\ltnspc}{\MakeLowercase{\mathrm{\ltn}}} % [J kg-1] Specific latent heat of transformation
+\newcommand{\mmravg}{\ensuremath{\bar{\mmr}}} % [kg kg-1] Mean mass mixing ratio
+\newcommand{\nthdryspc}{\MakeLowercase{\nthdry}} % [J kg-1] Specific dry static enthalpy
+\newcommand{\nthmstspc}{\MakeLowercase{\nthmst}} % [J kg-1] Specific moist static enthalpy
+\newcommand{\nrgdryspc}{\MakeLowercase{\nrgdry}} % [J kg-1] Specific dry static energy
+\newcommand{\nrggbbspc}{\MakeLowercase{\nrggbb}} % [J kg-1] Specific Gibbs free energy
+\newcommand{\nrgheatspc}{\MakeLowercase{\nrgheat}} % [J kg-1] Specific heat energy
+\newcommand{\nrghlmspc}{\MakeLowercase{\nrghlm}} % [J kg-1] Specific Helmholtz free energy
+\newcommand{\nrgkntspc}{\MakeLowercase{\nrgknt}} % [J kg-1] Specific kinetic energy
+\newcommand{\nrgltnspc}{\MakeLowercase{\nrgltn}} % [J kg-1] Specific latent heat energy
+\newcommand{\nrgmstspc}{\MakeLowercase{\nrgmst}} % [J kg-1] Specific moist static energy
+\newcommand{\nrgnthspc}{\MakeLowercase{\nrgnth}} % [J kg-1] Specific enthalpy
+\newcommand{\nrgntrspc}{\MakeLowercase{\nrgntr}} % [J kg-1] Specific internal energy
+\newcommand{\nrgptngrvbrt}{\ensuremath{\nrgptngrv_{0}}} % [J] Gravitational potential energy, barotropic
+\newcommand{\nrgptngrvnot}{\ensuremath{\nrgptngrv_{0}}} % [J] Initial gravitational potential energy
+\newcommand{\nrgptnnot}{\ensuremath{\nrgptn_{0}}} % [J] Initial potential energy
+\newcommand{\nrgptnsoigrv}{\ensuremath{\nrgptnsoi_{\grv}}} % [J] Gravitational potential energy of soil water
+\newcommand{\nrgptnsoiosm}{\ensuremath{\nrgptnsoi_{\mathrm{o}}}} % [J] Osmotic potential energy of soil water
+\newcommand{\nrgptnsoiprs}{\ensuremath{\nrgptnsoi_{\prs}}} % [J] Pressure potential energy 
+\newcommand{\nrgptnsoispc}{\MakeLowercase{\nrgptnsoi}} % [J kg-1] Specific potential energy of soil water
+\newcommand{\nrgptnspc}{\MakeLowercase{\nrgptn}} % [J kg-1] Specific potential energy
+\newcommand{\nrgspc}{\MakeLowercase{\nrg}} % [J kg-1] Specific energy
+\newcommand{\nrgwrkspc}{\MakeLowercase{\nrgwrk}} % [J kg-1] Specific work
+\newcommand{\ntpspc}{\MakeLowercase{\ntp}} % [J kg-1 K-1] Specfic entropy
+\newcommand{\prstld}{\ensuremath{\tilde{\prs}}} % [Pa] Pressure tilde
+\newcommand{\tptdwp}{\ensuremath{\tpt_{\dwpsbs}}} % [K] Dew point temperature
+\newcommand{\tptvrt}{\ensuremath{\tpt_{\vrtsbs}}} % [K] Virtual temperature
+\newcommand{\prsone}{\ensuremath{\prs_{\onesbs}}} % [Pa] Initial pressure
+\newcommand{\prstwo}{\ensuremath{\prs_{\twosbs}}} % [Pa] Final pressure
+%\newcommand{\tptone}{\ensuremath{\tpt_{\onesbs}}} % [K] Initial temperature
+%\newcommand{\tpttwo}{\ensuremath{\tpt_{\twosbs}}} % [K] Final temperature
+\newcommand{\vlmone}{\ensuremath{\vlm_{\onesbs}}} % [m3] Initial volume
+\newcommand{\vlmtwo}{\ensuremath{\vlm_{\twosbs}}} % [m3] Final volume
+\newcommand{\vlmspc}{\MakeLowercase{\vlm}} % [m3 kg-1] Specfic volume
+
+% 3. Doubly-derived commands
+\newcommand{\nrgnthatm}{\ensuremath{\nrgnth_{\atmsbs}}} % [J] Enthalpy of atmosphere
+\newcommand{\nrgnthocn}{\ensuremath{\nrgnth_{\ocnsbs}}} % [J] Enthalpy of ocean
+\newcommand{\nrgnthspcatm}{\ensuremath{\nrgnthspc_{\atmsbs}}} % [J kg-1] Specific enthalpy of atmosphere
+\newcommand{\nrgnthspcocn}{\ensuremath{\nrgnthspc_{\ocnsbs}}} % [J kg-1] Specific enthalpy of ocean
+\newcommand{\heatcpcprs}{\ensuremath{\heatcpc_{\prssbs}}} % [J K-1] Heat capacity at constant pressure
+\newcommand{\heatcpcspcprs}{\ensuremath{\heatcpcspc_{\prssbs}}} % [J kg-1 K-1] Specific heat capacity at constant pressure
+\newcommand{\heatcpcspcvlm}{\ensuremath{\heatcpcspc_{\vlmsbs}}} % [J kg-1 K-1] Specific heat capacity at constant volume
+\newcommand{\heatcpcvlm}{\ensuremath{\heatcpc_{\vlmsbs}}} % [J K-1] Heat capacity at constant volume
+\newcommand{\ltnfsn}{\ensuremath{\ltnspc_{\fsnsbs}}} % [J kg-1] Specific latent heat of fusion
+\newcommand{\ltnsbl}{\ensuremath{\ltnspc_{\sblsbs}}} % [J kg-1] Specific latent heat of sublimation
+\newcommand{\ltnvpr}{\ensuremath{\ltnspc_{\vprsbs}}} % [J kg-1] Specific latent heat of vaporization
+\newcommand{\nrgheatspcprs}{\ensuremath{\nrgheatspc_{\prs}}} % [J kg-1] Specific heat energy at constant pressure
+\newcommand{\nrgheatspcvlm}{\ensuremath{\nrgheatspc_{\vlmsbs}}} % [J kg-1] Specific heat energy at constant volume
+\newcommand{\nrgptnsoigrvvlm}{\ensuremath{\tilde{\nrgptnsoigrv}}} % [J m-3] Gravitational potential energy of soil water per unit volume
+\newcommand{\nrgptnsoiprsvlm}{\ensuremath{\tilde{\nrgptnsoiprs}}} % [J m-3] Pressure potential energy of soil water per unit volume
+\newcommand{\nrgptnsoispcgrv}{\ensuremath{\nrgptnsoispc_{\grv}}} % [J kg-1] Specific gravitational potential energy of soil water
+
+% Column-integral quantities
+\newcommand{\nrgntrclm}{\ensuremath{\hat{\nrgntr}}} % [J m-2] Internal energy, column integral
+\newcommand{\nrgntrspcclm}{\ensuremath{\hat{\nrgntrspc}}} % [J kg-1] Specific internal energy, column integral
+\newcommand{\nrgnthclm}{\ensuremath{\hat{\nrgnth}}} % [J m-2] Enthalpy, column integral
+\newcommand{\nrgdryclm}{\ensuremath{\hat{\nrgdry}}} % [J m-2] Dry static energy, column integral
+\newcommand{\nthdryclm}{\ensuremath{\hat{\nrgdry}_{\nrgnth}}} % [J m-2] Dry static enthalpy, column integral
+\newcommand{\nrgnthspcclm}{\ensuremath{\hat{\nrgnthspc}}} % [J kg-1] Specific enthalpy, column integral
+\newcommand{\nrgptngrvclm}{\ensuremath{\hat{\nrgptngrv}}} % [J m-2] Gravitational potential energy, column integral
+
+% 4. Trebly-derived commands
+\newcommand{\heatcpcspcprsdry}{\ensuremath{\heatcpcspc_{\prssbs,\drysbs}}} % [J kg-1 K-1] Specific heat capacity of dry air at constant pressure
+ 
+
+

@@ -1,0 +1,465 @@
+%
+%  dchem.sty   Donald Arseneau       asnd@reg.triumf.ca
+%  (under development)  Mar 24, 1998
+%
+%  To typeset chemical equations, use $\ch ...$ or \chm{...} for in-line 
+%  formulas.
+%  For displays, use any of \begin{reaction} ... \end{reaction}, 
+%  \begin{reaction*} ... \end{reaction*},  \begin{rxnarray} ... 
+%  \end{rxnarray}, or \begin{rxnarray*} ... \end{rxnarray*}:
+%  these correspond to {equation} {equation*} {eqnarray} and {eqnarray*}.
+%  These environments are numbered as equations unless you define 
+%  "\thereaction" (to change the formatting of the number but use the 
+%  same counter), and/or create the new counter with \newcounter{reaction}, 
+%  in which case they are numbered separately.
+%  e.g.:  \newcommand\thereaction{R\arabic{reaction}}
+%  or     \newcounter{reaction}
+%  or, to number separately with a separate format (sensible)
+%  \newcounter{reaction}   \renewcommand\thereaction{R\arabic{reaction}}
+%
+%  Use \ma or \mth ("math") to produce regular math inside chemistry:
+%  \begin{reaction}
+%    H + O_2 \eqbm^{\ma k\sub{a}}_{\ma k\sub{-a}} HO_2 \qquad \mth{\Delta G}
+%  \end{reaction}
+%  Use \chemistry and \mathematics like \ch or \ma, but \chemistry also
+%  changes the equation numbering to be reaction numbering (if they are 
+%  different).  The long-name versions are for math environments that have
+%  no chemistry analog, or for long portions of documents, or whole documents.
+%
+%  See comments below (at ***) for: Labelled arrows, subscripts (\sub), 
+%  units (\un), \degree, \excited, \eV.
+
+\@ifundefined{frozen@everymath}{% Old LaTeX; use \everymath
+ \newcommand\ch{\fam\z@\everymath{\fam\z@}}% like \rm but don't have to repeat
+ \newcommand\chemistry{\ch\everydisplay{\ch}%
+   \let\theequation\thereaction \let\c@equation\c@reaction 
+   \let\p@equation\p@reaction}% declares all math to be chemistry
+ \newcommand\ma{\fam\m@ne\everymath{}}% brings back regular math in chem
+ \newcommand\mathematics{\ma\everydisplay{}}% declares normal math
+}{% New LaTeX, with subverted \everymath
+ \def\dch@ch{\fam\z@}
+ \let\dch@everymath\@empty
+ \let\dch@everydisp\@empty
+% If existing every-math hook is the usual, insert my hook at the best place;
+% otherwise, just append my hook.  Then do the same for every-display.
+ \def\@tempa{\check@math@fonts\the\everymath}%
+ \edef\@tempb{\the\frozen@everymath}%
+ \ifx\@tempa\@tempb
+  \frozen@everymath{\check@math@fonts\dch@everymath\the\everymath}%
+ \else
+  \addto@hook\frozen@everymath{\dch@everymath}%
+ \fi
+ \def\@tempa{\check@math@fonts\the\everydisplay}%
+ \edef\@tempb{\the\frozen@everydisplay}%
+ \ifx\@tempa\@tempb
+  \frozen@everydisplay{\check@math@fonts\dch@everydisp\the\everydisplay}%
+ \else
+  \addto@hook\frozen@everydisplay{\dch@everydisp}%
+ \fi
+ \newcommand\ch{\fam\z@\let\dch@everymath\dch@ch}% like \rm
+ \newcommand\chemistry{\ch\let\dch@everydisp\ch
+   \let\theequation\thereaction \let\c@equation\c@reaction 
+   \let\p@equation\p@reaction}% all math to be chemistry
+ \newcommand\ma{\fam\m@ne\let\dch@everymath\@empty}% restore regular math 
+ \newcommand\mathematics{\ma\let\dch@everydisp\@empty}% declares normal math
+}
+\newcommand\chm[1]{\begingroup\ensuremath{\ch#1}\endgroup}
+\newcommand\mth[1]{\begingroup\ensuremath{\ma#1}\endgroup}
+
+\AtBeginDocument{%
+ \@ifundefined{thereaction}{\def\thereaction{\@arabic\c@reaction}}\relax
+ \@ifundefined{c@reaction}{\let\c@reaction\c@equation}\relax
+ \@ifundefined{p@reaction}{\let\p@reaction\p@equation}\relax
+}
+
+\catcode`\*=11 % make * letter for easy definition of * environment
+\newcommand\rxnarray{\chemistry \eqnarray}\let\endrxnarray\endeqnarray
+\newcommand\rxnarray*{\chemistry \eqnarray*}\let\endrxnarray*\endeqnarray*
+\newcommand\reaction{\chemistry \equation}\let\endreaction\endequation
+\newcommand\reaction*{\chemistry \displaymath}\let\endreaction*\enddisplaymath
+\catcode`\*=12 % make * other again
+% 
+%-------***
+%  Roman subscripts: \sub, for subscript labels like k\sub{H} or k\sub{abs};
+%  also give subscript in text: drink H\sub{2}O
+%
+\def\sub#1{\relax\ifmmode_\bgroup\else$_\bgroup\aftergroup$\fi \ch #1\egroup}
+% 
+%  ====== Labeled Arrows =======***
+%  Chemical relations that take labels above and below.  The labels are typed
+%  as superscripts and/or subscripts.  There are two versions of each: the
+%  smaller fixed size version (\yields) and the larger one that expands to
+%  match its labels (\Yields).  The small versions get smaller in fractions 
+%  and subscripts and their labels are the appropriate relative script-size
+%  (C-down);  the arrow size is determined only by the current math style,
+%  not by its labels.  All the capitalized versions have a default minimum 
+%  length of 1.1 cm, but a different length can be specified as an optional 
+%  argument (\Eqbm[45pt]^{k_{1}}_{k_{-1}}).  This a *minimum* length and
+%  the arrow may get larger to make sure it is longer than its label.  
+%  These larger versions are always in display size with labels in 
+%  text-style.
+%
+%  \yields, \Yields   --->
+%  \eqbm, \Eqbm       (right-left-harpoons)
+%  \forms, \Forms     ===>  % name subject to change!!!
+%  \twoway, \Twoway   (both-direction arrows) % name subject to change!!!
+%  \madeby, \Madeby   <---  % name subject to change!!!
+%  \leftyields, \Leftyields: alternate names for madeby
+%  \upyields, \Upyields      (uparrow)
+%  \downyields, \Downyields  (downarrow)
+%  \udyields, \Udyields      (vertical two-way; there is no vertical eqbm)
+%
+%  e.g.,  $\ch 4Fe + 3O_2 \yields^{H_2O}_{\triangle} 2Fe_2O_3 $
+%
+
+\def\yields{\labeledrel\longrightarrow}
+\def\Yields{\Labeledrel\;{\;\,}\rightarrowfill}
+
+\def\forms{\labeledrel\Longrightarrow}
+\def\Forms{\Labeledrel\;{\;\,}\Rightarrowfill}
+
+\def\eqbm{\labeledrel{\mathrel{\mathpalette{\protect\rlPOON}{}}}}
+\def\Eqbm{\Labeledrel\;\;{\protect\rightleftharpoonsfill}}
+
+\def\twoway{\labeledrel{\mathrel{\mathpalette{\protect\twowaY}{}}}}
+\def\Twoway{\Labeledrel\;\;{\protect\twowayarrowsfill}}
+
+\def\madeby{\labeledrel\longleftarrow}
+\def\Madeby{\Labeledrel{\;\,}\;\leftarrowfill}
+\let\leftyields\madeby
+\let\Leftyields\Madeby
+
+% \def\mapsto{\labeledrel{\mapstochar\rightarrow}}
+% \def\Mapsto{\Labeledrel\;\;{$\m@th\mapstochar$\rightarrowfill}}
+
+\def\upyields{\Labelledvertic@L\scriptstyle\uparrow.{2\p@}\z@[.8em]}
+\def\downyields{\Labelledvertic@L\scriptstyle\downarrow.\z@{2\p@}[.8em]}
+\def\udyields{\Labelledvertic@L\scriptstyle
+        {\uparrow\kern-3\p@}\downarrow\p@\p@[.8em]}
+
+\def\Upyields{\Labelledvertical\dch@labelsty\uparrow.{5\p@}{2\p@}}
+\def\Downyields{\Labelledvertical\dch@labelsty\downarrow.{2\p@}{5\p@}}
+\def\Udyields{\Labelledvertical\dch@labelsty
+        {\uparrow\kern-3\p@}\downarrow{3.5\p@}{3.5\p@}}
+
+\edef\labeledrel{\protect\csname labeledrel \endcsname}
+\@namedef{labeledrel }#1{\mathrel\bgroup\mathop{#1}\limits\t@StSS}
+\def\t@StSS{\@ifnextchar^{\aPPscriPt}{\@ifnextchar_{\aPPscriPt}{\egroup}}}
+\def\aPPscriPt#1#2{#1{\LR@lf#2\LR@rt}\t@StSS}
+\let\LR@lf\relax
+\let\LR@rt\relax
+
+\edef\Labeledrel{\protect\csname Labeledrel \endcsname}
+\@namedef{Labeledrel }#1#2#3{\mathrel\bgroup 
+  \def\LR@lf{\dch@labelsty#1}\def\LR@rt{#2}%
+  \@ifnextchar[{\LabeledreL{#3}}{\LabeledreL{#3}[1.1cm]}}
+\def\LabeledreL#1[#2]{\mathop{\hbox to#2{#1}}\limits\t@StSS}
+
+\let\dch@labelsty\textstyle % default; see option settings below
+
+\def\Labelledvertical#1#2#3#4#5{\@ifnextchar[%
+ {\Labelledvertic@L{#1}{#2\L@bvertvr}{#3}{#4}{#5}}%
+ {\Labelledvertic@L{#1}{#2\L@bvertvr}{#3}{#4}{#5}[.8cm]}}
+
+% much simpler would be typing the labels directly around \upyields, but
+% that would mean no automatic sizing and no automatic centering.
+% #1: style command  #2: vertical arrow command (must have a del-code;
+% may be followed by other code to control spacing) #3: additional arrow
+% #4: top arrow extension  #5: bottom arrow extension  #6: nominal length
+% ^{ }: label on left (box 0)  _{ }: label on right (box 2)
+%
+\def\Labelledvertic@L#1#2#3#4#5[#6]{\mathrel\bgroup\m@th
+ \setbox\z@\null \setbox\tw@\null
+ \def\dch@ti{#1}\def\dch@tii{{#2}{#3}{#4}{#5}{#6}}\vt@stSS}
+\def\vt@stSS{\@ifnextchar^{\dch@hold\z@}%
+  {\@ifnextchar_{\dch@hold\tw@}{\expandafter\L@belv@rt\dch@tii}}}
+\def\dch@hold#1#2#3{\setbox#1\hbox{$\dch@ti{#3}$}\vt@stSS}
+\def\L@belv@rt#1#2#3#4#5{%
+  \ifdim\ht\z@>\ht\tw@ \ht\tw@\ht\z@ \fi % give box 2 the maximum ht and dp
+  \ifdim\dp\z@>\dp\tw@ \dp\tw@\dp\z@ \fi
+  \ifdim\wd\z@>\wd\tw@ \wd\tw@\wd\z@ \fi % and both boxes the max wd
+  \ifdim\wd\tw@>\wd\z@ \setbox\z@\hbox to\wd\tw@{\hfil\unhbox\z@}\fi
+  \@tempdimb#3\advance\@tempdimb-#4\divide\@tempdimb\tw@
+  \box\z@ %
+  \raise\@tempdimb\hbox{$\dch@ti
+    \delimiterfactor\@m \delimitershortfall-#3 \advance\delimitershortfall-#4%
+    \left#1%
+     \vcenter to#5{}%
+    \right#2\n@space$}%
+  \box\tw@ \egroup}
+\def\L@bvertvr{\vrule \@height\ht\tw@ \@depth\dp\tw@ \@width\z@}
+
+\def\rightarrowfill{$\m@th \mathsm@sh{}-\barfill \mathord\rightarrow$}
+\def\leftarrowfill{$\m@th \mathord\leftarrow \barfill \mathsm@sh{}-$}
+
+\def\rlPOON#1#2{%  #1=style, #2=unused (required for \mathpalette)
+  \dual@bar\p@{\mathsm@sh{#1}-}{#1\leftharpoondown\mkern\NegFourmu}\!%
+  \dual@bar\p@{#1\mkern\NegFourmu\rightharpoonup}{\mathsm@sh{#1}-}}
+
+\def\rightleftharpoonsfill{$\m@th
+  \dual@bar\p@{\mathsm@sh{}-}{\leftharpoondown\mkern\NegFourmu}%
+  \setbox\z@\hbox{\dual@bar\p@{\mkern\NegFourmu-}{-\mkern\NegFourmu}}%
+  \ht\z@\z@\dp\z@\z@ \mkern\NegFourmu\cleaders\box\z@\hfill \mkern\NegFourmu
+  \dual@bar\p@{\mkern\NegFourmu\rightharpoonup}{\mathsm@sh{}-}$}
+
+% The large separation here and in \twowayarrowsfill is because of 
+% Knuth's silly change to CM arrows, giving them fat heads.
+\def\twowaY#1#2{%  #1=style, #2=unused (required for \mathpalette)
+  \dual@bar{1.7\p@}{\mathsm@sh{#1}-}{#1\leftarrow\mkern\NegFourmu}\!%
+  \dual@bar{1.7\p@}{#1\mkern\NegFourmu\rightarrow}{\mathsm@sh{#1}-}}
+
+% ***
+% New arrow-fill commands:
+% \rightarrowfill, \leftarrowfill (slightly redefined)
+% \rightleftharpoonsfill  (for \Eqbm)
+% \twowayarrowsfill       (similar, but with full arrow heads)
+% \Rightarrowfill, \Leftarrowfill ( ===>  <=== )
+% \Leftrightarrowfill   ( <===> )
+
+\def\twowayarrowsfill{$\m@th
+  \dual@bar{1.7\p@}{\mathsm@sh{}-}{\leftarrow\mkern\NegFourmu}%
+  \setbox\z@\hbox{\dual@bar{1.7\p@}{\mkern\NegFourmu-}{-\mkern\NegFourmu}}%
+  \ht\z@\z@\dp\z@\z@ \mkern\NegFourmu\cleaders\box\z@\hfill \mkern\NegFourmu
+  \dual@bar{1.7\p@}{\mkern\NegFourmu\rightarrow}{\mathsm@sh{}-}$}
+
+% Macro for my repeating units of two bars, as for \eqbm.
+% #1 = 1/2 the separation; #2 = the top "bar"; #3 = the bottom "bar"
+\def\dual@bar#1#2#3{\ooalign{\raise#1\hbox{$#2$}\cr
+  \lower#1\hbox{$#3$}\cr}}
+
+\def\barfill{\setbox\z@\hbox{$\mkern\NegTwomu\mathord-\mkern\NegTwomu$}%
+  \ht\z@\z@\dp\z@\z@ \mkern\NegSevmu\cleaders\copy\z@\hfill\mkern\NegSevmu}
+
+\newmuskip\NegTwomu \NegTwomu=-2mu\relax
+\newmuskip\NegFourmu \NegFourmu=-4mu\relax
+\newmuskip\NegSevmu \NegSevmu=-7mu\relax
+
+\def\Rightarrowfill{$\m@th\mathord=\mkern\NegSevmu%
+  \cleaders\hbox{$\mkern\NegTwomu\mathord=\mkern\NegTwomu$}\hfill
+  \mkern\NegSevmu\mathord\Rightarrow$}
+
+\def\Leftarrowfill{$\m@th\mathord\Leftarrow\mkern\NegSevmu%
+  \cleaders\hbox{$\mkern\NegTwomu\mathord=\mkern\NegTwomu$}\hfill
+  \mkern\NegSevmu\mathord=$}
+
+\def\Leftrightarrowfill{$\m@th\mathord\Leftarrow\mkern\NegSevmu%
+  \cleaders\hbox{$\mkern\NegTwomu\mathord=\mkern\NegTwomu$}\hfill
+  \mkern\NegSevmu\mathord\Rightarrow$}
+
+% Handle amsmath redefinition of \smash internals ... Grrrrr!
+\def\smash@{tb}
+
+%***
+%  \un   Put units after a number; e.g., 0.0821\un{l\,atm\,mol^{-1}\,K^{-1}}
+%        Use \, or space to put thin spaces between units.  Works in math and
+%        text mode. \un is fragile.
+%
+\newmuskip\unitmuskip \unitmuskip=3mu plus 1mu minus 1mu
+\def\unitmskip{\penalty\@highpenalty \mskip\unitmuskip}
+\def\unithskip{\leavevmode \penalty\@highpenalty
+ \hskip.22em plus.13em minus.1em}
+\newcommand\un[1]{\leavevmode\unskip\penalty\@highpenalty
+ \ensuremath{\mskip\medmuskip
+ \begingroup \fam\z@ % limit \fam but not style changes
+ \let\,\unitmskip \unit@PreserveSpaces\@empty #1 \unit@PreserveSpaces
+ \endgroup}}
+\def\unit@PreserveSpaces#1 {#1\@ifnextchar\unit@PreserveSpaces{\@gobble}%
+ {\unitmskip \unit@PreserveSpaces\@empty}}
+%
+
+% ***
+% Some symbols and text.
+%
+% \degree  - superscript circle
+% \eV      - kerned roman eV
+% \excited - superscipt full-size * (math or text)
+% \saturn  - circle with bar through it
+% 
+\newcommand\degree{\relax\ifmmode^\circ\else $^\circ$\fi}
+\newcommand\excited{\relax \ifmmode^{\textstyle *}\else*\fi}
+\newcommand\eV{\mbox{e\kern-.05emV}}
+\newcommand\saturn{\mathpalette\@barred\circ}
+\def\@barred#1#2{\ooalign{\hfil$#1-$\hfil\cr\hfil$#1#2$\hfil\cr}}
+
+% *** 
+% Tags for "structured markup" of miscellaneous notations.  Alternative
+% definitions in document preamble can change output style without changing 
+% the main document.
+
+% \stst   - standard state.  Default is superscript circle; others shown are
+%           superscipt 0 and superscript circle with bar through it.
+\newcommand\stst{\degree}
+% alternate: \renewcommand\stst{^0}
+% alternate: \renewcommand\stst{^{\protect\saturn}}
+%
+% \ts     - transition state.  Default is superscript double dagger; variants
+%           are asterisk, dagger, plus sign, and not-equals
+% Should these be split into two or more classes with distinct meanings?
+\newcommand\ts{^{\ddagger}}
+% \renewcommand\ts{^{\textstyle *}}
+% \renewcommand\ts{^{\dagger}}
+% \renewcommand\ts{^{+}}
+% \renewcommand\ts{^{\neq}}
+
+% *** 
+% Tags for "structured markup" of physical state notations.  Alternative
+% definitions can change output style without changing the document.
+\newcommand{\aq}{(\mkern-1mu\mathit{aq})}
+\newcommand{\liq}{(\mkern-.5mu\mathit{l})}
+\newcommand{\gas}{(\mathit{g})}
+\newcommand{\sol}{(\mkern-.5mu\mathit{s})}
+%
+% Alternative versions -- roman subscripts 
+% \newcommand{\aq}{\sub{aq}}
+% \newcommand{\liq}{\sub{\ell}}
+% \newcommand{\gas}{\sub{g}}
+% \newcommand{\sol}{\sub{s}}
+
+% ***
+% Tags for bonds, lone pairs, and unpaired electrons.  Many of these --
+% the ones printed above or below the chemical symbol -- must be typed
+% before the symbol, and take the symbol as an argument; others are
+% just symbols typed where they appear.  Bond lines are *not* provided at
+% different sizes for subscripts etc (no "\mathpalette") because they
+% shouldn't be used there and doing so would quadruple the execution time.
+%
+% Bonds for making very simple structures (perhaps using {array}):
+% \bond   -  horizontal line; darker and longer than -.
+% \vbond  -  vertical bond
+% \dbond  -  double \bond
+% \tbond  -  tripe \bond
+% \dvbond -  double \vbond
+% 
+% the sizes are parameterized by:
+\def\BondWidth{0.4pt}
+\def\BondLength{0.7em}
+%
+
+\newcommand\bond{\dch@bond\@bond}
+\newcommand\dbond{\dch@bond{\@bond\kern.35ex\@bond}}
+\newcommand\tbond{\dch@bond{\@bond\kern.25ex\@bond\kern.25ex\@bond}}
+\newcommand\vbond{\vcenter{\hrule \@height\BondLength \@width\BondWidth}}
+\newcommand\dvbond{{\vbond \kern.35ex\vbond}}
+\def\@bond{\hrule \@height\BondWidth \@width\BondLength}
+\def\dch@bond#1{\mkern\@ne mu\vcenter{#1}\mkern\@ne mu}
+
+% ***
+% Unpaired or paired electrons.  These don't look very good because the 
+% positioning is lousy and the separation of double dots is inconsistent.
+%                           in-line      above
+% lone electron             {\cdot}      \dot{X}
+% Pair of electrons         {:}          \ddot{X}
+% 
+% I should probably define commands for these things in the hope of making
+% better output.  Would people actually use more verbose commands??
+
+\newcommand\MathSubscripts{}
+\newcommand\ChemSubscripts{}
+
+\@ifundefined{DeclareOption}{\endinput}{}
+\let\dch@scr@hook\relax
+
+\ProvidesPackage{dchem}[1998/03/24 test]
+\DeclareOption{largelabels}{\let\dch@labelsty\textstyle}
+\DeclareOption{smalllabels}{\let\dch@labelsty\scriptstyle}
+\DeclareOption{lowersubs}{\let\dch@scr@hook\@empty}
+\DeclareOption{eqbmarrows}{\let\eqbm\twoway \let\Eqbm\Twoway}
+\ProcessOptions
+
+% ***
+% Subscript and superscript positions are adjusted so that subscripts 
+% stay at the same height regardless of whether there is a superscipt 
+% + or -.  Since this positioning applies to both chemistry and math
+% typesetting, it is *not* enabled by default but requires the option
+% [lowersubs] or the command \ChemSubscripts.  The default positioning
+% can be restored with a \MathSubscripts command.
+%
+% Set the fontdimen parameters for subscript and superscript position
+% so that C_2H_5^+ has both subscripts at the same vertical position.
+% Do this by actually comparing H_2 with H_2^+ and adjusting the font's
+% sub-lowering (16, 17) by half the difference and setting the super-
+% raising (13, 14, 15) to the matching position.  The settings (for
+% all three fonts t,s,ss) are determined once per text-font-size and 
+% stored in the macro \dch@sizet<size> (e.g. \csname dch@sizet12\endcsname).
+% Since some specific fonts are used in different roles at different
+% text-font-sizes, the original (dvi) settings for each particular font
+% are saved in a macro \dch@size<size> (no "t") before they are changed 
+% for the first time.  When that font appears in a different role for 
+% another text-font size, those original settings are restored first 
+% before making changes.
+%
+% This procedure sets the positioning each time the font size is changed,
+% but, although it keeps a record of the original parameters, the settings
+% are not restored for regular math.  Two reasons:
+% 1) Having a separate set of values for math and chemistry would mean
+%    you couldn't mix math symbols in with chemistry (no K_{\ch H_2O}
+%    or \yields^{\ma k_a}).  
+% 2) I *like* the modified settings for regular math; I find the regular
+%    subscripts too high often.  Though tastes may vary. 
+% If you do not select the subscript-alignment option, it is still 
+% reasonably easy to avoid ragged placement for the occasional ionic 
+% species as $\ch H_2PO_4{}^{-}$.  
+%
+
+\@ifundefined{every@math@size}{\endinput}{}
+\addto@hook\every@math@size{\dch@scr@hook}
+
+\def\dch@scr@adjust{\@ifundefined{dch@sizet\f@size}%
+  {\expandafter\dch@set@script\csname dch@sizet\f@size\endcsname}%
+  {\csname dch@sizet\f@size\endcsname}}
+
+% textfont done last so it takes precedence in case it is the same as 
+% another style (like at \tiny)
+% #1 = single-token command name for executing settings
+\def\dch@set@script#1{\begingroup % fontdimen settings are global anyway
+% \edef\mymes{Defining settings for size \f@size/\sf@size/\ssf@size.}\show\mymes
+  \frozen@everymath{}% Prevent recursion!
+  \let#1\@empty \let\dch@do@one\relax
+  \dch@set@one\scriptscriptstyle\scriptscriptfont#1\ssf@size
+  \dch@set@one\scriptstyle\scriptfont#1\sf@size
+  \dch@set@one\textstyle\textfont#1\f@size
+  \endgroup #1} % 
+
+\def\dch@set@one#1#2#3#4{%
+  \@ifundefined{dch@size#4}%
+   {\expandafter\xdef\csname dch@size#4\endcsname{%
+      \fontdimen13\the#2\tw@=\the\fontdimen13#2\tw@
+      \fontdimen14\the#2\tw@=\the\fontdimen14#2\tw@
+      \fontdimen15\the#2\tw@=\the\fontdimen15#2\tw@
+      \fontdimen16\the#2\tw@=\the\fontdimen16#2\tw@
+      \fontdimen17\the#2\tw@=\the\fontdimen17#2\tw@}%
+  }{\csname dch@size#4\endcsname}%
+  \setbox\z@\hbox{$#1H_2$}\@tempdima\dp\z@
+  \setbox\z@\hbox{$#1H_2^{+\vrule \@height 1em}$}%
+%  \message{Depth null: \the\@tempdima, Depth plus: \the\dp\z@, 
+%  Height plus: \the\ht\z@. }%
+   \ifdim\@tempdima<\dp\z@
+%     \message{Original: ^^J
+%      \fontdimen13#2\tw@=\the\fontdimen13#2\tw@, 
+%      \fontdimen14#2\tw@=\the\fontdimen14#2\tw@,
+%      \fontdimen15#2\tw@=\the\fontdimen15#2\tw@,
+%      \fontdimen16#2\tw@=\the\fontdimen16#2\tw@,
+%      \fontdimen17#2\tw@=\the\fontdimen17#2\tw@. }%
+    \advance\@tempdima\dp\z@ \divide\@tempdima\tw@ % new sub lowering
+    \@tempdimb\dp\z@ \advance\@tempdimb-\@tempdima % adjustment
+%     \message{Adjustment: \the\@tempdimb. }%
+    \advance\@tempdimb\ht\z@ \advance\@tempdimb-1em % new super raising
+%     \message{Super position: \the\@tempdimb, Sub position: \the\@tempdima. }%
+    \xdef#3{#3\dch@do@one#2{\the\@tempdimb}{\the\@tempdima}}%
+  \fi} 
+
+\def\dch@do@one#1#2#3{\fontdimen13#1\tw@#2\relax
+  \fontdimen14#1\tw@\fontdimen13#1\tw@ \fontdimen15#1\tw@\fontdimen13#1\tw@
+  \fontdimen\sixt@@n#1\tw@#3\fontdimen17#1\tw@\fontdimen\sixt@@n#1\tw@}%
+
+\def\MathSubscripts{\let\dch@scr@hook\relax
+  \ifx\glb@currsize\f@size  
+    \csname dch@size\ssf@size\endcsname
+    \csname dch@size\sf@size\endcsname
+    \csname dch@size\f@size\endcsname 
+  \fi }
+
+\def\ChemSubscripts{\let\dch@scr@hook\dch@scr@adjust 
+  \ifx\glb@currsize\f@size \dch@scr@adjust \fi}
+
+\ifx\dch@scr@hook\@empty \let\dch@scr@hook\dch@scr@adjust \fi

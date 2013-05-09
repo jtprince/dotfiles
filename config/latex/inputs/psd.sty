@@ -1,0 +1,315 @@
+% $Id$
+
+% Purpose: Commands specific to particle size distributions
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: dyn.sty
+
+% Usage:
+% \usepackage{psd} % Particle size distributions
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{
+\ProvidesPackage{psd}[2002/09/22 v1.14 Particle size distributions]
+} % end ProvidesPackage
+
+% 0. Provided commands
+\providecommand{\cstplk}{\ensuremath{h}}\renewcommand{\cstplk}{\ensuremath{h}} % [J s] Planck's constant
+\providecommand{\frq}{\ensuremath{\nu}}\renewcommand{\frq}{\ensuremath{\nu}} % [s-1] Frequency % [s-1] Frequency
+\providecommand{\ntrsbs}{\ensuremath{m}}\renewcommand{\ntrsbs}{\ensuremath{\mathrm{n}}} % [sbs] ``Natural'' (undisturbed) subscript
+\providecommand{\pcpsbs}{P}\renewcommand{\pcpsbs}{\mathrm{P}} % [sbs] Precipitation subscript
+\providecommand{\strsbs}{*}\renewcommand{\strsbs}{*} % [sbs] Star subscript
+\providecommand{\srcidx}{\ensuremath{i}}\renewcommand{\srcidx}{\ensuremath{i}} % [idx] Source index
+\providecommand{\snkidx}{\ensuremath{j}}\renewcommand{\snkidx}{\ensuremath{j}} % [idx] Sink index
+\providecommand{\srcnbr}{\ensuremath{I}}\renewcommand{\srcnbr}{\ensuremath{I}} % [nbr] Source number
+\providecommand{\snknbr}{\ensuremath{J}}\renewcommand{\snknbr}{\ensuremath{J}} % [nbr] Sink number
+\providecommand{\vlmsbs}{\ensuremath{\mathrm{v}}}\renewcommand{\vlmsbs}{\ensuremath{\mathrm{v}}} % [sbs] Volume subscript
+
+% 1. Primary commands
+%\newcommand{\cnc}{N} % [# m-3] Number concentration
+\newcommand{\nbr}{N} % [# m-3] Number concentration
+%\newcommand{\dmt}{D} % [m] Diameter
+%\newcommand{\rds}{r} % [m] Radius
+%\newcommand{\mss}{m} % [kg] Mass
+%\newcommand{\sfc}{s} % [m2] Surface area
+%\newcommand{\vlm}{v} % [m3] Volume
+%\newcommand{\xsa}{x} % [m2] Cross-sectional area
+\newcommand{\hxgsbs}{\mathrm{h}} % [sbs] Hexagon subscript
+\newcommand{\rdshxg}{a} % [m] Half-width a of basal face of hexagonal prism
+\newcommand{\dmthxg}{c} % [m] Length c of hexagonal prism
+\newcommand{\cerffnc}{\mathrm{cerf}} % [fnc] Complementary error function
+\newcommand{\cncfnc}{N} % [xxx m-3] Generic concentration function
+\newcommand{\cstnrm}{C_{n}} % [frc] Normalization constant
+\newcommand{\dstfncpcp}{N} % [xxx m-3 m-1] Generic distribution function for raindrops
+\newcommand{\dstfnc}{n} % [xxx m-3 m-1] Generic distribution function for particles
+\newcommand{\erffnc}{\mathrm{erf}} % [fnc] Error function
+\newcommand{\gsdi}{\sigma_{\mathrm{g},i}} % [frc] Geometric standard deviation bin i
+\newcommand{\gsdpcp}{\sigma_{\mathrm{g},\pcpsbs}} % [frc] Geometric standard deviation, raindrops
+\newcommand{\gsd}{\sigma_{\mathrm{g}}} % [frc] Geometric standard deviation
+\newcommand{\mmtfnc}{F} % Moment of number distribution
+\newcommand{\mmtidx}{k} % [idx] Moment index
+\newcommand{\msscnc}{\ensuremath{m}} % [kg m-3] Mass concentration
+\newcommand{\psdidx}{i} % [idx] Particle size distribution index
+\newcommand{\psdnbr}{I} % [nbr] Particle size distribution number
+\newcommand{\xcnlps}{e} % [frc] Eccentricity of ellipsoid
+
+\newcommand{\cncsbs}{\mathrm{n}} % [sbs] Number concentration subscript
+\newcommand{\dmtsbs}{\mathrm{d}} % [sbs] Diameter subscript
+\newcommand{\lpssbs}{\mathrm{e}} % [sbs] Ellipsoid subscript
+\newcommand{\mjrsbs}{A} % [sbs] Major axis subscript
+\newcommand{\MMD}{\ensuremath{\mbox{MMD}}} % [m] Mass Median Diameter
+\newcommand{\mnrsbs}{B} % [sbs] Minor axis subscript
+\newcommand{\msssbs}{\mathrm{m}} % [sbs] Mass subscript
+\newcommand{\nbrsbs}{\mathrm{n}} % [sbs] Number concentration subscript
+\newcommand{\rdssbs}{\mathrm{r}} % [sbs] Radius subscript
+\newcommand{\fllsbs}{\mathrm{f}} % [sbs] Fully disturbed subscript
+\newcommand{\psdsfcsbs}{\mathrm{s}} % [sbs] Surface area subscript (aer.sty has sfcsbs)
+\newcommand{\sphsbs}{\mathrm{s}} % [sbs] Sphere subscript
+\newcommand{\sfcspcssa}{\ensuremath{\mbox{SSA}}} % [m2 kg-1] Specific surface area
+\newcommand{\clmsbs}{\mathrm{c}} % [sbs] Column subscript
+\newcommand{\trnnbr}{T} % [nbr] Number of transport bins
+\newcommand{\vlmpth}{\ensuremath{V}} % [m3 m-2] Volume path
+\newcommand{\vlmcnc}{\ensuremath{v}} % [m3 m-3] Volume concentration
+\newcommand{\vlmpthsbs}{\mathrm{V}} % [sbs] Columnar volume subscript
+\newcommand{\xsasbs}{\mathrm{x}} % [sbs] Cross-sectional area subscript
+\newcommand{\vtssbs}{\mathrm{\vlm/\sfc}} % [sbs] Volume-to-surface area subscript
+\newcommand{\vtxsbs}{\mathrm{\vlm/\xsa}} % [sbs] Volume-to-cross-sectional area subscript
+\newcommand{\asphxg}{\Gamma} % [frc] Aspect ratio of hexagonal prisms
+
+% 2. Derived commands
+\newcommand{\asphxgaer}{\Gamma_{\aersbs}} % [frc] Aspect ratio of hexagonal prisms, aerosol
+\newcommand{\asphxgsnw}{\Gamma_{\snwsbs}} % [frc] Aspect ratio of hexagonal prisms, snow
+\newcommand{\cncspcrsl}{\underbar{\cnc}} % [# kg-1] Specific concentration resolved
+\newcommand{\cncspcanl}{\underbar{\cnc}} % [# kg-1] Specific concentration analytic
+\newcommand{\xsaspcanl}{\underbar{\xsa}} % [m2 kg-1] Specific cross-sectional area analytic
+\newcommand{\sfcspcrsl}{\hat{\sfc}} % [m2 kg-1] Specific surface area resolved
+\newcommand{\sfclps}{\sfc_{\lpssbs}} % [m2] Surface area of ellipsoid
+\newcommand{\sfcspcanl}{\hat{\sfc}} % [m2 kg-1] Specific surface area analytic
+\newcommand{\vlmspcanl}{\hat{\vlm}} % [m3 kg-1] Specific volume analytic
+\newcommand{\rdsfrc}{\rdsfnc} % [frc] Radius fraction
+\newcommand{\mssfrc}{\mssfnc} % [frc] Mass fraction
+\newcommand{\vlmfrc}{\vlmfnc} % [frc] Volume fraction
+\newcommand{\nbrfrc}{\nbrfnc} % [frc] Number fraction
+\newcommand{\cerfxxx}{\cerffnc(\xxx)} % [fnc] Complementary error function of x
+\newcommand{\erfdmt}{\erffnc(\dmt)} % [fnc] Error function of diameter
+\newcommand{\erfxxx}{\erffnc(\xxx)} % [fnc] Error function of x
+\newcommand{\erfzzz}{\erffnc(\zzz)} % [fnc] Error function of z
+\newcommand{\cncofdmt}{\cncfnc(\dmt)} % [# m-3] Concentration function of diameter
+\newcommand{\cncoflndmt}{\cncfnc(\ln\dmt)} % [# m-3] Concentration function of log diameter
+\newcommand{\cncofrds}{\cncfnc(\rds)} % [# m-3] Concentration function of radius
+\newcommand{\sfcofrds}{\sfcfnc(\rds)} % [m2 m-3] Surface area function of radius
+\newcommand{\sfcofdmt}{\sfcfnc(\dmt)} % [m2 m-3] Surface area function of diameter
+\newcommand{\vlmofrds}{\vlmfnc(\rds)} % [m3 m-3] Volume function of radius
+\newcommand{\vlmofdmt}{\vlmfnc(\dmt)} % [m3 m-3] Volume function of diameter
+
+% Diameter (Diameter is template for radius, put all symbols in diameter first)
+\newcommand{\dmtdlt}{\Delta \dmt} % [m] Width of diameter bin
+\newcommand{\dmtffc}{\dmt_{\mathrm{eff}}} % [m] Effective diameter
+\newcommand{\dmtgsd}{\dmt_{\gsd}} % [m] Diameter equaling gsd*dmt_nma
+\newcommand{\dmtgsdpls}{\dmtgsd^{+}} % [m] Diameter equaling dmt_nma*gsd
+\newcommand{\dmtgsdmns}{\dmtgsd^{-}} % [m] Diameter equaling dmt_nma/gsd
+\newcommand{\dmtmaxj}{\dmt_{\mathrm{max},j}} % [m] Maximum diameter bin j
+\newcommand{\dmtmaxJ}{\dmt_{\mathrm{max},J}} % [m] Maximum diameter bin J
+\newcommand{\dmtmax}{\dmt_{\mathrm{max}}} % [m] Maximum diameter in bin
+\newcommand{\dmtnda}{\hat{\dmt}_{\nbrsbs}} % [m] Number mode diameter
+\newcommand{\dmtsda}{\hat{\dmt}_{\sfcsbs}} % [m] Surface mode diameter
+\newcommand{\dmtvda}{\hat{\dmt}_{\vlmsbs}} % [m] Volume mode diameter
+\newcommand{\dmtminj}{\dmt_{\mathrm{min},j}} % [m] Minimum diameter bin j
+\newcommand{\dmtminone}{\dmt_{\mathrm{min},0}} % [m] Minimum diameter bin 1
+\newcommand{\dmtmin}{\dmt_{\mathrm{min}}} % [m] Minimum diameter in bin
+\newcommand{\dmtnaa}{\bar{\dmt}_{\nbrsbs}} % [m] Number mean diameter analytic
+\newcommand{\dmtnar}{\bar{\dmt}_{\nbrsbs}} % [m] Number mean diameter resolved
+\newcommand{\dmtnmai}{\tilde{\dmt}_{\nbrsbs,i}} % [m] Number median diameter bin i
+\newcommand{\dmtnmastr}{\dmtnma^{\strsbs}} % [m] Number median diameter analytic of truncated distribution
+\newcommand{\dmtnma}{\tilde{\dmt}_{\nbrsbs}} % [m] Number median diameter analytic
+\newcommand{\dmtnmahxg}{\tilde{\dmt}_{\nbrsbs,\hxgsbs}} % [m] Number median diameter analytic, hexagonal prisms
+\newcommand{\dmtnmr}{\tilde{\dmt}_{\nbrsbs}} % [m] Number median diameter resolved
+\newcommand{\dmtnot}{\dmt_{0}} % [m] Fixed diameter
+\newcommand{\dmtnwa}{\dmt_{\nbrsbs}} % [m] Number weighted mean diameter analytic
+\newcommand{\dmtnwr}{\dmt_{\nbrsbs}} % [m] Number weighted mean diameter resolved
+\newcommand{\dmtpcpnma}{\tilde{\dmt}_{\pcpsbs,\nbrsbs}} % [m] Number median diameter analytic, raindrops
+\newcommand{\dmtsaa}{\bar{\dmt}_{\psdsfcsbs}} % [m] Surface area mean diameter analytic
+\newcommand{\dmtsar}{\bar{\dmt}_{\psdsfcsbs}} % [m] Surface area mean diameter resolved
+\newcommand{\dmtsma}{\tilde{\dmt}_{\psdsfcsbs}} % [m] Surface median diameter analytic
+\newcommand{\dmtsmr}{\tilde{\dmt}_{\psdsfcsbs}} % [m] Surface median diameter resolved
+\newcommand{\dmtswa}{\dmt_{\psdsfcsbs}} % [m] Surface area weighted mean diameter analytic
+\newcommand{\dmtswr}{\dmt_{\psdsfcsbs}} % [m] Surface area weighted mean diameter
+\newcommand{\dmtvaa}{\bar{\dmt}_{\vlmsbs}} % [m] Volume mean diameter analytic
+\newcommand{\dmtvrnffc}{\sigma_{\dmt,\mathrm{eff}}^{2}} % [m2] Effective variance of diamter
+\newcommand{\dmtvar}{\bar{\dmt}_{\vlmsbs}} % [m] Volume mean diameter resolved
+\newcommand{\dmtvmai}{\tilde{\dmt}_{\vlmsbs,i}} % [m] Mass median diameter bin i
+\newcommand{\dmtvma}{\tilde{\dmt}_{\vlmsbs}} % [m] Volume median diameter analytic
+\newcommand{\dmtvmr}{\tilde{\dmt}_{\vlmsbs}} % [m] Volume median diameter resolved
+\newcommand{\dmtvwa}{\dmt_{\vlmsbs}} % [m] Volume weighted mean diameter analytic
+\newcommand{\dmtvwrpcp}{\dmt_{\pcpsbs,\vlmsbs}} % [m] Volume weighted mean diameter resolved, raindrops
+\newcommand{\dmtvwr}{\dmt_{\vlmsbs}} % [m] Volume weighted mean diameter resolved
+\newcommand{\dmtxaa}{\bar{\dmt}_{\xsasbs}} % [m] Cross-sectional area mean diameter analytic
+\newcommand{\dmtxar}{\bar{\dmt}_{\xsasbs}} % [m] Cross-sectional area mean diameter resolved
+\newcommand{\dmtxma}{\tilde{\dmt}_{\xsasbs}} % [m] Cross-sectional area median diameter analytic
+\newcommand{\dmtxmr}{\tilde{\dmt}_{\xsasbs}} % [m] Cross-sectional area median diameter resolved
+\newcommand{\dmtxwa}{\dmt_{\xsasbs}} % [m] Cross-sectional area weighted mean diameter analytic
+\newcommand{\dmtxwr}{\dmt_{\xsasbs}} % [m] Cross-sectional area weighted mean diameter
+
+% Radius
+\newcommand{\rdsdlt}{\Delta \rds} % [m] Width of radius bin
+\newcommand{\rdsmax}{\rds_\mathrm{max}} % [m] Maximum radius in bin
+\newcommand{\rdsmin}{\rds_\mathrm{min}} % [m] Minimum radius in bin
+\newcommand{\rdsnma}{\tilde{\rds}_{\nbrsbs}} % [m] Number median radius analytic
+\newcommand{\rdsnwa}{\rds_{\nbrsbs}} % [m] Number weighted mean radius analytic
+\newcommand{\rdssaa}{\bar{\rds}_{\psdsfcsbs}} % [m] Surface area mean radius analytic
+\newcommand{\rdsnot}{\rds_{0}} % [m] Fixed radius
+\newcommand{\rdssma}{\tilde{\rds}_{\psdsfcsbs}} % [m] Surface median radius analytic
+\newcommand{\rdssph}{\rds_{\sphsbs}} % [m] Radius of sphere
+\newcommand{\rdsswa}{\rds_{\psdsfcsbs}} % [m] Surface area weighted mean radius analytic
+\newcommand{\rdsnaa}{\bar{\rds}_{\nbrsbs}} % [m] Number mean radius analytic
+\newcommand{\rdsvaa}{\bar{\rds}_{\vlmsbs}} % [m] Volume mean radius analytic
+\newcommand{\rdsvma}{\tilde{\rds}_{\vlmsbs}} % [m] Volume median radius analytic
+\newcommand{\rdsvwa}{\rds_{\vlmsbs}} % [m] Volume weighted mean radius analytic
+
+\newcommand{\dmtavg}{\bar{\dmt}} % [m] Mean diameter
+\newcommand{\dmtfnc}{\dmt} % [fnc] Diameter function
+\newcommand{\dstcnc}{\dstfnc_{\cncsbs}} % [# m-3 m-1] Number distribution
+\newcommand{\dmtmjr}{\dmt_{\mjrsbs}} % [m] Diameter along major axis
+\newcommand{\dmtmnr}{\dmt_{\mnrsbs}} % [m] Diameter along minor axis
+\newcommand{\dstdmt}{\dstfnc_{\dmtsbs}} % [m m-3 m-1] Diameter distribution
+\newcommand{\dstmsspcp}{\dstfncpcp_{\msssbs}} % [kg m-3 m-1] Mass distribution of raindrops
+\newcommand{\dstnbrpcp}{\dstfncpcp_{\nbrsbs}} % [# m-3 m-1] Number distribution of raindrops
+\newcommand{\dstmss}{\dstfnc_{\msssbs}} % [kg m-3 m-1] Mass distribution
+\newcommand{\dstnbr}{\dstfnc_{\nbrsbs}} % [# m-3 m-1] Number distribution
+\newcommand{\dstrds}{\dstfnc_{\rdssbs}} % [m m-3 m-1] Radius distribution
+\newcommand{\dstsfc}{\dstfnc_{\psdsfcsbs}} % [m2 m-3 m-1] Surface area distribution
+\newcommand{\dstvlm}{\dstfnc_{\vlmsbs}} % [m3 m-3 m-1] Volume distribution
+\newcommand{\dstxsa}{\dstfnc_{\xsasbs}} % [m2 m-3 m-1] Cross-sectional area distribution
+\newcommand{\gsdidx}{\gsd^{\psdidx}} % [frc] kth Geometric standard deviation
+\newcommand{\gsdstr}{\gsd^{\strsbs}} % [frc] Geometric standard deviation of truncated distribution
+\newcommand{\gsdtldsqr}{\tilde{\gsd}^{\!\!2}} % [frc] Square of gsdtld
+\newcommand{\gsdtld}{\tilde{\gsd}} % [frc] Log of geometric standard deviation
+\newcommand{\gsdnot}{\sigma_{\mathrm{g},0}} % [frc] Geometric standard deviation
+\newcommand{\lngsdsqr}{\ln^{2} \gsd}% [frc] Square of log of geometric standard deviation
+\newcommand{\lngsd}{\ln \gsd} % [frc] Log of geometric standard deviation
+\newcommand{\msscncavg}{\ensuremath{\bar{\msscnc}}} % [kg m-3] Mean mass concentration
+\newcommand{\msscncfrc}{\ensuremath{\tilde{\msscnc}}} % [frc] Fractional mass concentration
+\newcommand{\vlmcncfrc}{\ensuremath{\tilde{\vlmcnc}}} % [frc] Fractional volume concentration
+\newcommand{\vlmpthfrc}{\ensuremath{\tilde{\vlmpth}}} % [frc] Fractional volume path
+\newcommand{\mssavg}{\bar{\mss}} % [kg] Mean mass
+\newcommand{\mssfnc}{\mss} % [frc] Mass function
+\newcommand{\mssnot}{\mss_{0}} % [kg] Fixed mass
+\newcommand{\mssovr}{\mss} % [frc] Mass overlap factor
+\newcommand{\nbrfnc}{\nbr} % [fnc] Number concentration function
+\newcommand{\nbrovr}{\nbr} % [frc] Number overlap factor
+\newcommand{\rdsfnc}{\rds} % [fnc] Radius function
+\newcommand{\nbrvts}{\nbr_{\vtssbs}} % [# m-3] Number concentration of equal V/S spheres
+\newcommand{\cncvts}{\cnc_{\vtssbs}} % [# m-3] Number concentration of equal V/S spheres
+\newcommand{\cnchxg}{\cnc_{\hxgsbs}} % [# m-3] Number concentration of hexagonal prisms
+\newcommand{\nbrhxg}{\nbr_{\hxgsbs}} % [# m-3] Number concentration of hexagonal prisms
+\newcommand{\vlmvts}{\vlm_{\vtssbs}} % [m3] Volume of equal V/S spheres
+\newcommand{\rdsvts}{\rds_{\vtssbs}} % [m] Radius of sphere with equal V/S ratio
+\newcommand{\rdsvtx}{\rds_{\vtxsbs}} % [m] Radius of sphere with equal V/X ratio
+\newcommand{\rdsmnr}{\rds_{\mnrsbs}} % [m] Radius along minor axis
+\newcommand{\rdsmjr}{\rds_{\mjrsbs}} % [m] Radius along major axis
+\newcommand{\rdsvlm}{\rds_{\mathrm{\vlmfnc}}} % [m] Radius of equivalent volume sphere
+\newcommand{\rdssfc}{\rds_{\mathrm{\sfcfnc}}} % [m] Radius of equivalent surface area sphere
+\newcommand{\rdsxsa}{\rds_{\mathrm{\xsafnc}}} % [m] Radius of equivalent cross-sectional area
+\newcommand{\sfcavg}{\bar{\sfc}} % [m2] Mean surface area
+\newcommand{\sfcfnc}{\sfc} % [fnc] Surface area function
+\newcommand{\vlmavg}{\bar{\vlm}} % [m3] Mean volume
+\newcommand{\vlmfnc}{\vlm} % [fnc] Volume function
+\newcommand{\vlmsph}{\vlm_{\sphsbs}} % [m3] Volume of sphere
+\newcommand{\vlmhxg}{\vlm_{\hxgsbs}} % [m3] Volume of hexagonal prism
+\newcommand{\sfcsph}{\sfc_{\sphsbs}} % [m2] Surface area of sphere
+\newcommand{\sfchxg}{\sfc_{\hxgsbs}} % [m2] Surface area of hexagonal prism
+\newcommand{\xsaavg}{\bar{\xsa}} % [m2] Mean cross-sectional area
+\newcommand{\xsafnc}{\xsa} % [fnc] Cross-sectional area function
+
+% 3. Doubly-derived commands
+\newcommand{\dstlnnbr}{\dstfnc_{\nbrsbs}^{\me}} % [# m-3] Number distribution, logarithmic
+\newcommand{\dstdmtpth}{\dstfnc_{\dmtsbs}^{\clmsbs}} % [m m-2 m-1] Diameter path distribution
+\newcommand{\dstmsspth}{\dstfnc_{\msssbs}^{\clmsbs}} % [kg m-2 m-1] Mass path distribution
+\newcommand{\dstnbrpth}{\dstfnc_{\nbrsbs}^{\clmsbs}} % [# m-2 m-1] Number path distribution
+\newcommand{\dstrdspth}{\dstfnc_{\rdssbs}^{\clmsbs}} % [m m-2 m-1] Radius path distribution
+\newcommand{\dstsfcpth}{\dstfnc_{\psdsfcsbs}^{\clmsbs}} % [m2 m-2 m-1] Surface area path distribution
+\newcommand{\dstvlmpth}{\dstfnc_{\vlmsbs}^{\clmsbs}} % [m3 m-2 m-1] Volume path distribution
+\newcommand{\dstxsapth}{\dstfnc_{\xsasbs}^{\clmsbs}} % [m2 m-2 m-1] Cross-sectional area path distribution
+\newcommand{\dstxxxpth}{\dstfnc_{\xxx}^{\clmsbs}} % [xxx m-2 m-1] Generic path distribution
+\newcommand{\dstlndmtpth}{\dstfnc_{\dmtsbs}^{\me,\clmsbs}} % [m m-2] Diameter path distribution, logarithmic
+\newcommand{\dstlnmsspth}{\dstfnc_{\msssbs}^{\me,\clmsbs}} % [kg m-2] Mass path distribution, logarithmic
+\newcommand{\dstlnnbrpth}{\dstfnc_{\nbrsbs}^{\me,\clmsbs}} % [# m-2] Number path distribution, logarithmic
+\newcommand{\dstlnrdspth}{\dstfnc_{\rdssbs}^{\me,\clmsbs}} % [m m-2] Radius path distribution, logarithmic
+\newcommand{\dstlnsfcpth}{\dstfnc_{\psdsfcsbs}^{\me,\clmsbs}} % [m2 m-2] Surface area path distribution, logarithmic
+\newcommand{\dstlnvlmpth}{\dstfnc_{\vlmsbs}^{\me,\clmsbs}} % [m3 m-2] Volume path distribution, logarithmic
+\newcommand{\dstlnxsapth}{\dstfnc_{\xsasbs}^{\me,\clmsbs}} % [m2 m-2] Cross-sectional area path distribution, logarithmic
+\newcommand{\dstlnxxxpth}{\dstfnc_{\xxx}^{\me,\clmsbs}} % [xxx m-2] Generic path distribution, logarithmic
+\newcommand{\dstlnvlm}{\dstfnc_{\vlmsbs}^{\me}} % [m3 m-2] Volume path distribution, logarithmic
+\newcommand{\sfcspc}{\sfcspcrsl} % [m2 kg-1] Specific surface area
+\newcommand{\cncttl}{\cncfnc_{0}} % [# m-3] Total number concentration
+\newcommand{\cncttlhxg}{\cncfnc_{0,\hxgsbs}} % [# m-3] Total number concentration of hexagonal prism distribution
+\newcommand{\cncttlvts}{\cncfnc_{0,\vtssbs}} % [# m-3] Total number concentration of equal V/S spheres
+\newcommand{\sfcttl}{\sfcfnc_{0}} % [m2 m-3] Total surface area
+\newcommand{\sfcttlhxg}{\sfcfnc_{0,\hxgsbs}} % [m2 m-3] Total surface area of hexagonal prism distribution
+\newcommand{\dmtttl}{\dmtfnc_{0}} % [m m-3] Total diameter
+\newcommand{\xsattl}{\xsafnc_{0}} % [m2 m-3] Total cross-sectional area
+\newcommand{\vlmttl}{\vlmfnc_{0}} % [m3 m-3] Total volume
+\newcommand{\vlmttlhxg}{\vlmfnc_{0,\hxgsbs}} % [m3 m-3] Total volume of hexagonal prism distribution
+\newcommand{\nbrttl}{\nbrfnc_{0}} % [# m-3] Total number
+\newcommand{\nbrttlhxg}{\nbrfnc_{0,\hxgsbs}} % [# m-3] Total number of hexagonal prism distribution
+\newcommand{\nbrttlvts}{\nbrfnc_{0,\vtssbs}} % [# m-3] Total number of equal V/S spheres
+\newcommand{\mssttl}{\mssfnc_{0}} % [kg m-3] Total mass 
+\newcommand{\dstcncofdmt}{\dstcnc(\dmt)} % [# m-3 m-1] Number distribution of D
+\newcommand{\dstmssslt}{\dstmss^{\sltsbs}} % [kg m-3 m-1] Mass distribution of saltators
+\newcommand{\dstmssfll}{\dstmss^{\fllsbs}} % [kg m-3 m-1] Mass distribution of fully disturbed soil
+\newcommand{\dstmssntr}{\dstmss^{\ntrsbs}} % [kg m-3 m-1] Mass distribution of natural (undisturbed) soil
+\newcommand{\dstmssofdmt}{\dstmss(\dmt)} % [kg m-3 m-1] Mass distribution of D
+\newcommand{\dstmsspcpofdmt}{\dstmsspcp(\dmtpcp)} % [kg m-3 m-1] Mass distribution of raindrop D
+\newcommand{\dstnbrdmtofdmt}{\dstnbr^{\dmt}(\dmt)} % [# m-3 m-1] Number distribution of D
+\newcommand{\dstlnnbroflndmt}{\dstlnnbr(\ln\dmt)} % [# m-3 m-1] Number distribution of D, logarithmic
+\newcommand{\dstnbrofdmt}{\dstnbr(\dmt)} % [# m-3 m-1] Number distribution of D
+\newcommand{\dstnbrofrds}{\dstnbr(\rds)} % [# m-3 m-1] Number distribution of r
+\newcommand{\dstnbrpcpofdmt}{\dstnbrpcp(\dmtpcp)} % [# m-3 m-1] Number distribution of raindrop D
+\newcommand{\dstnbrrdsofrds}{\dstnbr^{\rds}(\rds)} % [# m-3 m-1] Number distribution of r
+\newcommand{\dstnbrrds}{\dstnbr^{\rds}} % [# m-3 m-1] Number distribution of r
+\newcommand{\dstrdsofdmt}{\dstdmt(\dmt)} % [m m-3 m-1] Diameter distribution of D
+\newcommand{\dstrdsofrds}{\dstrds(\rds)} % [m m-3 m-1] Radius distribution of r
+\newcommand{\dstsfcofdmt}{\dstsfc(\dmt)} % [m2 m-3 m-1] Surface area distribution of D
+\newcommand{\dstvlmofrds}{\dstvlm(\rds)} % [m3 m-3 m-1] Volume distribution of r
+\newcommand{\dstvlmofdmt}{\dstvlm(\dmt)} % [m3 m-3 m-1] Volume distribution of D
+\newcommand{\dstxsaofdmt}{\dstxsa(\dmt)} % [m2 m-3 m-1] Cross-sectional area distribution of D
+\newcommand{\lngsdidx}{\ln \gsdidx} % [frc] Log of kth geometric standard deviation
+\newcommand{\lngsdi}{\ln \gsdi} % [frc] Log of geometric standard deviation bin i
+\newcommand{\mssfrcsrc}{\mssfrc_{\srcidx}} % [frc] Mass fraction in source bin
+\newcommand{\nbrfrcsrc}{\nbrfrc_{\srcidx}} % [frc] Number fraction in source bin
+\newcommand{\mssovrsrcsnk}{\mssovr_{\srcidx,\snkidx}} % [frc] Mass overlap factor (i,j)
+\newcommand{\nbrovrsrcsnk}{\nbrovr_{\srcidx,\snkidx}} % [frc] Number overlap factor (i,j)
+
+% 4. Trebly-derived commands
+\newcommand{\sfcspcnot}{\sfcspc_{0}} % [m2 kg-1] Specific surface area, initial
+\newcommand{\cncttlpth}{\cncfnc_{0}^{\clmsbs}} % [# m-2] Total number concentration, columnar
+\newcommand{\dmtttlpth}{\dmtfnc_{0}^{\clmsbs}} % [m m-2] Total diameter, columnar
+\newcommand{\mssttlpth}{\mssfnc_{0}^{\clmsbs}} % [kg m-2] Total mass, columnar
+\newcommand{\nbrttlpth}{\nbrfnc_{0}^{\clmsbs}} % [# m-2] Total number, columnar
+\newcommand{\sfcttlpth}{\sfcfnc_{0}^{\clmsbs}} % [m2 m-2] Total surface area, columnar
+\newcommand{\vlmttlpth}{\vlmfnc_{0}^{\clmsbs}} % [m3 m-2] Total volume, columnar, columnar
+\newcommand{\xsattlpth}{\xsafnc_{0}^{\clmsbs}} % [m2 m-2] Total cross-sectional area, columnar
+\newcommand{\msspth}{\mssttl^{\Sigma}} % [kg m-2] Mass path fxm: choose better symbol
+\newcommand{\msspthHdO}{\mssfnc_{0,\HdO}^{\Sigma}} % [kg m-2] Mass path of H2O fxm: choose better symbol
+\newcommand{\cncttlstr}{\cncttl^{\strsbs}} % [# m-3] Total number concentration of truncated distribution
+\newcommand{\dstnbridxofdmt}{\dstnbr^{\psdidx}(\dmt)} % [# m-3 m-1] kth Number distribution of D
+\newcommand{\dstmsssltofdmt}{\dstmssslt(\dmt)} % [kg m-3 m-1] Mass distribution of saltators of D
+\newcommand{\dstmssfllofdmt}{\dstmssfll(\dmt)} % [kg m-3 m-1] Mass distribution of fully disturbed soil of D
+\newcommand{\dstmssntrofdmt}{\dstmssntr(\dmt)} % [kg m-3 m-1] Mass distribution of natural (undisturbed) soil of D
+\newcommand{\cncttlidx}{\cncttl^{\psdidx}} % [# m-3] kth Total number concentration
+\newcommand{\dmtnmaidx}{\dmtnma^{\psdidx}} % [m] Number median diameter analytic of ith mode
+\newcommand{\rdsnmaidx}{\rdsnma^{\psdidx}} % [m] Number median radius analytic of ith mode
+
+% 5. Quadruply-derived commands

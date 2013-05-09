@@ -1,0 +1,104 @@
+# echo "*** sourcing .bashrc"
+
+#########################################################
+# SOURCE SYSTEM BASHRC
+#########################################################
+
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+if [ -f /etc/bash.bashrc ]; then
+	. /etc/bash.bashrc
+fi
+
+#########################################################
+# FUNCTIONS
+#########################################################
+
+function fix {
+  x=$1
+  y=${x#*:}
+  gvim +${y%:} ${x%%:*}
+}
+
+function powerpoint7 {
+    wine "C:\Program Files\Microsoft Office\Office12\POWERPNT.EXE" $1 &
+}
+function powerpoint {
+    wine "C:\Program Files\Microsoft Office\Office14\POWERPNT.EXE" $1 &
+}
+
+function msword7 {
+    wine "C:\Program Files\Microsoft Office\Office12\WINWORD.EXE" $1 &
+}
+function msword {
+    wine "C:\Program Files\Microsoft Office\Office14\WINWORD.EXE" $1 &
+}
+
+function excel7 {
+    wine "C:\Program Files\Microsoft Office\Office12\EXCEL.EXE" $1 &
+}
+function excel7 {
+    wine "C:\Program Files\Microsoft Office\Office14\EXCEL.EXE" $1 &
+}
+
+function latexlive {
+    if [ -e "$1" ]; then
+        execute_on_modify.rb $1 xelatex {{}}
+    else
+        echo "latexlive <file>.tex"
+    fi
+}
+
+function ooffice {
+    libreoffice $@ &
+}
+
+function oowriter {
+    # if they gave an argument but it didn't exist as a filename
+    if [ $# -ne 0 ] && [ ! -f "$1" ]
+    then
+        # if the document doesn't exist, copy a temple file to it
+        cp $HOME/Dropbox/Templates/one-inch-margins.odt $1
+    fi
+    libreoffice --nosplash --nologo --writer "$@" &
+}
+
+function nautilusnd {
+    local arg
+    if [ $# -lt 1 ]
+    then 
+        arg=`pwd`
+    else
+        arg=$@
+    fi
+    nautilus --no-desktop -n $arg &
+}
+
+##########################################################
+# SHELL ENVIRONMENT
+##########################################################
+
+# global environment variables should be defined in .profile
+# so they are accessible before X or bash start
+# select "run command as login shell" in your terminal 
+
+# should not be exported because it can interfere with child processes
+PS1="\n\w \u@\h \\$ "
+
+HISTCONTROL=ignoredups:erasedups
+HISTFILESIZE=65536
+HISTSIZE=65536
+shopt -s histappend
+
+# xfce4-terminal currently has bug in Ubuntu preventing
+# it from propogating the TERM variable properly.
+# gnome-terminal will support 256 colors with this:
+TERM="xterm-256color"
+
+##########################################################
+#                 ALIAS
+##########################################################
+
+source ~/.config/alias

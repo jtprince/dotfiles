@@ -1,0 +1,39 @@
+
+# the .xprofile is sourced *before* the WM is started by LXDE, GDM etc
+
+# better clipboard sync (with vnc, libreoffice etc.)
+# autocutsel -fork &
+# This is annoying, making any highlight overwrite to 
+#autocutsel -selection PRIMARY -fork &
+
+# clipboard manager (fork of parcellite)
+# clipit &
+
+# start xinitrc daemons like dbus and libcanberra [event sounds] (arch)
+# . /etc/X11/xinit/xinitrc.d/*
+
+#start-pulseaudio-x11 &
+
+#gnome-settings-daemon
+
+# Start GNOME Keyring
+#eval $(/usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+# You probably need to do this too:
+#export SSH_AUTH_SOCK
+#export GPG_AGENT_INFO
+#export GNOME_KEYRING_CONTROL
+#export GNOME_KEYRING_PID
+
+#nm-applet &
+
+#dunst -config ~/.dunstrc &
+
+# ensure home environment is loaded
+#source ~/.bashrc
+
+# do this with gnome settings
+#[ -e ~/.xmodmap ] && xmodmap ~/.xmodmap
+
+#thunar --daemon &
+#dropboxd &
+#dropbox start &
