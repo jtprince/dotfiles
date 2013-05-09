@@ -186,7 +186,6 @@ imap <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
 syntax enable             " Enable syntax highlighting
 if has('gui_running')
     set background=light
-    " colorscheme solarized
     colorscheme jtplight
 else
     set background=dark

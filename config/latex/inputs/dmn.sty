@@ -1,0 +1,494 @@
+% $Id$
+
+% Purpose: Dimensional units
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% See also http://physics.nist.gov/cuu/Units/units.html
+
+% Usage: 
+
+% Notes on typography:
+% ISO: ``A measurement consisting of a number plus a dimension is an
+% indivisible unit, with a smaller than normal space between them, as
+% 5.3\,km and 62\,kg. The dimension is in an upright font''. (KoD99 p. 142.)
+% comp.text.tex thread 20030709: J. Fluid. Mech. convention appears to
+% be \; space between value and dimension, and then \,
+% interdimensional % spacing, e.g., 5\;cm\,s$^{-1}$ 
+% My convention: Unit separation from value is small space ``\,''
+% (KoD99 p. 142), and intra-dimensional spacing is also small space
+
+% Dependencies: upgreek.sty (required solely for \upmu)
+
+% Convention: 
+% Lowercase ``x'' separates numerator from denominator
+% As in SI, uppercase letters signify prefixes greater than 10 
+% (except kilo = ``k'' because ``K'' stands for Kelvin)
+% Uppercase letters also signify atomic species, e.g., ``N'', ``S'', ``C''
+% All units are expressed in lowercase letters unless lowercasing
+% would create an ambiguous conflict with a fundamental dimensions,
+% e.g., use ``G'' for Giga instead of ``g'', which means gram.
+% Uppercase letters in dimension commands:
+% B = Byte
+% C = cubed or Carbon
+% F = to the fifth (quintic)
+% G = Giga
+% K = Kelvin
+% M = Mega
+% N = Newton or Nitrogen
+% Q = to the fourth (quartic)
+% S = squared or Sulfur
+% T = Ton
+% T = Tera
+% Lowercase letters in dimension commands:
+% u = micro
+% x = per
+
+% Equivalencies:
+% Megaton MT equals Teragram Tg
+
+% Bugs:
+% k and K are both used for Kelvin
+
+% Usage:
+% \usepackage{dmn} % Dimensional units
+
+% Units with single letter symbols (which therefore do not need commands)
+%\newcommand{\a}{A} % [A] Electric current (Ampere)
+%\newcommand{\c}{C} % [C] Charge (Coulomb)
+%\newcommand{\h}{H} % [H] Inductance (Henry)
+%\newcommand{\k}{K} % [K] Thermodynamic temperature (Kelvin)
+%\newcommand{\s}{S} % [S] Conductivity (Siemens)
+%\newcommand{\t}{T} % [T] Magnetic induction (Tesla)
+%\newcommand{\v}{V} % [V] Electric potential (Volt)
+%\newcommand{\w}{W} % [W] Power (Watt)
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{
+\ProvidesPackage{dmn}[2002/09/22 v1.81 Dimensional units]
+} % end ProvidesPackage
+
+\csznote{
+% preview.sty method of printing CVS version number with listings.sty
+\NeedsTeXFormat{LaTeX2e} \def\reserved@a #1#2$#3:
+#4${\edef#1{\reserved@c #2#4 $}} \def\reserved@c #1 #2${#1}
+\reserved@a\reserved@b $HeadURL$ \ifx\reserved@b\@empty
+\reserved@a\reserved@b CVS-$Revision$ \else \begingroup
+\lccode`-=`.  \def\next rel-{} \edef\next{\lowercase{\endgroup
+    \def\noexpand\reserved@b{\expandafter\next\reserved@b}}} \next \fi
+\reserved@a\next $Date$
+\edef\next{\noexpand\ProvidesPackage{preview}%
+  [\next\space preview-latex \reserved@b]}
+} % end csznote
+
+% dmn.sty depends on upgreek.sty for provision of upright Greek letters
+\usepackage[Symbol]{upgreek} % Upright Greek letters [Euler,Symbol,Symbolsmallscale]
+
+% Conflicting definitions
+\providecommand{\C}{\chm{C}}\renewcommand{\C}{\chm{C}} % [C] Temperature (Celsius) (C is also Carbon in chm.sty)
+
+% Units
+% \newcommand{\Tg}{Tg} % Seems to cause problems/conflicts
+% \newcommand{\nbr}{\#} % [nbr] Number (ordinal) (defined in psd.sty for number distributions)
+% \newcommand{\s}{s} % [s] Time (seconds) conflicts with TIPA?
+\newcommand{\ngs}{\AA} % [A] Length (Ångströms)
+\newcommand{\Bxs}{B\,s$^{-1}$} % [B s-1] Connection speed (bytes per second)
+\newcommand{\F}{F} % [F] Temperature (Fahrenheit)
+\newcommand{\GBxCPU}{GB\,CPU$^{-1}$} % [GB CPU-1] Computational speed (gigabytes per CPU)
+\newcommand{\GB}{GB} % [GB] Storage capacity (gigabytes)
+\newcommand{\GCCNxcmC}{GCCN\,cm$^{-3}$}
+\newcommand{\GHz}{GHz} % [GHz] Frequency (gigahertz)
+\newcommand{\GTxyr}{GT\,yr$^{-1}$} % [GT yr-1] Mass emission rate (gigatons per year)
+\newcommand{\Gbxs}{Gb\,s$^{-1}$} % [Gb s-1] Network bandwidth (gigabits per second)
+\newcommand{\Gb}{Gb} % [Gb] Storage capacity (gigabits)
+\newcommand{\Ghz}{GHz} % [GHz] Frequency (gigahertz)
+\newcommand{\GtCxyr}{GtC\,yr$^{-1}$} % [GtC yr-1] Mass emission rate (gigatons C per year)
+\newcommand{\GtC}{GtC} % [GtC] Mass (gigatons C)
+\newcommand{\Hz}{Hz} % [Hz] Frequency (Hertz)
+\newcommand{\J}{J} % [J] Energy
+\newcommand{\K}{K} % [K] Kelvin (K is also Potassium)
+\newcommand{\MBxs}{MB\,s$^{-1}$} % [MB s-1] Connection speed (megabytes per second)
+\newcommand{\MB}{MB} % [MB] Storage capacity (megabytes)
+\newcommand{\MHz}{MHz}
+\newcommand{\MSxatm}{M$^{2}$\,atm$^{-1}$} % [M2 atm-1] Molality (molar square per atmosphere)
+\newcommand{\MS}{M$^{2}$} % [M2] Equilibrium constant (molar square)
+\newcommand{\MTxyr}{MT\,yr$^{-1}$} % [MT yr-1] Mass emission rate (megatons per year)
+\newcommand{\MW}{MW} % [MW] Power (megawatts)
+\newcommand{\Mbxs}{Mb\,s$^{-1}$} % [Mb s-1] Connection speed (Megabits per second)
+\newcommand{\Mev}{MeV}
+\newcommand{\Mhz}{MHz}
+\newcommand{\MtC}{Mt\,C}
+\newcommand{\MtS}{Mt\,S}
+\newcommand{\MwxkOkmS}{MW\,K$^{-8}$\,km$^{-2}$} % [MW K-8 km-2] Fire Radiant Power factor
+\newcommand{\Mxatm}{M\,atm$^{-1}$}
+\newcommand{\Mya}{Mya} % [Mya] Time (millions of years ago)
+\newcommand{\NmSxkg}{N\,m$^{2}$\,kg$^{-1}$}
+\newcommand{\NxmS}{N\,m$^{-2}$}
+\newcommand{\Nxm}{N\,m$^{-1}$}
+\newcommand{\PBxyr}{PB\,yr$^{-1}$} % [PB yr-1] Storage capacity change (petabytes per year)
+\newcommand{\PB}{PB} % [PB] Storage capacity (petabytes)
+\newcommand{\Pa}{Pa} % [Pa] Pressure (Pascals)
+\newcommand{\TBxyr}{TB\,yr$^{-1}$} % [TB yr-1] Storage capacity change (terabytes per year)
+\newcommand{\TB}{TB} % [TB] Storage capacity (terabytes)
+\newcommand{\TgBCxyr}{Tg\,BC\,yr$^{-1}$}
+\newcommand{\TgBC}{Tg\,BC}
+\newcommand{\TgCxyr}{Tg\,C\,yr$^{-1}$}
+\newcommand{\TgC}{Tg\,C}
+\newcommand{\TgNxyr}{Tg\,N\,yr$^{-1}$}
+\newcommand{\TgSxyr}{Tg\,S\,yr$^{-1}$}
+\newcommand{\TgS}{Tg\,S}
+\newcommand{\Tgxyr}{Tg\,yr$^{-1}$}
+\newcommand{\Thz}{THz}
+\newcommand{\atmmSxs}{atm\,m$^{2}$\,s$^{-1}$} % [# m-2 s-1] Atomic number flux
+\newcommand{\atm}{atm} % [atm] Atmospheres
+\newcommand{\au}{AU} % [AU] Distance (Astronomical units)
+\newcommand{\axcmSs}{atom\,cm$^{-2}$\,s$^{-1}$} % [# cm-2 s-1] Atomic number flux
+\newcommand{\axmSs}{atom\,m$^{-2}$\,s$^{-1}$} % [# m-2 s-1] Atomic number flux
+\newcommand{\axmS}{A\,m$^{-2}$} % [A m-2] Current density (ampere per meter squared)
+\newcommand{\axm}{A\,m$^{-1}$} % [A m-1] Magnetic field (ampere-turn per meter) and Magnetization (ampere per meter)
+\newcommand{\axv}{A\,V$^{-1}$} % [A V-1] Conductivity (Amperes per Volt = Siemens)
+\newcommand{\bit}{b} % [b] Bits
+\newcommand{\bxs}{b\,s$^{-1}$} % [b s-1] Network bandwidth (bits per second)
+\newcommand{\bytexs}{byte\,s$^{-1}$} % [byte s-1] Connection speed (bytes per second)
+\newcommand{\bytxnbr}{B\,\#$^{-1}$} % [B #-1] Bytes per element
+\newcommand{\byt}{B} % [B] Bytes
+\newcommand{\cmFxmlcS}{cm$^{5}$\,molecule$^{-2}$}
+\newcommand{\cmSxg}{cm$^{2}$\,g$^{-1}$} % [cm2 g-1] Specific surface area
+\newcommand{\cmSxmlc}{cm$^{2}$\,molecule$^{-1}$}
+\newcommand{\cmSxs}{cm$^{2}$\,s$^{-1}$}
+\newcommand{\cmS}{cm$^{2}$} % [cm2] Area (square centimeters)
+\newcommand{\cmxatm}{cm\,atm$^{-1}$}
+\newcommand{\cmxa}{cm\,a$^{-1}$}
+\newcommand{\cmxday}{cm\,day$^{-1}$}
+\newcommand{\cmxm}{cm\,m$^{-1}$}
+\newcommand{\cmxs}{cm\,s$^{-1}$}
+\newcommand{\cmxyr}{cm\,yr$^{-1}$} % [cm yr-1] 
+\newcommand{\cm}{cm} % [cm] Length (centimeters)
+\newcommand{\cxkm}{C\,km$^{-1}$} % [C km-1] Lapse rate (Celsius per kilometer)
+\newcommand{\cxmC}{C\,m$^{-3}$} % [C m-3] Charge density (Coulomb per cubic meter)
+\newcommand{\cxmS}{C\,m$^{-2}$} % [C m-2] Electric displacement (Coulomb per square meter) or Electric polarization (Coulomb-meters per cubic meter)
+\newcommand{\cxvm}{C\,V$^{-1}$\,m$^{-1}$} % [C V-1 m-1] Susceptibility (Coulomb per Volt-meter)
+\newcommand{\dayxmth}{day\,mo$^{-1}$} % [day mth-1] Incidence (days per month)
+\newcommand{\dgrcxkm}{\ensuremath{^{\circ}\mbox{C\,km}^{-1}}} % [C km-1] Temperature lapse rate (degrees celsius per kilometer)
+\newcommand{\dgrc}{\ensuremath{^{\circ}\mbox{C}}} % [C] Degrees Celsius
+\newcommand{\dgre}{\ensuremath{^{\circ}\mbox{E}}} % [dgr] Degrees East
+\newcommand{\dgrf}{\ensuremath{^{\circ}\mbox{F}}} % [F] Degrees Fahrenheit
+\newcommand{\dgrkxkm}{\ensuremath{\mbox{K\,km}^{-1}}} % [K km-1] Temperature lapse rate (Kelvin per kilometer)
+\newcommand{\dgrk}{\ensuremath{\mbox{K}}} % [K] Kelvin (no degree symbol)
+\newcommand{\dgrn}{\ensuremath{^{\circ}\mbox{N}}} % [dgr] Degrees North
+\newcommand{\dgrs}{\ensuremath{^{\circ}\mbox{S}}} % [dgr] Degrees South
+\newcommand{\dgrw}{\ensuremath{^{\circ}\mbox{W}}} % [dgr] Degrees West
+\newcommand{\dgr}{\ensuremath{^{\circ}}} % [dgr] Degrees
+\newcommand{\dxcmS}{dyn\,cm$^{-2}$} % [dyn cm-2] Momentum flux (dynes per square centimeter)
+\newcommand{\dxcm}{dyn\,cm$^{-1}$}
+\newcommand{\excmS}{erg\,cm$^{-2}$}
+\newcommand{\fmolxmSs}{fmol\,m$^{-2}$\,s$^{-1}$} % [fmol m-2 s-1] Flux (femptomoles per square meter per second) 
+\newcommand{\frqmSxmol}{Hz\,m$^{2}$\,mol$^{-1}$}
+\newcommand{\ft}{ft} % [ft] Length
+\newcommand{\fxm}{F\,m$^{-1}$} % [F m-1] Permittivity (Farad per meter)
+\newcommand{\gCOdxmSs}{g\,\COd\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\gCxmS}{g\,C\,m$^{-2}$}
+\newcommand{\gxcmC}{g\,cm$^{-3}$}
+\newcommand{\gxcmSka}{g\,cm$^{-2}$\,ka$^{-1}$}
+\newcommand{\gxkgK}{g\,kg$^{-1}$\,K$^{-1}$}
+\newcommand{\gxkgkm}{g\,kg$^{-1}$\,km$^{-1}$}
+\newcommand{\gxkg}{g\,kg$^{-1}$}
+\newcommand{\gxl}{g\,$\ell^{-1}$}
+\newcommand{\gxmC}{g\,m$^{-3}$}
+\newcommand{\gxmSgcmt}{g\,m$^{-2}$\,(20\,min)$^{-1}$}
+\newcommand{\gxmShr}{g\,m$^{-2}$\,hr$^{-1}$}
+\newcommand{\gxmSs}{g\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\gxmSyr}{g\,m$^{-2}$\,yr$^{-1}$}
+\newcommand{\gxmS}{g\,m$^{-2}$}
+\newcommand{\gxmol}{g\,mol$^{-1}$}
+\newcommand{\hpa}{hPa} % [hPa] Pressure
+\newcommand{\hr}{hr}
+\newcommand{\hxm}{H\,m$^{-1}$} % [H m-1] Permeability (Henry per meter)
+\newcommand{\hzk}{Hz\,K}
+\newcommand{\hzxk}{Hz\,K$^{-1}$}
+\newcommand{\hz}{Hz}
+\newcommand{\inches}{in.} % [in] Length (inches) (\in is a math mode set symbol)
+\newcommand{\inxyr}{in.\,yr$^{-1}$} % [in yr-1] 
+\newcommand{\js}{J\,s}
+\newcommand{\jxK}{J\,K$^{-1}$}
+\newcommand{\jxMev}{J\,MeV$^{-1}$}
+\newcommand{\jxgC}{J\,(g\,C)$^{-1}$} % [J (g C)-1] Energy per carbon (joules per gram carbon)
+\newcommand{\jxkgK}{J\,kg$^{-1}$\,K$^{-1}$}
+\newcommand{\jxkgs}{J\,kg$^{-1}$\,s$^{-1}$}
+\newcommand{\jxkg}{J\,kg$^{-1}$}
+\newcommand{\jxmCK}{J\,m$^{-3}$\,K$^{-1}$}
+\newcommand{\jxmChz}{J\,m$^{-3}$\,Hz$^{-1}$}
+\newcommand{\jxmCm}{J\,m$^{-3}$\,m$^{-1}$}
+\newcommand{\jxmCs}{J\,m$^{-3}$\,s$^{-1}$}
+\newcommand{\jxmC}{J\,m$^{-3}$}
+\newcommand{\jxmSmon}{J\,m$^{-2}$\,mon$^{-1}$}
+\newcommand{\jxmSshz}{J\,m$^{-2}$\,s$^{-1}$\,Hz$^{-1}$}
+\newcommand{\jxmSssrm}{J\,m$^{-2}$\,s$^{-1}$\,sr$^{-1}$\,m$^{-1}$}
+\newcommand{\jxmSssrwvn}{J\,m$^{-2}$\,s$^{-1}$\,sr$^{-1}$\,(cm$^{-1}$)$^{-1}$}
+\newcommand{\jxmS}{J\,m$^{-2}$}
+\newcommand{\jxmks}{J\,m$^{-1}$\,K$^{-1}$\,s$^{-1}$}
+\newcommand{\jxmolK}{J\,mol$^{-1}$\,K$^{-1}$}
+\newcommand{\jxm}{J\,m$^{-1}$}
+\newcommand{\jxs}{J\,s$^{-1}$}
+\newcommand{\kBxs}{kB\,s$^{-1}$} % [kB s-1] Connection speed (kilobytes per second)
+\newcommand{\kB}{kB} % [kB] Storage capacity (kilobytes)
+\newcommand{\ka}{ka} % [yr] Millenia
+\newcommand{\kbxs}{kb\,s$^{-1}$} % [kb s-1] Connection speed (kilobits per second)
+\newcommand{\kcalxmol}{kcal\,mol$^{-1}$}
+\newcommand{\kgCxmSs}{kg\,C\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\kgSxmF}{kg$^{2}$\,m$^{-5}$}
+\newcommand{\kgSxmSix}{kg$^{2}$\,m$^{-6}$}
+\newcommand{\kgsSxmF}{kg\,s$^{2}$\,m$^{-5}$}
+\newcommand{\kgxcmS}{kg\,cm$^{-2}$}
+\newcommand{\kgxhayr}{kg\,ha$^{-1}$\,yr$^{-1}$}
+\newcommand{\kgxkgs}{kg\,kg$^{-1}$\,s$^{-1}$}
+\newcommand{\kgxkg}{kg\,kg$^{-1}$}
+\newcommand{\kgxkmSyr}{kg\,km$^{-2}$\,yr$^{-1}$}
+\newcommand{\kgxmCk}{kg\,m$^{-3}$\,K$^{-1}$}
+\newcommand{\kgxmCm}{kg\,m$^{-3}$\,m$^{-1}$} % [kg m-3 m-1] Mass distribution
+\newcommand{\kgxmCs}{kg\,m$^{-3}$\,s$^{-1}$}
+\newcommand{\kgxmC}{kg\,m$^{-3}$}
+\newcommand{\kgxmSsk}{kg\,m$^{-2}$\,s$^{-1}$\,K$^{-1}$}
+\newcommand{\kgxmSsm}{kg\,m$^{-2}$\,s$^{-1}$\,m$^{-1}$}
+\newcommand{\kgxmSs}{kg\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\kgxmS}{kg\,m$^{-2}$}
+\newcommand{\kgxmi}{kg\,mi$^{-1}$} % [kg mi-1] Mass per distance
+\newcommand{\kgxmol}{kg\,mol$^{-1}$}
+\newcommand{\kgxmsS}{kg\,m$^{-1}$\,s$^{-2}$}
+\newcommand{\kgxms}{kg\,m$^{-1}$\,s$^{-1}$}
+\newcommand{\kgxnbr}{kg\,\#$^{-1}$}
+\newcommand{\kgxs}{kg\,s$^{-1}$}
+\newcommand{\kg}{kg}
+\newcommand{\kmC}{km$^{3}$}
+\newcommand{\kmS}{km$^{2}$}
+\newcommand{\kmxhr}{km\,hr$^{-1}$}
+\newcommand{\kmxs}{K\,m\,s$^{-1}$} % [K m s-1] Kinematic heat flux
+\newcommand{\km}{km}
+\newcommand{\ktxyr}{kt\,yr$^{-1}$} % [kt yr-1] Flux (kilotons per year)
+\newcommand{\kxday}{K\,day$^{-1}$}
+\newcommand{\kxd}{K\,d$^{-1}$}
+\newcommand{\kxhr}{K\,hr$^{-1}$}
+\newcommand{\kxkm}{K\,km$^{-1}$}
+\newcommand{\kxm}{K\,m$^{-1}$}
+\newcommand{\kxs}{K\,s$^{-1}$}
+\newcommand{\kxwxmS}{K\,(W\,m$^{-2}$)$^{-1}$}
+\newcommand{\kxyr}{K\,yr$^{-1}$}
+\newcommand{\kya}{kya} % [yr] Millenia ago
+\newcommand{\lbxinS}{lb\,in$^{-2}$}
+\newcommand{\ltr}{\ensuremath{\mathrm{L}}} % [L] Liter (L is taken by something else) fxm: Should be \ell?
+\newcommand{\mCxkgsS}{m$^{3}$\,kg$^{-1}$\,s$^{-2}$}
+\newcommand{\mCxkg}{m$^{3}$\,kg$^{-1}$}
+\newcommand{\mCxmCm}{m$^{3}$\,m$^{-3}$\,m$^{-1}$} % [m3 m-2] Volume distribution
+\newcommand{\mCxmC}{m$^{3}$\,m$^{-3}$}
+\newcommand{\mCxmSm}{m$^{3}$\,m$^{-2}$\,m$^{-1}$} % [m3 m-2] Volume distribution, columnar
+\newcommand{\mCxmSsm}{m$^{3}$\,m$^{-2}$\,s$^{-1}$\,m$^{-1}$}
+\newcommand{\mCxmSs}{m$^{3}$\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\mCxmS}{m$^{3}$\,m$^{-2}$} % [m3 m-2] Volume path or logartithmic columnar volume distribution or, confusingly, volume distribution in "condensed" units
+\newcommand{\mCxmm}{m$^{3}$\,mm$^{-1}$}
+\newcommand{\mCxmol}{m$^{3}$\,mol$^{-1}$}
+\newcommand{\mCxnbr}{m$^{3}$\,\#$^{-1}$}
+\newcommand{\mCxs}{m$^{3}$\,s$^{-1}$}
+\newcommand{\mC}{m$^{3}$}
+\newcommand{\mSs}{m$^{2}$\,s} % [m2 s-1] Diffusivity
+\newcommand{\mSxg}{m$^{2}$\,g$^{-1}$} % [m2 g-1] Specific surface area
+\newcommand{\mSxkgxfrq}{m$^{2}$\,kg$^{-1}$\,s$^{-1}$}
+\newcommand{\mSxkgxhz}{m$^{2}$\,kg$^{-1}$\,Hz}
+\newcommand{\mSxkgxm}{m$^{2}$\,kg$^{-1}$\,m}
+\newcommand{\mSxkgxwvn}{m$^{2}$\,kg$^{-1}$\,cm$^{-1}$}
+\newcommand{\mSxkgxxwvn}{m$^{2}$\,kg$^{-1}$\,(cm$^{-1}$)$^{-1}$}
+\newcommand{\mSxkg}{m$^{2}$\,kg$^{-1}$} % [m2 kg-1] Specific surface area
+\newcommand{\mSxmC}{m$^{2}$\,m$^{-3}$}
+\newcommand{\mSxmS}{m$^{2}$\,m$^{-2}$}
+\newcommand{\mSxmlc}{m$^{2}$\,molecule$^{-1}$}
+\newcommand{\mSxmol}{m$^{2}$\,mol$^{-1}$}
+\newcommand{\mSxnbr}{m$^{2}$\,\#$^{-1}$}
+\newcommand{\mSxsS}{m$^{2}$\,s$^{-2}$}
+\newcommand{\mSxs}{m$^{2}$\,s$^{-1}$}
+\newcommand{\mS}{m$^{2}$}
+\newcommand{\mbxday}{mm\,d$^{-1}$}
+\newcommand{\mbxh}{mb\,hr$^{-1}$}
+\newcommand{\mbxkm}{mb\,km$^{-1}$}
+\newcommand{\mbxs}{mb\,s$^{-1}$}
+\newcommand{\mb}{mb}
+\newcommand{\mgxcmSka}{mg\,cm$^{-2}$\,ka$^{-1}$}
+\newcommand{\mgxkg}{mg\,kg$^{-1}$}
+\newcommand{\mgxl}{mg\,l$^{-1}$} % [mg l-1] Mass concentration
+\newcommand{\mgxmCum}{mg\,m$^{-3}\,\upmu$m$^{-1}$}
+\newcommand{\mgxmC}{mg\,m$^{-3}$}
+\newcommand{\mgxmS}{mg\,m$^{-2}$}
+\newcommand{\mg}{mg}
+\newcommand{\mhoxm}{mho\,x$^{-1}$} % [mho m-1] Conductivity
+\newcommand{\mixhr}{mi.\,hr$^{-1}$}
+\newcommand{\mlcSxcmF}{molecule$^{2}$\,cm$^{-5}$}
+\newcommand{\mlcSxcmS}{molecule$^{2}$\,cm$^{-6}$}
+\newcommand{\mlcSxmF}{molecule$^{2}$\,m$^{-5}$}
+\newcommand{\mlcSxmSix}{molecule$^{2}$\,m$^{-6}$}
+\newcommand{\mlcxcmC}{molecule\,cm$^{-3}$}
+\newcommand{\mlcxcmS}{molecule\,cm$^{-2}$}
+\newcommand{\mlcxmC}{molecule\,m$^{-3}$}
+\newcommand{\mlcxmSs}{molecule\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\mlcxmS}{molecule\,m$^{-2}$}
+\newcommand{\mlcxmlc}{molecule\,molecule$^{-1}$}
+\newcommand{\mlcxmol}{molecule\,mol$^{-1}$}
+\newcommand{\mlcxs}{molecule\,s$^{-1}$}
+\newcommand{\mmolxmC}{mmol\,m$^{-3}$} % [mmol m-3] Concentration (millimoles per cubic meter) (same as [nmol l-1])
+\newcommand{\mmxday}{mm\,d$^{-1}$} % [mm day-1] Rain rate (millimeters per day)
+\newcommand{\mmxhr}{mm\,hr$^{-1}$}
+\newcommand{\mmxmth}{mm\,mo$^{-1}$}
+\newcommand{\mm}{mm} % [mm] Length (millimeters)
+\newcommand{\molSxlS}{mol$^{2}$\,L$^{-2}$}
+\newcommand{\molxatm}{mol\,atm$^{-1}$}
+\newcommand{\molxkg}{mol\,kg$^{-1}$}
+\newcommand{\molxlatm}{mol\,L$^{-1}$\,atm$^{-1}$}
+\newcommand{\molxl}{mol\,L$^{-1}$} % [mol l-1 = M] Concentration (moles per liter)
+\newcommand{\molxmCp}{mol\,m$^{-3}$\,Pa$^{-1}$}
+\newcommand{\molxmC}{mol\,m$^{-3}$}
+\newcommand{\molxmol}{mol\,mol$^{-1}$}
+\newcommand{\mol}{mol}
+\newcommand{\mos}{mos} % [mo] Time (months)
+\newcommand{\mpg}{mi\,gal$^{-1}$} % [mi gal-1] Distance per volume
+\newcommand{\mph}{mi\,hr$^{-1}$} % [mi hr-1] Speed
+\newcommand{\mtr}{m} % [m] Length (meters)
+\newcommand{\mxmC}{m\,m$^{-3}$}
+\newcommand{\mxnbr}{m\,\#$^{-1}$}
+\newcommand{\mxsS}{m\,s$^{-2}$}
+\newcommand{\mxsm}{m\,s$^{-1}$\,m$^{-1}$}
+\newcommand{\mxs}{m\,s$^{-1}$}
+\newcommand{\m}{m} % [m] Length (meters)
+\newcommand{\nbrxcmC}{\#\,cm$^{-3}$}
+\newcommand{\nbrxkg}{\#\,kg$^{-1}$}
+\newcommand{\nbrxl}{\#\,L$^{-1}$} % [# l-1] Concentration (number per liter)
+\newcommand{\nbrxmCm}{\#\,m$^{-3}$\,m$^{-1}$}
+\newcommand{\nbrxmC}{\#\,m$^{-3}$}
+\newcommand{\nbrxmSsm}{\#\,m$^{-2}$\,s$^{-1}$\,m$^{-1}$}
+\newcommand{\nbrxmSsum}{\#\,m$^{-2}$\,s$^{-1}$\,$\upmu$m$^{-1}$}
+\newcommand{\nbrxmSs}{\#\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\nbrxmS}{\#\,m$^{-2}$}
+\newcommand{\nbrxmol}{\#\,mol$^{-1}$}
+\newcommand{\nbrxmthfz}{\#\,mo$^{-1}$\,(100,000)$^{-1}$} % [# mth-1 100000-1] (five zeroes!)
+\newcommand{\nbrxmth}{\#\,mo$^{-1}$}
+\newcommand{\nbrxs}{\#\,s$^{-1}$}
+\newcommand{\nbrxum}{\#\,$\upmu$m$^{-1}$} % [# um-1] Quadrature density
+\newcommand{\nbrxyrfz}{\#\,yr$^{-1}$\,(100,000)$^{-1}$} % [# yr-1 100000-1] (five zeroes!)
+\newcommand{\nbrxyr}{\#\,yr$^{-1}$}
+\newcommand{\ngxg}{ng\,g$^{-1}$}
+\newcommand{\ngxkgs}{ng\,kg$^{-1}$\,s$^{-1}$}
+\newcommand{\ngxmC}{ng\,m$^{-3}$}
+\newcommand{\ngxmSs}{ng\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\nmolxl}{nmol\,L$^{-1}$} % [nmol l-1 = nM] Concentration (nanomoles per liter) (same as [mmol m-3]) (same as nM)
+\newcommand{\nmolxmSd}{nmol\,m$^{-2}$\,d$^{-1}$} % [nmol m-2 d-1] Flux (nanomoles per square meter per day) 
+\newcommand{\nm}{nm}
+\newcommand{\nxmCs}{\#\,m$^{-3}$\,s$^{-1}$}
+\newcommand{\nxmS}{N\,m$^{-2}$} % [N m-2] Momentum flux (Newtons per square meter)
+\newcommand{\nxm}{N\,m$^{-1}$}
+\newcommand{\ohm}{\Omega} % [ohm] Resistance
+\newcommand{\pctxdgrc}{\%\,\ensuremath{^{\circ}\mbox{C}^{-1}}} % [% C-1]
+\newcommand{\pctxdgrf}{\%\,\ensuremath{^{\circ}\mbox{F}^{-1}}} % [% F-1]
+\newcommand{\pctxyr}{\%\,yr$^{-1}$} % [% yr-1]
+\newcommand{\pgxkgs}{pg\,kg$^{-1}$\,s$^{-1}$}
+\newcommand{\pgxmSs}{pg\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\phtxmSshz}{\#\,m$^{-2}$\,s$^{-1}$\,Hz$^{-1}$}
+\newcommand{\phtxmSsm}{\#\,m$^{-2}$\,s$^{-1}$\,m$^{-1}$}
+\newcommand{\phtxmSsum}{\#\,m$^{-2}$\,s$^{-1}$\,$\upmu$m$^{-1}$}
+\newcommand{\pmolxmSs}{pmol\,m$^{-2}$\,s$^{-1}$} % [pmol m-2 s-1] Flux (picomoles per square meter per second) 
+\newcommand{\ppbm}{ppbm} % [ppbm] Mass mixing ratio
+\newcommand{\ppbv}{ppbv} % [ppbv] Volumetric mixing ratio
+\newcommand{\ppb}{ppb} % [ppb] Volumetric mixing ratio
+\newcommand{\ppmm}{ppmm} % [ppmm] Mass mixing ratio
+\newcommand{\ppmv}{ppmv} % [ppmv] Volumetric mixing ratio
+\newcommand{\ppm}{ppm} % [ppm] Volumetric mixing ratio
+\newcommand{\pxk}{Pa\,K$^{-1}$}
+\newcommand{\pxm}{Pa\,m$^{-1}$}
+\newcommand{\scn}{s} % [s] Time (seconds)
+\newcommand{\sr}{sr}
+\newcommand{\sxcm}{s\,cm$^{-1}$}
+\newcommand{\sxm}{s\,m$^{-1}$}
+\newcommand{\ugxg}{$\upmu$g\,g$^{-1}$}
+\newcommand{\ugxkgs}{$\upmu$g\,kg$^{-1}$\,s$^{-1}$}
+\newcommand{\ugxkg}{$\upmu$g\,kg$^{-1}$}
+\newcommand{\ugxmC}{$\upmu$g\,m$^{-3}$}
+\newcommand{\ugxmSd}{$\upmu$g\,m$^{-2}$\,d$^{-1}$}
+\newcommand{\ugxmSs}{$\upmu$g\,m$^{-2}$\,s$^{-1}$}
+\newcommand{\umCxumSum}{$\upmu$m$^{3}$\,$\upmu$m$^{-3}$\,$\upmu$m$^{-1}$} % [um3 um-3 um-1] Volume distribution
+\newcommand{\umCxumS}{$\upmu$m$^{3}$\,$\upmu$m$^{-2}$} % [um3 um-2] Volume path or logartithmic columnar volume distribution or, confusingly, volume distribution in "condensed" units
+\newcommand{\umk}{$\upmu$m\,K}
+\newcommand{\umolxl}{$\upmu$mol\,L$^{-1}$} % [umol l-1] Concentration (micromoles per liter)
+\newcommand{\umolxmC}{$\upmu$mol\,m$^{-3}$} % [umol m-3] Number concentration (micromoles per cubic meter)
+\newcommand{\umolxmS}{$\upmu$mol\,m$^{-2}$} % [umol m-2] Number path (micromoles per square meter)
+\newcommand{\um}{\ensuremath{\upmu\mbox{m}}}
+\newcommand{\vxm}{V\,m$^{-1}$} % [V m-1] Electric field (Volt per meter)
+\newcommand{\wvlmSxmol}{m\,m$^{2}$\,mol$^{-1}$}
+\newcommand{\wvncmSxmlcatm}{cm$^{-1}$\,cm$^{2}$\,molecule$^{-1}$\,atm$^{-1}$}
+\newcommand{\wvncmSxmlc}{cm$^{-1}$\,cm$^{2}$\,molecule$^{-1}$}
+\newcommand{\wvnmSxmlc}{cm$^{-1}$\,m$^{2}$\,molecule$^{-1}$}
+\newcommand{\wvnmSxmol}{cm$^{-1}$\,m$^{2}$\,mol$^{-1}$}
+\newcommand{\wvnxatm}{cm$^{-1}$\,atm$^{-1}$}
+\newcommand{\wxkg}{W\,kg$^{-1}$}
+\newcommand{\wxmChz}{W\,m$^{-3}$\,Hz$^{-1}$}
+\newcommand{\wxmC}{W\,m$^{-3}$}
+\newcommand{\wxmScm}{W\,m$^{-2}$\,(cm$^{-1}$)$^{-1}$}
+\newcommand{\wxmShzsr}{W\,m$^{-2}$\,Hz$^{-1}$\,sr$^{-1}$}
+\newcommand{\wxmShz}{W\,m$^{-2}$\,Hz$^{-1}$}
+\newcommand{\wxmSkQ}{W\,m$^{-2}$\,K$^{-4}$}
+\newcommand{\wxmSk}{W\,m$^{-2}$\,K$^{-1}$}
+\newcommand{\wxmSmsr}{W\,m$^{-2}$\,m$^{-1}$\,sr$^{-1}$}
+\newcommand{\wxmSm}{W\,m$^{-2}$\,m$^{-1}$}
+\newcommand{\wxmSnmsr}{W\,m$^{-2}$\,nm$^{-1}$\,sr$^{-1}$}
+\newcommand{\wxmSnm}{W\,m$^{-2}$\,nm$^{-1}$}
+\newcommand{\wxmSsrfrq}{W\,m$^{-2}$\,sr$^{-1}$\,Hz$^{-1}$}
+\newcommand{\wxmSsrhz}{W\,m$^{-2}$\,sr$^{-1}$\,Hz$^{-1}$}
+\newcommand{\wxmSsrm}{W\,m$^{-2}$\,sr$^{-1}$\,m$^{-1}$}
+\newcommand{\wxmSsrs}{W\,m$^{-2}$\,sr$^{-1}$\,s$^{-1}$}
+\newcommand{\wxmSsrwvn}{W\,m$^{-2}$\,sr$^{-1}$\,(cm$^{-1}$)$^{-1}$}
+\newcommand{\wxmSsrxcm}{W\,m$^{-2}$\,sr$^{-1}$\,(cm$^{-1}$)$^{-1}$}
+\newcommand{\wxmSsrxm}{W\,m$^{-2}$\,sr$^{-1}$\,(m$^{-1}$)$^{-1}$}
+\newcommand{\wxmSsr}{W\,m$^{-2}$\,sr$^{-1}$}
+\newcommand{\wxmSumsr}{W\,m$^{-2}$\,$\upmu$m$^{-1}$\,sr$^{-1}$}
+\newcommand{\wxmSum}{W\,m$^{-2}$\,$\upmu$m$^{-1}$}
+\newcommand{\wxmS}{W\,m$^{-2}$} % [W m-2] Heat flux (Watts per square meter)
+\newcommand{\wxmk}{W\,m$^{-1}$\,K$^{-1}$}
+\newcommand{\xTB}{TB$^{-1}$} % per Terabyte
+\newcommand{\xcmC}{cm$^{-3}$}
+\newcommand{\xcmS}{cm$^{-2}$}
+\newcommand{\xcm}{\ensuremath{\mbox{cm}^{-1}}}
+\newcommand{\xfrq}{(s$^{-1}$)$^{-1}$}
+\newcommand{\xft}{ft$^{-1}$}
+\newcommand{\xhz}{Hz$^{-1}$}
+\newcommand{\xkS}{K$^{-2}$}
+\newcommand{\xkm}{km$^{-1}$}
+\newcommand{\xk}{K$^{-1}$}
+\newcommand{\xmCs}{m$^{-3}$\,s$^{-1}$}
+\newcommand{\xmCum}{m$^{-3}\,\upmu$m}
+\newcommand{\xmC}{m$^{-3}$}
+\newcommand{\xmSs}{m$^{-2}$\,s$^{-1}$}
+\newcommand{\xmS}{m$^{-2}$}
+\newcommand{\xmm}{mm$^{-1}$}
+\newcommand{\xmthfz}{mo$^{-1}$\,(100,000)$^{-1}$} % [mth-1 100000-1] (five zeroes!)
+\newcommand{\xmth}{mo$^{-1}$} % [mth-1]
+\newcommand{\xm}{m$^{-1}$}
+\newcommand{\xnbr}{\#$^{-1}$}
+\newcommand{\xsS}{s$^{-2}$}
+\newcommand{\xshz}{s$^{-1}$\,Hz$^{-1}$}
+\newcommand{\xsm}{s$^{-1}$\,m$^{-1}$}
+\newcommand{\xsr}{sr$^{-1}$}
+\newcommand{\xs}{s$^{-1}$}
+\newcommand{\xum}{$\upmu$m$^{-1}$} % [um-1] Spectral density
+\newcommand{\xwvn}{(cm$^{-1}$)$^{-1}$}
+\newcommand{\xyrfz}{yr$^{-1}$\,(100,000)$^{-1}$} % [yr-1 100000-1] (five zeroes!)
+\newcommand{\xyr}{yr$^{-1}$} % [yr-1]
+\newcommand{\yrxwk}{yr\,wk$^{-1}$}
+\newcommand{\yr}{yr}
+
+% Derived units
+\newcommand{\dgrcxwxmS}{\ensuremath{^{\circ}\mbox{C\,(W\,m$^{-2}$)}^{-1}}} % [C (W m-2)-1] Temperature sensitivity to forcing (degrees celsius per Watt per square meter)

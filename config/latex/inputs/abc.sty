@@ -1,0 +1,109 @@
+% $Id$
+
+% Purpose: Declaration of entire alphabet as three letter macros
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: none
+
+% Usage:
+% \usepackage{abc} % Alphabet as three letter macros
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{
+\ProvidesPackage{abc}[2002/09/22 v1.4 Alphabet as three letter macros]
+} % end ProvidesPackage
+
+% 1. Primary commands
+\newcommand{\AAA}{A}
+\newcommand{\BBB}{B}
+\newcommand{\CCC}{C}
+\newcommand{\DDD}{D}
+\newcommand{\EEE}{E}
+\newcommand{\FFF}{F}
+\newcommand{\GGG}{G}
+\newcommand{\HHH}{H}
+\newcommand{\III}{I}
+\newcommand{\JJJ}{J}
+\newcommand{\KKK}{K}
+\newcommand{\LLL}{L}
+\newcommand{\MMM}{M}
+\newcommand{\NNN}{N}
+\newcommand{\OOO}{O}
+\newcommand{\PPP}{P}
+\newcommand{\QQQ}{Q}
+\newcommand{\RRR}{R}
+\newcommand{\SSS}{S}
+\newcommand{\TTT}{T}
+\newcommand{\UUU}{U}
+\newcommand{\VVV}{V}
+\newcommand{\WWW}{W}
+\newcommand{\XXX}{X}
+\newcommand{\YYY}{Y}
+\newcommand{\ZZZ}{Z}
+
+\newcommand{\aaa}{a}
+\newcommand{\bbb}{b}
+%\newcommand{\ccc}{c}
+\@ifundefined{ccc}{\newcommand{\ccc}{c}}{} % May be defined by agutex
+\newcommand{\ddd}{d}
+\newcommand{\eee}{e}
+\newcommand{\fff}{f}
+\@ifundefined{ggg}{\newcommand{\ggg}{g}}{} % May be defined by pdfscreen
+\newcommand{\hhh}{h}
+\newcommand{\iii}{i}
+\newcommand{\jjj}{j}
+\newcommand{\kkk}{k}
+\@ifundefined{lll}{\newcommand{\lll}{l}}{} % May be defined by pdfscreen
+\newcommand{\mmm}{m}
+\newcommand{\nnn}{n}
+\newcommand{\ooo}{o}
+\newcommand{\ppp}{p}
+\newcommand{\qqq}{q}
+\newcommand{\rrr}{r}
+\newcommand{\sss}{s}
+\newcommand{\ttt}{t}
+\newcommand{\uuu}{u}
+\newcommand{\vvv}{v}
+\newcommand{\www}{w}
+\newcommand{\xxx}{x}
+\newcommand{\yyy}{y}
+\newcommand{\zzz}{z}
+
+% 2. Derived commands
+\newcommand{\AAAbld}{\mathbf{\AAA}} % A bold
+\newcommand{\aaabld}{\mathbf{\aaa}} % a bold
+\newcommand{\bbbbld}{\mathbf{\bbb}} % b bold
+\newcommand{\cccbld}{\mathbf{\ccc}} % c bold
+\newcommand{\uuubar}{\bar{\uuu}} % u bar
+\newcommand{\vvvbar}{\bar{\vvv}} % v bar
+\newcommand{\wwwbar}{\bar{\www}} % w bar
+\newcommand{\uuubld}{\mathbf{\uuu}} % u bold
+\newcommand{\vvvbld}{\mathbf{\vvv}} % v bold
+\newcommand{\aaatld}{\tilde{\aaa}} % a transpose
+\newcommand{\bbbtld}{\tilde{\bbb}} % b transpose
+\newcommand{\ccctld}{\tilde{\ccc}} % c transpose
+\newcommand{\ttttld}{\tilde{\ttt}} % t transpose
+\newcommand{\uuutld}{\tilde{\uuu}} % u transpose
+\newcommand{\vvvtld}{\tilde{\vvv}} % v transpose
+\newcommand{\wwwtld}{\tilde{\www}} % w transpose
+\newcommand{\xxxtld}{\tilde{\xxx}} % x transpose
+\newcommand{\yyytld}{\tilde{\yyy}} % y transpose
+\newcommand{\zzztld}{\tilde{\zzz}} % z transpose
+\newcommand{\xxxdot}{\dot{\xxx}} % x dot
+\newcommand{\xxxddot}{\ddot{\xxx}} % x double dot
+\newcommand{\yyydot}{\dot{\yyy}} % y dot
+\newcommand{\yyyddot}{\ddot{\yyy}} % y double dot
+
+

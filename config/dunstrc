@@ -1,0 +1,51 @@
+# see /usr/share/dunst/dunstrc for meaning
+
+[global]
+    font = Monospace-12
+
+    format = "%a: %s %b"
+    sort = yes
+    indicate_hidden = yes
+    alignment = center
+    bounce_freq = 0
+    show_age_threshold = 60;
+
+    word_wrap = yes
+
+    geometry = "0x0-0+0"
+    transparency = 40
+
+    idle_threshold = 120
+
+    monitor = 0
+    follow = none
+
+    sticky_history = yes
+    line_height = 0
+
+    separator_height = 2;
+
+    separator_color = auto
+
+
+[shortcuts]
+# this is Alt-Shift-N if you remapped Win/Alt
+#    close = mod4+n
+    close = mod4+ctrl+space
+#    close_all = ctrl+shift+space
+    history = mod4+ctrl+grave
+
+[urgency_low]
+    background = "#00BF06"
+    foreground = "#EEEEEE"
+    timeout = 3
+
+[urgency_normal]
+    background = "#00039B"
+    foreground = "#EEEEEE"
+    timeout = 4
+
+[urgency_critical]
+    background = "#dc322f"
+    foreground = "#DDDDDD"
+    timeout = 0

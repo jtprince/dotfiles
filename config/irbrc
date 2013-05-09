@@ -1,0 +1,29 @@
+require 'irb/completion'
+require 'irb/ext/save-history'
+ARGV.concat ["--readline", "--prompt-mode", "--simple" ]
+
+IRB.conf[:SAVE_HISTORY] = 10000
+IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb-save-history"
+
+
+IRB.conf[:PROMPT][:JTP] = { # name of prompt mode
+  :PROMPT_I => nil,          # normal prompt
+  :PROMPT_S => nil,          # prompt for continuated strings
+  :PROMPT_C => nil,          # prompt for continuated statement
+  :RETURN => "    ==>%s\n"      # format to return value
+}
+
+# Prompts
+IRB.conf[:PROMPT][:QUIET_SIMPLE] = {
+    :PROMPT_N => "\e[1m>\e[m ",
+    :PROMPT_I => "\e[1m>\e[m ",
+    :PROMPT_S => nil,
+    :PROMPT_C => "\e[1m>\e[m ",
+    :RETURN => ""
+}
+
+# Set default prompt
+#IRB.conf[:PROMPT_MODE] = :QUIET_SIMPLE
+#IRB.conf[:PROMPT_MODE] = :JTP
+
+IRB.conf[:PROMPT_MODE] = :SIMPLE

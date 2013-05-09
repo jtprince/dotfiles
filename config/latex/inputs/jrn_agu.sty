@@ -1,0 +1,116 @@
+% $Id$
+
+% Purpose: AGU-sanctioned journal title abbreviations for use in BiBTeX databases
+
+% Copyright (c) 1993--2003, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% Dependencies: none
+
+% History:
+% Original file: jgr.abbrev from Janet Rodina 1992
+% Copied to ${HOME}/tex/jgr_abb.tex around 1994
+% 19990818: Reformatted as LaTeX style file and copied to jrn_agu.sty
+% 19990811: Placing journal title abbreviations within \textit{} is
+%           redundant since natbib does this automatically with most bibliography styles
+% 19990812: jrn_agu.sty does not work with AGUplus, don't know why...
+
+% Usage:
+% \usepackage{jrn_agu} % AGU-sanctioned journal title abbreviations
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{
+\ProvidesPackage{jrn_agu}[2002/09/22 v1.6 AGU-sanctioned journal title abbreviations]
+} % end ProvidesPackage
+
+%\newcommand{\ppp}{Paleogeogr. Paleoclim. Paleoecol.} % csz name conflict
+\newcommand{\aapgb}{Amer. Assoc. Petroleum Geologists Bull.}
+\newcommand{\adg}{Adv. Geophys.}
+\newcommand{\ajs}{Amer. J. Sci.}
+\newcommand{\amb}{Ambio}
+\newcommand{\amgb}{Arch. Meteorol. Geophys. Bioclimatl.}
+\newcommand{\angeo}{Ann. Geophys.}
+\newcommand{\ang}{Ann. Glaciol.}
+\newcommand{\apo}{Appl. Opt.}
+\newcommand{\areps}{Ann. Rev. Earth Planet. Sci.}
+\newcommand{\asr}{Adv. Space Res.}
+\newcommand{\ate}{Atmos. Environ.}
+\newcommand{\atf}{Atmosfera}
+\newcommand{\atms}{ACM Trans. Math Software}
+\newcommand{\ato}{Atmos. Ocean}
+\newcommand{\atr}{Atmos. Res.}
+\newcommand{\bams}{Bull. Am. Meteorol. Soc.}
+\newcommand{\blm}{Boundary-Layer Meteorol.} % csz 
+%\newcommand{\bpa}{Beitr. Phys. Atmosph.}
+\newcommand{\bpa}{Contr. Atmos. Phys.} % csz name conflict with \cap
+\newcommand{\clc}{Clim. Change}
+\newcommand{\cld}{Clim. Dyn.}
+\newcommand{\com}{Computing}
+\newcommand{\dao}{Dyn. Atmos. Oceans}
+\newcommand{\dsr}{Deep-Sea Res.}
+\newcommand{\esr}{Earth Sci. Revs.}
+\newcommand{\gbc}{Global Biogeochem. Cycles} % csz
+\newcommand{\gec}{Geosci. Canada}
+\newcommand{\gei}{Geofis. Int.}
+\newcommand{\gej}{Geogr. J.}
+\newcommand{\gem}{Geophys. Monogr.}
+\newcommand{\geo}{Geology}
+\newcommand{\grl}{Geophys. Res. Lett.}
+\newcommand{\ieeec}{IEEE Computer}
+\newcommand{\ijna}{IMA J. Numer. Anal.}
+\newcommand{\ijnmf}{Int. J. Num. Meteorol. Fl.}
+\newcommand{\jacm}{J. Assoc. Comput. Mach.}
+\newcommand{\jac}{J. Atmos. Chem.}
+\newcommand{\jam}{J. Appl. Meteorol.}
+\newcommand{\jas}{J. Atmos. Sci.}
+\newcommand{\jatp}{J. Atmos. Terr. Phys.}
+\newcommand{\jcam}{J. Climate Appl. Meteorol.}
+\newcommand{\jchp}{J. Chem Phys.}
+\newcommand{\jcis}{J. Coll. I. Sci.}
+\newcommand{\jcl}{J. Clim.}
+\newcommand{\jcp}{J. Comput. Phys.}
+\newcommand{\jfm}{J. Fluid Mech.}
+\newcommand{\jgl}{J. Glaciol.}
+\newcommand{\jgr}{J. Geophys. Res.}
+\newcommand{\jgs}{J. Geol. Soc. London}
+\newcommand{\jme}{J. Meteorol.}
+\newcommand{\jmr}{J. Marine Res.}
+\newcommand{\jmsj}{J. Meteorol. Soc. Jpn.}
+\newcommand{\josa}{J. Opt. Soc. A}
+\newcommand{\jpo}{J. Phys. Oceanogr.}
+\newcommand{\jpca}{J. Phys. Chem. A}
+\newcommand{\jqsrt}{J. Quant. Spectrosc. Radiat. Transfer}
+\newcommand{\lnc}{Lett. Nuov. C}
+\newcommand{\mac}{Math. Comp.}
+\newcommand{\map}{Meteorol. Atmos. Physics.}
+\newcommand{\mem}{Meteorol. Mag.}
+\newcommand{\mnras}{Mon. Not. Roy. Astron. Soc.} 
+\newcommand{\mwr}{Mon. Weather Rev.} 
+\newcommand{\nat}{Nature}
+\newcommand{\pac}{Parallel Computing}
+\newcommand{\pag}{Pure Appl. Geophys.}
+\newcommand{\pal}{Paleoceanography}
+\newcommand{\pht}{Physics Today}
+\newcommand{\pieee}{Proc. IEEE}
+\newcommand{\pla}{Phys. Lett. A}
+\newcommand{\pra}{Phys. Res. A}
+\newcommand{\prd}{Phys. Rev. D}
+\newcommand{\prl}{Phys. Rev. L}
+\newcommand{\pss}{Planet. Space Sci.}
+\newcommand{\ptrsl}{Phil. Trans. R. Soc. Lond.}
+\newcommand{\qjrms}{Q. J. R. Meteorol. Soc.}
+\newcommand{\qres}{Quat. Res.}
+\newcommand{\qsr}{Quatern. Sci. Rev.}
+\newcommand{\reg}{Rev. Geophys.}
+\newcommand{\rgsp}{Revs. Geophys. Space Phys.}
+\newcommand{\rpp}{Rep. Prog. Phys.}
+\newcommand{\sca}{Sci. Amer.}
+\newcommand{\sci}{Science}
+\newcommand{\sjna}{SIAM J. Numer. Anal.}
+\newcommand{\sjssc}{SIAM J. Sci. Stat. Comput.}
+\newcommand{\tac}{Theor. Appl. Climatl.}
+\newcommand{\tel}{Tellus}
+\newcommand{\wea}{Weather}

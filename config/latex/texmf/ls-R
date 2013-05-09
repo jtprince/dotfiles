@@ -1,0 +1,16 @@
+% ls-R -- filename database for kpathsea; do not change this line.
+./:
+.:
+ls-R
+README.txt
+tex
+
+
+./tex:
+latex
+
+./tex/latex:
+sectsty
+
+./tex/latex/sectsty:
+sectsty.sty

@@ -1,0 +1,141 @@
+% $Id$
+
+% Purpose: Commands general to fluid dynamics
+
+% Copyright (c) 1998--2009, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: tdy.sty
+
+% Usage:
+% \usepackage{dyn} % Fluid dynamics
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{
+\ProvidesPackage{dyn}[2002/09/22 v1.24 Fluid dynamics]
+} % end ProvidesPackage
+
+\usepackage{tdy} % Thermodynamics
+
+% 0. Provided commands
+\providecommand{\azi}{\ensuremath{\phi}}\renewcommand{\azi}{\ensuremath{\phi}} % [rdn] Azimuthal angle
+\providecommand{\mrd}{\ensuremath{\phi}}\renewcommand{\mrd}{\ensuremath{\phi}} % [rdn] Meridional angle (latitude)
+\providecommand{\plr}{\ensuremath{\theta}}\renewcommand{\plr}{\ensuremath{\theta}} % [rdn] Polar angle (zenith angle)
+\providecommand{\rdl}{\ensuremath{r}}\renewcommand{\rdl}{\ensuremath{r}} % [m] Radial distance
+\providecommand{\rds}{\ensuremath{r}}\renewcommand{\rds}{\ensuremath{r}} % [m] Radius
+\providecommand{\znl}{\ensuremath{\lambda}}\renewcommand{\znl}{\ensuremath{\lambda}} % [rdn] Zonal angle (longitude)
+
+% 1. Primary commands
+\newcommand{\cross}{\ensuremath{\times}} % [frc] Cross product
+\newcommand{\cnfstt}{\ensuremath{p}} % [frc] Confidence statistic
+\newcommand{\arm}{\ensuremath{\mathrm{AR}}} % [idx] Autoregression model
+\newcommand{\armrdr}{\ensuremath{p}} % [idx] Autoregression model order
+\newcommand{\crrcff}{\ensuremath{r}} % [frc] Linear correlation coefficient (Pearson coefficient)
+\newcommand{\dmt}{\ensuremath{D}} % [m] Diameter
+\newcommand{\dst}{\ensuremath{n}} % Distribution
+\newcommand{\frc}{\ensuremath{F}} % [kg m s-2] [N] Force
+\newcommand{\grv}{\ensuremath{g}} % [m s-2] Gravity
+\newcommand{\hgt}{\ensuremath{z}} % [m] Height
+\newcommand{\dpt}{\ensuremath{z}} % [m] Depth (normally positive definite)
+\newcommand{\xhatidx}{\ensuremath{\mathbf{\hat{x}}_{\iii}}} % Unit vector in ith direction
+\newcommand{\ihat}{\ensuremath{\mathbf{\hat{i}}}} % Unit vector in x-direction
+\newcommand{\ivec}{\ensuremath{\vec{\imath}}} % Vector in x-direction
+\newcommand{\jhat}{\ensuremath{\mathbf{\hat{j}}}} % Unit vector in y-direction
+\newcommand{\jvec}{\ensuremath{\vec{\jmath}}} % Vector in y-direction
+\newcommand{\khat}{\ensuremath{\mathbf{\hat{k}}}} % Unit vector in z-direction
+\newcommand{\kvec}{\ensuremath{\vec{k}}} % Vector in z-direction
+\newcommand{\lngscl}{\ensuremath{L}} % [m] Length scale
+\newcommand{\mmn}{\ensuremath{p}} % [kg m s-1] Momentum
+\newcommand{\mss}{\ensuremath{M}} % [kg] Mass
+\newcommand{\mtrdrv}{\ensuremath{D}} % Material derivative 
+\newcommand{\nablavec}{\ensuremath{\vec{\nabla}}} % Vector form of del operator
+\newcommand{\pdffnc}{\ensuremath{p}} % Probability density function
+\newcommand{\pnt}{\ensuremath{P}} % Generic point
+\newcommand{\psn}{\ensuremath{r}} % [m] Position
+\newcommand{\rms}{\ensuremath{\mathrm{RMS}}} % Root-mean-square error
+\newcommand{\rskrlt}{\ensuremath{\mathrm{RR}}} % [frc] Relative Risk
+\newcommand{\sclfld}{\ensuremath{u}} % Generic scalar field
+\newcommand{\sdn}{\ensuremath{\sigma}} % Standard deviation
+\newcommand{\sfc}{\ensuremath{S}} % Surface
+\newcommand{\spd}{\ensuremath{u}} % [m s-1] Speed
+\newcommand{\strtnsvsc}{\ensuremath{\tau}} % Viscous stress tensor
+\newcommand{\strtns}{\ensuremath{T}} % Stress tensor
+\newcommand{\tm}{\ensuremath{t}} % [s] Time
+\newcommand{\vct}{\ensuremath{v}} % Generic vector
+\newcommand{\vlcngl}{\ensuremath{\omega}} % [rdn s-1] Angular velocity
+\newcommand{\vlcu}{\ensuremath{u}} % [m s-1] Velocity expressed as u
+\newcommand{\vlc}{\ensuremath{v}} % [m s-1] Velocity
+\newcommand{\vlm}{\ensuremath{V}} % [m3] Volume
+\newcommand{\wndspd}{\ensuremath{U}} % [m s-1] Scalar wind speed
+\newcommand{\xcl}{\ensuremath{a}} % [m s-2] Acceleration
+\newcommand{\xsa}{\ensuremath{A}} % [m2] Cross-sectional area
+\newcommand{\xsx}{\ensuremath{A}} % [m2] Cross-sectional area
+
+% 2. Derived commands
+\newcommand{\azihat}{\ensuremath{\mbox{\boldmath$\hat{\azi}$}}} % Unit vector in azimuthal direction
+\newcommand{\crrcffprs}{\ensuremath{\crrcff}} % [frc] Linear correlation coefficient, unranked (Pearson)
+\newcommand{\crrcffspr}{\ensuremath{\crrcff_{\mathrm{s}}}} % [frc] Linear correlation coefficient, ranked (Spearman)
+\newcommand{\crrcffsqr}{\ensuremath{\crrcff^{2}}} % [frc] Linear correlation coefficient squared
+\newcommand{\frcbld}{\ensuremath{\mathbf{\frc}}} % [kg m s-2] Boldface force
+\newcommand{\frcgrvbld}{\ensuremath{\mathbf{\frc}_{\grv}}} % [kg m s-2] Boldface force of gravity
+\newcommand{\grvbld}{\ensuremath{\mathbf{\grv}}} % [m s-2] Boldface gravity
+\newcommand{\grvvec}{\ensuremath{\vec{\grv}}} % [m s-2] Gravity vector
+\newcommand{\ihatbld}{\ensuremath{\mathbf{\ihat}}} % Bold unit vector in x-direction
+\newcommand{\jhatbld}{\ensuremath{\mathbf{\jhat}}} % Bold unit vector in y-direction
+\newcommand{\khatbld}{\ensuremath{\mathbf{\khat}}} % Bold unit vector in z-direction
+\newcommand{\mmnbld}{\ensuremath{\mathbf{p}}} % [m2 s-1] Boldface momentum
+\newcommand{\mmrone}{\ensuremath{\mmr_{1}}} % [kg kg-1] Mixing ratio one
+\newcommand{\mmrtwo}{\ensuremath{\mmr_{2}}} % [kg kg-1] Mixing ratio two
+\newcommand{\mrdhat}{\ensuremath{\mbox{\boldmath$\hat{\mrd}$}}} % Unit vector in meridional direction
+\newcommand{\mssone}{\ensuremath{\mss_{1}}} % [kg] Mass one
+\newcommand{\msstwo}{\ensuremath{\mss_{2}}} % [kg] Mass two
+\newcommand{\plrhat}{\ensuremath{\mbox{\boldmath$\hat{\plr}$}}} % Unit vector in polar direction
+\newcommand{\prphat}{\ensuremath{\mbox{\boldmath$\hat{e}$}}} % Unit vector in direction of propogation
+\newcommand{\psnbld}{\ensuremath{\mathbf{\psn}}} % [m] Boldface position 
+\newcommand{\psnvec}{\ensuremath{\vec{\psn}}} % [m] Position vector 
+\newcommand{\rdlhat}{\ensuremath{\mathbf{\hat{\rdl}}}} % [m] Unit vector in radial direction
+\newcommand{\rdsbld}{\ensuremath{\mathbf{\rds}}} % [m] Boldface radius
+\newcommand{\rdssqr}{\ensuremath{\rds^{2}}} % [m2] Square of radius
+\newcommand{\rdshatbld}{\ensuremath{\mathbf{\hat{\rds}}}} % [m] Boldface radius hat
+\newcommand{\rmsabs}{\ensuremath{\rms_{\mathrm{abs}}}} % Absolute root-mean-square error
+\newcommand{\rmsrlt}{\ensuremath{\rms_{\mathrm{rel}}}} % Relative root-mean-square error
+\newcommand{\sdnxxx}{\ensuremath{\sdn_{\xxx}}} % Standard deviation of x
+\newcommand{\tptone}{\ensuremath{\tpt_{1}}} % [K] Temperature one
+\newcommand{\tpttwo}{\ensuremath{\tpt_{2}}} % [K] Temperature two
+\newcommand{\vctazi}{\ensuremath{\vct_{\azi}}} % Azimuthal component of generic vector field
+\newcommand{\vctbld}{\ensuremath{\mathbf{\vct}}} % Generic vector
+\newcommand{\vctmrd}{\ensuremath{\vct_{\mrd}}} % Meridional component of generic vector field
+\newcommand{\vctplr}{\ensuremath{\vct_{\plr}}} % Polar component of generic vector field
+\newcommand{\vctrdl}{\ensuremath{\vct_{\rdl}}} % Radial component of generic vector field
+\newcommand{\vctvec}{\ensuremath{\vec{\vct}}} % Generic vector
+\newcommand{\vctxxx}{\ensuremath{\vct_{x}}} % x-component of generic vector field
+\newcommand{\vctyyy}{\ensuremath{\vct_{y}}} % y-component of generic vector field
+\newcommand{\vctznl}{\ensuremath{\vct_{\znl}}} % Zonal component of generic vector field
+\newcommand{\vctzzz}{\ensuremath{\vct_{z}}} % z-component of generic vector field
+\newcommand{\vlcbld}{\ensuremath{\mathbf{\vlc}}} % [m s-1] Boldface velocity
+\newcommand{\vlcinf}{\ensuremath{\vlc_{\infty}}} % [m s-1] Unperturbed velocity
+\newcommand{\vlcvec}{\ensuremath{\vec{\vlc}}} % [m s-1] Velocity vector 
+\newcommand{\vlcxxx}{\ensuremath{\vlc_{\xxx}}} % [m s-1] x-component of velocity
+\newcommand{\vlcyyy}{\ensuremath{\vlc_{\yyy}}} % [m s-1] y-component of velocity
+\newcommand{\vlczzz}{\ensuremath{\vlc_{\zzz}}} % [m s-1] z-component of velocity
+\newcommand{\wndspdavg}{\ensuremath{\bar{\wndspd}}} % [m s-1] Wind speed, climatological mean
+\newcommand{\xclbld}{\ensuremath{\mathbf{\xcl}}} % [m s-2] Boldface acceleration
+\newcommand{\xxxavg}{\ensuremath{\bar{\xxx}}} % Mean value of x
+\newcommand{\znlhat}{\ensuremath{\mbox{\boldmath$\hat{\znl}$}}} % Unit vector in zonal direction
+
+% 3. Doubly-derived commands
+\newcommand{\vlcxxxtld}{\ensuremath{\tilde{\vlc}_{\xxx}}} % Transposed x-component of velocity
+\newcommand{\vlcyyytld}{\ensuremath{\tilde{\vlc}_{\yyy}}} % Transposed y-component of velocity
+\newcommand{\vlczzztld}{\ensuremath{\tilde{\vlc}_{\zzz}}} % Transposed z-component of velocity
+
+

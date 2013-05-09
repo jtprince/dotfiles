@@ -1,0 +1,533 @@
+% $Id$
+
+% Purpose: Frequently used macros for LaTeX
+
+% Copyright (c) 1993--2003, Charles S. Zender
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License (LPPL), 
+% either version 1.2, or (at your option) any later version.
+% LPPL: http://www.latex-project.org/lppl.txt
+
+% The original author of this software, Charlie Zender, seeks to improve
+% it with your suggestions, contributions, bug-reports, and patches.
+% Charlie Zender <surname@uci.edu>, surname=zender
+% Department of Earth System Science
+% University of California at Irvine
+% Irvine, CA 92697-3100
+
+% Dependencies: upgreek.sty  (required solely for \uppi)
+% It is important that no packages need to be loaded before csz.sty
+% This ensures that csz.sty may be loaded first to define important 
+% document-wide settings needed by other packages.
+% Defining \ifpdf in advance of loading graphicx is an example of this
+
+% URL:
+% http://dust.ess.uci.edu/doc/tex/csz.sty
+
+% Usage:
+% \usepackage{csz} % Library of personal definitions
+% scp ~/tex/csz.sty dust.ess.uci.edu:/var/www/html/doc/tex
+
+% Message printed when LaTeX called
+\@ifundefined{ProvidesPackage}{}{
+\ProvidesPackage{csz}[2002/03/06 v1.0 Library of personal definitions]
+} % end ProvidesPackage
+
+\usepackage[Symbol]{upgreek} % Upright Greek letters [Euler,Symbol,Symbolsmallscale]
+
+% 20040126:\@ifundefined seems to break htlatex
+% \lesssim is normally provided by agutex (or amssymb?)
+\@ifundefined{lesssim}{\def\lesssim{\mathrel{\hbox{\rlap{\hbox{\lower0.8ex\hbox{$\sim$}}}\hbox{$<$}}}}}{}
+% \gtrsim is normally provided by agutex (or amssymb?)
+\@ifundefined{gtrsim}{\def\gtrsim{\mathrel{\hbox{\rlap{\hbox{\lower0.8ex\hbox{$\sim$}}}\hbox{$>$}}}}}{}
+
+% \iftwocol is normally provided by aguplus
+%\@ifundefined{iftwocol}{\def\iftwocol#1#2{\if@draft#2\else#1\fi}}{}
+
+% 20050228 comp.text.tex Donald Arsenau recommends following three lines
+\let\iftwocolumn\if@twocolumn
+\g@addto@macro\@twocolumntrue{\let\iftwocolumn\if@twocolumn}
+\g@addto@macro\@twocolumnfalse{\let\iftwocolumn\if@twocolumn}
+
+% \tableline is normally provided by agutex
+\@ifundefined{tableline}{\let\tableline=\hline}{} 
+% \halfwidth figures out a good width for single column graphics
+\def\minof#1#2{\ifdim#1>#2#2\else#1\fi}
+\def\maxof#1#2{\ifdim#1<#2#2\else#1\fi}
+\newcommand{\halfwidth}{\minof{\hsize}{4in}}
+\newcommand{\shortheight}{\minof{\textheight}{4in}}
+\newlength{\heightdim}
+\newlength{\widthdim}
+%\setlength{\phdheight}{\textheight}
+
+\newcommand{\dpysty}{\displaystyle} % Use display-mode (large) math spacing
+\newcommand{\txtsty}{\textstyle} % Use in-text-mode (small) math spacing
+
+% KoD99 p. 142 describe international typesetting standards
+% Apparently ISO wants slight deviations from my default math typesetting
+% Specifically
+% 1. Simple variables are represented by italic letters (LaTeX default)
+% 2. Vectors are written bold face italic
+% 4. The special numbers e, i, pi and the differential operator d are to
+% be written in an upright font to emphasize that they are not
+% variables
+% 5. A measurement consisting of a number plus a dimension is an
+% indivisible unit, with a smaller than normal space between them. 
+% The dimension is in an upright font. 
+% Accomplish this in LaTeX by using \, instead of ~ between number and dimension
+% fxm: Applying these conventions to old work will take a long time
+\newcommand{\me}{\mathrm{e}} % [frc] Math e
+\newcommand{\mi}{\mathrm{i}} % [frc] Math i
+% fxm: \usepackage[Symbol]{upgreek}
+\newcommand{\mpi}{\uppi} % [frc] Math pi
+\newcommand{\dfr}{\mathrm{d}} % [frc] Math differential
+\newcommand{\dfrsqr}{\dfr^{2}} % [frc] Math second differential
+\newcommand{\dfrcbc}{\dfr^{3}} % [frc] Math third differential
+
+% ``csznote'' command allows placement of comments in text
+% \note conflicts with \note in mdwlist.sty so use \csznote
+% Usage: \csznote{A bunch of text which will not be printed}
+\newcommand{\csznote}[1]{}
+
+% ``careof'' symbol c/o, lowercase c above lowercase o in text mode
+\newcommand{\careof}{\leavevmode\hbox{\raise.75ex\hbox{c}\kern-.15em /\kern-.125em\smash{\lower.3ex\hbox{o}}} \ignorespaces}
+
+% euro currency symbol http://www.tex.ac.uk/cgi-bin/texfaq2html?label=euro
+%\let\saveeuro\texteuro
+%\renewcommand{\texteuro}{{\normalfont\sffamily\saveeuro}}
+
+% Pretty-print the word C++ without breaking and move plusses close together
+% From http://www.parashift.com/c++-faq-lite/misc-environmental-issues.html
+\newcommand{\cxx}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bf +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bf +}}
+
+% 20060101: Temporary solution for slanted fractions
+% This solution looks terrible in superscript mode
+% More permanent solution may be xfrac package (currently experimental)
+% For slanted fractions: \sfrac{1}{2}
+% Source for \sfrac from ltugboat.sty and ltugcomn.sty
+% 20060101: This looks much better than the comp.text.tex solution by Joel Coltoff
+\DeclareRobustCommand\sfrac[1]{\@ifnextchar/{\@sfrac{#1}}%
+                                            {\@sfrac{#1}/}}
+\def\@sfrac#1/#2{\leavevmode\kern.1em\raise.5ex
+         \hbox{$\m@th\mbox{\fontsize\sf@size\z@
+                           \selectfont#1}$}\kern-.1em
+         /\kern-.15em\lower.25ex
+          \hbox{$\m@th\mbox{\fontsize\sf@size\z@
+                            \selectfont#2}$}}
+
+% \DeclareGraphicsRule commands should be moved into document source 
+% so that csz.sty need not depend on graphicx.
+% Here are the most frequently used \DeclareGraphicsRule commands:
+%\DeclareGraphicsRule{.gif}{eps}{.bb}{`gif2eps #1 -} % Convert GIF files to eps
+%\DeclareGraphicsRule{.eps}{pdf}{}{`epstopdf #1 -} % Convert eps to pdf
+%\DeclareGraphicsRule{.ps}{pdf}{}{`epstopdf #1 -} % Convert ps to pdf
+
+% \newbool command creates boolean variable from Heiko Oberdiek 20001231
+% Presumably this is similar to the definition of ifpdf
+\makeatletter
+\newcommand*{\newbool}[1]{%
+  \expandafter\newif\csname if@@#1\endcsname
+\expandafter\newcommand\csname if#1\endcsname{}%
+  \@namedef{if#1}{%
+    \csname if@@#1\endcsname
+\expandafter\@firstoftwo
+    \else
+      \expandafter\@secondoftwo
+    \fi
+  }%
+}
+\newcommand*{\setbool}[2]{%
+  \csname @@#1#2\endcsname
+}
+\makeatother
+% end newbool definition
+% Usage:
+\csznote{
+% NB: Enclose following usage within verbatime environment within
+% csznote or else latex2html will choke here
+\begin{verbatim}
+\newbool{phd} % Create \ifphd command
+\setbool{phd}{true} % Default value
+\begin{document}
+  Is phd boolean set? \ifphd{yeah dude}{no way}
+  Type value of phd to screen: \typeout{\ifphd{yeah dude}{no way}}
+\end{document}
+\end{verbatim}
+} % end usage
+
+% Use \newbool command for certain important system-wide tests
+% \ifphdcsz decides true if in phdcsz environment
+\newbool{phdcsz} % Create \ifphdcsz command
+\setbool{phdcsz}{false} % Default value
+% \ifams decides true if in ams formatted document
+% Usage: \ifams{blah}{blah}
+\newbool{fmtams} % Create fmtams command
+\setbool{fmtams}{false} % Default value
+
+% Glossary commands fxm: Placeholder, not currently used
+% To add a term to the glossary, use \glsdfn{}
+\newcommand{\glsdfn}[1]{} % Glossary entry
+
+% Symbol table commands fxm: Placeholder, not currently used
+% To add a term to the symbol table, use \symdfn{}
+\newcommand{\symdfn}[4]{} % Symbol definition
+
+% Index and highlighting commands
+% TeXInfo provides this list of different semantic meaning of a text unit:
+\newcommand{\TeXInfo}{\TeX{}Info}
+% @acronym{ACRONYM}: Indicate an acronym.
+% @cite{REFERENCE}: Indicate the name of a book.
+% @code{SAMPLE-CODE}: Indicate text that is a literal example of a piece of a program.
+% @command{COMMAND-NAME}: Indicate the name of a command.
+% @dfn{TERM}: Indicate the introductory or defining use of a term.
+% @email{EMAIL-ADDRESS[, DISPLAYED-TEXT]}: Indicate an electronic mail address.
+% @env{ENVIRONMENT-VARIABLE}: Indicate an environment variable.
+% @file{FILE-NAME}: Indicate the name of a file.
+% @kbd{KEYBOARD-CHARACTERS}: Indicate keyboard input.
+% @key{KEY-NAME}: Indicate the conventional name for a key on a keyboard.
+% @option{OPTION}: Indicate a command-line option.
+% @samp{TEXT}: Indicate text that is a literal example of a sequence of characters.
+% @url{UNIFORM-RESOURCE-LOCATOR}: Indicate a uniform resource locator for the World Wide Web.
+% @var{METASYNTACTIC-VARIABLE}: Indicate a metasyntactic variable.
+% Each of these types of text may be expected to be indexed
+% The page number formatting in the index should be able to
+% discriminate between introductory or defining use, and their subsequent use
+% Thus distinct commands are required for both uses
+% We use \fmtdfn{text} and \fmtidx{text} for these, respectively
+% Use \fmtprn{text} to print text in appropriate format without indexing it
+
+% When defining a term for the first time use \trmdfn{term} if the 
+% term will appear in the index more than once, and \trmidx{term}
+% if the term will appear only once.
+% \trmdfn places the term in italics and issues a keyword to \index
+% to place the pagenumber for this instance of the term in boldface
+% 20001028: According to hyperref documentation, p. 102,
+% using |keyword to, e.g., boldify entries will confuse makeindex when \hyperref
+% is active since \hyperref attempts to add its own |hyperindex{} text
+% and makeindex only allows one | to be present. 
+% Result is that index will build but only non-boldfaced items will
+% have working hyper-index.
+% Jochen Kuepper suggested this combination as a solution
+% Something tells me this will break when hyperref is not loaded
+\newcommand{\trmdfn}[2][\DefaultOpt]{\def\DefaultOpt{#2}\textit{#2}\index{#1|bfhyp}}% Italicize term, boldface pagenumber
+\newcommand*{\bfhyp}[1]{\textbf{\hyperpage{#1}}}
+
+% When re-using an already introduced term use \trmidx{term}
+% \trmidx places the term in the current font and issues an \index call
+% Argument is printed verbatim and is default for index
+% Optional argument supercedes in-text for indexing
+% Command definition from Donald Arsenau 20010328 
+\newcommand{\trmidx}[2][\DefaultOpt]{\def\DefaultOpt{#2}#2\index{#1}} % Verbatim in-term term, optional index term
+\newcommand*{\trmprn}[1]{\string#1} % Print term
+% Define the exact same functionality using slightly different syntax
+% \makeatletter
+% \newcommand{\trmidx}[2][]{#2\@ifempty{#1}\index{#2}\else\index{#1}}
+% \makeatother
+
+% Print LaTeX command verbatim in text and index it verbatim, correctly alphabetized
+% Heiko Oberdiek wrote the original of these for me
+\makeatletter
+% Usage: \cmdltxidx{\foo} translates to \texttt{\foo} \index{foo@\texttt{\foo}}
+\newcommand*{\cmdltxprn}[1]{\texttt{\string#1}} % Print LaTeX command
+\newcommand*{\cmdltxidx}[1]{% Print LaTeX command verbatim in text and index
+  \cmdltxprn{#1}%
+  \index{\expandafter\@gobble\string#1@\string\cmdltxprn{\string#1}}%
+} % end \newcommand
+
+% Print environment variables verbatim in text and index it verbatim, correctly alphabetized
+% Arguments are usually prefixed with dollar sign
+\makeatletter
+% Usage: \nvridx{$FOO} translates to \texttt{$FOO} \index{foo@\texttt{$FOO}}
+\newcommand*{\nvrprn}[1]{\texttt{\string#1}} % Print LaTeX command
+\newcommand*{\nvridx}[1]{% Print LaTeX command verbatim in text and index
+  \nvrprn{#1}%
+  \index{\expandafter\@gobble\string#1@\string\nvrprn{\string#1}}%
+} % end \newcommand
+
+% Used for shell commands and variables which contain no backslashes, a la TeXInfo @command
+% Usage: \cmdidx{mkdir} translates to \texttt{mkdir} \index{mkdir@\texttt{\foo}}
+\newcommand*{\cmdprn}[1]{\texttt{\string#1}} % Print shell command
+\newcommand*{\cmdidx}[1]{% Print shell command verbatim in text and index
+  \cmdprn{#1}%
+  \index{\string\cmdprn{\string#1}}%
+} % end \newcommand
+\newcommand*{\cmddfn}[1]{% Print shell command verbatim in text and index
+  \cmdidx{#1}%
+} % end \newcommand
+
+% Similar to \cmdprn, \cmdidx, but used for files, a la TeXInfo @file
+\newcommand*{\flprn}[1]{\textsf{\string#1}} % Print filename
+\newcommand*{\flidx}[1]{% Print file verbatim in text and index
+  \flprn{#1}%
+  \index{\string\flprn{\string#1}}%
+} % end \newcommand
+% Similar to \cmdprn, \cmdidx, but used for keyboard input, a la TeXInfo @kbd
+\newcommand*{\kbdprn}[1]{\texttt{\string#1}} % Print filename
+\newcommand*{\kbdidx}[1]{% Print file verbatim in text and index
+  \kbdprn{#1}%
+  \index{\string\kbdprn{\string#1}}%
+} % end \newcommand
+% Similar to \cmdprn, \cmdidx, but used for machines, no TeXInfo equivalent
+\newcommand*{\mchprn}[1]{\textsf{\string#1}} % Print machine name
+\newcommand*{\mchidx}[1]{% Print machine verbatim in text and index
+  \mchprn{#1}%
+  \index{\string\mchprn{\string#1}}%
+} % end \newcommand
+% Similar to \cmdprn, \cmdidx, but used for proper names
+\newcommand*{\nmprn}[1]{\textsf{\string#1}} % Print proper name
+\newcommand*{\nmidx}[1]{% Print proper name verbatim in text and index
+  \nmprn{#1}%
+  \index{\string\nmprn{\string#1}}%
+} % end \newcommand
+% Similar to \cmdprn, \cmdidx, but used for Extended commands and character sequences, a la TeXInfo @samp
+\newcommand*{\smpprn}[1]{\texttt{\string#1}} % Print filename
+\newcommand*{\smpidx}[1]{% Print file verbatim in text and index
+  \smpprn{#1}%
+  \index{\string\smpprn{\string#1}}%
+} % end \newcommand
+% Similar to \cmdprn, \cmdidx, but used for variables, a la TeXInfo @var
+\newcommand*{\varprn}[1]{\ensuremath{\mbox{\textit{\string#1}}}} % Print variable
+\newcommand*{\varidx}[1]{% Print variable verbatim in text and index
+  \varprn{#1}%
+  \index{\string\varprn{\string#1}}%
+} % end \newcommand
+\makeatother
+
+% Lengths for table spacing
+\newlength{\cpthdrhlnskp}\setlength{\cpthdrhlnskp}{0.5ex} % Between caption header and first hline in table
+\newlength{\hlntblhdrskp}\setlength{\hlntblhdrskp}{2.5ex} % Between first hline and column header
+\newlength{\hlntblntrskp}\setlength{\hlntblntrskp}{2.5ex} % Between second hline and first entry
+\newlength{\tblendhlnskp}\setlength{\tblendhlnskp}{0.5ex} % Between last entry and last hline in table
+\newlength{\hlncptftrskp}\setlength{\hlncptftrskp}{1.0ex} % Between last entry and caption footer
+
+% Used for wrapping text in raggedright cells in tables in ZeK05
+\newcommand\newrightline{\newline\hspace*{\fill}} % Arsenau suggestion for table formatting
+
+% Lengths for homework
+\newlength{\hmwskpsht}\setlength{\hmwskpsht}{1.0cm} % Short skip between consecutive homework questions
+\newlength{\hmwskplng}\setlength{\hmwskplng}{2.0cm} % Long skip between consecutive homework questions
+
+% Acronyms
+% fxm: turn this into standalone style file, e.g., acr.sty
+% Typographical conventions are to set acronyms that are all caps in
+% smallcaps font
+% The Economist follows this convention
+% Figure out xspace package so trailing slashes are not required
+\newcommand{\acr}[1]{\textsc{#1}}
+\newcommand{\Postscript}{Postscript} % [sng] Postscript
+\newcommand{\NCOacr}{\textsc{nco}} % [sng] NCO acronym
+\newcommand{\NCOtrd}{\textsc{nco}\texttradmark} % [sng] NCO trademark
+\newcommand{\NCOrgs}{\textsc{nco}\textregistered} % [sng] NCO registered
+\newcommand{\EPSacr}{\textsc{eps}} % [sng] EPS acronym
+\newcommand{\PSacr}{\textsc{ps}} % [sng] PS acronym
+\newcommand{\PDFacr}{\textsc{pdf}} % [sng] PDF acronym
+\newcommand{\DVIacr}{\textsc{dvi}} % [sng] DVI acronym
+\newcommand{\GIFacr}{\textsc{gif}} % [sng] GIF acronym
+\newcommand{\JPEGacr}{\textsc{jpeg}} % [sng] JPEG acronym
+\newcommand{\UCIacr}{\textsc{uci}} % [sng] UCI acronym
+\newcommand{\PDFTeX}{\textsc{pdf}\TeX} % [sng] PDFTeX
+\newcommand{\PDFLaTeX}{\textsc{pdf}\LaTeX} % [sng] PDFLaTeX
+
+% Counter and command for enumerated references
+\newcounter{mltctt} % Counter for multiple citations in table
+\newcounter{enmrfr} % Counter for enumerated references in table
+\newcommand{\enmrfrstpprn}{\refstepcounter{enmrfr}\theenmrfr} % Advance enumerated reference by 1 and print it
+\newcommand{\enmrfrstp}{\refstepcounter{enmrfr}} % Advance enumerated reference by 1
+\newcounter{enmnot} % Counter for enumerated notes in table
+\newcommand{\enmnotstpprn}{\refstepcounter{enmnot}\theenmnot} % Advance enumerated note by 1 and print it
+\newcommand{\enmnotstp}{\refstepcounter{enmnot}} % Advance enumerated note by 1
+
+% Epigraphs to set nice tone
+\newcommand{\cszepigraph}[4]{ % Convert citation to epigraph
+\epigraph{#1}
+{\textit{\href{#2}{#3}}\\
+\textsc{#4}}
+} % end \cszepigraph
+
+% Chemistry macro from KoD95 p. 192
+% This macro keeps chemical subscripts, e.g., O_2 N_2, at same level 
+% Usage: \chemical{Fe_2^{2+}Cr_2O_4}
+\newlength{\fntxvi} \newlength{\fntxvii}
+\newcommand{\chemical}[1]
+{{\fontencoding{OMS}\fontfamily{cmsy}\selectfont
+  \fntxvi\the\fontdimen16\font
+  \fntxvii\the\fontdimen17\font
+  \fontdimen16\font=3pt\fontdimen17\font=3pt
+  $\mathrm{#1}$
+  \fontencoding{OMS}\fontfamily{cmsy}\selectfont % NB: cmsy or cmys?
+  \fontdimen16\font=\fntxvi \fontdimen17\font=\fntxvii}}
+
+% Numerals are verboten in TeX macro names, e.g., \H2O is not valid
+% Current workaround uses root acronyms to indicate cardinals:
+% Spanish is less ambiguous then latin or english
+% Convention:
+% Use lowercase Spanish for chemical subscripts, e.g., \HdO = H2O
+% Use uppercase English for dimensional powers, e.g., \wxmS = watt meter-2
+% English   Latin      Spanish
+% 1 = one = primus = p; = uno = u
+% 2 = two = secundus = s; = dos = d
+% 3 = three = tertius = t; = tres = t
+% 4 = four = quartus = q; = quatro (cuatro) = q
+% 5 = five = quintus = q; = cinco = c
+% 6 = six = sexus = s; = seis = s
+
+% Abbreviations 
+% fxm: Obsolete abbreviations used only in pre-1997 papers, e.g., PhD
+% fxm: update, standardize, and move from csz.sty to aer.sty, rt.sty
+% fxm: intermediate step: place in oldcommand.sty file
+\newcommand{\ANV}{\mbox{\textrm{ANV}}}
+\newcommand{\CCM}{\mbox{\textrm{CCM}}}
+\newcommand{\CWCdot}{\mbox{$\dot {\mbox{\textrm{CWC}}}$\/}}
+\newcommand{\CWC}{\mbox{\textrm{CWC}}}
+\newcommand{\CWPdot}{\mbox{$\dot {\mbox{\textrm{CWP}}}$\/}}
+\newcommand{\CWP}{\mbox{\textrm{CWP}}}
+\newcommand{\ECMWF}{\mbox{\textrm{ECMWF}}}
+\newcommand{\ERBE}{\mbox{\textrm{ERBE}}}
+\newcommand{\FABSNIR}{\mbox{$F^\mathrm{abs}_\mathrm{NIR}$}}
+\newcommand{\FABSTOT}{\mbox{$F^\mathrm{abs}_\mathrm{TOT}$}}
+\newcommand{\FABSVIS}{\mbox{$F^\mathrm{abs}_\mathrm{VIS}$}}
+\newcommand{\FABS}{\mbox{$F_\mathrm{abs}$}}
+\newcommand{\FASM}{\mbox{$F^{asm}$}}
+\newcommand{\FBB}{\mbox{$F_\mathrm{BB}$}}
+\newcommand{\FDWNASMsfc}{\mbox{$F^{\downarrow*}(\mathrm{sfc})$}}
+\newcommand{\FDWNEGR}{\mbox{$F^\downarrow(\mathrm{Egr})$}}
+\newcommand{\FDWNFSBRTOA}{\mbox{$F^\downarrow_\mathrm{FSBR}(\mathrm{TOA})$}}
+\newcommand{\FDWNFSBRsfc}{\mbox{$F^\downarrow_\mathrm{FSBR}(\mathrm{sfc})$}}
+\newcommand{\FDWNNIRTOA}{\mbox{$F^\downarrow_\mathrm{NIR}(\mathrm{TOA})$}}
+\newcommand{\FDWNNIRsfc}{\mbox{$F^\downarrow_\mathrm{NIR}(\mathrm{sfc})$}}
+\newcommand{\FDWNOTT}{\mbox{$F^\downarrow(\mathrm{Ott})$}}
+\newcommand{\FDWNTOA}{\mbox{$F^\downarrow(\mathrm{TOA})$}}
+\newcommand{\FDWNsfccld}{\mbox{$F^\downarrow_\mathrm{cld}(\mathrm{sfc})$}}
+\newcommand{\FDWNsfcclr}{\mbox{$F^\downarrow_\mathrm{clr}(\mathrm{sfc})$}}
+\newcommand{\FDWNsfc}{\mbox{$F^\downarrow(\mathrm{sfc})$}}
+\newcommand{\FDWN}{\mbox{$F^\downarrow$}}
+\newcommand{\FEGR}{\mbox{$F(\mathrm{Egr})$}}
+\newcommand{\FLNTC}{\mbox{$^\mathrm{TOA}_\mathrm{clr}F_\mathrm{LW}$}}
+\newcommand{\FLNT}{\mbox{$^\mathrm{TOA}_\mathrm{cld}F^{\uparrow}_\mathrm{LW}$}}
+\newcommand{\FLUS}{\mbox{$^{\mathrm{sfc}}_{\mathrm{cld}}F^{\uparrow}_{\mathrm{LW}}$}}
+\newcommand{\FNIR}{\mbox{$F_\mathrm{NIR}$}}
+\newcommand{\FOTT}{\mbox{$F(\mathrm{Ott})$}}
+\newcommand{\FSDT}{\mbox{$^\mathrm{TOA}_\mathrm{cld}F^\downarrow_\mathrm{SW}$}}
+\newcommand{\FSLRCST}{\mbox{$F_\odot$}}
+\newcommand{\FSNTC}{\mbox{$^\mathrm{TOA}_\mathrm{clr}F_\mathrm{SW}$}}
+\newcommand{\FSNT}{\mbox{$^\mathrm{TOA}_\mathrm{cld}F_\mathrm{SW}$}}
+\newcommand{\FSUT}{\mbox{$^\mathrm{TOA}_\mathrm{cld}F^\uparrow_\mathrm{SW}$}}
+\newcommand{\FSW}{\mbox{$F_\mathrm{SW}$}}
+\newcommand{\FTOAcld}{\mbox{$F_\mathrm{cld}(\mathrm{TOA})$}}
+\newcommand{\FTOAclr}{\mbox{$F_\mathrm{clr}(\mathrm{TOA})$}}
+\newcommand{\FTOA}{\mbox{$F(\mathrm{TOA})$}}
+\newcommand{\FUPEGR}{\mbox{$F^\uparrow(\mathrm{Egr})$}}
+\newcommand{\FUPOTT}{\mbox{$F^\uparrow(\mathrm{Ott})$}}
+\newcommand{\FUPTOA}{\mbox{$F^\uparrow(\mathrm{TOA})$}}
+\newcommand{\FUPsfc}{\mbox{$F^\uparrow(\mathrm{sfc})$}}
+\newcommand{\FUP}{\mbox{$F^\uparrow$}}
+\newcommand{\FVIS}{\mbox{$F_\mathrm{vis}$}}
+\newcommand{\Fsfccld}{\mbox{$F_\mathrm{cld}(\mathrm{sfc})$}}
+\newcommand{\Fsfcclr}{\mbox{$F_\mathrm{clr}(\mathrm{sfc})$}}
+\newcommand{\Fsfc}{\mbox{$F(\mathrm{sfc})$}}
+\newcommand{\Ga}{\mbox{$G_\mathrm{a}$}}
+\newcommand{\GCLD}{\mbox{$G_\mathrm{c}$}}
+\newcommand{\ISCCP}{\mbox{\textrm{ISCCP}}}
+\newcommand{\IWCdot}{\mbox{$\dot {\mbox{\textrm{IWC}}}$\/}}
+\newcommand{\IWC}{\mbox{\textrm{IWC}}}
+\newcommand{\IWPdot}{\mbox{$\dot {\mbox{\textrm{IWP}}}$\/}}
+\newcommand{\IWP}{\mbox{\textrm{IWP}}}
+\newcommand{\LWCFTOA}{\mbox{\textrm{LWCF(TOA)}}}
+\newcommand{\LWCFsfc}{\mbox{\textrm{LWCF(sfc)}}}
+\newcommand{\LWCF}{\mbox{\textrm{LWCF}}}
+\newcommand{\LWCdot}{\mbox{$\dot {\mbox{\textit{LWC}}}$\/}}
+\newcommand{\LWC}{\mbox{\textrm{LWC}}}
+\newcommand{\LWPdot}{\mbox{$\dot {\mbox{\textit{LWP}}}$\/}}
+\newcommand{\LWP}{\mbox{\textrm{LWP}}}
+\newcommand{\Lvi}{\mbox{\textrm{L$_\mathrm{vi}$}}}
+\newcommand{\Lvl}{\mbox{\textrm{L$_\mathrm{vl}$}}}
+\newcommand{\MAER}{\mbox{$M_\mathrm{aer}$}}
+\newcommand{\MVAPASM}{\mbox{$M_\mathrm{H_2O}^*$}}
+\newcommand{\MVAP}{\mbox{$M_\mathrm{H_2O}$}}
+\newcommand{\Mc}{\mbox{$M_\mathrm{c}$}}
+\newcommand{\NCF}{\mbox{\textrm{NCF}}}
+\newcommand{\OLRc}{\mbox{\textrm{OLR$_\mathrm{c}$}}}
+\newcommand{\OLR}{\mbox{\textrm{OLR}}}
+\newcommand{\Psnow}{\mbox{$P_\mathrm{i}$}}
+\newcommand{\QC}{\mbox{$Q_\mathrm{C}$}}
+\newcommand{\QD}{\mbox{$Q_\mathrm{D}$}}
+\newcommand{\QLS}{\mbox{$Q_\mathrm{LS}$}}
+\newcommand{\QL}{\mbox{$Q_\mathrm{L}$}}
+\newcommand{\QRL}{\mbox{$Q_\mathrm{LW}$}}
+\newcommand{\QRS}{\mbox{$Q_\mathrm{SW}$}}
+\newcommand{\QR}{\mbox{$Q_\mathrm{R}$}}
+\newcommand{\QT}{\mbox{$Q_\mathrm{T}$}}
+\newcommand{\Qv}{\mbox{$Q_\mathrm{v}$}}
+\newcommand{\RHp}{\mbox{${\mbox{\textrm{RH}}}'$}}
+\newcommand{\RH}{\mbox{\textrm{RH}}}
+\newcommand{\Rv}{\mbox{\textrm{R$_\mathrm{v}$}}}
+\newcommand{\SST}{\mbox{\textrm{SST}}}
+\newcommand{\SWCFTOA}{\mbox{\textrm{SWCF(TOA)}}}
+\newcommand{\SWCFsfc}{\mbox{\textrm{SWCF(sfc)}}}
+\newcommand{\SWCF}{\mbox{\textrm{SWCF}}}
+\newcommand{\Svi}{\mbox{$S_\mathrm{vi}$}}
+\newcommand{\Svl}{\mbox{$S_\mathrm{vl}$}}
+\newcommand{\TFLT}{\mbox{$T_\mathrm{FLT}$}}
+\newcommand{\TOBS}{\mbox{$T_\mathrm{OBS}$}}
+\newcommand{\Tc}{\mbox{$T_\mathrm{c}$}}
+\newcommand{\Ts}{\mbox{$T_\mathrm{s}$}}
+\newcommand{\cp}{\mbox{\textrm{c$_\mathrm{p}$}}}
+\newcommand{\dqidt}{\mbox{$\partial \qi / \partial t$}}
+\newcommand{\dqvidz}{\mbox{$\partial \qvi / \partial z$}}
+\newcommand{\evi}{\mbox{$e_\mathrm{vi}$}}
+\newcommand{\evl}{\mbox{$e_\mathrm{vl}$}}
+\newcommand{\fM}{\mbox{$f_\mathrm{M}$}}
+\newcommand{\fT}{\mbox{$f_\mathrm{T}$}}
+\newcommand{\ficeanv}{\mbox{$f_\mathrm{i}^\mathrm{ANV}$}}
+\newcommand{\ficeccm}{\mbox{$f_\mathrm{i}^\mathrm{CCM}$}}
+\newcommand{\fice}{\mbox{$f_\mathrm{i}$}}
+\newcommand{\gi}{\mbox{$g_\mathrm{i}$}}
+\newcommand{\gl}{\mbox{$g_\mathrm{l}$}}
+\newcommand{\hl}{\mbox{$h_\ell$}}
+\newcommand{\kabs}{\mbox{$\kappa_\mathrm{abs}$}}
+\newcommand{\kappai}{\mbox{$\kappa_\mathrm{i}$}}
+\newcommand{\kappal}{\mbox{$\kappa_\mathrm{l}$}}
+\newcommand{\mpsi}{\mbox{$\psi_\mathrm{M}$}}
+\newcommand{\omegai}{\mbox{$\omega_\mathrm{i}$}}
+\newcommand{\omegal}{\mbox{$\omega_\mathrm{l}$}}
+\newcommand{\pc}{\mbox{$p_\mathrm{c}$}}
+\newcommand{\psiabs}{\mbox{$\psi_\mathrm{abs}$}}
+\newcommand{\psiext}{\mbox{$\psi_\mathrm{ext}$}}
+\newcommand{\psisca}{\mbox{$\psi_\mathrm{sca}$}}
+\newcommand{\psismpnot}{\mbox{$\psi_\mathrm{SMP}$}}
+\newcommand{\psismp}{\mbox{$\psi_\mathrm{SMP}$}}
+%\newcommand{\ps}{\mbox{$p_\mathrm{s}$}}
+\newcommand{\qHdOHdO}{\mbox{$q_\mathrm{(H_2O)_2}$}}
+\newcommand{\qHdO}{\mbox{$q_\mathrm{H_2O}$}}
+\newcommand{\qR}{\mbox{$q_\mathrm{R}$}}
+\newcommand{\qcc}{\mbox{$q_\mathrm{c,c}$}}
+\newcommand{\qc}{\mbox{$q_\mathrm{c}$}}
+\newcommand{\qd}{\mbox{$Q_\mathrm{D}$}}
+\newcommand{\qidot}{\mbox{$\dot q_\mathrm{i}$}}
+\newcommand{\qi}{\mbox{$q_\mathrm{i}$}}
+\newcommand{\qldot}{\mbox{$\dot q_\mathrm{l}$}}
+\newcommand{\ql}{\mbox{$q_\mathrm{l}$}}
+\newcommand{\qr}{\mbox{$Q_\mathrm{R}$}}
+\newcommand{\qvi}{\mbox{$q_\mathrm{vi}$}}
+\newcommand{\qvl}{\mbox{$q_\mathrm{vl}$}}
+\newcommand{\qv}{\mbox{$q_\mathrm{v}$}}
+\newcommand{\rebar}{\mbox{$\overline{r_\mathrm{e}}$}}
+\newcommand{\rei}{\mbox{$r_\mathrm{ei}$}}
+\newcommand{\rel}{\mbox{$r_\mathrm{el}$}}
+\newcommand{\rdsffc}{\mbox{$r_\mathrm{e}$}}
+\newcommand{\rhoaer}{\mbox{$\rho_\mathrm{aer}$}}
+\newcommand{\rhol}{\mbox{$\rho_\ell$}}
+\newcommand{\rsphere}{\mbox{$r_\mathrm{s}$}}
+\newcommand{\sigmahexi}{\mbox{$\sigma_\mathrm{i}^\mathrm{hex}$}}
+\newcommand{\sigmamiei}{\mbox{$\sigma_\mathrm{Mie}^\mathrm{Mie}$}}
+\newcommand{\svi}{\mbox{$s_\mathrm{vi}$}}
+\newcommand{\svl}{\mbox{$s_\mathrm{vl}$}}
+\newcommand{\taui}{\mbox{$\tau_\mathrm{i}$}}
+\newcommand{\taul}{\mbox{$\tau_\mathrm{l}$}}
+\newcommand{\tauvisaer}{\mbox{$\tau_{0.5\mu}^\mathrm{aer}$}}
+\newcommand{\tauvisobs}{\mbox{$\tau_{0.5\mu}^\mathrm{obs}$}}
+\newcommand{\tauvistot}{\mbox{$\tau_{0.5\mu}^\mathrm{tot}$}}
+\newcommand{\vhnot}{\mbox{$V_\mathrm{H}^0$}}
+\newcommand{\vh}{\mbox{$V_\mathrm{H}$}}
+\newcommand{\wc}{\mbox{$w_\mathrm{c}$}}
+
