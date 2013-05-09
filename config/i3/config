@@ -4,12 +4,8 @@
 # STARTUP PROGRAMS & SETTINGS (Early)
 ######################################
 
-exec gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
-exec gnome-settings-daemon
-exec nm-applet
-exec gnome-sound-applet
-exec hsetroot -fill /home/jtprince/Dropbox/backgrounds/bep_smilin.jpg
-exec /usr/bin/dropbox start 
+exec --no-startup-id dbus-launch --sh-syntax --exit-with-session i3 -V -d all > ~/.config/i3/i3log-$(date +'%F-%k-%M-%S') 2>&1
+exec --no-startup-id autostart
 
 #########################
 # VARIABLES
@@ -55,12 +51,15 @@ client.urgent               #F00000     #F00000     #000000
 #########################
 
 ## parentheses left and right to change volume
-bindsym $mod+parenright exec /usr/bin/pactl set-sink-volume 0 -- '+5%'
-bindsym $mod+parenleft exec /usr/bin/pactl set-sink-volume 0 -- '-5%'
-bindsym $mod+m exec /home/jtprince/bin/toggle_mute
+bindsym $mod+parenright exec pactl set-sink-volume 0 -- '+5%'
+bindsym $mod+parenleft exec pactl set-sink-volume 0 -- '-5%'
+bindsym $mod+m exec toggle_mute
 # toggle_mute is two lines:
 #/usr/bin/pactl list sinks | grep -q Mute:.yes
 #/usr/bin/pactl set-sink-mute 0 ${PIPESTATUS[1]}
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 -- '+5%'
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -- '-5%'
+bindsym XF86AudioMute exec toggle_mute
  
 # if not using pulseaudio:
 #bindsym $mod+parenright exec amixer set Master 5%+
@@ -106,15 +105,22 @@ floating_modifier $mod
 #########################
 # Preferred applications
 #########################
-# some can be set in gnome, but for this config
-set $browser /usr/bin/chromium-browser --allow-outdated-plugins
-# your system's default terminal
-set $terminal /usr/bin/x-terminal-emulator
+# use the system default browser
+#set $browser x-www-browser
+set $browser chromium-browser
+
+# debian/ubuntu default terminal
+#set $terminal x-terminal-emulator
+set $terminal gnome-terminal
+
+set $filemanager nautilus --no-desktop
 
 bindsym $mod+x exec $terminal
 bindsym $mod+i exec $browser
 bindsym $mod+e exec $browser --new-window http://gmail.com
 bindsym $mod+c exec $browser --new-window http://calendar.google.com
+
+bindsym $mod+n exec $filemanager
 
 #######################
 # LIFE AND DEATH
@@ -137,6 +143,7 @@ bindsym $mod+Shift+Q exit
 
 # shutdown the computer: sudo chmod u+s /sbin/poweroff
 bindsym $mod+Ctrl+Shift+P exec poweroff -p
+bindsym $mod+Ctrl+Shift+R exec reboot
 
 #######################
 # FOCUS
@@ -304,6 +311,7 @@ bar {
   }
 }
 
+
 #######################
 # I3 SCRIPTING
 #######################
@@ -316,6 +324,8 @@ bar {
 ######################################
 # STARTUP PROGRAMS & SETTINGS (Late)
 ######################################
+
+exec --no-startup-id autostart late
 
 # note that you should mount these once with nautilus and remember the
 # password, then you never have to type in the password!

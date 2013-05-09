@@ -1,0 +1,48 @@
+
+alias libreoffice_to_pdf="libreoffice --headless --invisible --convert-to pdf"
+
+# hosts
+alias gosuper="ssh -Y $SUPER"
+alias gobigmem="ssh -Y $BIGMEM"
+alias kelso="rdesktop -g workarea $KELSOIP"
+
+# apt-get
+alias apti='sudo aptitude install'
+alias aptinstall='sudo aptitude install'
+alias apts='aptitude search'
+alias aptsearch='aptitude search'
+alias aptr='sudo aptitude remove --purge-unused'
+alias aptremove='sudo aptitude remove --purge-unused'
+alias aptshow='aptitude show'
+alias addkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
+
+# extraction
+alias utar='dtrx -n'
+
+# navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+# ruby
+alias be="bundle exec"
+alias irb="pry"
+
+# misc
+alias logoutnow="gnome-session-quit --logout"
+alias ls="ls --color=auto"
+alias bunzip='bunzip2'
+alias bzip='bzip2'
+alias dl='gvfs-trash'
+alias presentation="xrandr --output VGA1 --mode 1024x768 --same-as primary"
+alias presentation_hidden="xrandr --output VGA1 --mode 1024x768 --right-of primary"
+alias unpresentation="xrandr --output primary"
+
+# spelling mistakes
+alias sl="ls"
+alias givm="gvim"
+alias gvmi="gvim"
+alias gimv="gvim"
+alias mdkir="mkdir"
+alias eixt="exit"
