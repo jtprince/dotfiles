@@ -1,0 +1,103 @@
+#!/usr/bin/ruby
+# coding: utf-8
+
+require 'optparse'
+require 'rexml/streamlistener'
+require 'rexml/document'
+require 'fileutils'
+
+class TextListener
+  include REXML::StreamListener
+  def initialize
+    @all_text = ""
+  end
+  def text(txt)
+    @all_text << txt
+  end
+  def get_all_text
+    @all_text
+  end
+end
+
+opt = {
+  :e => false,
+  :i => false,
+  :m => false
+}
+opts = OptionParser.new do |op|
+  op.banner = "usage: #{File.basename(__FILE__)} [-iem] <regexp> [<dir>]"
+  op.separator "prints the filenames whose text matches"
+  op.separator ""
+  op.on("-i", "--insensitive", "case insensitive matching") {|v| opt[:i] = true }
+  op.on("-e", "--extended", "extended matching") {|v| opt[:e] = true }
+  op.on("-m", "--multiline", "multiline matching") {|v| opt[:m] = true }
+end
+
+opts.parse!
+
+if ARGV.size == 0
+  puts opts
+  exit
+end
+
+# unzips the file for looking at, destroys the unzipped archive when done
+# yields the directory it unzipped to
+def unzip_open_document(file, &block)
+  cnt = 0
+  tmpdir = "oogrep_unzip_open_doc.tmp#{cnt}" 
+  while File.exist?(tmpdir)
+    tmpdir[-1,1] = cnt.to_s
+    cnt += 1
+  end
+  system "unzip -q -d #{tmpdir} '#{file}'"
+  contents = Dir["#{tmpdir}/*"]
+  block.call(contents, tmpdir)
+  FileUtils.rm_rf(tmpdir)
+end
+
+# takes the content.xml file from opendoc format and returns the text
+def text_from_content_xml(content_file)
+  listener = TextListener.new
+  File.open(content_file) do |io|
+    REXML::Document.parse_stream(io, listener)
+  end
+  listener.get_all_text
+end
+
+(regexp_st, dir) = ARGV
+
+dir ||= '.'
+p dir
+
+regexp_opts = [Regexp::EXTENDED, Regexp::IGNORECASE, Regexp::MULTILINE]
+
+regexp_bit_option = opt.values_at(:e, :i, :m).zip(regexp_opts).inject(0) do |final,opt_pair|
+  (boolean, val) = opt_pair
+  final = final | val if boolean
+  final
+end
+
+regexp = Regexp.new(regexp_st, regexp_bit_option)
+
+#ooexts_re = /\.(ods)|(odt)|(odp)|(odg)/io
+#ooexts_re = /\.(ods|odt|odp|odg)/io
+
+ooexts_glob = "**/*.{ods,odt,odp,odg}"
+ooexts_glob_upcase = ooexts_glob.upcase
+
+# Having trouble with the File::FNM_CASEFOLD argument giving "invalid byte sequence in UTF-8"
+[ooexts_glob, ooexts_glob_upcase].each do |glob| 
+  Dir.glob(File.join(dir, glob)).each do |path|
+    unzip_open_document(path) do |contents, dir|
+      content_file = File.join(dir, "content.xml")
+      if File.exist?(content_file)
+        text = text_from_content_xml(content_file)
+        if md = regexp.match(text)
+          puts "#{path}"
+        end
+      else
+        puts "Can't seem to find #{content_file}"
+      end
+    end
+  end
+end

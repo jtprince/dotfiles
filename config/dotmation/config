@@ -1,20 +1,22 @@
 
-repo "spec/testfiles/tmp/dotrepos" # where to put all these files
+cache_dir "~/src/remote_dotfiles"
 
-github "jtprince/dotfiles" do      # stored in ~/dotrepos/jtprince/dotfiles
-  dir 'config' do
-    dot 'Xresources'               # symlink ~/.Xresources
-    dot 'Xresources', '.Xdefaults' # symlink ~/.Xdefaults -> Xresources
-    dot 'zsh/zshenv'               # symlink ~/.zshenv
+github "jtprince/dotfiles" do
+  dot 'Xresources'
+  dot 'Xresources', '.Xdefaults'
+  
+  #dot 'Xresources'
+  #dot 'Xresources', '.Xdefaults'
+  #dot 'zsh/zshenv'
 
-    xdg 'dunstrc'                  # symlink ~/.config/dunstrc
-    xdg 'zsh'                      # symlink ~/.config/zsh
-    xdg 'i3/config', 'i3/'         # symlink ~/.config/i3/config
+  #cfg 'dunstrc'
+  #cfg 'zsh'
+  #cfg 'i3/config', 'i3/'
   end
 end
 
-github "robbyrussel/oh-my-zsh" do
-  xdg .                            # symlink ~/.config/oh-my-zsh
-end
+#github "robbyrussel/oh-my-zsh" do
+#  xdg .                            # symlink ~/.config/oh-my-zsh
+#end
 
 

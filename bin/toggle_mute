@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/usr/bin/pactl list sinks | grep -q Mute:.yes
+/usr/bin/pactl set-sink-mute 0 ${PIPESTATUS[1]}

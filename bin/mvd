@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+DOWNLOADS_DIR = ENV['HOME'] + '/Downloads'
+
+def latest(n)
+  Dir.chdir(DOWNLOADS_DIR) do
+    accessed = Dir['*'].sort_by {|f| File.atime(f) }
+    accessed[(-n)..-1].map {|f| File.expand_path(f) }
+  end
+end
+
+opt = {}
+opts = OptionParser.new do |op|
+  op.banner = "usage: #{File.basename(__FILE__)} [COUNT] <dest>"
+  op.separator "moves the latest downloaded file(s) to <dest>"
+  op.separator "if given a count, moves the latest COUNT files to the <dest> dir"
+  op.on("-l", "--list", "just list the contents, don't move them") {|v| opt[:list] = v }
+end
+opts.parse!
+
+if ARGV.size == 0
+  puts opts
+  exit
+end
+
+count = ARGV.size == 2 ? ARGV.shift.to_i : 1
+dest = ARGV.shift
+
+abort 'destination must be a dir' if count.size > 1 && File.directory?(dest).!
+
+full_paths = latest(count)
+abort 'file must still be downloading!' if full_paths.any? {|f| File.extname(f).include?("crdownload") }
+
+if opt[:list]
+  puts full_paths
+else
+  system "mv", *full_paths, dest
+end

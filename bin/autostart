@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ "$1" != "late" ]; then
+    xrdb -merge ~/.Xdefaults
+    start-pulseaudio-x11
+    #eval `dbus-launch --sh-syntax --exit-with-session`
+    dunst -config ~/.config/dunstrc &
+    xmodmap ~/.config/xmodmap
+    thunar --daemon &
+    gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
+    volti &
+    nm-applet &
+    dropbox start 
+    notify-send -u low 'initialized!'
+else
+    hsetroot -fill ~/Dropbox/backgrounds/bep_smilin.jpg
+    if [ `hostname` == "prince" ]; then
+        notify-send -u low 'chem dirs mounted!'
+        mount_chem_dirs.rb all
+    fi
+fi
+

@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+if ARGV.length == 0
+  puts "tarz [-d] dir"
+  puts "outputs: dir.tgz"
+  puts "-d deletes dir"
+  puts "trailing '/' or '\\' is OK"
+  exit
+end
+
+
+files = []
+deleteflag = false
+bzipflag = false
+ARGV.each do |arg|
+  if arg[0,1] == '-'
+    if arg.include?('d')
+      deleteflag = true
+    end
+    if arg.include?('j') 
+      bzipflag = true
+    end
+  else
+    files.push(arg)
+  end
+end
+
+compression_flag = bzipflag ? 'j' : 'z'
+ext = bzipflag ? '.tar.bz2' : '.tgz'
+
+files.each do |filearg|
+  file = filearg.dup
+
+  file.gsub!(/\/$/, '')
+  file.gsub!(/\\$/, '')
+
+  tarfile = file + ext
+
+  reply = `tar -c#{compression_flag}f #{tarfile} #{file}`
+  puts "CREATING: " + tarfile
+  if reply =~ /\w/
+    puts reply
+  else
+    if deleteflag   # only delete if there was no reply on the tar command!
+      puts "REMOVING: #{file}"
+      system "rm -rf #{file}"
+    end
+  end
+
+end
+
+

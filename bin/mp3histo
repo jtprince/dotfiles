@@ -1,0 +1,42 @@
+#!/bin/sh	
+# mp3histo v0.5 7/8/9
+usage() {
+	[ "$1" ] && echo $1
+	echo "usage: `basename $0` filename.mp3"
+	echo "(requires checkmp3)"; exit 1
+}
+[ "$1" ] || usage
+[ -r "$1" ] || usage "no file $1"	# "$1" may have spaces
+stem=${1%.mp3}; [ "${stem}.mp3" = "$1" ] || usage "$1 not *.mp3"
+tmpf=/tmp/`basename "$1"`		# avoid using subshell
+
+brtab='32 40 48 56 64 80 96 112 128 160 192 224 256 320'
+for i in $brtab max all; do eval count_$i=0; done
+
+checkmp3 -avv "${stem}.mp3" | awk '/BitRate/ { print $2 }' > $tmpf
+while read br; do
+	[ "${brtab% $br*}" = "$brtab" ] && echo "bad rate $br" && continue
+	eval count_$br=\$\(\(\$count_$br + 1\)\)
+done < $tmpf	# ; rm $tmpf
+
+for br in $brtab; do
+	eval i=\$count_$br
+	[ $i -gt $count_max ] && count_max=$i  
+	count_all=$(($count_all + $i))
+done
+
+[ -f "$stem.histo" ] && rm "$stem.histo"
+for br in $brtab; do
+	[ $br -gt 96 ] && f='' || f=' '
+	eval echo -n "$br \$count_$br" \
+	| awk -v max=$count_max -v t="	" -v f="$f" -v width=64 -v ch="*" \
+		' { len=int($2/max*width); bar=""; OFS="";
+		for (i=0; i<len; i++) bar=bar ch;
+		print "[",f,$1,"] ",$2, t bar } ' >> "$stem.histo"
+done
+echo "[all] $count_all" >> "$stem.histo"
+
+touch -r "$stem.mp3" "$stem.histo"
+cat "$stem.histo"
+exit 0
+

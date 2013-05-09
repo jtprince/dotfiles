@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require 'shellwords'
+
+if ARGV.size == 0
+  puts "usage: #{File.basename(__FILE__)} <filename> ..."
+  puts "permanently deletes the file from history and in current HEAD"
+  puts ""
+  puts "to remove upstream execute: git push origin <branch> --force"
+  puts "e.g.$   git push origin master --force"
+  exit
+end
+
+abort 'need to be in root git directory' unless File.exist?('.git')
+
+# remove all paths passed as arguments from the history of the repo
+escaped_files=ARGV.map {|f| Shellwords.escape(f) }
+
+system %Q{git filter-branch --index-filter "git rm -rf --cached --ignore-unmatch #{escaped_files.join(' ')}" HEAD}
+ 
+# remove the temporary history git-filter-branch otherwise leaves behind for a long time
+system "rm -rf .git/refs/original/" 
+system "git reflog expire --all"
+system "git gc --aggressive --prune"

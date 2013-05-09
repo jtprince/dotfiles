@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+base = "gunzip"
+
+$KEEP = false
+opts = OptionParser.new do |op|
+  op.banner = "usage: #{File.basename(__FILE__)} [-k] <file>.gz ..."
+  op.separator "outputs: <file> ..."
+  op.on("-k", "--keep", "keep the originals") {|v| $KEEP = true }
+end
+
+opts.parse!
+
+if ARGV.size == 0
+  puts opts
+  exit
+end
+
+ARGV.each do |file|
+  cmd = 
+    if $KEEP
+      base + " < #{file} > #{file.chomp(File.extname(file))}"
+    else
+      bast + " " + file
+    end
+  reply = `#{cmd}`
+  puts reply if reply =~ /\w/
+end
