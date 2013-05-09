@@ -12,7 +12,6 @@ github "jtprince/dotfiles" do
   #cfg 'dunstrc'
   #cfg 'zsh'
   #cfg 'i3/config', 'i3/'
-  end
 end
 
 #github "robbyrussel/oh-my-zsh" do
