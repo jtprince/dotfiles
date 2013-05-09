@@ -10,6 +10,8 @@ github "jtprince/dotfiles/config" do
   dot 'Xresources'
   dot 'Xresources', '.Xdefaults'
 
+  cfg 'xmodmap'
+
   cfg 'git'
   dot 'git/config', '.gitconfig'
   dot 'git/ignore', '.gitignore'
