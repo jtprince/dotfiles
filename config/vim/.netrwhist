@@ -1,5 +1,5 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_cnt =9
 let g:netrw_dirhist_1='/home/jtprince/dev/mspire/lib/mspire/mzml'
 let g:netrw_dirhist_2='/home/jtprince/dev/mspire/lib/mspire/ident/peptide_hit'
 let g:netrw_dirhist_3='/home/jtprince/Dropbox/env/.vim'
@@ -8,3 +8,4 @@ let g:netrw_dirhist_5='/home/jtprince/.config/gtk-3.0'
 let g:netrw_dirhist_6='/home/jtprince/dev/massifquant-pub/source/latex'
 let g:netrw_dirhist_7='/home/jtprince/dev'
 let g:netrw_dirhist_8='/home/jtprince/dev/dotmation'
+let g:netrw_dirhist_9='/home/jtprince/.config/i3'

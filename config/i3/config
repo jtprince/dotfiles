@@ -67,6 +67,24 @@ bindsym XF86AudioMute exec toggle_mute
 #bindsym $mod+m exec amixer set Master toggle
 
 #########################
+# Music player
+#########################
+# using moc right now
+
+bindsym XF86AudioNext exec mocp --next
+bindsym XF86AudioPlay exec mocp --toggle-pause
+bindsym XF86AudioPrev exec mocp --previous
+# key 1 on my microsoft keyboard
+bindsym XF86Launch5 exec mocp --toggle shuffle
+# play the same song infinitely
+bindsym XF86Favorites exec mocp --on repeat --off autonext
+# normal mode (no repeat) autonext
+bindsym XF86Launch9 exec mocp --off repeat --on autonext
+
+# http://wiki.linuxquestions.org/wiki/XF86_keyboard_symbols
+# http://praksh.wordpress.com/2010/06/13/moc-the-terminal-music-player-for-all-your-needs/
+
+#########################
 # DESKTOP MOVEMENT
 #########################
 
