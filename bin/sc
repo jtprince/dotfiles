@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
+require 'shellwords'
 
 viewers = {
   'e' => 'eog',
@@ -15,15 +16,18 @@ def bold(text)
   "\033[1m\033[31m" + text + "\033[0m"
 end
 
+TIME_STAMP_FORMAT = "%Y-%m-%d--%H-%M-%S"
+
 opts = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [OPTS] filename[.png]"
-  op.separator ""
-  op.separator "always copies the image onto the clipboard using xclip"
   op.separator ""
   op.on("-d", "--delay <sec>", Float, "delay that many seconds") {|v| opt[:delay] = v }
   op.on("-b", "--box", "draw a box to capture") {|v| opt[:box] = v }
   op.on("-w", "--window", "select a window to capture") {|v| opt[:window] = v }
   op.on("-o", "--open <s>", "#{bold('g')}eeqie|#{bold('e')}og|gi#{bold('m')}p|#{bold('i')}nkscape") {|v| opt[:open] = viewers[v] || v }
+  op.on("--parcellite", "copies image to parcellite") {|v| opt[:parcellite] }
+  op.on("--dir <s>", "save to this directory") {|v| opt[:dir] = v }
+  op.on("--timestamp", "add a date/time stamp to filename") {|v| opt[:timestamp] = v }
 end
 opts.parse!
 
@@ -35,6 +39,11 @@ end
 filename = ARGV.shift
 filename += ".png" unless filename =~ /\.png/i
 
+if opt[:timestamp]
+  ext = File.extname(filename)
+  base = filename.chomp(ext)
+  filename = base + "-" + Time.now.strftime(TIME_STAMP_FORMAT) + ext
+end
 
 # create the command
 cmd = 
@@ -47,22 +56,21 @@ cmd =
     "import -window root '#{filename}'"
   end
 
-"xclip '#{filename}'"
-
 # sleep if necessary
 if opt[:delay]
   sleep(opt[:delay]) 
 end
 
-system cmd
+dir = (opt[:dir] && File.expand_path(opt[:dir]) ) || Dir.pwd
 
-if opt[:open]
-  sleep(0.1)
+Dir.chdir(dir) do
+  system cmd
 
-  system("#{opt[:open]} '#{filename}' &")
+  if opt[:open]
+    sleep(0.1)
+    cmd = "#{opt[:open]} #{Shellwords.escape(filename)} &"
+    puts cmd
+    system cmd
+  end
 end
-
-
-
-
 

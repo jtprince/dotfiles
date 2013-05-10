@@ -40,7 +40,9 @@ github "jtprince/dotfiles/config" do
   cfg 'dunstrc'
   cfg 'i3/config', 'i3/'
 
-  dot 'moc'
+  #dot 'moc'
+  dot 'mpd'
+  dot 'ncmpcpp'
 end
 
 github "jtprince/dotfiles/config/latex" do

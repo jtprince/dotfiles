@@ -1,5 +1,28 @@
 # userguide: http://i3wm.org/docs/userguide.html
 
+# use xev to determine keynames
+#
+# keys on most of my keyboards not yet being used:
+# XF86Documents
+# XF86HomePage
+# XF86Mail
+# XF86Phone
+# XF86Back
+# XF86Forward
+# XF86Calculator
+# The alternate F-Lock keys:
+#   Help
+#   Undo
+#   Redo
+#   XF86New
+#   SunOpen
+#   XF86Close
+#   XF86Reply
+#   XF86MailForward
+#   XF86Send
+#   XF86Save
+#   Print
+
 ######################################
 # STARTUP PROGRAMS & SETTINGS (Early)
 ######################################
@@ -69,17 +92,24 @@ bindsym XF86AudioMute exec toggle_mute
 #########################
 # Music player
 #########################
-# using moc right now
-
-bindsym XF86AudioNext exec mocp --next
-bindsym XF86AudioPlay exec mocp --toggle-pause
-bindsym XF86AudioPrev exec mocp --previous
+# commands for mpd
+bindsym XF86AudioNext exec mpc next
+bindsym XF86AudioPlay exec mpc toggle
+bindsym XF86AudioPrev exec mpc prev
 # key 1 on my microsoft keyboard
-bindsym XF86Launch5 exec mocp --toggle shuffle
+# shuffle the playlist
+bindsym XF86Launch5 exec mpc shuffle
+
+# commands for moc
+#bindsym XF86AudioNext exec mocp --next
+#bindsym XF86AudioPlay exec mocp --toggle-pause
+#bindsym XF86AudioPrev exec mocp --previous
+# key 1 on my microsoft keyboard
+#bindsym XF86Launch5 exec mocp --toggle shuffle
 # play the same song infinitely
-bindsym XF86Favorites exec mocp --on repeat --off autonext
+#bindsym XF86Favorites exec mocp --on repeat --off autonext
 # normal mode (no repeat) autonext
-bindsym XF86Launch9 exec mocp --off repeat --on autonext
+#bindsym XF86Launch9 exec mocp --off repeat --on autonext
 
 # http://wiki.linuxquestions.org/wiki/XF86_keyboard_symbols
 # http://praksh.wordpress.com/2010/06/13/moc-the-terminal-music-player-for-all-your-needs/
@@ -134,11 +164,27 @@ set $terminal gnome-terminal
 set $filemanager nautilus --no-desktop
 
 bindsym $mod+x exec $terminal
+
+bindsym XF86HomePage exec $browser
 bindsym $mod+i exec $browser
+
+bindsym XF86Mail exec $browser --new-window http://gmail.com
 bindsym $mod+e exec $browser --new-window http://gmail.com
+
 bindsym $mod+c exec $browser --new-window http://calendar.google.com
 
 bindsym $mod+n exec $filemanager
+
+bindsym XF86Documents exec libreoffice --minimized --nologo --writer
+bindsym $mod+g exec gvim
+
+bindsym XF86Calculator exec gnome-terminal -x orpie
+
+bindsym XF86Phone exec $browser --new-window http://voice.google.com
+
+bindsym Print exec sc --dir ~/screenshots --timestamp screenshot -o e
+#bindsym $mod+Print exec sc -w --dir ~/screenshots --timestamp window
+bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e
 
 #######################
 # LIFE AND DEATH
