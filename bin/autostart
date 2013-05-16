@@ -12,6 +12,7 @@ if [ "$1" != "late" ]; then
     volti &
     nm-applet &
     dropbox start 
+    mpd
     notify-send -u low 'initialized!'
 else
     hsetroot -fill ~/Dropbox/backgrounds/bep_smilin.jpg

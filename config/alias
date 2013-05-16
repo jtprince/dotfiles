@@ -6,6 +6,8 @@ alias gosuper="ssh -Y $SUPER"
 alias gobigmem="ssh -Y $BIGMEM"
 alias kelso="rdesktop -g workarea $KELSOIP"
 
+alias mp="ncmpcpp"
+
 # apt-get
 alias apti='sudo aptitude install'
 alias aptinstall='sudo aptitude install'
