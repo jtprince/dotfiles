@@ -249,8 +249,8 @@ bindsym $mod+f fullscreen
 
 # change container layout (stacked, tabbed, default)
 bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+t layout default
+bindsym $mod+t layout tabbed
+bindsym $mod+d layout default
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -264,26 +264,26 @@ bindsym $mod+space focus mode_toggle
 
 # switch to workspace
 bindsym $mod+1 workspace 1:work
-bindsym $mod+2 workspace 2:mail
 bindsym $mod+3 workspace 3:music
-bindsym $mod+4 workspace 4:kelso
-bindsym $mod+5 workspace 5:other
-bindsym $mod+6 workspace 6:pubcrawler
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
 bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
+bindsym $mod+2 workspace 9:mail
 bindsym $mod+0 workspace 10
 
 # move focused container to workspace
 bindsym $mod+Shift+exclam move workspace 1:work
-bindsym $mod+Shift+at move workspace 2:mail
+bindsym $mod+Shift+at move workspace 2
 bindsym $mod+Shift+numbersign move workspace 3:music
-bindsym $mod+Shift+dollar move workspace 4:kelso
-bindsym $mod+Shift+percent move workspace 5:other
-bindsym $mod+Shift+asciicircum move workspace 6:pubcrawler
+bindsym $mod+Shift+dollar move workspace 4
+bindsym $mod+Shift+percent move workspace 5
+bindsym $mod+Shift+asciicircum move workspace 6
 bindsym $mod+Shift+ampersand move workspace 7
 bindsym $mod+Shift+asterisk move workspace 8
-bindsym $mod+Shift+parenleft move workspace 9
+bindsym $mod+Shift+parenleft move workspace 9:mail
 bindsym $mod+Shift+parenright move workspace 10
 
 #######################

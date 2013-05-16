@@ -232,6 +232,10 @@ noremap j f
 
 noremap hh gg
 
+" center the next and prev search matches to center of screen
+nmap n nzz
+nmap N Nzz
+
 " ****************************************************************
 " COPY & PASTE using the external clipboard
 " F2-cut, F3-copy, F4-paste

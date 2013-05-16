@@ -1,7 +1,8 @@
 
 repo_cache "~/src/remote_dotfiles"
 
-pkg %w(git dunst mpd ncmpcpp)
+pkg %w(git dunst mpd ncmpcpp orpie chromium-browser)
+# need to add libreoffice files
 
 github "jtprince/dotfiles/config" do
 
