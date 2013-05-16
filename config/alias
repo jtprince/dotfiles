@@ -1,11 +1,12 @@
 
-alias libreoffice_to_pdf="libreoffice --headless --invisible --convert-to pdf"
+alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
 # hosts
 alias gosuper="ssh -Y $SUPER"
 alias gobigmem="ssh -Y $BIGMEM"
 alias kelso="rdesktop -g workarea $KELSOIP"
 
+alias sudoe="sudo -E"
 alias mp="ncmpcpp"
 
 # apt-get

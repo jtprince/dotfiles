@@ -2,12 +2,68 @@
 
 set nocompatible      " vim, not vi (first because of side-effects)
 
-" Environment
+" Environment (follow XDG specification) ====================================
+
 set directory=~/tmp,/tmp
 set backupdir=~/tmp,/tmp
 set viminfo+=n$XDG_CACHE_HOME/vim/viminfo
 set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
 let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc"
+
+let mapleader = ','
+
+" VUNDLE ====================================================================
+
+" setup:
+filetype on
+filetype off                   " required!
+set rtp+=~/.config/vim/bundle/vundle/
+call vundle#rc( "~/.config/vim/bundle" )
+Bundle 'gmarik/vundle'
+
+" bundles:
+
+" UPDATE
+" vim +BundleInstall +qall
+
+" open and edit the file you want including path searching
+"   command-t needs C-extensions:
+"   ensure ruby-dev is installed, then 'rake make' in folder
+Bundle 'git://git.wincent.com/command-t.git'
+" powerful comment/uncomment for diff't languages
+Bundle 'scrooloose/nerdcommenter'
+" allow doing diffs on small sections
+Bundle 'AndrewRadev/linediff.vim'
+
+" do git things
+" "Bundle 'tpope/vim-fugitive'
+" change surround characters
+" "Bundle 'tpope/vim-surround'
+" ensure that things get closed up properly
+" "Bundle 'spf13/vim-autoclose'
+" line up programming structures
+" "Bundle 'godlygeek/tabular'
+" view the undo tree
+" "Bundle 'mbbill/undotree'
+" fancy word substition and completion
+" "Bundle 'tpope/vim-abolish'
+
+" vundle post-hook:
+filetype plugin indent on     " required!
+
+" Brief help
+" :BundleList          - list configured bundles
+" :BundleInstall(!)    - install(update) bundles
+" :BundleSearch(!) foo - search(or refresh cache first) for foo
+" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
+"
+" see :h vundle for more details or wiki for FAQ
+
+" ENABLE plugins ============================================================
+
+filetype on           " Enable filetype detection
+filetype indent on    " Enable filetype-specific indenting
+filetype plugin on    " Enable filetype-specific plugins
 
 " SIZE ======================================================================
 
@@ -22,14 +78,7 @@ if has("win32")
     set guifont=Andale_Mono:h8
 else
     set guifont=Deja\ Vu\ Sans\ Mono\ 10
-"    set guifont=Inconsolata\ Medium\ 10
 endif
-
-" ENABLE plugins ============================================================
-
-filetype on           " Enable filetype detection
-filetype indent on    " Enable filetype-specific indenting
-filetype plugin on    " Enable filetype-specific plugins
 
 " BASIC CONFIG ==============================================================
 
@@ -52,6 +101,14 @@ set gcr=a:blinkon0 "Disable cursor blink
 set autoread    " Reload files changed outside vim
 set hidden      " buffers can exist in bkg w/o window
 set history=1000 " size of command history
+
+set fileformats=unix,dos,mac
+if exists("+spelllang")
+  set spelllang=en_us
+endif
+set spellfile=~/.vim/spell/en.utf-8.add
+
+" set statusline=[%n]\ %<%.99f\ %h%w%m%r%{SL('CapsLockStatusline')}%y%{SL('fugitive#statusline')}%#ErrorMsg#%{SL('SyntasticStatuslineFlag')}%*%=%-14.(%l,%c%V%)\ %P
 
 " search ====================================================================
 
@@ -83,26 +140,6 @@ autocmd BufRead *.yaml set ts=2 sw=2 sts=2
 " make
 au FileType make setlocal noexpandtab   " turn off et for makefiles
 
-" pathogen.vim ==============================================================
-
-call pathogen#infect()
-
-" vim slime  ================================================================
-
-let g:slime_target = "tmux"
-" use default for socket name
-" : - current window
-" :3 - 3rd window, current pane (zero indexed??)
-" :3.2 - 3rd window, jth pane, (zero indexed??)
-
-" minibufexpl.vim =======================================================
-
-let g:miniBufExplMapWindowNavVim = 1
-let g:miniBufExplMapWindowNavArrows = 1
-let g:miniBufExplMapCTabSwitchBufs = 1
-let g:miniBufExplModSelTarget = 1
-let g:miniBufExplTabWrap = 1 " make tabs show complete (no broken on two lines)
-
 " FOLDING =======================================================
 
 set foldenable          " Turn on folding
@@ -122,6 +159,40 @@ iab pirnt print
 iab serach search
 iab boolena boolean
  
+" ****************************************************************
+" SWAP things around
+" For example, to swap "apple" and "orange" in the line below:
+"         int apple, lemon, orange;
+" 1. Delete "apple", using (for example) dw
+" 2. Visually select "orange"
+" 3. Press CTRL-X
+vnoremap <C-X> <Esc>`.``gvP``P
+
+" swap current word with next
+:nnoremap <silent> hw "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><c-o><c-l>
+" swap current word with previous
+:nnoremap <silent> hl "_yiw?\w\+\_W\+\%#<CR>:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><c-o><c-l>
+" push word to the right in sequence
+:nnoremap <silent> hr "_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><c-o>/\w\+\_W\+<CR><c-l
+" swap current paragraph with next
+:nnoremap h{ {dap}p{
+
+function WordWrap()
+    set formatoptions+=l
+    set lbr
+endfunction
+
+function NoWordWrap()
+    set formatoptions-=l
+    set nolbr
+endfunction
+":call WordWrap()
+" [there has got to be a cleaner way to do this...]
+
+" *************************************************************************** 
+noremap \ldf :Linediff<CR>
+noremap \ldo :LinediffReset<CR>
+
 " *************************************************************************** 
 " LEFT-HANDED NAVIGATION
 " s (go left) g (go right) d (go down) f (go up) 
@@ -139,32 +210,6 @@ noremap j f
 noremap hh gg
 
 " ****************************************************************
-" NERD_comment
-" visualize something, hit 'comma, pound'
-vmap ,# ,cc
-
-" ****************************************************************
-" SWAP things around
-" For example, to swap "apple" and "orange" in the line below:
-"         int apple, lemon, orange;
-" 1. Delete "apple", using (for example) dw
-" 2. Visually select "orange"
-" 3. Press CTRL-X
-vnoremap <C-X> <Esc>`.``gvP``P
-
-function WordWrap()
-    set formatoptions+=l
-    set lbr
-endfunction
-
-function NoWordWrap()
-    set formatoptions-=l
-    set nolbr
-endfunction
-":call WordWrap()
-" [there has got to be a cleaner way to do this...]
-
-" ****************************************************************
 " COPY & PASTE using the external clipboard
 " F2-cut, F3-copy, F4-paste
 " cut
@@ -180,6 +225,13 @@ map <F4> "+gP
 map <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
 imap <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
   
+
+" For when you forget to sudo.. Really Write the file.
+cmap w!! w !sudo tee % >/dev/null
+
+" Toggle search highlighting
+nmap <silent> <leader>/ :set invhlsearch<CR>
+
 " *************************************************************************** 
 " COLOR CONFIG
 
@@ -190,8 +242,4 @@ if has('gui_running')
 else
     set background=dark
     colorscheme tortejtp
-    " colorscheme 256-grayvim
-    " colorscheme murphyjtp
-    " colorscheme desertjtp
-    " colorscheme defaultjtp
 endif

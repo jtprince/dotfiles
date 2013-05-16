@@ -5,7 +5,9 @@
 #####################################################
 
 # not technically necessary since this is the default
+# but I use in other scripts, so define it
 export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
 
 # xfce4-terminal currently has bug in Ubuntu preventing
 # it from propogating the TERM variable properly.

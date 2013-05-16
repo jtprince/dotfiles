@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-File.write("/home/jtprince/randomize_bgk_which_ruby.log", "using ruby: #{RUBY_VERSION} #{RUBY_RELEASE_DATE} #{`which ruby`}")
+#File.write("/home/jtprince/randomize_bgk_which_ruby.log", "using ruby: #{RUBY_VERSION} #{RUBY_RELEASE_DATE} #{`which ruby`}")
 
 BKG_DIR = ENV['HOME'] + '/Dropbox/backgrounds'
 EXTS = %w(png jpg)

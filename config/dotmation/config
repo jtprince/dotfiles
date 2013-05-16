@@ -21,8 +21,6 @@ github "jtprince/dotfiles/config" do
   dot 'gtkrc-2.0'
   cfg 'gtk-3.0'
 
-  cfg 'vim'
-
   ln 'zsh/zshenv', '.zshenv'
   cfg 'zsh'
 
@@ -45,6 +43,11 @@ github "jtprince/dotfiles/config" do
   dot 'ncmpcpp'
 end
 
+github "jtprince/dotfiles/config/vim" do
+  cfg 'vimrc', 'vim/'
+  cfg 'colors', 'vim/'
+end
+
 github "jtprince/dotfiles/config/latex" do
   ln 'texmf'
   cfg 'bst', 'latex/'
@@ -59,4 +62,6 @@ github "robbyrussell/oh-my-zsh" do
   cfg '.'
 end
 
-
+github 'gmarik/vundle' do
+  cfg '.', 'vim/bundle/vundle'
+end

@@ -69,12 +69,12 @@ module Monitor
     include Monitor
     include LongTimer
     QUOTES = [
-      'if you want to be thought a liar, always tell the truth', # Logan P. Smith
       #'move-eat-sleep-relax-connect',
       #'1-act-on-important, 2-extraordinary, 3-bigrocks, 4-ruletech, 5-fire',
       #'to a mind that is still the whole universe surrenders',
       #'be the change you wish to see in the world',
       #'see everything as if it were your first or last time',
+      'D&C 61:36 be of good cheer, little children; for I am in your midst, and I have not forsaken you.',
       'what you do is who you become',
     ]
 
