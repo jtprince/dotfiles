@@ -19,6 +19,8 @@ alias aptremove='sudo aptitude remove --purge-unused'
 alias aptshow='aptitude show'
 alias addkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
 
+alias mount_wd15="gvfs-mount smb://wd15/USB_Storage"
+
 # extraction
 alias utar='dtrx -n'
 
