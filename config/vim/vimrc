@@ -6,13 +6,13 @@ set nocompatible      " vim, not vi (first because of side-effects)
 
 set directory=~/tmp,/tmp
 set backupdir=~/tmp,/tmp
-set viminfo+=n$XDG_CACHE_HOME/vim/viminfo
+set viminfo+=n~/tmp/viminfo
 set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
 let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc"
 
 let mapleader = ','
 
-" VUNDLE ====================================================================
+" Vundle setup ==============================================================
 
 " setup:
 filetype on
@@ -21,10 +21,9 @@ set rtp+=~/.config/vim/bundle/vundle/
 call vundle#rc( "~/.config/vim/bundle" )
 Bundle 'gmarik/vundle'
 
-" bundles:
-
-" UPDATE
 " vim +BundleInstall +qall
+
+" Bundles ===================================================================
 
 " open and edit the file you want including path searching
 "   command-t needs C-extensions:
@@ -32,6 +31,8 @@ Bundle 'gmarik/vundle'
 Bundle 'git://git.wincent.com/command-t.git'
 " powerful comment/uncomment for diff't languages
 Bundle 'scrooloose/nerdcommenter'
+" file view
+Bundle 'scrooloose/nerdtree'
 " securely edit gpg files (.gpg .pgp or .asc)
 Bundle 'jamessan/vim-gnupg'
 " ensure that gvim uses the proper 256 terminal colors
@@ -44,6 +45,10 @@ Bundle 'vim-scripts/taglist.vim'
 Bundle 'tpope/vim-markdown'
 Bundle 'timcharper/textile.vim'
 Bundle 'vim-scripts/eruby.vim'
+Bundle 'vim-ruby/vim-ruby'
+
+" view ansi marked-up color in vim
+Bundle 'vim-scripts/AnsiEsc.vim'
 
 " allow doing diffs on small sections
 "Bundle 'AndrewRadev/linediff.vim'
@@ -62,9 +67,6 @@ Bundle 'vim-scripts/eruby.vim'
 " fancy word substition and completion
 " "Bundle 'tpope/vim-abolish'
 
-" vundle post-hook:
-filetype plugin indent on     " required!
-
 " Brief help
 " :BundleList          - list configured bundles
 " :BundleInstall(!)    - install(update) bundles
@@ -75,16 +77,9 @@ filetype plugin indent on     " required!
 
 " ENABLE plugins ============================================================
 
-filetype on           " Enable filetype detection
-filetype indent on    " Enable filetype-specific indenting
-filetype plugin on    " Enable filetype-specific plugins
-
-" SIZE ======================================================================
-
-if has('gui_running')
-  set lines=60
-  set columns=80
-endif
+" filetype detection, filetype specific indenting and plugins
+" must be in this order
+filetype plugin indent on
 
 " FONT ======================================================================
 
@@ -205,11 +200,24 @@ endfunction
 " [there has got to be a cleaner way to do this...]
 
 " *************************************************************************** 
-noremap \ldf :Linediff<CR>
-noremap \ldo :LinediffReset<CR>
+"noremap \ldf :Linediff<CR>
+"noremap \ldo :LinediffReset<CR>
 
 " *************************************************************************** 
-" LEFT-HANDED NAVIGATION
+
+" use semicolon for all colon commands
+:noremap ; :
+
+" easier window control generally
+noremap ,w <C-w>
+
+" easier window navigation by holding down Ctrl
+map <C-J> <C-W>j
+map <C-K> <C-W>k
+map <C-H> <C-W>h
+map <C-L> <C-W>l
+
+" LEFT-HANDED NAVIGATION (right hand gets tired)
 " s (go left) g (go right) d (go down) f (go up) 
 " h = s  k = d  j = g
 noremap s h
@@ -246,6 +254,13 @@ cmap w!! w !sudo tee % >/dev/null
 
 " Toggle search highlighting
 nmap <silent> <leader>/ :set invhlsearch<CR>
+
+" SIZE ======================================================================
+
+if has('gui_running')
+  set lines=60
+  set columns=80
+endif
 
 " *************************************************************************** 
 " COLOR CONFIG
