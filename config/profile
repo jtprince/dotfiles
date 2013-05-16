@@ -29,16 +29,7 @@ export WINEPREFIX="$HOME/.wine"
 # see ~/env/ls_colors.txt
 export LS_COLORS="*.zip=1;31:ex=1;32:*.z=1;31:*.Z=1;31:*.gz=1;31:*.bz2=1;31:*.tgz=1;31:*.tar=31:*.png=1;35:*.jpg=1;35"
 
-# fixes the gvim ubuntu window manager bug
-#export UBUNTU_MENUPROXY=0
-
-# turn off bell
-# xset b off
-
-xset fp+ ~/.config/fontconfig/fonts.conf
-
-GPG_TTY=`tty`
-export GPG_TTY
+export GPG_TTY=`tty`
 
 # supercomputers
 export SUPER="jtp25@ssh.fsl.byu.edu"
@@ -70,6 +61,6 @@ eval "$(rbenv init -)"
 # LOAD BASHRC
 #####################################################
 
-if [ -f ~/.bashrc ]; then
-    source ~/.bashrc
-fi
+#if [ -f ~/.bashrc ]; then
+#    source ~/.bashrc
+#fi

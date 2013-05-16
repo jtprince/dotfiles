@@ -24,5 +24,6 @@ ZSH_THEME_GIT_PROMPT_RENAMED="%{$terminfo[bold]$fg[magenta]%}➜"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$terminfo[bold]$fg[yellow]%}═"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$terminfo[bold]$fg[cyan]%}✭"
 
-PROMPT="${user} ${pwd} $ "
+PROMPT="
+${user} ${pwd} $ "
 RPROMPT="${return_code} ${git_branch} ${rbenv}"
