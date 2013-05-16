@@ -1,5 +1,7 @@
 # echo "*** sourcing .profile"
 
+export HAVE_READ_JTP_PROFILE="true"
+
 #####################################################
 # ENVIRONMENT
 #####################################################
