@@ -46,7 +46,7 @@ end
 github "jtprince/dotfiles/config/vim" do
   cfg 'vimrc', 'vim/'
   cfg 'colors', 'vim/'
-  cfg 'ftplugin', 'vim/'
+  cfg 'spell', 'vim/'
 end
 
 github "jtprince/dotfiles/config/latex" do
