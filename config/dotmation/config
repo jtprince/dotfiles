@@ -1,6 +1,8 @@
 
 repo_cache "~/src/remote_dotfiles"
 
+pkg %w(git dunst mpd ncmpcpp)
+
 github "jtprince/dotfiles/config" do
 
   cfg 'dotmation'
@@ -10,7 +12,7 @@ github "jtprince/dotfiles/config" do
   dot 'profile'
 
   dot 'Xresources'
-  dot 'Xresources', '.Xdefaults'
+  ln 'Xresources', '.Xdefaults'
 
   cfg 'xmodmap'
 
@@ -49,6 +51,7 @@ github "jtprince/dotfiles/config/vim" do
   cfg 'spell', 'vim/'
 end
 
+pkg %w(texlive-xetex texlive-latex-recommended texlive-science texlive-fonts-recommended texlive-fonts-extra)
 github "jtprince/dotfiles/config/latex" do
   ln 'texmf'
   cfg 'bst', 'latex/'
@@ -59,10 +62,13 @@ github "jtprince/dotfiles/bin" do
   ln '.'
 end
 
+pkg %w(zsh)
 github "robbyrussell/oh-my-zsh" do
   cfg '.'
 end
 
+pkg %w(exuberant-ctags gnome-terminal)
+pkg %w(ruby ruby-dev) # for command-t
 github 'gmarik/vundle' do
   cfg '.', 'vim/bundle/vundle'
 end
