@@ -20,5 +20,8 @@ else
         notify-send -u low 'chem dirs mounted!'
         mount_chem_dirs.rb all
     fi
+    if [ `hostname` == "altius" ]; then
+        mount_wd15
+    fi
 fi
 
