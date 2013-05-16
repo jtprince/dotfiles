@@ -34,17 +34,21 @@ Bundle 'git://git.wincent.com/command-t.git'
 Bundle 'scrooloose/nerdcommenter'
 " securely edit gpg files (.gpg .pgp or .asc)
 Bundle 'jamessan/vim-gnupg'
-" allow doing diffs on small sections
-" remember old yanked things
-" Bundle 'vim-scripts/YankRing.vim'
 " ensure that gvim uses the proper 256 terminal colors
 Bundle 'vim-scripts/colorsupport.vim'
+" source code browser (e.g. methods and classes etc)
+" sudo apt-get install exuberant-ctags
+Bundle 'vim-scripts/taglist.vim'
 
+" syntax additions
 Bundle 'tpope/vim-markdown'
 Bundle 'timcharper/textile.vim'
 Bundle 'vim-scripts/eruby.vim'
 
+" allow doing diffs on small sections
 "Bundle 'AndrewRadev/linediff.vim'
+" remember old yanked things
+" Bundle 'vim-scripts/YankRing.vim'
 " do git things
 " "Bundle 'tpope/vim-fugitive'
 " change surround characters
@@ -94,6 +98,7 @@ endif
 
 set visualbell t_vb= " turn off error beep/flash
 set mousehide   " Hide the mouse when typing text
+set mouse=a     " use your mouse in a terminal
 set ch=1        " Make command line one line high
 set backspace=indent,eol,start  " trying this out
 set ts=4        " tabstop # of spaces that <Tab> in file counts when displaying
