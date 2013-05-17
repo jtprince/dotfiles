@@ -46,6 +46,9 @@ Bundle 'tpope/vim-markdown'
 Bundle 'timcharper/textile.vim'
 Bundle 'vim-scripts/eruby.vim'
 Bundle 'vim-ruby/vim-ruby'
+Bundle 'gerw/vim-latex-suite'
+" http://vim-latex.sourceforge.net/documentation/latex-suite/latex-folding.html
+" <leader>rf to remake folds
 
 " view ansi marked-up color in vim
 Bundle 'vim-scripts/AnsiEsc.vim'
@@ -197,7 +200,6 @@ function NoWordWrap()
     set nolbr
 endfunction
 ":call WordWrap()
-" [there has got to be a cleaner way to do this...]
 
 " *************************************************************************** 
 "noremap \ldf :Linediff<CR>
@@ -232,9 +234,12 @@ noremap j f
 
 noremap hh gg
 
-" center the next and prev search matches to center of screen
-nmap n nzz
-nmap N Nzz
+noremap F <PAGEDOWN>M
+noremap D <PAGEUP>M
+
+" ****************************************************************
+
+noremap <leader>ecc :1,$d<CR>
 
 " ****************************************************************
 " COPY & PASTE using the external clipboard
