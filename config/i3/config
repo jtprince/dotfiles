@@ -263,20 +263,20 @@ bindsym $mod+space focus mode_toggle
 #######################
 
 # switch to workspace
-bindsym $mod+1 workspace 1:work
+bindsym $mod+1 workspace 1:w1
+bindsym $mod+2 workspace 2:w2
 bindsym $mod+3 workspace 3:music
 bindsym $mod+4 workspace 4
 bindsym $mod+5 workspace 5
 bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
 bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9
-bindsym $mod+2 workspace 9:mail
+bindsym $mod+9 workspace 9:mail
 bindsym $mod+0 workspace 10
 
 # move focused container to workspace
-bindsym $mod+Shift+exclam move workspace 1:work
-bindsym $mod+Shift+at move workspace 2
+bindsym $mod+Shift+exclam move workspace 1:w1
+bindsym $mod+Shift+at move workspace 2:w2
 bindsym $mod+Shift+numbersign move workspace 3:music
 bindsym $mod+Shift+dollar move workspace 4
 bindsym $mod+Shift+percent move workspace 5
@@ -304,6 +304,17 @@ bindsym $mod+Ctrl+Shift+$D resize grow   down 10 px or 10 ppt
 
 #bindsym k resize shrink up 10 px or 10 ppt
 bindsym $mod+Ctrl+Shift+$U resize grow   up 10 px or 10 ppt
+
+mode "resize" {
+    bindsym $mod+Ctrl+Shift+$R resize shrink   left 10 px or 10 ppt
+    bindsym $mod+Ctrl+Shift+$L resize shrink   right 10 px or 10 ppt
+    bindsym $mod+Ctrl+Shift+$U resize shrink   down 10 px or 10 ppt
+    bindsym $mod+Ctrl+Shift+$D resize shrink   up 10 px or 10 ppt
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
 
 ## this is cool because it shows you how to use modes... unfortunately it is
 ## too much work and I just use the ones I care about without a 'mode'

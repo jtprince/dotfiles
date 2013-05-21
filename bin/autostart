@@ -12,6 +12,7 @@ if [ "$1" != "late" ]; then
     volti &
     nm-applet &
     dropbox start 
+    xclip &  # provides a clipboard that can be used across applications
     mpd
     notify-send -u low 'initialized!'
 else
