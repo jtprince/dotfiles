@@ -46,7 +46,10 @@ Bundle 'tpope/vim-markdown'
 Bundle 'timcharper/textile.vim'
 Bundle 'vim-scripts/eruby.vim'
 Bundle 'vim-ruby/vim-ruby'
-Bundle 'gerw/vim-latex-suite'
+
+
+"Bundle 'Eckankar/vim-latex-folding'
+"Bundle 'gerw/vim-latex-suite'
 " http://vim-latex.sourceforge.net/documentation/latex-suite/latex-folding.html
 " <leader>rf to remake folds
 
@@ -155,6 +158,9 @@ au FileType make setlocal noexpandtab   " turn off et for makefiles
 
 " FOLDING =======================================================
 
+" folding for latex
+let g:tex_fold_enabled=1
+
 set foldenable          " Turn on folding
 set foldmethod=indent   " Make folding indent sensitive
 set foldlevel=100       " Don't autofold anything (but can still fold manually)
@@ -239,6 +245,7 @@ noremap D <PAGEUP>M
 
 " ****************************************************************
 
+" delete all contents of the buffer
 noremap <leader>ecc :1,$d<CR>
 
 " ****************************************************************
@@ -269,6 +276,7 @@ nmap <silent> <leader>/ :set invhlsearch<CR>
 autocmd Filetype html setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 noexpandtab
+autocmd Filetype tex setlocal foldmethod=syntax
 
 " SIZE ======================================================================
 

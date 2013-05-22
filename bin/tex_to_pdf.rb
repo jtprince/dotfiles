@@ -29,27 +29,34 @@ class String
   end
 
   def rename(newname)
-    File.rename(self, newname)
+    if File.exist?(self)
+      File.rename(self, newname)
+    end
   end
 end
 
 def delete_auxs(base, exts=AUX_EXTS)
   exts.each do |ext| 
     [nil,0,1,2].each do |n|
-      base.+(".#{ext}#{n}").unlink
+      unless $DRY
+        base.+(".#{ext}#{n}").unlink
+      end
     end
   end
 end
 
 def runv(*args)
   putsv "running: #{args.join(' ')}"
-  system *args
+  unless $DRY
+    system *args
+  end
 end
 
 def putsv(*args)
   puts *args if $VERBOSE
 end
 
+$DRY = false
 opt = { }
 opts = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [OPTS] <file>.tex"
@@ -71,6 +78,7 @@ opts = OptionParser.new do |op|
   op.on("--finished", "just tell me when finished") {|v| $FINISHED = true }
   op.on("--dirty", "leave auxiliary files") {|v| opt[:dirty] = v }
   op.on("--delete", "just delete auxiliary files") {|v| opt[:delete] = v }
+  op.on("--dry", "don't run anything") {|v| opt[:dry] = $DRY = true }
 end
 opts.parse!
 opt = OpenStruct.new(opt)
