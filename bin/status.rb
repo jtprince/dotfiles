@@ -77,7 +77,7 @@ module Monitor
       # Kurt Vonnegut '"We are what we pretend to be, so we must be careful about what we pretend to be."
       'D&C 61:36 be of good cheer, little children; for I am in your midst, and I have not forsaken you.',
       'what you do is who you become',
-      'We are what we pretend to be, so careful what you pretend.",
+      'We are what we pretend to be, so careful what you pretend.',
     ]
 
     def get_data
