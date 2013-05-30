@@ -271,8 +271,8 @@ bindsym $mod+5 workspace 5
 bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
 bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9:mail
-bindsym $mod+0 workspace 10
+# bindsym $mod+9 workspace 9
+# bindsym $mod+0 workspace 10
 
 # move focused container to workspace
 bindsym $mod+Shift+exclam move workspace 1:w1
@@ -283,8 +283,8 @@ bindsym $mod+Shift+percent move workspace 5
 bindsym $mod+Shift+asciicircum move workspace 6
 bindsym $mod+Shift+ampersand move workspace 7
 bindsym $mod+Shift+asterisk move workspace 8
-bindsym $mod+Shift+parenleft move workspace 9:mail
-bindsym $mod+Shift+parenright move workspace 10
+#bindsym $mod+Shift+parenleft move workspace 9
+#bindsym $mod+Shift+parenright move workspace 10
 
 #######################
 # RESIZE

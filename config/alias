@@ -10,16 +10,20 @@ alias sudoe="sudo -E"
 alias mp="ncmpcpp"
 
 # apt-get
-alias apti='sudo aptitude install'
-alias aptinstall='sudo aptitude install'
-alias apts='aptitude search'
-alias aptsearch='aptitude search'
+alias apti='sudo apt-get install'
+alias aptinstall='sudo apt-get install'
+alias apts='apt-cache search'
+alias aptsearch='apt-cache search'
 alias aptr='sudo aptitude remove --purge-unused'
 alias aptremove='sudo aptitude remove --purge-unused'
-alias aptshow='aptitude show'
+alias aptshow='apt-cache show'
 alias addkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
 
 alias mount_wd15="gvfs-mount smb://wd15/USB_Storage"
+
+alias dependenciesr="apt-cache --recurse depends"
+alias dependencies="apt-cache depends"
+alias depends_on="apt-cache rdepends"
 
 # extraction
 alias utar='dtrx -n'
