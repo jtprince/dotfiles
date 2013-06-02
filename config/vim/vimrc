@@ -148,7 +148,7 @@ set undofile
 " LANGUAGE EXTENSIONS =======================================================
 " markdown
 augroup mkd
-  autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:>
+  autocmd BufRead *.mkd *.md set ai formatoptions+=l lbr formatoptions=tcroqn2 comments=n:> 
 augroup END
 " yaml
 autocmd BufRead *.yml set ts=2 sw=2 sts=2
@@ -200,6 +200,7 @@ vnoremap <C-X> <Esc>`.``gvP``P
 function WordWrap()
     set formatoptions+=l
     set lbr
+" formatoptions+=l lbr
 endfunction
 
 function NoWordWrap()

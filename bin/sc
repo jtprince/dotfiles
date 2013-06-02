@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'shellwords'
+require 'fileutils'
 
 viewers = {
   'e' => 'eog',
@@ -21,11 +22,11 @@ TIME_STAMP_FORMAT = "%Y-%m-%d--%H-%M-%S"
 opts = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [OPTS] filename[.png]"
   op.separator ""
+  op.on("-a", "--active", "capture the active window") {|v| opt[:active] = v }
   op.on("-d", "--delay <sec>", Float, "delay that many seconds") {|v| opt[:delay] = v }
   op.on("-b", "--box", "draw a box to capture") {|v| opt[:box] = v }
   op.on("-w", "--window", "select a window to capture") {|v| opt[:window] = v }
   op.on("-o", "--open <s>", "#{bold('g')}eeqie|#{bold('e')}og|gi#{bold('m')}p|#{bold('i')}nkscape") {|v| opt[:open] = viewers[v] || v }
-  op.on("--parcellite", "copies image to parcellite") {|v| opt[:parcellite] }
   op.on("--dir <s>", "save to this directory") {|v| opt[:dir] = v }
   op.on("--timestamp", "add a date/time stamp to filename") {|v| opt[:timestamp] = v }
 end
@@ -45,23 +46,29 @@ if opt[:timestamp]
   filename = base + "-" + Time.now.strftime(TIME_STAMP_FORMAT) + ext
 end
 
-# create the command
-cmd = 
-  if opt[:box]
-    "import '#{filename}'"
-  elsif opt[:window]
-    windowid = `xwininfo`.match(/Window id\:\s+(\w+)\s+/)[1]
-    "import -window #{windowid} '#{filename}'"
-  else
-    "import -window root '#{filename}'"
-  end
-
 # sleep if necessary
 if opt[:delay]
   sleep(opt[:delay]) 
 end
 
+# create the command
+cmd = 
+  if opt[:box]
+    "import '#{filename}'"
+  elsif opt[:window] || opt[:active]
+    windowid = 
+      if opt[:window]
+        `xwininfo`.match(/Window id\:\s+(\w+)\s+/)[1]
+      else
+        `xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)"`.split(/\s+/).last
+      end
+    "import -window #{windowid} '#{filename}'"
+  else
+    "import -window root '#{filename}'"
+  end
+
 dir = (opt[:dir] && File.expand_path(opt[:dir]) ) || Dir.pwd
+FileUtils.mkpath(dir) unless File.exist?(dir)
 
 Dir.chdir(dir) do
   system cmd
