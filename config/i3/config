@@ -155,7 +155,10 @@ floating_modifier $mod
 #########################
 # use the system default browser
 #set $browser x-www-browser
-set $browser chromium-browser
+#set $browser chromium-browser
+#set $newwindow --new-window
+set $browser firefox
+set $newwindow -new-window
 
 # debian/ubuntu default terminal
 #set $terminal x-terminal-emulator
@@ -168,10 +171,10 @@ bindsym $mod+x exec $terminal
 bindsym XF86HomePage exec $browser
 bindsym $mod+i exec $browser
 
-bindsym XF86Mail exec $browser --new-window http://gmail.com
-bindsym $mod+e exec $browser --new-window http://gmail.com
+bindsym XF86Mail exec $browser $newwindow http://gmail.com
+bindsym $mod+e exec $browser $newwindow http://gmail.com
 
-bindsym $mod+c exec $browser --new-window http://calendar.google.com
+bindsym $mod+c exec $browser $newwindow http://calendar.google.com
 
 bindsym $mod+n exec $filemanager
 
@@ -180,7 +183,7 @@ bindsym $mod+g exec gvim
 
 bindsym XF86Calculator exec gnome-terminal -x orpie
 
-bindsym XF86Phone exec $browser --new-window http://voice.google.com
+bindsym XF86Phone exec $browser $newwindow http://voice.google.com
 
 bindsym Print exec sc --dir ~/screenshots --timestamp screenshot -o e
 #bindsym $mod+Print exec sc -w --dir ~/screenshots --timestamp window
