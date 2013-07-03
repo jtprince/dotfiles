@@ -29,6 +29,11 @@ alias depends_on="apt-cache rdepends"
 # extraction
 alias utar='dtrx -n'
 
+alias wine32="export WINEARCH=win32; export WINEPREFIX=~/.wine32; wine"
+alias winecfg32="export WINEARCH=win32; export WINEPREFIX=~/.wine32; winecfg"
+alias wine64="export WINEARCH=win64; export WINEPREFIX=~/.wine64; wine"
+alias winecfg64="export WINEARCH=win64; export WINEPREFIX=~/.wine64; winecfg"
+
 # navigation
 alias ..='cd ..'
 alias ...='cd ../..'

@@ -175,6 +175,7 @@ bindsym XF86Mail exec $browser $newwindow http://gmail.com
 bindsym $mod+e exec $browser $newwindow http://gmail.com
 
 bindsym $mod+c exec $browser $newwindow http://calendar.google.com
+bindsym $mod+y exec $browser $newwindow https://mail.google.com/tasks/ig
 
 bindsym $mod+n exec $filemanager
 
