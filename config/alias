@@ -44,6 +44,9 @@ alias .....='cd ../../../..'
 alias be="bundle exec"
 alias irb="pry"
 
+# git
+alias gist="git status"
+
 # misc
 alias logoutnow="gnome-session-quit --logout"
 alias ls="ls --color=auto"
