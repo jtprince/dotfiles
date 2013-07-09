@@ -22,12 +22,13 @@ viewers_bold_string = viewers.map do |letter,app|
   app.sub(letter, "\033[1m\033[31m" + letter + "\033[0m")
 end.join('|')
 
-opt = OpenStruct.new
+opt = OpenStruct.new( window: :root )
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [OPTS] filename[.png]"
+  op.separator "output: filename.png [by default captures entire screen]"
   op.separator ""
-  op.on("-a", "--active", "capture the active window") { opt.window = :active }
   op.on("-d", "--delay <sec>", Float, "delay that many seconds") {|v| opt.delay = v }
+  op.on("-a", "--active", "capture the active window") { opt.window = :active }
   op.on("-b", "--box", "draw a box to capture") { opt.window = :box }
   op.on("-w", "--window", "select a window to capture") { opt.window = :window }
   op.on("-o", "--open <s>", viewers_bold_string) {|v| opt.open = viewers[v] || v }
@@ -35,7 +36,6 @@ parser = OptionParser.new do |op|
   op.on("--timestamp", "add a date/time stamp to filename") {|v| opt.timestamp = v }
 end
 parser.parse!
-opt.box || opt.window || (opt.window = :root)
 
 if ARGV.size == 0
   puts parser
