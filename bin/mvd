@@ -12,6 +12,7 @@ end
 
 opt = {
   dir: ENV['HOME'] + '/Downloads'
+
 }
 opts = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [COUNT] <dest>"
@@ -19,6 +20,7 @@ opts = OptionParser.new do |op|
   op.separator "if given a count, moves the latest COUNT files to the <dest> dir"
   op.on("-l", "--list", "just list the contents, don't move them") {|v| opt[:list] = v }
   op.on("-d", "--dir <path>", "look in path (default: #{opt[:dir]})") {|v| opt[:dir] = File.expand_path(v) }
+  op.on("-t", "--tmp", "look in /tmp") {|v| opt[:dir] = "/tmp" }
 end
 opts.parse!
 

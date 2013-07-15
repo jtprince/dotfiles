@@ -40,6 +40,8 @@ Bundle 'vim-scripts/colorsupport.vim'
 " source code browser (e.g. methods and classes etc)
 " sudo apt-get install exuberant-ctags
 Bundle 'vim-scripts/taglist.vim'
+" vim-endwise
+Bundle 'tpope/vim-endwise'
 
 " syntax additions
 Bundle 'tpope/vim-markdown'
