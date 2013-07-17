@@ -14,7 +14,6 @@ if [ "$1" != "late" ]; then
     dropbox start 
     ~/src/copy_agent/copy/x86_64/CopyAgent &
     xclip &  # provides a clipboard that can be used across applications
-    mpd
     notify-send -u low 'initialized!'
 else
     hsetroot -fill ~/Dropbox/backgrounds/bep_smilin.jpg
