@@ -166,10 +166,10 @@ floating_modifier $mod
 #########################
 # use the system default browser
 #set $browser x-www-browser
-#set $browser chromium-browser
-#set $newwindow --new-window
-set $browser firefox
-set $newwindow -new-window
+set $browser chromium-browser
+set $newwindow --new-window
+#set $browser firefox
+#set $newwindow -new-window
 
 # debian/ubuntu default terminal
 #set $terminal x-terminal-emulator
