@@ -69,7 +69,7 @@ Bundle 'vim-scripts/AnsiEsc.vim'
 " ensure that things get closed up properly
 " "Bundle 'spf13/vim-autoclose'
 " line up programming structures
-" "Bundle 'godlygeek/tabular'
+Bundle 'godlygeek/tabular'
 " view the undo tree
 " "Bundle 'mbbill/undotree'
 " fancy word substition and completion
