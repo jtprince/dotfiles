@@ -89,6 +89,7 @@ songs_chopped = songs[opt[:start],limit]
 num_missing = songs.size - songs_chopped.size
 puts "not using #{num_missing} tracks because reached limit (#{limit})" if num_missing > 0
 
+=begin
 songs_chopped.each do |song| 
   cmd = "youtube-dl -gf 34 --cookies /tmp/cookie.txt '#{song.url}'"
   puts cmd if $VERBOSE
@@ -109,3 +110,4 @@ cmd = "mplayer #{no_video} -cookies -cookies-file /tmp/cookie.txt -loop #{opt[:l
   songs.map(&:play_url).map(&:esc).join(" ")
 puts cmd if $VERBOSE
 system cmd unless opt[:dry]
+=end
