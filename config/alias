@@ -18,7 +18,7 @@ alias aptsearch='aptitude search'
 alias aptr='sudo aptitude remove --purge-unused'
 alias aptremove='sudo aptitude remove --purge-unused'
 alias aptshow='apt-cache show'
-alias addkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
+alias aptaddkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
 
 alias mount_wd15="gvfs-mount smb://wd15/USB_Storage"
 

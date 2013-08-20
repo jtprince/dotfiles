@@ -1,0 +1,7 @@
+#!/bin/bash
+
+pushd /var/lib/apt
+sudo mv lists lists.old
+sudo mkdir -p lists/partial
+sudo apt-get update
+popd
