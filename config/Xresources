@@ -19,3 +19,44 @@ Xft.hinting: true
 Xft.hintstyle: hintslight
 Xft.rgba: rgb
 ! Xft.lcdfilter: lcddefault
+
+xscreensaver.timeout:	0:10:00
+xscreensaver.cycle:		0:05:00
+xscreensaver.lock:		True
+xscreensaver.lockTimeout:	0:50:00
+xscreensaver.passwdTimeout:	0:00:30
+xscreensaver.visualID:	default
+xscreensaver.installColormap:    True
+xscreensaver.verbose:	False
+xscreensaver.timestamp:	True
+xscreensaver.splash:		False
+! xscreensaver.splashDuration:	0:00:05
+! xscreensaver.demoCommand:	xscreensaver-demo
+! xscreensaver.prefsCommand:	xscreensaver-demo -prefs
+xscreensaver.nice:		10
+xscreensaver.memoryLimit:	0
+xscreensaver.fade:		True
+xscreensaver.unfade:		False
+xscreensaver.fadeSeconds:	0:00:05
+xscreensaver.fadeTicks:	20
+xscreensaver.captureStderr:	True
+xscreensaver.ignoreUninstalledPrograms:False
+xscreensaver.font:		*-medium-r-*-140-*-m-*
+xscreensaver.dpmsEnabled:	True
+xscreensaver.dpmsQuickOff:	False
+xscreensaver.dpmsStandby:	0:20:00
+xscreensaver.dpmsSuspend:	1:00:00
+xscreensaver.dpmsOff:	4:00:00
+xscreensaver.grabDesktopImages:  True
+xscreensaver.grabVideoFrames:    False
+xscreensaver.chooseRandomImages: False
+! xscreensaver.imageDirectory:
+
+xscreensaver.mode:		random
+xscreensaver.selected:	-1
+
+xscreensaver.textMode:	url
+xscreensaver.textLiteral:	XScreenSaver
+!xscreensaver.textFile:	
+xscreensaver.textProgram:	fortune
+xscreensaver.textURL:	http://fridge.ubuntu.com/node/feed
