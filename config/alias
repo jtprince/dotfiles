@@ -57,6 +57,9 @@ alias presentation="xrandr --output VGA1 --mode 1024x768 --same-as primary"
 alias presentation_hidden="xrandr --output VGA1 --mode 1024x768 --right-of primary"
 alias unpresentation="xrandr --output primary"
 
+alias atlasinclude="export C_INCLUDE_PATH=/usr/include/atlas && export CPLUS_INCLUDE_PATH=/usr/include/atlas"
+alias includeatlas=atlasinclude
+
 # spelling mistakes
 alias sl="ls"
 alias givm="gvim"
