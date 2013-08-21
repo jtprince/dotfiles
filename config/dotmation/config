@@ -38,6 +38,8 @@ github "jtprince/dotfiles/config" do
   dot 'pryrc'
   dot 'irbrc'
 
+  dot 'xscreensaver'
+
   cfg 'dunstrc'
   cfg 'i3/config', 'i3/'
 
