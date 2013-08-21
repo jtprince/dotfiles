@@ -1,0 +1,42 @@
+#!/bin/bash
+
+################
+# John T. Prince
+#############################################################################
+# script for minimalist environments like i3 or xmonad to prevent screensaver
+# or DPMS from blanking the screen
+#############################################################################
+
+function nosleep_on {
+    xset s off
+    xset -dpms
+}
+
+function nosleep_off {
+    xset s on
+    xset +dpms
+}
+
+if [ "$#" == "0" ]; then
+    pgname =`basename $0`
+    echo "usage: $pgnmae on|off|status"
+    echo "usage: $pgnmae command ..."
+    echo "   won't sleep while command is alive"
+else
+    if [ "$1" == "off" ]; then
+        nosleep_off
+    elif [ "$1" == "on" ]; then
+        nosleep_on
+    elif [ "$1" == "status" ]; then
+        words=( `xset q | grep 'timeout\|DPMS is'` )
+        if [[ ${words[1]} == "0" && ${words[6]} == "Disabled" ]]; then
+            echo "will not blank"
+        else
+            echo "will blank on idle"
+        fi
+    else
+        nosleep_on
+        "$@"
+        nosleep_off
+    fi
+fi
