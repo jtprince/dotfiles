@@ -18,9 +18,9 @@ function nosleep_off {
 }
 
 if [ "$#" == "0" ]; then
-    pgname =`basename $0`
-    echo "usage: $pgnmae on|off|status"
-    echo "usage: $pgnmae command ..."
+    pgname=`basename $0`
+    echo "usage: $pgname on|off|status"
+    echo "usage: $pgname command ..."
     echo "   won't sleep while command is alive"
 else
     if [ "$1" == "off" ]; then

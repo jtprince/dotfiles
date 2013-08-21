@@ -201,9 +201,9 @@ bindsym Print exec sc --dir ~/screenshots --timestamp screenshot -o e
 #bindsym $mod+Print exec sc -w --dir ~/screenshots --timestamp window
 bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e
 
-#######################
-# LIFE AND DEATH
-#######################
+###########################
+# LIFE, DEATH, and SLEEPING
+###########################
 
 # kill focused window
 bindsym $mod+Shift+C kill
@@ -223,6 +223,8 @@ bindsym $mod+Shift+Q exit
 # shutdown the computer: sudo chmod u+s /sbin/poweroff
 bindsym $mod+Ctrl+Shift+P exec poweroff -p
 bindsym $mod+Ctrl+Shift+R exec reboot
+
+#bindsym XF86Sleep exec echo -n mem > /sys/power/state
 
 #######################
 # FOCUS
