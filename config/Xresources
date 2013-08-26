@@ -22,8 +22,8 @@ Xft.rgba: rgb
 
 xscreensaver.timeout:	0:10:00
 xscreensaver.cycle:		0:05:00
-xscreensaver.lock:		True
-xscreensaver.lockTimeout:	0:50:00
+xscreensaver.lock:		False
+xscreensaver.lockTimeout:	0:30:00
 xscreensaver.passwdTimeout:	0:00:30
 xscreensaver.visualID:	default
 xscreensaver.installColormap:    True
@@ -44,9 +44,9 @@ xscreensaver.ignoreUninstalledPrograms:False
 xscreensaver.font:		*-medium-r-*-140-*-m-*
 xscreensaver.dpmsEnabled:	True
 xscreensaver.dpmsQuickOff:	False
-xscreensaver.dpmsStandby:	0:20:00
-xscreensaver.dpmsSuspend:	1:00:00
-xscreensaver.dpmsOff:	4:00:00
+xscreensaver.dpmsStandby:	0:01:00
+xscreensaver.dpmsSuspend:	0:01:00
+xscreensaver.dpmsOff:	0:01:00
 xscreensaver.grabDesktopImages:  True
 xscreensaver.grabVideoFrames:    False
 xscreensaver.chooseRandomImages: False
