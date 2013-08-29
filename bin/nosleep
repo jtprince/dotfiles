@@ -8,6 +8,7 @@
 #############################################################################
 
 function nosleep_on {
+    killall xscreensaver
     xset s off
     xset -dpms
 }
@@ -15,6 +16,7 @@ function nosleep_on {
 function nosleep_off {
     xset s on
     xset +dpms
+    xscreensaver &
 }
 
 if [ "$#" == "0" ]; then
