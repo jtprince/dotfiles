@@ -333,6 +333,18 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
+set $iclickerdata /home/jtprince/Dropbox/481-Fall2013/data.csv
+mode "iclicker" {
+    bindsym s exec "iclickerpoll.py --type alpha --dest $iclickerdata --frequency 'cb'
+    bindsym f exec killall iclickerpoll.py -s SIGINT; iclicker-plot.rb $iclickerdata; mode "default"
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+
+bindsym $mod+Shift+I mode "iclicker"
+
 ## this is cool because it shows you how to use modes... unfortunately it is
 ## too much work and I just use the ones I care about without a 'mode'
 ## uncomment if you want to try it out
