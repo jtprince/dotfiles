@@ -242,6 +242,8 @@ bindsym $mod+a focus parent
 # focus the child container
 bindsym $mod+o focus child
 
+popup_during_fullscreen leave_fullscreen
+
 #######################
 # MOVEMENT
 #######################
@@ -333,11 +335,15 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-set $iclickerdata /home/jtprince/Dropbox/481-Fall2013/data.csv
+set $iclickerdata /home/jtprince/Dropbox/481-Fall2013/iclicker/current-poll.csv
 mode "iclicker" {
     bindsym s exec "iclickerpoll.py --type alpha --dest $iclickerdata --frequency 'cb'
-    bindsym f exec killall iclickerpoll.py -s SIGINT; iclicker-plot.rb $iclickerdata; mode "default"
-    # back to normal: Enter or Escape
+
+    # duplicate these
+    bindsym f exec killall iclickerpoll.py -s SIGINT; exec iclicker-plot.rb -s $iclickerdata; mode "default"
+    bindsym space exec killall iclickerpoll.py -s SIGINT; exec iclicker-plot.rb -s $iclickerdata; mode "default"
+
+    bindsym e mode "default"
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
