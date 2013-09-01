@@ -18,7 +18,7 @@ if [ "$1" != "late" ]; then
     
     notify-send -u low 'initialized!'
 else
-    hsetroot -fill ~/Dropbox/backgrounds/bep_smilin.jpg
+    randomise_background.rb
     if [ `hostname` == "prince" ]; then
         notify-send -u low 'chem dirs mounted!'
         mount_chem_dirs.rb all
