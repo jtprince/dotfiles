@@ -70,14 +70,22 @@ module Monitor
     include LongTimer
     QUOTES = [
       #'move-eat-sleep-relax-connect',
-      '1-act-on-important, 2-extraordinary, 3-bigrocks, 4-ruletech, 5-fire',
+      #'1-act-on-important, 2-extraordinary, 3-bigrocks, 4-ruletech, 5-fire',
       #'to a mind that is still the whole universe surrenders',
       #'be the change you wish to see in the world',
       #'see everything as if it were your first or last time',
       # Kurt Vonnegut '"We are what we pretend to be, so we must be careful about what we pretend to be."
-      #'D&C 61:36 be of good cheer, little children; for I am in your midst, and I have not forsaken you.',
+      #'For my soul delighteth in plainness; for after this manner doth the Lord God work among the children of men'
+      'whatsoever is light, is good, because it is discernible',
+      'my soul delighteth in plainness',
+      'see that all these things are done in wisdom and order',
+      'he should be diligent, that thereby he might win the prize',
+      'mourn with those that mourn',
+      'my grace is sufficient for all men that humble themselves before me',
+      'he hath all power unto the fulfilling of all his words',
+      'I am in your midst, and I have not forsaken you',
       'what you do is who you become',
-      'if you have time to browse internet, you have time to read scriptures & exercise',
+      #'if you have time to browse internet, you have time to read scriptures & exercise',
       #'We are what we pretend to be, so careful what you pretend.',
     ]
 
