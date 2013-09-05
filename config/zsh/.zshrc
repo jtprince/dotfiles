@@ -87,7 +87,7 @@ export WORDCHARS='*?_[]~=&;!#$%^(){}'
 
 
 ###############################################################################
-# Aliases
+# Zsh or more comples Aliases (simple aliases go in .profile)
 ###############################################################################
 
 source ~/.config/alias
@@ -97,6 +97,9 @@ alias zshrc='gvim ~/.config/zsh/.zshrc'
 insert_sudo () { zle beginning-of-line; zle -U "sudo " }
 zle -N insert-sudo insert_sudo
 bindkey "^[s" insert-sudo
+
+export NUM_CPU_CORES=`grep -c ^processor /proc/cpuinfo`
+alias bundlei="bundle install --jobs=$NUM_CPU_CORES"
 
 ###############################################################################
 # Functions
