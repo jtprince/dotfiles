@@ -25,6 +25,14 @@ Song = Struct.new(:info, :key, :play_url) do
   end
 end
 
+def prep_comment(comment)
+  if comment =~ /\A\#/
+    comment.sub(/\A\#\s+/,'')
+  else
+    ''
+  end
+end
+
 class PlaylistReader
   # returns an array of songs
   def read(filename)
@@ -32,7 +40,7 @@ class PlaylistReader
     songs = []
     lines.each_cons(2) do |comment, key|
       next if key =~ /^\#/ || key !~ /\w/
-      songs << Song.new(comment.sub(/^\#\s+/,''), to_key(key))
+      songs << Song.new(prep_comment(comment), to_key(key))
     end
     songs
   end
@@ -89,7 +97,6 @@ songs_chopped = songs[opt[:start],limit]
 num_missing = songs.size - songs_chopped.size
 puts "not using #{num_missing} tracks because reached limit (#{limit})" if num_missing > 0
 
-=begin
 songs_chopped.each do |song| 
   cmd = "youtube-dl -gf 34 --cookies /tmp/cookie.txt '#{song.url}'"
   puts cmd if $VERBOSE
@@ -110,4 +117,3 @@ cmd = "mplayer #{no_video} -cookies -cookies-file /tmp/cookie.txt -loop #{opt[:l
   songs.map(&:play_url).map(&:esc).join(" ")
 puts cmd if $VERBOSE
 system cmd unless opt[:dry]
-=end
