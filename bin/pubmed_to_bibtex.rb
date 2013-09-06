@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'ostruct'
+require_relative "../script/pubmed_to_bibtex"
 
 begin
   require 'bio'
@@ -45,7 +46,7 @@ parser = OptionParser.new do |op|
   op.separator "note: retrieves them all at once to be good citizen to pubmed"
   op.separator "      uses 'firstAuthorLastName+year' as default label"
   op.separator ""
-  op.on("-b", "--bib-append [file]", "append to the first .bib file in pwd (or given)") {|v| opt.bib_append = v || :first }
+  op.on("-b", "--bib-append", "append to the first .bib file found in pwd") {|v| opt.bib_append = v }
   op.on("-a", "--abstract", "include the abstract") {|v| opt.abstract = v }
   op.on("-l", "--label <String>", "use the specified label") {|v| opt.label = v }
   op.on("--pmid-label", "use PMID as label (overrides -l)") {|v| opt.pmid_label = v }
@@ -57,29 +58,51 @@ if ARGV.size == 0
   exit
 end
 
-type = 'article'
-entries = Bio::PubMed.efetch(ARGV)
-entries.each do |entry|
-  medline = Bio::MEDLINE.new(entry)
-  reference = medline.reference
+# returns two parallel arrays: the labels used and the bibtex text
+def entries_to_bibtexs(pmids, default_label: nil, abstract: false, pmid_label: false)
+  type = 'article'
+  entries = Bio::PubMed.efetch(pmids)
+  ids = []
+  bibtexs = entries.map do |entry|
+    label = label
+    medline = Bio::MEDLINE.new(entry)
+    reference = medline.reference
 
-  extra = {}
-  unless opt.label
-    first_author_last_name = reference.authors.first.split(",").first
-    opt.label = first_author_last_name + reference.year
+    extra = {}
+    unless label
+      first_author_last_name = reference.authors.first.split(",").first
+      label = first_author_last_name + reference.year
+    end
+    label = nil if pmid_label
+
+    extra['pmid'] = reference.pubmed
+    extra['abstract'] = escape(reference.abstract) if abstract
+
+    reference.bibtex(type, label, extra)
   end
-  opt.label = nil if opt.pmid_label
+  labels = bibtexs.map {|v| reference_to_label(v) }
+  [labels, bibtexs]
+end
 
-  extra['pmid'] = reference.pubmed
-  extra['abstract'] = escape(reference.abstract) if opt.abstract
+def reference_to_label(bibtex)
+  bibtex.strip[/\@article\{(\w+),/,1]
+end
+
+if __FILE__ == $0
+  pmids = ARGV.dup
+  bibtexs = entries_to_bibtexs(pmids, default_label: opt.label, abstract: opt.abstract, pmid_label: opt.pmid_label)
 
   if opt.bib_append
-    bibfile = (opt.bib_append==:first) ? Dir["*.bib"].sort.first : opt.bib_append
+    bibfile = Dir["*.bib"].sort.first
     warn "no bibfile found! writing to STDOUT" unless bibfile
   end
+
   bib_append(bibfile) do
-    puts
-    puts reference.bibtex(type, opt.label, extra)
+    (labels, bibtexs) = entries_to_bibtexs(pmids)
+    labels.zip(bibtexs) do |label, bibtex|
+      puts
+      puts bibtex
+    end
   end
 end
 
