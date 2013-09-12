@@ -13,7 +13,7 @@ require 'shellwords'
 require 'optparse'
 require 'ostruct'
 
-AUX_EXTS = %w(bbl blg log aux)
+AUX_EXTS = %w(bbl blg log aux out toc)
 
 # bastardize the string class for easy file manipulation
 class String
@@ -95,6 +95,9 @@ quiet = opt.latex_verbose ? nil : ">/dev/null 2>&1"
 latexdir = File.expand_path(File.dirname(file))
 putsv "changing to #{latexdir}"
 
+ENV['TEXMFHOME'] = 'texmf'
+ENV['BSTINPUTS'] = 'texmf/tex/bibtex/bib'
+
 Dir.chdir(latexdir) do |latexdir|
 
   basename = File.basename(file)
@@ -102,6 +105,7 @@ Dir.chdir(latexdir) do |latexdir|
   pdfname = base + ".pdf"
   logname = base + ".log"
   bibname = base + ".bib"
+  tocname = base + ".toc"
 
   putsv "cleaning up auxiliary files"
   delete_auxs(base)
@@ -112,7 +116,8 @@ Dir.chdir(latexdir) do |latexdir|
 
   xelatex_cmd = ["xelatex", basename.escape, quiet].compact.join(' ')
 
-  runv xelatex_cmd
+  2.times{ runv xelatex_cmd }
+
   if File.exist?(bibname)
     logname.rename logname + "0"
     runv ["bibtex", base.escape, quiet].compact.join(" ")

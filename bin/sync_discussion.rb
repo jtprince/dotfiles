@@ -3,8 +3,10 @@
 require 'shellwords'
 home = ENV['HOME']
 
+#USB_STICK = '8GB_BLUE'
+USB_STICK = 'YELLOW_8GB'
 source = home + '/Dropbox/481-Fall2013/discussions'
-destination = '/media/jtprince/8GB_BLUE/481-Fall2013/discussions'
+destination = "/media/jtprince/#{USB_STICK}/481-Fall2013/discussions"
 
 if ARGV.size == 0
   puts "usage: #{File.basename(__FILE__)} regex|all"
@@ -14,7 +16,7 @@ end
 def run_verify(cmd)
   puts "Run the following:"
   puts cmd
-  puts "  [Y]?"
+  puts "      [Y/Enter]?"
   reply = gets.chomp
   if reply == '' || reply.upcase == 'Y'
     system cmd
