@@ -181,6 +181,7 @@ bindsym $mod+x exec $terminal
 
 bindsym XF86HomePage exec $browser
 bindsym $mod+i exec $browser
+bindsym $mod+z exec firefox
 
 bindsym XF86Mail exec $browser $newwindow http://gmail.com
 bindsym $mod+e exec $browser $newwindow http://gmail.com
