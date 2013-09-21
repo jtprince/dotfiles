@@ -42,7 +42,6 @@ alias .....='cd ../../../..'
 
 # ruby
 alias be="bundle exec"
-alias irb="pry"
 
 # git
 alias gist="git status"

@@ -45,10 +45,11 @@ def get_spelling_words(file)
   words
 end
 
-pdffile = ARGV.shift
+(pdffile, start_num) = ARGV
+start_num = start_num.to_i
 
 unless pdffile
-  puts "usage: #{File.basename(__FILE__)} <spellinglist>.pdf"
+  puts "usage: #{File.basename(__FILE__)} <spellinglist>.pdf start_num"
   exit
 end
 
@@ -59,7 +60,9 @@ system pdfcmd, pdffile
 
 words = get_spelling_words(txtfile)
 
+words = words[(start_num-1)..-1]
+
 words.each do |word|
   word.say
-  sleep 1
+  sleep 2.5
 end
