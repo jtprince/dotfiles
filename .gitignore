@@ -1,3 +1,4 @@
 config/moc/cache
 config/moc/pid
 config/moc/last_directory
+/bin/biber
