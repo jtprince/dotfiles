@@ -2,3 +2,4 @@
 /config/moc/pid
 /config/moc/last_directory
 /config/zsh/.zcompdump*
+/bin/biber

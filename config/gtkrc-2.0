@@ -17,11 +17,11 @@
 #sudo add-apt-repository ppa:noobslab/themes
 #sudo apt-get update
 #sudo apt-get install zukiwi
-include "/usr/share/themes/zukiwi/gtk-2.0/gtkrc"
+#include "/usr/share/themes/zukiwi/gtk-2.0/gtkrc"
 
 # base theme
 # sudo apt-get install gnome-themes-standard
-#include "/usr/share/themes/Adwaita/gtk-2.0/gtkrc"
+include "/usr/share/themes/Adwaita/gtk-2.0/gtkrc"
 
 # also thinking about these:
 # Ambiance or Radiance
