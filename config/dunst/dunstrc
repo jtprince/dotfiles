@@ -36,9 +36,12 @@
     history = mod4+ctrl+grave
 
 [urgency_low]
-    background = "#00BF06"
-    foreground = "#EEEEEE"
-    timeout = 3
+    transparency = 60
+    font = Monospace-6
+    #background = "#00BF06"
+    background = "#08301B"
+    foreground = "#AAAAAA"
+    timeout = 1
 
 [urgency_normal]
     background = "#00039B"
