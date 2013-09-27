@@ -169,8 +169,8 @@ set foldmethod=indent   " Make folding indent sensitive
 set foldlevel=100       " Don't autofold anything (but can still fold manually)
 set foldopen-=search    " don't open folds when you search into them
 set foldopen-=undo      " don't open folds when you undo stuff 
-" NOTE--> zM closes all folds and zR opens all folds
-" NOTE--> zo opens the fold you are on
+" NOTE--> zM closes all, zR opens all, zv expand to reveal cursor
+" NOTE--> current: za toogle, zo opens, zc closes 
 
 " FIX TYPOS =======================================================
 

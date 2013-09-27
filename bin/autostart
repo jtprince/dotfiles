@@ -11,8 +11,8 @@ if [ "$1" != "late" ]; then
     gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
     volti &
     nm-applet &
-    dropbox start 
-    ~/src/copy_agent/copy/x86_64/CopyAgent &
+    #dropbox start 
+    #~/src/copy_agent/copy/x86_64/CopyAgent &
     xclip &  # provides a clipboard that can be used across applications
     xscreensaver &
     

@@ -5,6 +5,14 @@ require 'ostruct'
 require 'shellwords'
 require 'fileutils'
 
+def printv(*args)
+  print *args if $VERBOSE
+end
+
+def putsv(*args)
+  puts *args if $VERBOSE
+end
+
 viewers = {
   'g' => 'geeqie',
   'e' => 'eog',
@@ -27,13 +35,14 @@ parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [OPTS] filename[.png]"
   op.separator "output: filename.png [by default captures entire screen]"
   op.separator ""
-  op.on("-d", "--delay <sec>", Float, "delay that many seconds") {|v| opt.delay = v }
+  op.on("-d", "--delay <sec>", Integer, "delay that many seconds (Int)") {|v| opt.delay = v }
   op.on("-a", "--active", "capture the active window") { opt.window = :active }
   op.on("-b", "--box", "draw a box to capture") { opt.window = :box }
   op.on("-w", "--window", "select a window to capture") { opt.window = :window }
   op.on("-o", "--open <s>", viewers_bold_string) {|v| opt.open = viewers[v] || v }
   op.on("--dir <s>", "save to this directory") {|v| opt.dir = v }
   op.on("--timestamp", "add a date/time stamp to filename") {|v| opt.timestamp = v }
+  op.on("-v", "--verbose", "talk about it") {|v| $VERBOSE = 3 }
 end
 parser.parse!
 
@@ -44,7 +53,6 @@ end
 
 filename = ARGV.shift
 filename += ".png" unless filename[/\.png/i]
-filename_esc = Shellwords.escape(filename)
 
 TIME_STAMP_FORMAT = "%Y-%m-%d--%H-%M-%S"
 if opt.timestamp
@@ -52,8 +60,17 @@ if opt.timestamp
   base = filename.chomp(ext)
   filename = base + "-" + Time.now.strftime(TIME_STAMP_FORMAT) + ext
 end
+filename_esc = Shellwords.escape(filename)
 
-sleep(opt.delay) if opt.delay
+if opt.delay
+  likecheese = ["say 茄子[eggplant]", "say pickles", "Sig ‘appelsin", "käsekuchen", "sei, no", "kimchi", "säg ‘omelett", "say سیب[apple]", "pepsi", "beanjack"]
+  printv "Action in "
+  opt.delay.downto(1) do |cnt|
+    printv "#{cnt}.. "
+    sleep(1)
+  end
+  putsv likecheese.sample + "!"
+end
 
 # create the command
 cmd_parts = ["import"]
@@ -72,7 +89,7 @@ Dir.chdir(dir) do
   if opt.open
     sleep(0.1)
     open_cmd = "#{opt.open} #{filename_esc} &"
-    puts open_cmd
+    putsv open_cmd
     system open_cmd
   end
 end
