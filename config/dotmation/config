@@ -38,7 +38,7 @@ github "jtprince/dotfiles/config" do
   dot 'pryrc'
   dot 'irbrc'
 
-  cfg 'dunstrc'
+  cfg 'dunst'
   cfg 'i3/config', 'i3/'
 
   #dot 'moc'
