@@ -112,6 +112,14 @@ function fix {
   gvim +${y%:} ${x%%:*}
 }
 
+function latexmklive {
+    if [ -e "$1" ]; then
+        execute_on_modify.rb $1 latexmk -pdf -xelatex {{}}
+    else
+        echo "latexlive <file>.tex"
+    fi
+}
+
 function latexlive {
     if [ -e "$1" ]; then
         execute_on_modify.rb $1 tex_to_pdf.rb --no-delete-pdf -v {{}}
@@ -119,6 +127,7 @@ function latexlive {
         echo "latexlive <file>.tex"
     fi
 }
+
 
 function ooffice {
     libreoffice --minimized --nologo "$@" &

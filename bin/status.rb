@@ -87,6 +87,8 @@ module Monitor
       'what you do is who you become',
       #'if you have time to browse internet, you have time to read scriptures & exercise',
       #'We are what we pretend to be, so careful what you pretend.',
+      #"I am no lover of disorder and doubt as such. Rather do I fear to lose truth by the pretension to possess it already wholly." # -- William James
+      "I fear to lose truth by the pretension to possess it already wholly.",
     ]
 
     def get_data
