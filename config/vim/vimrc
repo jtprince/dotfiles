@@ -124,7 +124,7 @@ set fileformats=unix,dos,mac
 if exists("+spelllang")
   set spelllang=en_us
 endif
-set spellfile=~/.vim/spell/en.utf-8.add
+set spellfile=~/.config/vim/spell/en.utf-8.add
 
 " set statusline=[%n]\ %<%.99f\ %h%w%m%r%{SL('CapsLockStatusline')}%y%{SL('fugitive#statusline')}%#ErrorMsg#%{SL('SyntasticStatuslineFlag')}%*%=%-14.(%l,%c%V%)\ %P
 

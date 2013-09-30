@@ -114,6 +114,8 @@ function fix {
 
 function latexmklive {
     if [ -e "$1" ]; then
+        export TEXMFHOME=texmf
+        export BSTINPUTS=texmf/tex/bibtex/bib
         execute_on_modify.rb $1 latexmk -pdf -xelatex {{}}
     else
         echo "latexlive <file>.tex"
