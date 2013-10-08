@@ -1,0 +1,14 @@
+#!/bin/bash
+
+################
+# John T. Prince
+
+if [ "$#" == "0" ]; then
+    pgname=`basename $0`
+    echo "usage: $pgname program"
+    echo "    releases the program!"
+else
+    echo "running: nohup $@ > /dev/null 2>&1 &"
+    nohup "$@" > /dev/null 2>&1 &
+    echo "pid: $!"
+fi

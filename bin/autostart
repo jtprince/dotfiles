@@ -1,5 +1,9 @@
 #!/bin/bash
 
+function cmd_exists {
+    command -v "$1" >/dev/null 2>&1
+}
+
 if [ "$1" != "late" ]; then
     xrdb -merge ~/.Xdefaults
     start-pulseaudio-x11
@@ -11,8 +15,12 @@ if [ "$1" != "late" ]; then
     gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
     volti &
     nm-applet &
-    #dropbox start 
-    #~/src/copy_agent/copy/x86_64/CopyAgent &
+    if cmd_exists dropbox ; then
+        ( sleep 20 && dropbox start )&
+    fi
+    if [ -e ~/src/copy_agent/copy/x86_64/CopyAgent ]; then
+        ( sleep 40 && ~/src/copy_agent/copy/x86_64/CopyAgent& )&
+    fi
     xclip &  # provides a clipboard that can be used across applications
     xscreensaver &
     
