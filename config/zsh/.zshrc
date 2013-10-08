@@ -116,7 +116,8 @@ function latexmklive {
     if [ -e "$1" ]; then
         export TEXMFHOME=texmf
         export BSTINPUTS=texmf/tex/bibtex/bib
-        execute_on_modify.rb $1 latexmk -pdf -xelatex {{}}
+        latexmk -pdf -xelatex -gg "$1"  # clean up files and do make
+        execute_on_modify.rb "$1" latexmk -pdf -xelatex {{}}
     else
         echo "latexlive <file>.tex"
     fi
