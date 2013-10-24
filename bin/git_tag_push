@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby 
+
+if ARGV.size == 0
+  puts "usage: #{File.basename($0)} tagname [-m 'some message']"
+  puts "makes an annotated tag and pushes it if there is an upstream remote"
+  puts "defaults message to 'none' if none provided"
+  exit
+end
+
+def run(*args)
+  puts *args
+end
+
+args = ARGV.map.to_a
+
+tagname = nil
+was_switch = false
+tagname = 
+  if args.size == 1
+    args[0]
+    args << "-m" << 'none'
+  else
+    args.each_cons(2) do |arg1, arg2|
+      next if was_switch
+      if arg1[0] != '-'
+        tagname = arg1
+        break
+      else
+        was_switch = true
+      end
+    end
+    tagname
+  end
+
+p args
+p tagname
+args.delete_at(args.index(tagname))
+
+run "git tag -a #{tagname} #{args.join(' ')}"
+run "git push #{tagname}"
+
