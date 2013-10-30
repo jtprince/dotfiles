@@ -1,6 +1,5 @@
 ScanTron
 Lipidomics
-lipidomics
 LipidBlast
 phosphoglyceride
 glycerophosphoglycerolipids
@@ -9,7 +8,6 @@ phospholipids
 ceramides
 R15
 bioinformatic
-lipidomic
 HPLC
 omic
 Rubabel
@@ -52,3 +50,6 @@ arabinose
 hemiacetals
 anomeric
 lignin
+cheminformatic
+lipidomics
+lipidomic
