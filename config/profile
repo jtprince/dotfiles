@@ -57,7 +57,8 @@ export BSTINPUTS=$HOME/.config/latex/bst
 #echo "$PATH" >> "/home/jtprince/INITIAL_PATH.txt"
 export PATH=$HOME/bin:$HOME/usr/bin:$PATH:/usr/bin/X11
 export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+eval "$(rbenv init --no-rehash - zsh)"
+#eval "$(rbenv init -)"
 
 #####################################################
 # LOAD BASHRC

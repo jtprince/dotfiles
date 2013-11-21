@@ -25,10 +25,10 @@ if ARGV.size == 0
 end
 
 TOP_MARGIN = 18
-RIGHT_MARGIN = 18
+RIGHT_MARGIN = 20
 JUSTIFY = :right
-FONT_SIZE = 10
-COLOR = '888888'
+FONT_SIZE = 8 
+COLOR = '777777'
 
 ARGV.each do |file|
   fileappears = opt[:nopdfext] ? file.chomp(File.extname(file)) : file

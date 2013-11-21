@@ -19,43 +19,25 @@ bindkey -e
 # oh my zsh
 ###############################################################################
 
-ZSH=$HOME/.config/oh-my-zsh
+#ZSH=$HOME/.config/oh-my-zsh
 
 # plugins in ~/.oh-my-zsh/plugins/*
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(git ruby rake)
+#plugins=(git ruby rake)
 
-DISABLE_AUTO_UPDATE="true"
-source $ZSH/oh-my-zsh.sh
+#DISABLE_AUTO_UPDATE="true"
+#source $ZSH/oh-my-zsh.sh
 
 ###############################################################################
 # Prompt
 ###############################################################################
 
+for config_file (~/.config/zsh/lib/*.zsh); do
+  source $config_file
+done
+
 source ~/.config/zsh/jtprince.zsh-theme
 
-###############################################################################
-# History
-###############################################################################
-
-HISTSIZE=10000
-SAVEHIST=10000
-setopt APPEND_HISTORY
-setopt SHARE_HISTORY
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_REDUCE_BLANKS
-setopt HIST_IGNORE_SPACE
-# not sure what this does
-setopt HIST_NO_STORE
-# When using a hist thing, make a newline show the change before executing it.
-# Save the time and how long a command ran
-# setopt EXTENDED_HISTORY
-setopt HIST_VERIFY
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_FIND_NO_DUPS
-HISTFILE=~/.cache/.zsh_history
 
 # Use modern completion system
 autoload -Uz compinit
@@ -93,7 +75,8 @@ export WORDCHARS='*?_[]~=&;!#$%^(){}'
 
 source ~/.config/alias
 
-alias zshrc='gvim ~/.config/zsh/.zshrc'
+alias zedit="gvim ~/.config/zsh/.zshrc"
+alias zsource=". ~/.config/zsh/.zshrc && echo 'ZSH config sourced"
 
 insert_sudo () { zle beginning-of-line; zle -U "sudo " }
 zle -N insert-sudo insert_sudo
@@ -114,8 +97,6 @@ function fix {
 
 function latexmklive {
     if [ -e "$1" ]; then
-        export TEXMFHOME=texmf
-        export BSTINPUTS=texmf/tex/bibtex/bib
         latexmk -pdf -xelatex -gg "$1"  # clean up files and do make
         execute_on_modify.rb "$1" latexmk -pdf -xelatex {{}}
     else
