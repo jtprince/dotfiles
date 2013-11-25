@@ -1,1 +1,1 @@
-/home/jtprince/dev/princelab-scripts/latex/pubmed_to_bibtex.rb
+/home/jtprince/dev/princelab-scripts/pubmed_to_summary_email.rb
