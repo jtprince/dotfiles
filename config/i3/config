@@ -120,8 +120,6 @@ bindsym XF86AudioPlay exec audtool playback-playpause
 bindsym XF86AudioPrev exec audtool playlist-reverse
 bindsym XF86Launch5 exec audtool playlist-shuffle-toggle
 
-
-
 # http://wiki.linuxquestions.org/wiki/XF86_keyboard_symbols
 # http://praksh.wordpress.com/2010/06/13/moc-the-terminal-music-player-for-all-your-needs/
 
@@ -172,10 +170,10 @@ set $newwindow --new-window
 #set $newwindow -new-window
 
 # debian/ubuntu default terminal
-#set $terminal x-terminal-emulator
-set $terminal gnome-terminal
+set $terminal x-terminal-emulator
 
-set $filemanager nautilus --no-desktop
+#set $filemanager nautilus --no-desktop
+set $filemanager filemanager
 
 bindsym $mod+x exec $terminal
 

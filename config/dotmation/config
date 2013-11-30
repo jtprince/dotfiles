@@ -44,6 +44,8 @@ github "jtprince/dotfiles/config" do
   #dot 'moc'
   dot 'mpd'
   dot 'ncmpcpp'
+
+  cfg 'devilspie2'
 end
 
 github "jtprince/dotfiles/config/vim" do
@@ -52,21 +54,21 @@ github "jtprince/dotfiles/config/vim" do
   cfg 'spell', 'vim/'
 end
 
-pkg %w(texlive-xetex texlive-latex-recommended texlive-science texlive-fonts-recommended texlive-fonts-extra)
-github "jtprince/dotfiles/config/latex" do
-  ln 'texmf'
-  cfg 'bst', 'latex/'
-  cfg 'inputs', 'latex/'
-end
+#pkg %w(texlive-xetex texlive-latex-recommended texlive-science texlive-fonts-recommended texlive-fonts-extra)
+#github "jtprince/dotfiles/config/latex" do
+#  ln 'texmf'
+#  cfg 'bst', 'latex/'
+#  cfg 'inputs', 'latex/'
+#end
 
 github "jtprince/dotfiles/bin" do
   ln '.'
 end
 
-pkg %w(zsh)
-github "robbyrussell/oh-my-zsh" do
-  cfg '.'
-end
+#pkg %w(zsh)
+#github "robbyrussell/oh-my-zsh" do
+#  cfg '.'
+#end
 
 pkg %w(exuberant-ctags gnome-terminal)
 pkg %w(ruby ruby-dev) # for command-t

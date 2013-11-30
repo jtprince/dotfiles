@@ -1,11 +1,10 @@
 #!/usr/bin/env ruby
-# encoding: UTF-8
 
 ######################################################################
 # Monitors
 ######################################################################
 
-module Monitor
+module SysMonitor
   SLEEP = 2
 
   def valid?
@@ -13,7 +12,7 @@ module Monitor
   end
 
   class DateTime
-    include Monitor
+    include SysMonitor
     def initialize(format="%a %b %d %l:%M%P")
       @format = format
     end
@@ -25,7 +24,7 @@ module Monitor
   # a mixin that actively sleeps the monitor
   # requires mixin classes to implement get_data which returns the data
   module Sleeper
-    def initialize(slp=Monitor::SLEEP)
+    def initialize(slp=SysMonitor::SLEEP)
       @sleep = slp
     end
 
@@ -39,7 +38,7 @@ module Monitor
   module LongTimer
     SLEEP = 600
 
-    def initialize(update_sec=Monitor::LongTimer::SLEEP)
+    def initialize(update_sec=SysMonitor::LongTimer::SLEEP)
       @update_sec = update_sec
       @last_update = Time.now - @update_sec # set to immediately update
     end
@@ -56,7 +55,7 @@ module Monitor
   class Weather
     PROGRAM = 'weather_simple.rb'
     LOCATION = 'provo'
-    include Monitor
+    include SysMonitor
     include LongTimer
 
     def get_data
@@ -66,7 +65,7 @@ module Monitor
   end
 
   class Quote
-    include Monitor
+    include SysMonitor
     include LongTimer
     QUOTES = [
       #'move-eat-sleep-relax-connect',
@@ -97,7 +96,7 @@ module Monitor
   end
 
   class CPU
-    include Monitor
+    include SysMonitor
     include Sleeper
     IDLE_IDX = 3
 
@@ -141,7 +140,7 @@ module Monitor
   end
 
   class Memory
-    include Monitor
+    include SysMonitor
     include Sleeper
     attr_reader :total
 
@@ -171,7 +170,7 @@ module Monitor
   end
 
   class Battery
-    include Monitor
+    include SysMonitor
     include Sleeper
 
     def valid?
@@ -326,12 +325,12 @@ end
 
 # '𝗖' '𝗕' '𝗠'
 
-quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', Monitor::Quote.new(6000))
-bat = I3Bar::UI::UpDownBar.new('♉', '#0000FF', Monitor::Battery.new)
-cpu = I3Bar::UI::VBars.new('⌘', '#FF0000', Monitor::CPU.new)
-mem = I3Bar::UI::VBars.new('♏', '#00FF00', Monitor::Memory.new)
-weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', Monitor::Weather.new)
-datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', Monitor::DateTime.new)
+quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
+bat = I3Bar::UI::UpDownBar.new('♉', '#0000FF', SysMonitor::Battery.new)
+cpu = I3Bar::UI::VBars.new('⌘', '#FF0000', SysMonitor::CPU.new)
+mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
+weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
+datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime.new)
 
 components = [quote, bat, cpu, mem, weather, datetime].select {|cell| cell[:monitor].valid? }
 

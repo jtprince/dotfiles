@@ -28,7 +28,7 @@ Bundle 'gmarik/vundle'
 " open and edit the file you want including path searching
 "   command-t needs C-extensions:
 "   ensure ruby-dev is installed, then 'rake make' in folder
-Bundle 'git://git.wincent.com/command-t.git'
+Bundle 'git://git.wincent.com/Command-T.git'
 " powerful comment/uncomment for diff't languages
 Bundle 'scrooloose/nerdcommenter'
 " file view
