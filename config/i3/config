@@ -29,7 +29,7 @@
 # STARTUP PROGRAMS & SETTINGS (Early)
 ######################################
 
-exec --no-startup-id dbus-launch --sh-syntax --exit-with-session i3 -V -d all > ~/.config/i3/i3log-$(date +'%F-%k-%M-%S') 2>&1
+# exec --no-startup-id dbus-launch --sh-syntax --exit-with-session i3 -V -d all > ~/.config/i3/i3log-$(date +'%F-%k-%M-%S') 2>&1
 exec --no-startup-id autostart
 
 #########################
