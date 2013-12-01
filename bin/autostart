@@ -11,7 +11,7 @@ if [ "$1" != "late" ]; then
     dunst -config ~/.config/dunstrc &
     echo "trying to run xmodmap"
     xmodmap ~/.config/xmodmap
-    thunar --daemon &
+    #thunar --daemon &
     gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
     volti &
     nm-applet &
@@ -31,7 +31,7 @@ else
         notify-send -u low 'chem dirs mounted!'
         mount_chem_dirs.rb all
     fi
-    if [ `hostname` == "altius" ]; then
-        mount_wd15
-    fi
+    #if [ `hostname` == "altius" ]; then
+    #    mount_wd15
+    #fi
 fi
