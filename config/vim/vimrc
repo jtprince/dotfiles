@@ -94,7 +94,7 @@ filetype plugin indent on
 if has("win32")
     set guifont=Andale_Mono:h8
 else
-    set guifont=Deja\ Vu\ Sans\ Mono\ 10
+    set guifont=Deja\ Vu\ Sans\ Mono\ 12
 endif
 
 " BASIC CONFIG ==============================================================
