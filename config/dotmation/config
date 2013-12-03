@@ -42,10 +42,8 @@ github "jtprince/dotfiles/config" do
   cfg 'i3/config', 'i3/'
 
   #dot 'moc'
-  dot 'mpd'
-  dot 'ncmpcpp'
-
-  cfg 'devilspie2'
+  #dot 'mpd'
+  #dot 'ncmpcpp'
 end
 
 github "jtprince/dotfiles/config/vim" do
