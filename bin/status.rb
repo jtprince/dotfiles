@@ -88,6 +88,8 @@ module SysMonitor
       #'We are what we pretend to be, so careful what you pretend.',
       #"I am no lover of disorder and doubt as such. Rather do I fear to lose truth by the pretension to possess it already wholly." # -- William James
       "I fear to lose truth by the pretension to possess it already wholly.",
+      "If patience is worth anything, it must endure to the end of time.", # Ghandi
+      "A living faith will last in the midst of the blackest storm.", #Ghandi 
     ]
 
     def get_data
