@@ -15,12 +15,12 @@ if [ "$1" != "late" ]; then
     gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
     volti &
     nm-applet &
-    if cmd_exists dropbox ; then
-        ( sleep 20 && dropbox start )&
-    fi
-    if [ -e ~/src/copy_agent/copy/x86_64/CopyAgent ]; then
-        ( sleep 40 && ~/src/copy_agent/copy/x86_64/CopyAgent& )&
-    fi
+#    if cmd_exists dropbox ; then
+        #( sleep 20 && dropbox start )&
+    #fi
+    #if [ -e ~/src/copy_agent/copy/x86_64/CopyAgent ]; then
+        #( sleep 40 && ~/src/copy_agent/copy/x86_64/CopyAgent& )&
+    #fi
     xclip &  # provides a clipboard that can be used across applications
     xscreensaver &
     

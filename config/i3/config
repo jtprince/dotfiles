@@ -31,6 +31,8 @@
 
 # exec --no-startup-id dbus-launch --sh-syntax --exit-with-session i3 -V -d all > ~/.config/i3/i3log-$(date +'%F-%k-%M-%S') 2>&1
 exec --no-startup-id autostart
+# in /etc/profile.d/jre.sh
+exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 
 #########################
 # VARIABLES
