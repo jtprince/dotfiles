@@ -80,7 +80,8 @@ client.urgent               #F00000     #F00000     #000000
 ## parentheses left and right to change volume
 bindsym $mod+parenright exec pactl set-sink-volume 0 -- '+5%'
 bindsym $mod+parenleft exec pactl set-sink-volume 0 -- '-5%'
-bindsym $mod+Shift+M exec toggle_mute
+bindsym $mod+minus exec toggle_mute
+
 # toggle_mute is two lines:
 #/usr/bin/pactl list sinks | grep -q Mute:.yes
 #/usr/bin/pactl set-sink-mute 0 ${PIPESTATUS[1]}
@@ -96,6 +97,28 @@ bindsym XF86AudioMute exec toggle_mute
 #########################
 # Music player
 #########################
+
+mode "musicplayer" {
+    bindsym Shift+S exec mocp --toggle shuffle
+    bindsym n exec mocp --next
+    bindsym b exec mocp --previous
+    bindsym s exec mocp --stop
+
+    bindsym $mod+parenright exec mocp -v +4
+    bindsym $mod+parenleft exec mocp -v -4
+
+    bindsym Shift+< exec mocp -v +4
+    bindsym Shift+> exec mocp -v -4
+
+    bindsym Shift+C exec mocp --clear
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+m mode "musicplayer"
+bindsym $mod+Shift+M exec sakura -x "mocp -p"
+
 # commands for mpd
 #bindsym XF86AudioNext exec mpc next
 #bindsym XF86AudioPlay exec mpc toggle
@@ -105,22 +128,24 @@ bindsym XF86AudioMute exec toggle_mute
 #bindsym XF86Launch5 exec mpc shuffle
 
 # commands for moc
-#bindsym XF86AudioNext exec mocp --next
-#bindsym XF86AudioPlay exec mocp --toggle-pause
-#bindsym XF86AudioPrev exec mocp --previous
+bindsym XF86AudioNext exec mocp --next
+bindsym XF86AudioPlay exec mocp --toggle-pause
+bindsym XF86AudioPrev exec mocp --previous
 # key 1 on my microsoft keyboard
-#bindsym XF86Launch5 exec mocp --toggle shuffle
+bindsym XF86Launch5 exec mocp --toggle shuffle
 # play the same song infinitely
-#bindsym XF86Favorites exec mocp --on repeat --off autonext
+bindsym XF86Favorites exec mocp --on repeat --off autonext
 # normal mode (no repeat) autonext
-#bindsym XF86Launch9 exec mocp --off repeat --on autonext
+bindsym XF86Launch9 exec mocp --off repeat --on autonext
+
+# These are still tied into the main master, not sure why
 
 # commands for audacious (via audtool which comes with audacious)
-bindsym $mod+m exec audacious
-bindsym XF86AudioNext exec audtool playlist-advance
-bindsym XF86AudioPlay exec audtool playback-playpause
-bindsym XF86AudioPrev exec audtool playlist-reverse
-bindsym XF86Launch5 exec audtool playlist-shuffle-toggle
+#bindsym $mod+m exec audacious
+#bindsym XF86AudioNext exec audtool playlist-advance
+#bindsym XF86AudioPlay exec audtool playback-playpause
+#bindsym XF86AudioPrev exec audtool playlist-reverse
+#bindsym XF86Launch5 exec audtool playlist-shuffle-toggle
 
 # http://wiki.linuxquestions.org/wiki/XF86_keyboard_symbols
 # http://praksh.wordpress.com/2010/06/13/moc-the-terminal-music-player-for-all-your-needs/
@@ -337,22 +362,6 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
-
-set $iclickerdata /home/jtprince/Dropbox/481-Fall2013/iclicker/current-poll.csv
-mode "iclicker" {
-    bindsym s exec "iclickerpoll.py --type alpha --dest $iclickerdata --frequency 'cb'
-
-    # duplicate these
-    bindsym f exec killall iclickerpoll.py -s SIGINT; exec iclicker-plot.rb -s $iclickerdata; mode "default"
-    bindsym space exec killall iclickerpoll.py -s SIGINT; exec iclicker-plot.rb -s $iclickerdata; mode "default"
-
-    bindsym e mode "default"
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-
-
-bindsym $mod+Shift+I mode "iclicker"
 
 ## this is cool because it shows you how to use modes... unfortunately it is
 ## too much work and I just use the ones I care about without a 'mode'

@@ -64,7 +64,7 @@ ReadTags		= yes
 # Directory in which you store music files. If you specify it you will be able
 # to quickly go to this directory with the '-m' parameter or the 'm' command.
 # This can also point to a playlist.
-MusicDir		= "/home/jtprince/local_music"
+MusicDir		= "/home/jtprince/Music"
 
 # How to sort? FileName is the only option for now.
 Sort			= FileName
@@ -129,13 +129,13 @@ OSSDevice		= /dev/dsp
 OSSMixerDevice		= /dev/mixer
 
 # OSS Mixer channel: pcm or master.
-OSSMixerChannel		= pcm
+OSSMixerChannel1 = pcm
 
 # Second OSS Mixer channel: pcm or master.
-OSSMixerChannel2	= master
+OSSMixerChannel2 = master
 
 # ALSA mixer device.
-AlsaMixer 		= PCM
+AlsaMixer1 		= PCM
 
 # Second ALSA mixer device.
 AlsaMixer2		= Master
@@ -198,6 +198,7 @@ XTerms += eterm
 # Theme file. This can be absolute path or relative to
 # /usr/share/moc/themes/ (depends on installation prefix) or ~/.moc/themes/
 # Theme			= example_theme
+Theme			= bwv549
 
 # The theme used when running on an xterm.
 XTermTheme		= bwv549

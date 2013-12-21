@@ -49,6 +49,7 @@ export KELSOIP="192.168.101.82"
 export MANPATH=$MANPATH:$HOME/man:/usr/dt/man:/usr/share/man:/usr/local/man:/usr/X11R6/man
 export LD_LIBRARY_PATH=$HOME/usr/lib:$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/usr/local/sys/os/glnx86:/usr/local/j3d/lib/i386:/usr/local/extern/lib/glnx86:.
 export PKG_CONFIG_PATH=$HOME/usr/lib/pkgconfig:/usr/lib/pkgconfig
+
 export TEXINPUTS=$TEXINPUTS:$HOME/.config/latex/inputs
 export BSTINPUTS=$HOME/.config/latex/bst
 
