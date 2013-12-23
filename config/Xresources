@@ -1,5 +1,6 @@
 
-Xcursor.theme: DMZ-White
+Xcursor.theme: Vanilla-DMZ
+!Xcursor.theme: DMZ-White
 ! Xcursor.theme: Adwaita
 ! Xcursor.theme: core
 ! Xcursor.theme: handhelds

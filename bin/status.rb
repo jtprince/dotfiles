@@ -282,7 +282,7 @@ class I3Bar < Array
         (temp, condition_st, intensity) = data
         st = 
           if condition_st 
-            "#{temp}° #{condition_st*intensity}"
+            "#{temp}°C #{condition_st*intensity}"
           else
             "[NC]"
           end

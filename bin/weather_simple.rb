@@ -110,7 +110,8 @@ arg = ARGV.shift.to_sym
 
 yahoo_w_code = places.key?(arg) ? places[arg] : arg
 
-uri = "http://weather.yahooapis.com/forecastrss?w=#{yahoo_w_code}&u=f"
+temp_unit = "c"  # c or f
+uri = "http://weather.yahooapis.com/forecastrss?w=#{yahoo_w_code}&u=#{temp_unit}"
 
 response = open(uri) {|f| f.read }
 #response = DATA.read

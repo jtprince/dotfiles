@@ -12,7 +12,7 @@ if [ "$1" != "late" ]; then
     echo "trying to run xmodmap"
     xmodmap ~/.config/xmodmap
     #thunar --daemon &
-    gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
+    eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
     volti &
     nm-applet &
 #    if cmd_exists dropbox ; then

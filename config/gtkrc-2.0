@@ -74,7 +74,7 @@ style "mono" = "default" {
 gtk-enable-event-sounds = 1
 
 # icons
-gtk-icon-theme-name = "Humanity"
+gtk-icon-theme-name = "gnome"
 
 # fonts
 # see http://bbs.archlinux.org/viewtopic.php?pid=693878#p693878

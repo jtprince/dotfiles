@@ -28,27 +28,26 @@ Bundle 'gmarik/vundle'
 " open and edit the file you want including path searching
 "   command-t needs C-extensions:
 "   ensure ruby-dev is installed, then 'rake make' in folder
-Bundle 'git://git.wincent.com/Command-T.git'
+" Bundle 'git://git.wincent.com/Command-T.git'
 " powerful comment/uncomment for diff't languages
-Bundle 'scrooloose/nerdcommenter'
+" Bundle 'scrooloose/nerdcommenter'
 " file view
-Bundle 'scrooloose/nerdtree'
+" Bundle 'scrooloose/nerdtree'
 " securely edit gpg files (.gpg .pgp or .asc)
-Bundle 'jamessan/vim-gnupg'
+" Bundle 'jamessan/vim-gnupg'
 " ensure that gvim uses the proper 256 terminal colors
 Bundle 'vim-scripts/colorsupport.vim'
 " source code browser (e.g. methods and classes etc)
 " sudo apt-get install exuberant-ctags
-Bundle 'vim-scripts/taglist.vim'
+" Bundle 'vim-scripts/taglist.vim'
 " vim-endwise
-Bundle 'tpope/vim-endwise'
+" Bundle 'tpope/vim-endwise'
 
 " syntax additions
 Bundle 'tpope/vim-markdown'
 Bundle 'timcharper/textile.vim'
 Bundle 'vim-scripts/eruby.vim'
 Bundle 'vim-ruby/vim-ruby'
-
 
 "Bundle 'Eckankar/vim-latex-folding'
 "Bundle 'gerw/vim-latex-suite'
@@ -95,6 +94,7 @@ if has("win32")
     set guifont=Andale_Mono:h8
 else
     set guifont=Deja\ Vu\ Sans\ Mono\ 10
+    " set guifont=Ubuntu\ Mono\ 12
 endif
 
 " BASIC CONFIG ==============================================================
