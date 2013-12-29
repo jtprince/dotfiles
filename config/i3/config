@@ -65,7 +65,7 @@ set $U K
 # font for window titles. ISO 10646 = Unicode
 #font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 #font pango:Telegrama 10
-font pango:Droid Sans Mono 10
+font pango:Droid Sans Mono 7
 
 # colors                    border      background  text
 client.focused              #77994B     #006600     #FFFFFF

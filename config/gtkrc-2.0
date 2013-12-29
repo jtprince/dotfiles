@@ -74,7 +74,9 @@ style "mono" = "default" {
 gtk-enable-event-sounds = 1
 
 # icons
-gtk-icon-theme-name = "gnome"
+#gtk-icon-theme-name = "gnome"
+# aur - tango-icon-theme
+gtk-icon-theme-name = "Tango"
 
 # fonts
 # see http://bbs.archlinux.org/viewtopic.php?pid=693878#p693878
