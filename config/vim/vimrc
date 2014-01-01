@@ -30,7 +30,7 @@ Bundle 'gmarik/vundle'
 "   ensure ruby-dev is installed, then 'rake make' in folder
 " Bundle 'git://git.wincent.com/Command-T.git'
 " powerful comment/uncomment for diff't languages
-" Bundle 'scrooloose/nerdcommenter'
+Bundle 'scrooloose/nerdcommenter'
 " file view
 " Bundle 'scrooloose/nerdtree'
 " securely edit gpg files (.gpg .pgp or .asc)
