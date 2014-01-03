@@ -66,3 +66,5 @@ alias gvmi="gvim"
 alias gimv="gvim"
 alias mdkir="mkdir"
 alias eixt="exit"
+
+alias msword='wine32 "/home/jtprince/.wine32/drive_c/Program Files/Microsoft Office/Office12/WINWORD.EXE"'

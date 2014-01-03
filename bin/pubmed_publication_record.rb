@@ -8,6 +8,8 @@ require 'ascii_charts'
 
 Bio::NCBI.default_email = "abc@def.ghi.com"
 
+# to get all my publicatios: (Prince JT[Author]) AND (Brigham Young University[Affiliation] OR Ahn NG[Author] OR Marcotte EM[Author])
+
 opt = OpenStruct.new
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} 'query' ..."
