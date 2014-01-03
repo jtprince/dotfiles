@@ -43,7 +43,7 @@ github "jtprince/dotfiles/config" do
 
   #dot 'moc'
   #dot 'mpd'
-  #dot 'ncmpcpp'
+  #ln 'ncmpcpp/config' .ncmpcpp/config
 end
 
 github "jtprince/dotfiles/config/vim" do

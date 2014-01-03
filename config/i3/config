@@ -65,7 +65,7 @@ set $U K
 # font for window titles. ISO 10646 = Unicode
 #font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 #font pango:Telegrama 10
-font pango:Droid Sans Mono 10
+font pango:Droid Sans Mono 7
 
 # colors                    border      background  text
 client.focused              #77994B     #006600     #FFFFFF
@@ -98,26 +98,26 @@ bindsym XF86AudioMute exec toggle_mute
 # Music player
 #########################
 
-mode "musicplayer" {
-    bindsym Shift+S exec mocp --toggle shuffle
-    bindsym n exec mocp --next
-    bindsym b exec mocp --previous
-    bindsym s exec mocp --stop
+#mode "musicplayer" {
+    #bindsym Shift+S exec mocp --toggle shuffle
+    #bindsym n exec mocp --next
+    #bindsym b exec mocp --previous
+    #bindsym s exec mocp --stop
 
-    bindsym $mod+parenright exec mocp -v +4
-    bindsym $mod+parenleft exec mocp -v -4
+    #bindsym $mod+parenright exec mocp -v +4
+    #bindsym $mod+parenleft exec mocp -v -4
 
-    bindsym Shift+< exec mocp -v +4
-    bindsym Shift+> exec mocp -v -4
+    #bindsym Shift+< exec mocp -v +4
+    #bindsym Shift+> exec mocp -v -4
 
-    bindsym Shift+C exec mocp --clear
+    #bindsym Shift+C exec mocp --clear
 
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
+    #bindsym Return mode "default"
+    #bindsym Escape mode "default"
+#}
 
-bindsym $mod+m mode "musicplayer"
-bindsym $mod+Shift+M exec sakura -x "mocp -p"
+#bindsym $mod+m mode "musicplayer"
+#bindsym $mod+Shift+M exec sakura -x "mocp -p"
 
 # commands for mpd
 #bindsym XF86AudioNext exec mpc next
@@ -126,6 +126,18 @@ bindsym $mod+Shift+M exec sakura -x "mocp -p"
 # key 1 on my microsoft keyboard
 # shuffle the playlist
 #bindsym XF86Launch5 exec mpc shuffle
+
+mode "musicplayer" {
+    bindsym d exec mocp --previous
+    bindsym f exec mocp --next
+
+    bindsym Shift+S exec mocp --toggle shuffle
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+m mode "musicplayer"
 
 # commands for moc
 bindsym XF86AudioNext exec mocp --next
