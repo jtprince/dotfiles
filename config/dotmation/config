@@ -11,6 +11,7 @@ github "jtprince/dotfiles/config" do
   cfg 'alias'
 
   dot 'profile'
+  dot 'xprofile'
 
   dot 'Xresources'
   ln 'Xresources', '.Xdefaults'

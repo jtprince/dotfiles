@@ -1,6 +1,12 @@
 
 # the .xprofile is sourced *before* the WM is started by LXDE, GDM etc
 
+if which dbus-launch >/dev/null && test -z "$DBUS_SESSION_BUS_ADDRESS"; then
+    eval "$(dbus-launch --sh-syntax --exit-with-session)"
+fi
+
+export GTK2_RC_FILES="$HOME/.gtkrc-2.0" 
+
 # better clipboard sync (with vnc, libreoffice etc.)
 # autocutsel -fork &
 # This is annoying, making any highlight overwrite to 
