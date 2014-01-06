@@ -208,13 +208,7 @@ set $newwindow --new-window
 #set $browser firefox
 #set $newwindow -new-window
 
-# debian/ubuntu default terminal
-set $terminal x-terminal-emulator
-
-#set $filemanager nautilus --no-desktop
-set $filemanager filemanager
-
-bindsym $mod+x exec $terminal
+bindsym $mod+x exec x-terminal-emulator
 
 bindsym XF86HomePage exec $browser
 bindsym $mod+i exec $browser
@@ -226,12 +220,12 @@ bindsym $mod+e exec $browser $newwindow http://gmail.com
 bindsym $mod+c exec $browser $newwindow http://calendar.google.com
 bindsym $mod+y exec $browser $newwindow https://mail.google.com/tasks/ig
 
-bindsym $mod+n exec $filemanager
+bindsym $mod+n exec file-manager
 
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
 bindsym $mod+g exec gvim
 
-bindsym XF86Calculator exec gnome-terminal -x orpie
+bindsym XF86Calculator exec x-terminal-emulator -x orpie
 
 bindsym XF86Phone exec $browser $newwindow http://voice.google.com
 

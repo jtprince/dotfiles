@@ -4,3 +4,4 @@
 /config/zsh/.zcompdump*
 /bin/biber
 /bin/x-terminal-emulator
+/bin/file-manager
