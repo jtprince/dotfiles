@@ -6,14 +6,12 @@ function cmd_exists {
 
 if [ "$1" != "late" ]; then
     xrdb -merge ~/.Xdefaults
-    urxvtd --quiet --opendisplay --fork
-    start-pulseaudio-x11
-    #eval `dbus-launch --sh-syntax --exit-with-session`
-    dunst -config ~/.config/dunstrc &
-    echo "trying to run xmodmap"
-    xmodmap ~/.config/xmodmap
-    #thunar --daemon &
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+    urxvtd --quiet --opendisplay --fork
+    dunst -config ~/.config/dunstrc &
+    start-pulseaudio-x11
+    xmodmap ~/.config/xmodmap
+    thunar --daemon &
     volti &
     nm-applet &
 #    if cmd_exists dropbox ; then
@@ -36,3 +34,7 @@ else
     #    mount_wd15
     #fi
 fi
+
+
+
+#eval `dbus-launch --sh-syntax --exit-with-session`

@@ -10,7 +10,6 @@ fi
 # xfce4-terminal currently has bug in Ubuntu preventing
 # it from propogating the TERM variable properly.
 # gnome-terminal will support 256 colors with this:
-TERM="xterm-256color"
 
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
