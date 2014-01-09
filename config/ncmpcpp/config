@@ -251,16 +251,17 @@ message_delay_time = "3"
 #
 playlist_shorten_total_times = "yes"
 #
-#playlist_separate_albums = "no"
+# (no/yes)
+playlist_separate_albums = "yes"
 #
 #(classic/columns)
 playlist_display_mode = "columns" 
 #
 #(classic/columns)
-browser_display_mode = "classic" 
+browser_display_mode = "columns" 
 #
 #(classic/columns)
-search_engine_display_mode = "classic" 
+search_engine_display_mode = "columns" 
 #
 # (classic/columns)
 playlist_editor_display_mode = "columns"
@@ -279,9 +280,18 @@ centered_cursor = "yes"
 ## Note: You can specify third character which will
 ## be used to build 'empty' part of progressbar.
 ##
-progressbar_look = "▋>"
-
+# Tried:
+progressbar_look = "■◩□"
+#progressbar_look = "∫⪼☆"
+#progressbar_look = "❉⪼✧"
+#progressbar_look = "▋>"
 #
+# Finished: ▣ ▓ ▩ ■
+# Empty:⊞ ∿ ⌼ □ ∫
+# Edge: ⨠ ᐉ ⪼ ↦ ↣ ↠ ⍄ ◩ ∫
+# Cool: ✵ ❄❅ ❆ ★ ☆✪ ✫ ✯ ⚫✶✵
+
+
 #default_place_to_search_in = "database" (database/playlist)
 #
 #(classic/alternative)
@@ -363,7 +373,7 @@ follow_now_playing_lyrics = "yes"
 ##
 #
 # default was 50
-locked_screen_width_part = "60"
+locked_screen_width_part = "80"
 #
 #ask_for_locked_screen_width_part = "yes"
 #

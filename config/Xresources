@@ -22,6 +22,56 @@ Xft.hintstyle: hintslight
 Xft.rgba: rgb
 ! Xft.lcdfilter: lcddefault
 
+! URxvt !!!!!!!!!!!!!!!!!!!!!!!!
+
+URxvt*.transparent: true
+! URxvt*.shading: 0 to 99 darkens, 101 to 200 lightens
+URxvt*.shading: 30
+! scrollbar style - rxvt (default), plain (most compact), next, or xterm
+!URxvt.scrollstyle: plain
+URxvt.scrollBar: false
+
+!URxvt*troughColor:                    black
+!URxvt*scrollBar_floating:             true
+!URxvt*scrollBar_right:                true
+URxvt*cursorColor:                     darkorange1
+URxvt*foreground:                      white 
+URxvt*background:                      black
+URxvt*saveLines:                       7777
+URxvt*cursorBlink:                     false
+URxvt*termName:                        rxvt-256color
+! URxvt*font:                            xft:Dejavu Sans Mono:pixelsize=10.5
+! URxvt*boldFont:                        xft:Dejavu Sans Mono:pixelsize=10.5
+URxvt*font: xft:Ubuntu Mono
+URxvt*boldFont: xft:Ubuntu Mono
+URxvt*colorBD:                         #FFB700
+
+!colors
+!black
+!urxvt*color0:				#171717
+!urxvt*color8:				#737373
+!!red
+!urxvt*color1:				#ff5e5e
+!urxvt*color9:				#ff7878
+!!green
+!urxvt*color2:				#9ce82b
+!urxvt*color10:				#9acd32
+!!yellow
+!urxvt*color3:				#f0e68c
+!urxvt*color11:				#eee8aa
+!!blue
+!urxvt*color4:				#008aff
+!urxvt*color12:				#4f98ff
+!!magenta
+!urxvt*color5:				#e88cff
+!urxvt*color13:				#eda6ff
+!!cyan
+!urxvt*color6:				#87cefa
+!urxvt*color14:				#b0e2ff
+!!white
+!urxvt*color7:				#dcdccc
+!uRxvt*color15:				#FFFFFF
+
 xscreensaver.timeout:	0:10:00
 xscreensaver.cycle:		0:08:00
 xscreensaver.lock:		False
