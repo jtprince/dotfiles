@@ -128,12 +128,21 @@ bindsym XF86AudioMute exec toggle_mute
 #bindsym XF86Launch5 exec mpc shuffle
 
 mode "musicplayer" {
-    bindsym d exec mocp --previous
-    bindsym f exec mocp --next
+    bindsym Shift+M exec mpd
 
-    bindsym Shift+S exec mocp --toggle shuffle
+    bindsym Return exec mpc play
+    bindsym Shift+less exec mpc prev
+    bindsym Shift+greater exec mpc next
 
-    bindsym Return mode "default"
+    bindsym BackSpace mpc seek 0
+
+    bindsym s exec mpc stop
+    bindsym Shift+P exec mpc toggle  # pause/play
+    bindsym Shift+z exec mpc random
+
+    bindsym q exec mpd --kill
+    bindsym Shift+Q exec mpd --kill
+
     bindsym Escape mode "default"
 }
 

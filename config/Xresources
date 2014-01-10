@@ -1,4 +1,7 @@
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! Cursor
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Xcursor.theme: Vanilla-DMZ
 !Xcursor.theme: DMZ-White
 ! Xcursor.theme: Adwaita
@@ -8,6 +11,9 @@ Xcursor.theme: Vanilla-DMZ
 ! Xcursor.theme: whiteglass
 ! Xcursor.theme: DMZ-Black
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! General font
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! make sure to mirror settings in ~/.gtkrc-2.0 and in ~/.config/fontconfig/fonts.conf
 ! link to ~/.Xresources until you are certain you can change to
 ! XDG_CONFIG_HOME style directory...
@@ -22,32 +28,34 @@ Xft.hintstyle: hintslight
 Xft.rgba: rgb
 ! Xft.lcdfilter: lcddefault
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! URxvt
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !colors
 !black
-urxvt*color0:				#222222
-urxvt*color8:				#222222
+URxvt*color0:				#222222
+URxvt*color8:				#222222
 !red
-urxvt*color1:				#ff3333
-urxvt*color9:				#ff3333
+URxvt*color1:				#ff3333
+URxvt*color9:				#ff3333
 !green
-urxvt*color2:				#44ff44
-urxvt*color10:				#44ff44
+URxvt*color2:				#44ff44
+URxvt*color10:				#44ff44
 !yellow
-urxvt*color3:				#ffff33
+URxvt*color3:				#ffff33
 urxvt*color11:				#ffff33
 !blue
-urxvt*color4:				#6666ff
-urxvt*color12:				#6666ff
+URxvt*color4:				#6666ff
+URxvt*color12:				#6666ff
 !magenta
-urxvt*color5:				#ff33ff
-urxvt*color13:				#ff33ff
+URxvt*color5:				#ff33ff
+URxvt*color13:				#ff33ff
 !cyan
-urxvt*color6:				#33ffff
-urxvt*color14:				#33ffff
+URxvt*color6:				#33ffff
+URxvt*color14:				#33ffff
 !white
-urxvt*color7:				#efefef
-uRxvt*color15:				#efefef
+URxvt*color7:				#efefef
+URxvt*color15:				#efefef
 
 ! Tango colors:
 !urxvt*color0:  #2E3436
@@ -67,7 +75,6 @@ uRxvt*color15:				#efefef
 !urxvt*color14: #fcaf3e
 !urxvt*color15: #EEEEEC
 
-
 URxvt*.transparent: true
 ! URxvt*.shading: 0 to 99 darkens, 101 to 200 lightens
 URxvt*.shading: 17
@@ -81,7 +88,6 @@ URxvt.scrollBar: false
 URxvt*cursorColor:                     darkorange1
 URxvt*foreground:                      white 
 URxvt*background:                      black
-URxvt*saveLines:                       7777
 URxvt*cursorBlink:                     false
 URxvt*termName:                        rxvt-256color
 ! URxvt*font:                            xft:Dejavu Sans Mono:pixelsize=10.5
@@ -92,8 +98,12 @@ URxvt*font:                            xft:Dejavu Sans Mono:size=10
 !URxvt*boldFont:                        xft:Dejavu Sans Mono:bold:size=13
 URxvt*colorBD:                         white
 
+! 65535 is max on most machines (64 is default)
+URxvt*saveLines: 65535
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! Xscreensaver
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 xscreensaver.timeout:	0:10:00
 xscreensaver.cycle:		0:08:00
 xscreensaver.lock:		False

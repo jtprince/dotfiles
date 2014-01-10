@@ -37,7 +37,6 @@ done
 
 source ~/.config/zsh/jtprince.zsh-theme
 
-
 # Use modern completion system
 autoload -Uz compinit
 compinit
