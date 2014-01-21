@@ -47,4 +47,12 @@ class Temperature
       @celsius * (4.0/5)
     end
   end
+
+  def to_s
+    "#{@celsius} ℃"
+  end
+
+end
+
+if __FILE__ == $0
 end
