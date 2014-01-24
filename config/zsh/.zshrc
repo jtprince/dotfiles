@@ -140,7 +140,7 @@ function nautilusnd {
 # A shortcut function that simplifies usage of xclip.
 # - Accepts input from either stdin (pipe), or params.
 # ------------------------------------------------
-cb() {
+clip() {
   local _scs_col="\e[0;32m"; local _wrn_col='\e[1;31m'; local _trn_col='\e[0;33m'
   # Check that xclip is installed.
   if ! type xclip > /dev/null 2>&1; then
@@ -158,8 +158,8 @@ cb() {
     fi
     if [ -z "$input" ]; then  # If no input, print usage message.
       echo "Copies a string to the clipboard."
-      echo "Usage: cb <string>"
-      echo "       echo <string> | cb"
+      echo "Usage: clip <string>"
+      echo "       echo <string> | clip"
     else
       # Copy input to clipboard
       echo -n "$input" | xclip -selection c
@@ -170,16 +170,16 @@ cb() {
     fi
   fi
 }
-# Aliases / functions leveraging the cb() function
+# Aliases / functions leveraging the clip() function
 # ------------------------------------------------
 # Copy contents of a file
-function cbf() { cat "$1" | cb; }  
+function clipfile() { cat "$1" | clip; }  
 # Copy SSH public key
-alias cbssh="cbf ~/.ssh/id_rsa.pub"  
+alias clipsshkey="clipfile ~/.ssh/id_rsa.pub"  
 # Copy current working directory
-alias cbwd="pwd | cb"  
+alias clippwd="pwd | clip"  
 # Copy most recent command in bash history
-alias cbhs="cat $HISTFILE | tail -n 1 | cb"
+alias cliplastcommand="cat $HISTFILE | tail -n 1 | clip"
 
 ###############################################################################
 # File Associations
