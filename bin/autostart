@@ -12,7 +12,8 @@ if [ "$1" != "late" ]; then
     start-pulseaudio-x11
     xmodmap ~/.config/xmodmap
     thunar --daemon &
-    volti &
+    # should probably install pavumeter and paprefs, too
+    pasystray &   
     nm-applet &
 #    if cmd_exists dropbox ; then
         #( sleep 20 && dropbox start )&
