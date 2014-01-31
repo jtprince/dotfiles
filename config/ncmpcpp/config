@@ -92,7 +92,7 @@ visualizer_look = "◆│"
 #
 ## delay after playlist highlighting will be disabled (0 = don't disable)
 #
-#playlist_disable_highlight_delay = "5"
+playlist_disable_highlight_delay = "0"
 #
 ## defines how long various messages are supposed to be visible
 #

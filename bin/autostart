@@ -14,6 +14,7 @@ if [ "$1" != "late" ]; then
     thunar --daemon &
     # should probably install pavumeter and paprefs, too
     pasystray &   
+    #volti &
     nm-applet &
 #    if cmd_exists dropbox ; then
         #( sleep 20 && dropbox start )&
