@@ -101,6 +101,12 @@ URxvt*colorBD:                         white
 ! 65535 is max on most machines (64 is default)
 URxvt*saveLines: 65535
 
+! removes the weird behavior when pressing ctrl-shift:
+URxvt.iso14755 : false
+!URxvt.keysym.C-C: perl:clipboard:copy
+!URxvt.keysym.C-V: perl:clipboard:paste
+!URxvt.keysym.C-A-V: perl:clipboard:paste_escaped
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! Xscreensaver
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
