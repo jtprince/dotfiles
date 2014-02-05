@@ -1,13 +1,11 @@
 #!/usr/bin/env ruby
 
 require 'ostruct'
-require 'andand'
 
 class App < OpenStruct
   class << self
     def from_desktop_file(file)
-      lines = IO.readlines(file)
-      lines = lines.drop_while(&:empty?)
+      lines = IO.readlines(file).drop_while(&:empty?)
       desktop = lines.shift
       return nil unless desktop && desktop =~ /[Desktop Entry]/
       hash = lines.each_with_object({}) do |line, hash| 
