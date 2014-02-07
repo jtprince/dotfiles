@@ -262,8 +262,8 @@ bindsym $mod+Shift+U restart
 bindsym $mod+Shift+Q exit
 
 # shutdown the computer: sudo chmod u+s /sbin/poweroff
-bindsym $mod+Ctrl+Shift+P exec poweroff -p
-bindsym $mod+Ctrl+Shift+R exec reboot
+bindsym $mod+Ctrl+Shift+P exec systemctl poweroff
+bindsym $mod+Ctrl+Shift+R exec systemctl reboot
 
 #bindsym XF86Sleep exec echo -n mem > /sys/power/state
 
