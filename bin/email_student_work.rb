@@ -44,7 +44,10 @@ opt = OpenStruct.new({
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename($0)} <ADDRESSES>.txt student_paper ..."
   op.separator "student_paper: named <Last.> or <Last_>"
-  op.separator %Q{<ADDRESSES>.txt:to have one address per line "First M. Last" <address>}
+  op.separator %Q{<ADDRESSES>.txt:to has one address per line in this format!: "First M. Last" <address>}
+  op.separator ""
+  op.separator "WARNING: assumes unique last names!!!"
+  op.separator ""
   op.on("-s", "--subject <string>", "subject line, def: #{opt.subject}") {|v| opt.subject = v }
   op.on("-b", "--body <string>", "body def: #{opt.body}") {|v| opt.body = v }
 end
