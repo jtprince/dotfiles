@@ -1,4 +1,7 @@
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! Cursor
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Xcursor.theme: Vanilla-DMZ
 !Xcursor.theme: DMZ-White
 ! Xcursor.theme: Adwaita
@@ -8,6 +11,9 @@ Xcursor.theme: Vanilla-DMZ
 ! Xcursor.theme: whiteglass
 ! Xcursor.theme: DMZ-Black
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! General font
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! make sure to mirror settings in ~/.gtkrc-2.0 and in ~/.config/fontconfig/fonts.conf
 ! link to ~/.Xresources until you are certain you can change to
 ! XDG_CONFIG_HOME style directory...
@@ -22,6 +28,88 @@ Xft.hintstyle: hintslight
 Xft.rgba: rgb
 ! Xft.lcdfilter: lcddefault
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! URxvt
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!colors
+!black
+URxvt*color0:				#222222
+URxvt*color8:				#222222
+!red
+URxvt*color1:				#ff3333
+URxvt*color9:				#ff3333
+!green
+URxvt*color2:				#44ff44
+URxvt*color10:				#44ff44
+!yellow
+URxvt*color3:				#ffff33
+urxvt*color11:				#ffff33
+!blue
+URxvt*color4:				#6666ff
+URxvt*color12:				#6666ff
+!magenta
+URxvt*color5:				#ff33ff
+URxvt*color13:				#ff33ff
+!cyan
+URxvt*color6:				#33ffff
+URxvt*color14:				#33ffff
+!white
+URxvt*color7:				#efefef
+URxvt*color15:				#efefef
+
+! Tango colors:
+!urxvt*color0:  #2E3436
+!urxvt*color1:  #a40000
+!urxvt*color2:  #4E9A06
+!urxvt*color3:  #C4A000
+!urxvt*color4:  #3465A4
+!urxvt*color5:  #75507B
+!urxvt*color6:  #ce5c00
+!urxvt*color7:  #babdb9
+!urxvt*color8:  #555753
+!urxvt*color9:  #EF2929
+!urxvt*color10: #8AE234
+!urxvt*color11: #FCE94F
+!urxvt*color12: #729FCF
+!urxvt*color13: #AD7FA8
+!urxvt*color14: #fcaf3e
+!urxvt*color15: #EEEEEC
+
+URxvt*.transparent: true
+! URxvt*.shading: 0 to 99 darkens, 101 to 200 lightens
+URxvt*.shading: 17
+! scrollbar style - rxvt (default), plain (most compact), next, or xterm
+!URxvt.scrollstyle: plain
+URxvt.scrollBar: false
+
+!URxvt*troughColor:                    black
+!URxvt*scrollBar_floating:             true
+!URxvt*scrollBar_right:                true
+URxvt*cursorColor:                     darkorange1
+URxvt*foreground:                      white 
+URxvt*background:                      black
+URxvt*cursorBlink:                     false
+URxvt*termName:                        rxvt-256color
+! URxvt*font:                            xft:Dejavu Sans Mono:pixelsize=10.5
+! URxvt*boldFont:                        xft:Dejavu Sans Mono:pixelsize=10.5
+!URxvt*font:                            xft:Ubuntu Mono:size=13
+!URxvt*boldFont:                        xft:Ubuntu Mono:bold:size=13
+URxvt*font:                            xft:Dejavu Sans Mono:size=10
+!URxvt*boldFont:                        xft:Dejavu Sans Mono:bold:size=13
+URxvt*colorBD:                         white
+
+! 65535 is max on most machines (64 is default)
+URxvt*saveLines: 65535
+
+! removes the weird behavior when pressing ctrl-shift:
+URxvt.iso14755 : false
+!URxvt.keysym.C-C: perl:clipboard:copy
+!URxvt.keysym.C-V: perl:clipboard:paste
+!URxvt.keysym.C-A-V: perl:clipboard:paste_escaped
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! Xscreensaver
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 xscreensaver.timeout:	0:10:00
 xscreensaver.cycle:		0:08:00
 xscreensaver.lock:		False

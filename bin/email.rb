@@ -1,96 +1,87 @@
-#!/usr/bin/ruby -w
+#!/usr/bin/env ruby
 
-require 'net/smtp'
+require 'mail'
 require 'optparse'
+require 'io/console'
 
-# abstracts out the email address
-def get_from_email(string)
-  if string =~ /<(.*)>/
-    $1.dup
-  else
-    string
-  end
+## to is a string or an array
+#def send_email(from, to, subject, message)
+  #from_email = get_from_email(from) 
+  #to_email = get_to_email(to)
+
+  #msg = <<END_OF_MESSAGE
+#From: #{from}
+#To: #{to}
+#Subject: #{subject}
+
+##{message}
+#END_OF_MESSAGE
+
+  ## on local machine with smtp
+  #Net::SMTP.start('localhost') do |smtp|
+    #smtp.send_message(msg, from_email, *to_email)
+  #end
+#end
+
+opt = {}
+opt[:from] = '"John T. Prince" <jtprince@gmail.com>'
+opt[:subject] = '(no subject)'
+opt[:message] = ''
+opt[:attachments] = []
+
+parser = OptionParser.new do |op|
+  prog = File.basename(__FILE__)
+  op.banner = "usage: #{prog} to ... [-s subject] [-m message]"
+  op.on('-f', '--from <from>', "'from email def: '#{opt[:from]}'") {|v| opt[:from] = v}
+  op.on('-m', '--message <message>', "'my message' def: '#{opt[:message]}'") {|v| opt[:body] = v}
+  op.on('-s', '--subject <subject>', "'my subject' def: '#{opt[:subject]}'") {|v| opt[:subject] = v}
+  op.on('-a', '--attachment <filepath>', "def: '#{opt[:attachments]}'") {|v| opt[:attachments] << v}
+
+  op.separator ""
+  op.separator "examples:"
+  op.separator "  #{prog} mine@home.com bob@gmail.com sally@yahoo.com \\"
+  op.separator "          -s hi -m 'my message'"
+  op.separator "  #{prog} 'Sender <mine@home.com>' 'Bob <bob@gmail.com>' \\"
+  op.separator "          'Sally <sally@yahoo.com>' -s hi -m 'my message'"
+  op.separator "  #{prog} mine@home.com 'bob@gmail.com, sally@yahoo.com' \\"
+  op.separator "          -s hi -m 'my message'"
 end
 
-# arg is string or array
-def get_to_email(arg)
-  ar = 
-    if arg.is_a? Array
-      arg
-    else
-      arg.split(', ')
-    end
-  ar.map do |email|
-    if email =~ /(.*)<(.*)>/ 
-      $2.dup
-    else
-      email
-    end
-  end
+parser.parse!
+
+if ARGV.size < 1
+  puts parser
+  exit
 end
 
+print "gmail password: "
+gmail_password = STDIN.noecho(&:gets).chomp
 
-
-# to is a string or an array
-def send_email(from, to, subject, message)
-  from_email = get_from_email(from) 
-  to_email = get_to_email(to)
-
-  msg = <<END_OF_MESSAGE
-From: #{from}
-To: #{to}
-Subject: #{subject}
-
-#{message}
-END_OF_MESSAGE
-
-  # on local machine with smtp
-  Net::SMTP.start('localhost') do |smtp|
-    smtp.send_message(msg, from_email, *to_email)
-  end
+Mail.defaults do
+  delivery_method :smtp, {
+    address: "smtp.gmail.com",
+    port: 587,
+    user_name: 'jtprince',
+    password: gmail_password,
+    authentication: :plain,
+    enable_starttls_auto: true,
+  }
 end
 
+opt[:to] = ARGV.to_a
 
-if $0 == __FILE__
+attachments = opt.delete(:attachments)
 
-  # TODO: get working with ssl on gmail for output!
-
-  opt = {}
-  opt[:subject] = '(no subject)'
-  opt[:message] = ''
-
-  opts = OptionParser.new do |op|
-    prog = File.basename(__FILE__)
-    op.banner = "usage: #{prog} from to ... [-s subject] [-m message]"
-    op.on('-m', '--message <message>', "'my message' def: '#{opt[:message]}'") {|v| opt[:message] = v}
-    op.on('-s', '--subject <subject>', "'my subject' def: '#{opt[:subject]}'") {|v| opt[:subject] = v}
-
-    op.separator ""
-    op.separator "examples:"
-    op.separator "  #{prog} mine@home.com bob@gmail.com sally@yahoo.com \\"
-    op.separator "          -s hi -m 'my message'"
-    op.separator "  #{prog} 'Sender <mine@home.com>' 'Bob <bob@gmail.com>' \\"
-    op.separator "          'Sally <sally@yahoo.com>' -s hi -m 'my message'"
-    op.separator "  #{prog} mine@home.com 'bob@gmail.com, sally@yahoo.com' \\"
-    op.separator "          -s hi -m 'my message'"
-    op.separator ""
-    op.separator ""
-
-  end
-
-  opts.parse!
-
-  if ARGV.size < 2
-    puts opts
-    abort
-  end
-
-  opt[:from] = ARGV.shift
-  opt[:to] = ARGV.to_a.join(', ')
-
-  send_email opt[:from], opt[:to], opt[:subject], opt[:message]
-
+mail = Mail.new
+opt.each do |key,val|
+  mail[key] = val
 end
+
+attachments.each do |attachment|
+  mail.add_file attachment
+end
+
+mail.deliver!
 
 
 

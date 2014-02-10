@@ -5,24 +5,26 @@ function cmd_exists {
 }
 
 if [ "$1" != "late" ]; then
-    xrdb -merge ~/.Xdefaults
-    start-pulseaudio-x11
-    #eval `dbus-launch --sh-syntax --exit-with-session`
-    dunst -config ~/.config/dunstrc &
-    echo "trying to run xmodmap"
-    xmodmap ~/.config/xmodmap
-    #thunar --daemon &
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
-    volti &
-    nm-applet &
-#    if cmd_exists dropbox ; then
-        #( sleep 20 && dropbox start )&
-    #fi
-    #if [ -e ~/src/copy_agent/copy/x86_64/CopyAgent ]; then
-        #( sleep 40 && ~/src/copy_agent/copy/x86_64/CopyAgent& )&
-    #fi
+    xrdb -merge ~/.Xdefaults
     xclip &  # provides a clipboard that can be used across applications
+    urxvtd --quiet --opendisplay --fork
+    dunst -config ~/.config/dunstrc &
+    start-pulseaudio-x11
+    xmodmap ~/.config/xmodmap
+    thunar --daemon &
     xscreensaver &
+    # should probably install pavumeter and paprefs, too
+    pasystray &   
+    if cmd_exists nm-applet ; then
+        nm-applet &
+    fi
+    if cmd_exists dropbox ; then
+        ( sleep 60 && dropbox start )&
+    fi
+    if [ -e ~/src/copy_agent/copy/x86_64/CopyAgent ]; then
+        ( sleep 180 && ~/src/copy_agent/copy/x86_64/CopyAgent& )&
+    fi
     
     notify-send -u low 'initialized!'
 else
@@ -35,3 +37,7 @@ else
     #    mount_wd15
     #fi
 fi
+
+
+
+#eval `dbus-launch --sh-syntax --exit-with-session`

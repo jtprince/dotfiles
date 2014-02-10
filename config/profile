@@ -26,6 +26,8 @@ export EDITOR=vim
 export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
 export INTERF=/etc/network/interfaces
 export WINEPREFIX="$HOME/.wine"
+# prevents wine from using windows apps as default applications
+export WINEDLLOVERRIDES='winemenubuilder.exe=d'
 #export WINEARCH="win32"
 
 # see ~/env/ls_colors.txt
