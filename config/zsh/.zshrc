@@ -182,6 +182,12 @@ alias clippwd="pwd | clip"
 alias cliplastcommand="cat $HISTFILE | tail -n 1 | clip"
 
 ###############################################################################
+# Permissions
+###############################################################################
+
+alias dirs_fix_permissions_jtp="find . -type d -exec chmod 0755 {} \;"
+
+###############################################################################
 # File Associations
 ###############################################################################
 
@@ -244,3 +250,11 @@ setopt PUSHD_IGNORE_DUPS
 
 # 10 second wait if you do something that will delete everything.  I wish I'd had this before...
 setopt RM_STAR_WAIT
+
+###############################################################################
+# ssh agent with envoy
+###############################################################################
+# % sudo pacman -S envoy 
+# % systemctl enable envoy@ssh-agent.socket
+envoy -t ssh-agent
+source <(envoy -p)
