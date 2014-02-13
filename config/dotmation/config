@@ -40,7 +40,7 @@ github "jtprince/dotfiles/config" do
   dot 'irbrc'
 
   cfg 'dunst'
-  cfg 'i3/config', 'i3/'
+  cfg 'i3'
 
   #dot 'moc'
   #dot 'mpd'
