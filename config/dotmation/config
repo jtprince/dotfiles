@@ -1,8 +1,4 @@
-
 repo_cache "~/src/remote_dotfiles"
-
-pkg %w(git dunst mpd ncmpcpp orpie chromium-browser)
-# need to add libreoffice files
 
 github "jtprince/dotfiles/config" do
 
@@ -19,8 +15,6 @@ github "jtprince/dotfiles/config" do
   cfg 'xmodmap'
 
   cfg 'git'
-  dot 'git/config', '.gitconfig'
-  dot 'git/ignore', '.gitignore'
   
   dot 'gtkrc-2.0'
   cfg 'gtk-3.0'
@@ -30,19 +24,14 @@ github "jtprince/dotfiles/config" do
 
   cfg 'fontconfig'
 
-  # this is not really doing what I want at the moment!
-  # debug this in dotmation
-  #ln 'latex/texmf'
-  #cfg 'latex/bst', 'latex/'
-  #cfg 'latex/inputs', 'latex/'
-
   dot 'pryrc'
   dot 'irbrc'
 
   cfg 'dunst'
   cfg 'i3'
 
-  #dot 'moc'
+  cfg 'latex'
+
   #dot 'mpd'
   #ln 'ncmpcpp/config' .ncmpcpp/config
 end
@@ -53,24 +42,10 @@ github "jtprince/dotfiles/config/vim" do
   cfg 'spell', 'vim/'
 end
 
-#pkg %w(texlive-xetex texlive-latex-recommended texlive-science texlive-fonts-recommended texlive-fonts-extra)
-#github "jtprince/dotfiles/config/latex" do
-#  ln 'texmf'
-#  cfg 'bst', 'latex/'
-#  cfg 'inputs', 'latex/'
-#end
-
 github "jtprince/dotfiles/bin" do
   ln '.'
 end
 
-#pkg %w(zsh)
-#github "robbyrussell/oh-my-zsh" do
-#  cfg '.'
-#end
-
-pkg %w(exuberant-ctags gnome-terminal)
-pkg %w(ruby ruby-dev) # for command-t
 github 'gmarik/vundle' do
   cfg '.', 'vim/bundle/vundle'
 end
