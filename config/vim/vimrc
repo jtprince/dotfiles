@@ -48,6 +48,7 @@ Bundle 'tpope/vim-markdown'
 Bundle 'timcharper/textile.vim'
 Bundle 'vim-scripts/eruby.vim'
 Bundle 'vim-ruby/vim-ruby'
+Bundle 'gisraptor/vim-lilypond-integrator'
 
 "Bundle 'Eckankar/vim-latex-folding'
 "Bundle 'gerw/vim-latex-suite'

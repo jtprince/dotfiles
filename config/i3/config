@@ -144,6 +144,7 @@ mode "musicplayer" {
     bindsym Shift+Q exec mpd --kill
 
     bindsym Escape mode "default"
+    bindsym $mod+m mode "default"
 }
 
 bindsym $mod+m mode "musicplayer"

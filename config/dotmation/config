@@ -24,6 +24,8 @@ github "jtprince/dotfiles/config" do
 
   cfg 'fontconfig'
 
+  cfg 'texlive'
+
   dot 'pryrc'
   dot 'irbrc'
 

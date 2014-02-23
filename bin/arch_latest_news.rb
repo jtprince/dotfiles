@@ -3,13 +3,33 @@
 require 'nokogiri'
 require 'open-uri'
 
+# returns an array of row of info
+def rownode_to_row(rownode)
+  rownode.xpath('td').map &:text
+end
+
 # finds the latest piece of arch news (helpful if you want to check *before*
 # you do an update!
 
-page = open('https://www.archlinux.org/news/') {|io| io.read }
-doc = Nokogiri::HTML(page) {|cfg| cfg.noblanks.nonet }
-first_row_n = doc.xpath(%Q{//table[@id='article-list']//tr[@class='odd']}).first
-table_data = first_row_n.xpath('td').map &:text
+if ARGV.size == 0
+  puts "usage: #{File.basename($0)} <Count>"
+  puts "outputs latest <Count> pieces of news"
+  exit
+end
 
-puts table_data[0,2].join(": ")
+num = ARGV.shift.to_i
+
+page = open('https://www.archlinux.org/news/') {|io| io.read }
+
+doc = Nokogiri::HTML(page) {|cfg| cfg.noblanks.nonet }
+
+rows = doc.xpath(%Q{//table[@id='article-list']//tr[@class='odd']})[0,num].map do |rownode|
+  rownode_to_row(rownode)
+end
+
+rows.each do |row|
+  puts row[0,2].join(": ")
+end
+
+
 

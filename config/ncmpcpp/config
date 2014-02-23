@@ -389,7 +389,7 @@ locked_screen_width_part = "80"
 #
 #clock_display_seconds = "no"
 #
-#display_volume_level = "yes"
+display_volume_level = "yes"
 #
 display_bitrate = "yes"
 #
