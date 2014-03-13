@@ -22,6 +22,8 @@ require 'io/console'
   #end
 #end
 
+GRADESHEET_EXT = ".GRADING.txt"
+
 def email_address_to_name(address)
   address.match(/"([^"]+)"/)[1]
 end
@@ -32,6 +34,10 @@ end
 
 def basename_to_lastname(basename)
   basename.split(/[\._]/).first
+end
+
+def filename_to_gradesheetname(filename)
+  filename.chomp(File.extname(filename)) + GRADESHEET_EXT
 end
 
 opt = OpenStruct.new({
@@ -50,6 +56,7 @@ parser = OptionParser.new do |op|
   op.separator ""
   op.on("-s", "--subject <string>", "subject line, def: #{opt.subject}") {|v| opt.subject = v }
   op.on("-b", "--body <string>", "body def: #{opt.body}") {|v| opt.body = v }
+  op.on("-g", "--grade-sheet-as-body", "grabs <paper>#{GRADESHEET_EXT} and makes body") {|v| opt.grade_sheet = v }
 end
 parser.parse!
 
@@ -90,10 +97,18 @@ last_name_to_file = basename_to_filename.keys.each_with_object({}) do |basename,
   hash[basename_to_lastname(basename)] = basename_to_filename[basename]
 end
 
+if opt.grade_sheet
+  opt.delete_field(:body)
+end
+
 last_name_to_file.each do |last_name, filename|
   mail = Mail.new
+  mail.charset = 'UTF-8'
   opt.to_h.each do |k,v|
     mail[k] = v
+  end
+  if opt.grade_sheet
+    mail[:body] = IO.read( filename_to_gradesheetname(filename) )
   end
   mail[:to] = last_name_to_address[last_name]
   mail.add_file filename

@@ -42,7 +42,9 @@ if opt[:list]
 else
   if full_paths.size == 1
     FileUtils.mv full_paths.first, dest
+    puts "moved: #{full_paths.first} -> #{dest}" 
   else
     FileUtils.mv full_paths, dest
+    puts "moved: #{full_paths.join(", ")} -> #{dest}" 
   end
 end
