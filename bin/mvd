@@ -40,11 +40,8 @@ abort 'file must still be downloading!' if full_paths.any? {|f| File.extname(f).
 if opt[:list]
   puts full_paths
 else
-  if full_paths.size == 1
-    FileUtils.mv full_paths.first, dest
-    puts "moved: #{full_paths.first} -> #{dest}" 
-  else
-    FileUtils.mv full_paths, dest
-    puts "moved: #{full_paths.join(", ")} -> #{dest}" 
-  end
+  FileUtils.mv full_paths, dest
+  outstring = "moved: #{full_paths.map {|p| File.basename(p) }.join(", ")}"
+  outstring << " ---> #{dest}" if dest != "."
+  puts outstring
 end

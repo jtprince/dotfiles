@@ -174,6 +174,7 @@ clip() {
 # ------------------------------------------------
 # Copy contents of a file
 function clipfile() { cat "$1" | clip; }  
+function clippath() { readlink -f "$1" | clip; }  
 # Copy SSH public key
 alias clipsshkey="clipfile ~/.ssh/id_rsa.pub"  
 # Copy current working directory
