@@ -3,13 +3,13 @@
 require_relative "odf_to_other"
 
 if ARGV.size == 0
-  usage '.pdf'
+  usage '.txt'
   exit
 end
 
 (filenames, opts, verbose) = parse_argv(ARGV)
 
-ext = "pdf"
+ext = "txt"
 
 filenames.each do |file|
   cmd = convert_cmd(file, ext, opts, verbose)
