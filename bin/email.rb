@@ -22,29 +22,26 @@ require 'io/console'
     #smtp.send_message(msg, from_email, *to_email)
   #end
 #end
+emails = {
+  gmail: '"John T. Prince" <jtprince@gmail.com>',
+  chem: '"John T. Prince" <jtprince@chem.byu.edu>',
+}
 
 opt = {}
-opt[:from] = '"John T. Prince" <jtprince@gmail.com>'
+opt[:from] = emails.values.first
 opt[:subject] = '(no subject)'
 opt[:message] = ''
 opt[:attachments] = []
 
 parser = OptionParser.new do |op|
   prog = File.basename(__FILE__)
-  op.banner = "usage: #{prog} to ... [-s subject] [-m message]"
-  op.on('-f', '--from <from>', "'from email def: '#{opt[:from]}'") {|v| opt[:from] = v}
+  op.banner = "usage: #{prog} to ... [-s subject] [-m message] [-a attachment]"
+  op.on('-f', '--from <from>', "'from email (1st is def: #{emails.keys.join('|')})", "can give key or real email") do |v| 
+    opt[:from] = v.include?('@') ? v : emails[v.to_sym]
+  end
   op.on('-m', '--message <message>', "'my message' def: '#{opt[:message]}'") {|v| opt[:body] = v}
   op.on('-s', '--subject <subject>', "'my subject' def: '#{opt[:subject]}'") {|v| opt[:subject] = v}
   op.on('-a', '--attachment <filepath>', "def: '#{opt[:attachments]}'") {|v| opt[:attachments] << v}
-
-  op.separator ""
-  op.separator "examples:"
-  op.separator "  #{prog} mine@home.com bob@gmail.com sally@yahoo.com \\"
-  op.separator "          -s hi -m 'my message'"
-  op.separator "  #{prog} 'Sender <mine@home.com>' 'Bob <bob@gmail.com>' \\"
-  op.separator "          'Sally <sally@yahoo.com>' -s hi -m 'my message'"
-  op.separator "  #{prog} mine@home.com 'bob@gmail.com, sally@yahoo.com' \\"
-  op.separator "          -s hi -m 'my message'"
 end
 
 parser.parse!
