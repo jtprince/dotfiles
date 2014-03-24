@@ -56,6 +56,8 @@ opt[:to] = ARGV.to_a
 attachments = opt.delete(:attachments)
 
 mail = Mail.new
+mail.charset = 'UTF-8'
+
 opt.each do |key,val|
   mail[key] = val
 end
