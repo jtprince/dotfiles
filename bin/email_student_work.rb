@@ -135,7 +135,7 @@ last_name_to_file.each do |last_name, filename|
       puts "SOUND ATTACHMENT: #{audiofile}"
       mail.add_file(audiofile)
     end
-    start_of_msg = body.split("\n")[0,3].join("\n")
+    start_of_msg = ( body.split("\n")[0,3].join("\n") << "\n... (first 3 lines) ..." )
     puts "MESSAGE: \n#{start_of_msg}"
   end
 
