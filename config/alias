@@ -52,14 +52,13 @@ alias be="bundle exec"
 alias gist="git status"
 
 # misc
-alias logoutnow="gnome-session-quit --logout"
 alias ls="ls --color=auto"
 alias bunzip='bunzip2'
 alias bzip='bzip2'
 alias dl='gvfs-trash'
-alias presentation="xrandr --output VGA1 --mode 1024x768 --same-as primary"
-alias presentation_hidden="xrandr --output VGA1 --mode 1024x768 --right-of primary"
-alias unpresentation="xrandr --output primary"
+#alias presentation="xrandr --output VGA1 --mode 1024x768 --same-as primary"
+#alias presentation_hidden="xrandr --output VGA1 --mode 1024x768 --right-of primary"
+#alias unpresentation="xrandr --output primary"
 
 alias atlasinclude="export C_INCLUDE_PATH=/usr/include/atlas && export CPLUS_INCLUDE_PATH=/usr/include/atlas"
 alias includeatlas=atlasinclude
@@ -72,9 +71,11 @@ alias gimv="gvim"
 alias mdkir="mkdir"
 alias eixt="exit"
 
-alias msword='wine32 "/home/jtprince/.wine32/drive_c/Program Files/Microsoft Office/Office12/WINWORD.EXE"'
+#alias msword='wine32 "/home/jtprince/.wine32/drive_c/Program Files/Microsoft Office/Office12/WINWORD.EXE"'
 
-alias tmux="tmux -f ~/.config/tmux/config"
+# media
+#alias tmux="tmux -f ~/.config/tmux/config"
+alias vlisten="vlc --intf rc -Vdummy"
 
 # latex
 alias latexmk="latexmk -pdf -xelatex"
