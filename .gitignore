@@ -4,3 +4,8 @@
 /config/zsh/.zcompdump*
 /bin/biber
 /bin/exercism
+/bin/qprot-paired
+/bin/qprot-param
+/bin/qspec-paired
+/bin/qspec-param
+/bin/getfdr
