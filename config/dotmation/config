@@ -34,6 +34,8 @@ github "jtprince/dotfiles/config" do
 
   cfg 'latex'
 
+  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
+
   #dot 'mpd'
   #ln 'ncmpcpp/config' .ncmpcpp/config
 end
