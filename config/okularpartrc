@@ -1,0 +1,27 @@
+[$Version]
+update_info=okular.upd:sep_settings
+
+[Core General]
+ObeyDRM=false
+
+[Core Performance]
+MemoryLevel=Greedy
+TextHinting=Enabled
+
+[General]
+UseKTTSD=false
+
+[Main View]
+ShowBottomBar=false
+ShowLeftPanel=false
+SplitterSizes=199,1094
+
+[Nav Panel]
+SidebarIconSize=22
+SidebarShowText=false
+
+[PageView]
+EditToolBarPlacement=2
+
+[Reviews]
+AnnotationTools=<tool type="highlight" id="1" name="Highlight"><engine type="TextSelector" color="#ffff00"><annotation opacity="0.75" type="Highlight" color="#ffff00"/></engine><shortcut>1</shortcut></tool>,<tool type="highlight" id="2" name="Highlight - Needs fixing"><engine type="TextSelector" color="#ff0000"><annotation opacity="0.75" type="Highlight" color="#ff0000"/></engine><shortcut>2</shortcut></tool>,<tool type="highlight" id="3" name="Highlight - Good!"><engine type="TextSelector" color="#00ff00"><annotation opacity="0.75" type="Highlight" color="#00ff00"/></engine><shortcut>3</shortcut></tool>,<tool type="note-linked" id="4" name="Comment"><engine hoverIcon="tool-note" type="PickPoint" color="#ffff00"><annotation opacity="0.5" icon="Comment" type="Text" color="#ffff00"/></engine><shortcut>4</shortcut></tool>,<tool type="note-linked" id="5" name="Comment - Needs fixing"><engine hoverIcon="tool-note" type="PickPoint" color="#ff0000"><annotation opacity="0.8" icon="Comment" type="Text" color="#ff0000"/></engine><shortcut>5</shortcut></tool>,<tool type="note-linked" id="6" name="Comment - Good!"><engine hoverIcon="tool-note" type="PickPoint" color="#00ff00"><annotation opacity="0.8" icon="Comment" type="Text" color="#00ff00"/></engine><shortcut>6</shortcut></tool>,<tool type="strikeout" id="7"><engine type="TextSelector" color="#ff0000"><annotation opacity="0.8" type="StrikeOut" color="#ff0000"/></engine><shortcut>7</shortcut></tool>,<tool type="underline" id="8"><engine type="TextSelector" color="#ff0000"><annotation type="Underline" color="#ff0000"/></engine><shortcut>8</shortcut></tool>,<tool type="note-inline" id="9"><engine hoverIcon="tool-note-inline" block="true" type="PickPoint" color="#ffff00"><annotation type="FreeText" color="#ffff00"/></engine><shortcut>9</shortcut></tool>,<tool type="ink" id="10" name="FreeLine 1.0"><engine type="SmoothLine" color="#ff0000"><annotation width="1" type="Ink" color="#ff0000"/></engine></tool>,<tool type="ellipse" id="11"><engine block="true" type="PickPoint" color="#ff0000"><annotation width="2" opacity="0.7" type="GeomCircle" color="#ff0000"/></engine></tool>,<tool type="polygon" id="12"><engine points="-1" type="PolyLine" color="#ff0000"><annotation width="1" type="Line" color="#ff0000"/></engine></tool>,<tool type="stamp" id="13"><engine hoverIcon="Awkward" size="64" block="true" type="PickPoint"><annotation icon="Awkward" type="Stamp"/></engine></tool>,<tool type="straight-line" id="14" name="Sraight Line"><engine points="2" type="PolyLine" color="#ff0000"><annotation width="1" type="Line" color="#ff0000"/></engine></tool>
