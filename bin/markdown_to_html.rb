@@ -8,9 +8,27 @@ end
 # see http://stackoverflow.com/questions/373002/better-ruby-markdown-interpreter
 # (and read the Updates!)
 
+# https://github.com/vmg/redcarpet 
+options = %i{
+  no_intra_emphasis
+  tables
+  autolink
+  space_after_headers
+  fenced_code_blocks
+  lax_spacing
+  superscript
+  hard_wrap
+  quote
+}
+
 if ARGV.size == 0
-  puts "usage: #{File.basename(__FILE__)} <file>.mkd ..."
-  puts "outputs <file>.html"
+  puts "usage: #{File.basename(__FILE__)} [OPT] <file>.mkd ..."
+  puts "outputs <file>.html ..."
+  puts
+  puts "options on by default: "
+  print options.sort_by(&:size).map {|opt| "    #{opt}\n" }.join
+  puts
+  puts 'see https://github.com/vmg/redcarpet'
   exit
 end
 
@@ -20,20 +38,15 @@ def wrap_in_html_body(text)
   "</body><html>"
 end
 
-# explain options:
-# https://github.com/vmg/redcarpet 
+opthash = options.map {|opt| [opt, true] }
+
+class HTMLWithPants < Redcarpet::Render::HTML
+  include Redcarpet::Render::SmartyPants
+end
 
 ARGV.each do |file|
   base = file.chomp(File.extname(file))
-  markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, 
-                                     #autolink: true, 
-                                     #space_after_headers: true, 
-                                     #fenced_code_blocks: true, 
-                                     #tables: true,
-                                     #superscript: true,
-                                     #hard_wrap: true, 
-                                     #quote: true,
-                                    )
+  markdown = Redcarpet::Markdown.new(HTMLWithPants, Hash[opthash])
 
   html = wrap_in_html_body markdown.render(IO.read(file, encoding: 'UTF-8'))
   File.write(base + '.html', html)
