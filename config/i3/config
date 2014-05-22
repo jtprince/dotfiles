@@ -266,6 +266,9 @@ bindsym $mod+Shift+Q exit
 bindsym $mod+Ctrl+Shift+P exec systemctl poweroff
 bindsym $mod+Ctrl+Shift+R exec systemctl reboot
 
+# suspend (RAM)
+bindsym $mod+Ctrl+Shift+S exec systemctl suspend
+
 #bindsym XF86Sleep exec echo -n mem > /sys/power/state
 
 #######################
