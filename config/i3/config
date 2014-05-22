@@ -73,6 +73,17 @@ client.focused_inactive     #77994B     #465C86     #FFFFFF
 client.unfocused            #465C86     #333333     #CFCFCF
 client.urgent               #F00000     #F00000     #000000
 
+# note that you also need to create file </etc/udev/rules.d/97-intel_backlight.rules> with contents (no #):
+# KERNEL=="intel_backlight", SUBSYSTEM=="backlight", RUN+="/usr/bin/chmod 666 /sys/class/backlight/%k/brightness"
+# https://bbs.archlinux.org/viewtopic.php?id=167209
+# udevadm control --reload  # or maybe reboot
+bindsym XF86MonBrightnessDown exec laptop_monitor_brightness intel_backlight '-' 100
+bindsym XF86MonBrightnessUp exec laptop_monitor_brightness intel_backlight '+' 100
+
+# keyboard backlights[m
+bindsym XF86KbdBrightnessDown exec kbdlight down
+bindsym XF86KbdBrightnessUp exec kbdlight up
+
 #########################
 # SOUND
 #########################

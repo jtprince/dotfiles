@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+backlight_dir ="/sys/class/backlight"
+default_inc = 20
+
+# note that you also need to create file </etc/udev/rules.d/97-intel_backlight.rules> with contents (no #):
+# KERNEL=="intel_backlight", SUBSYSTEM=="backlight", RUN+="/usr/bin/chmod 666 /sys/class/backlight/%k/brightness"
+# https://bbs.archlinux.org/viewtopic.php?id=167209
+# udevadm control --reload  # or maybe reboot
+
+if ARGV.size == 0
+  video_cards = Dir[backlight_dir + "/*"].map {|v| File.basename(v) }
+  puts "usage: #{File.basename($0)} <video_card> [+|-] [increment=#{default_inc}]"
+  puts "video card should be one of: "
+  puts "    #{video_cards.join(", ")}"
+  puts "always *prints* current brightness to stdout"
+  exit
+end
+
+(video_card, operation, increment) = ARGV
+operation = operation ? operation.to_sym : nil
+increment = increment ? increment.to_i : default_inc
+backlight_base ="#{backlight_dir}/#{video_card}"
+brightness_pipe = backlight_base  + "/brightness"
+current_brightness = `cat #{brightness_pipe}`.to_i
+if operation
+  new_brightness = current_brightness.send(operation, increment)
+  if operation == :+
+    max_val = `cat #{backlight_base }/max_brightness`.to_i
+    new_brightness = max_val if new_brightness > max_val
+  else
+    new_brightness = 0 if new_brightness < 0
+  end
+  cmd = "echo #{new_brightness} > #{brightness_pipe}"
+  #puts cmd
+  `#{cmd}`
+end
+print current_brightness.to_s

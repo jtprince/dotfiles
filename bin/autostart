@@ -7,6 +7,9 @@ function cmd_exists {
 if [ "$1" != "late" ]; then
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
     xrdb -merge ~/.Xdefaults
+    if [ `hostname` == "aphelion" ]; then
+        xrdb -merge ~/.config/Xresources-aphelion
+    fi
     xclip &  # provides a clipboard that can be used across applications
     urxvtd --quiet --opendisplay --fork
     dunst -config ~/.config/dunstrc &
