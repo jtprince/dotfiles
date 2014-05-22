@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+myhash = 'ckoxMlQ3bTZGdUFWNWhOZktvNmM6MTA4NjU4MjU='
+CACHE_FILE = ENV['HOME'] + "/Dropbox/env/home_network" + "/CURRENT_IP_CACHED"
+
+if ARGV.size == 0
+  puts "usage: #{File.basename($0)} status|update"  
+  exit
+end
+
+current_address = `curl -s icanhazip.com`
+#current_address = `curl -s ifconfig.me`
+
+old_address = IO.read(CACHE_FILE)
+
+case ARGV.shift.to_sym
+when :status
+  puts "current: #{current_address}"
+  if current_address == old_address
+    puts "[no change]"
+  else
+    puts "old: #{old_address}"
+    puts "CHANGED!! (need to update)"
+  end
+when :update
+  cmd = %Q{curl -k 'http://freedns.afraid.org/dynamic/update.php?#{myhash}'}
+  puts `#{cmd}`
+  File.write(CACHE_FILE, current_address)
+end
