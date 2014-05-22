@@ -22,8 +22,8 @@ if [ "$1" != "late" ]; then
     if cmd_exists dropbox ; then
         ( sleep 60 && dropbox start )&
     fi
-    if [ -e ~/src/copy_agent/copy/x86_64/CopyAgent ]; then
-        ( sleep 180 && ~/src/copy_agent/copy/x86_64/CopyAgent& )&
+    if [ -e /usr/bin/CopyAgent ]; then
+        ( sleep 180 && CopyAgent& )&
     fi
     
     notify-send -u low 'initialized!'
