@@ -455,7 +455,6 @@ bar {
   mode dock
   position bottom
   status_command status.rb
-  #status_command i3status --config ~/.i3/i3status.conf
   # note: you need to set the primary output!, something like:
   # xrandr --output 'VGA1' --primary
   # discover the names of your connections
