@@ -9,9 +9,9 @@ end
 (branch, where) = ARGV
 
 unless where == 'remote'
-  %x{git branch -D #{branch}"}
+  %x{git branch -D #{branch}}
 end
 
 unless where == 'local'
-  %x{git push origin :#{branch}"}
+  %x{git push origin :#{branch}}
 end
