@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+if ARGV.size == 0
+  puts "usage: #{File.basename($0)} <branch> [local|remote]"
+  puts "default action is to delete *both* local and remote branch"
+  exit
+end
+
+(branch, where) = ARGV
+
+unless where == 'remote'
+  %x{git branch -D #{branch}"}
+end
+
+unless where == 'local'
+  %x{git push origin :#{branch}"}
+end
