@@ -1,2 +1,0 @@
-workspace <next|prev>?
-focus <left|right|up|down> will move across outputs
