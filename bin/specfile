@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require 'shellwords'
+
+cmd = "bundle exec rake spec SPEC="
+if ARGV.size == 0
+  puts "usage: #{File.basename($0)} <file>"
+  puts "runs: #{cmd}<file>"
+  exit
+end
+
+file = ARGV.shift
+print `#{cmd}#{Shellwords.escape(file)}`

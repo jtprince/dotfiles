@@ -83,3 +83,5 @@ alias latexmk="latexmk -pdf -xelatex"
 # grep
 alias rgrep="grep -r"
 alias rgreptext="grep -r --binary-files=without-match"
+
+alias newterm="urxvtc"
