@@ -40,6 +40,7 @@ parser = OptionParser.new do |op|
   op.on("-b", "--box", "draw a box to capture") { opt.window = :box }
   op.on("-w", "--window", "select a window to capture") { opt.window = :window }
   op.on("-o", "--open <s>", viewers_bold_string) {|v| opt.open = viewers[v] || v }
+  op.on("-p", "--print", "print file directly with lp") {|v| opt.print = v }
   op.on("--dir <s>", "save to this directory") {|v| opt.dir = v }
   op.on("--timestamp", "add a date/time stamp to filename") {|v| opt.timestamp = v }
   op.on("-v", "--verbose", "talk about it") {|v| $VERBOSE = 3 }
@@ -85,6 +86,10 @@ FileUtils.mkpath(dir) unless File.exist?(dir)
 
 Dir.chdir(dir) do
   system cmd
+
+  if opt.print
+    system "lp #{filename_esc}"
+  end
 
   if opt.open
     sleep(0.1)
