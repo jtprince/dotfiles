@@ -34,6 +34,7 @@ opt = OpenStruct.new( window: :root )
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [OPTS] filename[.png]"
   op.separator "output: filename.png [by default captures entire screen]"
+  op.separator "filename may be omitted if you open/print"
   op.separator ""
   op.on("-d", "--delay <sec>", Integer, "delay that many seconds (Int)") {|v| opt.delay = v }
   op.on("-a", "--active", "capture the active window") { opt.window = :active }
@@ -47,7 +48,13 @@ parser = OptionParser.new do |op|
 end
 parser.parse!
 
-if ARGV.size == 0
+def write_tmpfile?(argv, opt)
+  argv.size == 0 && (opt.print || opt.open)
+end
+
+filename_needed = !write_tmpfile?(ARGV, opt)
+
+if ARGV.size == 0 && filename_needed
   puts parser
   exit
 end
