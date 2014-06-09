@@ -59,6 +59,8 @@ if ARGV.size == 0 && filename_needed
   exit
 end
 
+### TODO: implement ability to optionally enter filename on open or print (use tmpfile)
+
 filename = ARGV.shift
 filename += ".png" unless filename[/\.png/i]
 
