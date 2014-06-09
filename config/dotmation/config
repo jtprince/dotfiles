@@ -36,8 +36,14 @@ github "jtprince/dotfiles/config" do
 
   ln 'okularpartrc', '.kde4/share/config/okularpartrc'
 
-  #dot 'mpd'
-  #ln 'ncmpcpp/config' .ncmpcpp/config
+  cfg 'mpd'
+  # yaourt -S mpd mpc ncmpcpp-xdg-config 
+  # mkdir -p ~/.cache/mpd
+  # touch ~/.cache/mpd{pid,state,tag_cache}
+  # mkdir -p ~/Music/playlists
+
+  # use with ncmpcpp-xdg-config 
+  cfg 'ncmpcpp'
 end
 
 github "jtprince/dotfiles/config/vim" do
