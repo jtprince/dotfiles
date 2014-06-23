@@ -252,6 +252,11 @@ setopt PUSHD_IGNORE_DUPS
 # 10 second wait if you do something that will delete everything.  I wish I'd had this before...
 setopt RM_STAR_WAIT
 
+if [[ $TERM == xterm-termite ]]; then
+  . /etc/profile.d/vte.sh
+  __vte_osc7
+fi
+
 ###############################################################################
 # ssh agent with envoy
 ###############################################################################

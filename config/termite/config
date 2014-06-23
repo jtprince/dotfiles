@@ -1,0 +1,94 @@
+[options]
+resize_grip = false
+scroll_on_output = false
+scroll_on_keystroke = true
+audible_bell = false
+visible_bell = false
+mouse_autohide = false
+allow_bold = true
+dynamic_title = true
+urgent_on_bell = true
+clickable_url = true
+#font = Monospace 9
+font = Dejavu Sans Mono 10
+scrollback_lines = 99999
+search_wrap = true
+icon_name = terminal
+
+# "system", "on" or "off"
+cursor_blink = system
+
+# "block", "underline" or "ibeam"
+cursor_shape = block
+
+# $BROWSER is used by default
+browser = chromium-browser
+
+# word characters used for word selection
+# (default if unset: all graphic non-punctuation/space characters)
+#word_chars = -A-Za-z0-9,./?%&#:_=+@~
+
+# set size hints for the window
+#size_hints = false
+
+# emit escape sequences for other keys modified by Control
+#modify_other_keys = false
+
+[colors]
+foreground = #ffffff
+foreground_bold = #ffffff
+#foreground_dim = #888888
+background = #000000
+cursor = #FF7F00
+
+# if unset, will reverse foreground and background
+#highlight = #585858
+
+# colors from color0 to color254 can be set
+color0 = #222222
+color1 = #ff3333
+color2 = #44ff44
+color3 = #ffff33
+color4 = #6666ff
+color5 = #ff33ff
+color6 = #33ffff
+color7 = #efefef
+color8 = #222222
+color9 = #ff3333
+color10 = #44ff44
+color11 = #ffff33
+color12 = #6666ff
+color13 = #ff33ff
+color14 = #33ffff
+color15 = #efefef
+
+[hints]
+#font = Monospace 12
+#foreground = #dcdccc
+#background = #3f3f3f
+#padding = 2
+#border = #3f3f3f
+#border_width = 0.5
+#roundness = 2.0
+
+# vim: ft=dosini cms=#%s
+
+
+#resize_grip = false
+#scroll_on_output = false
+#scroll_on_keystroke = true
+#audible_bell = false
+#visible_bell = false
+#mouse_autohide = true
+#allow_bold = true
+#dynamic_title = true
+#urgent_on_bell = true
+#clickable_url = true
+#font = Terminus (TTF) 12
+#scrollback_lines = 1000
+#search_wrap = true
+
+# transparency
+#transparency = 0.0
+#pseudo_transparency = true
+
