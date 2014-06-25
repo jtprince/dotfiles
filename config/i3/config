@@ -451,30 +451,45 @@ bindsym $mod+r mode "resize"
 ## MISSING YOUR ICONS??!!! You probably need to configure your primary output!
 # xrandr --output <output> --primary
 
+#bar {
+
+    #status_command i3blocks -c ~/.config/i3/i3blocks.conf -d ~/.config/i3/i3blocks_scripts
+    #tray_output primary
+    #font pango:DejaVu Sans Mono, Icons 8
+
+    #colors {
+        #background #465C86
+        #statusline #CFCFCF
+        #separator #465C86
+        #focused_workspace #FFFFFF #006600
+        #active_workspace #FFFFFF #006600
+        #inactive_workspace #CFCFCF #333333
+        #urgent_workspace #000000 #F00000
+    #}
+#}
+
 bar {
+  mode dock
+  position bottom
+  font pango:Droid Sans Mono, Icons 8
+  status_command status.rb
 
-status_command i3blocks
+  # note: you need to set the primary output!, something like:
+  # xrandr --output 'VGA1' --primary
+  # discover the names of your connections
+  # xrandr --current
+  tray_output primary
 
-#  mode dock
-  #position bottom
-  #status_command status.rb
-  ## note: you need to set the primary output!, something like:
-  ## xrandr --output 'VGA1' --primary
-  ## discover the names of your connections
-  ## xrandr --current
-  #tray_output primary
-
-  #colors {
-    #background #465C86
-    #statusline #CFCFCF
-    #separator #465C86
-    #focused_workspace #FFFFFF #006600
-    #active_workspace #FFFFFF #006600
-    #inactive_workspace #CFCFCF #333333
-    #urgent_workspace #000000 #F00000
-  #}
+  colors {
+    background #465C86
+    statusline #CFCFCF
+    separator #465C86
+    focused_workspace #FFFFFF #006600
+    active_workspace #FFFFFF #006600
+    inactive_workspace #CFCFCF #333333
+    urgent_workspace #000000 #F00000
+  }
 }
-
 
 #######################
 # I3 SCRIPTING

@@ -326,10 +326,17 @@ class I3Bar < Array
 end
 
 # '𝗖' '𝗕' '𝗠'
+# '⌘'
+
+# ttf-font-icons
+# need something like this line inside the bar stanza:
+# font pango:DejaVu Sans Mono, Icons 8
+# insert character in vim with: <C-v>uXXXX
+# see https://www.dropbox.com/s/9iysh2i0gadi4ic/icons.pdf
 
 quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
-bat = I3Bar::UI::UpDownBar.new('♉', '#0000FF', SysMonitor::Battery.new)
-cpu = I3Bar::UI::VBars.new('⌘', '#FF0000', SysMonitor::CPU.new)
+bat = I3Bar::UI::UpDownBar.new('', '#0000FF', SysMonitor::Battery.new)
+cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
 mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
 weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
 datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime.new)
