@@ -38,7 +38,7 @@ browser = chromium-browser
 foreground = #ffffff
 foreground_bold = #ffffff
 #foreground_dim = #888888
-background = #000000
+background = #111111
 cursor = #FF7F00
 
 # if unset, will reverse foreground and background
