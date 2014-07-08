@@ -90,6 +90,9 @@ module SysMonitor
       "I fear to lose truth by the pretension to possess it already wholly.",
       "If patience is worth anything, it must endure to the end of time.", # Ghandi
       "A living faith will last in the midst of the blackest storm.", #Ghandi 
+      "the inches we need are everywhere around us",
+      "master everything important",
+      "breathe in hostility, breathe out focus and peace",
     ]
 
     def get_data
