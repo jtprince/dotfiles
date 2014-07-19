@@ -1,1 +1,1 @@
-/usr/bin/st -f "Dejavu Sans Mono:size=10:style=medium:antialias=true" -e /usr/bin/tmux -f $HOME/.config/tmux/config
+/usr/bin/st -f "Dejavu Sans Mono:size=10:style=medium:antialias=true"
