@@ -8,6 +8,7 @@ begin
 rescue
   puts "You may not have enscript installed: "
   puts "sudo aptitude install enscript"
+  puts "sudo pacman -S enscript"
   exit
 end
 
