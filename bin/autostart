@@ -11,7 +11,7 @@ if [ "$1" != "late" ]; then
         xrdb -merge ~/.config/Xresources-aphelion
     fi
     xclip &  # provides a clipboard that can be used across applications
-    urxvtd --quiet --opendisplay --fork
+    #urxvtd --quiet --opendisplay --fork
     dunst -config ~/.config/dunstrc &
     start-pulseaudio-x11
     xmodmap ~/.config/xmodmap

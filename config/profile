@@ -41,6 +41,9 @@ export SUPERSCP="jtp25@scp.fsl.byu.edu"
 export BIGMEM="jtp25@bigmemssh.fsl.byu.edu"
 export KELSOIP="192.168.101.82"
 
+# to prevent "Could not register with accessibility bus: Did not receive a reply..." errors with GTK3
+export NO_AT_BRIDGE=1
+
 # is this really necessary??
 # export RBENV_GEMSET_FILE="${HOME}/.rbenv-gemsets"
 
