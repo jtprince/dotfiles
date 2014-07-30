@@ -141,6 +141,8 @@ bindsym XF86AudioPrev exec mpc prev
 # key 1 on my microsoft keyboard
 # shuffle the playlist
 #bindsym XF86Launch5 exec mpc shuffle
+#
+bindsym $mod+Shift+P exec mpc toggle  # pause/play
 
 mode "musicplayer" {
     bindsym Shift+M exec mpd
