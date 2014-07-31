@@ -249,6 +249,8 @@ bindsym $mod+y exec $browser $newwindow https://mail.google.com/tasks/ig
 
 bindsym $mod+n exec file-manager
 
+bindsym $mod+Shift+T exec todo
+
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
 bindsym $mod+g exec gvim
 

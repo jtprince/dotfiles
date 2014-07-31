@@ -9,10 +9,13 @@ EXTS = %w(png jpg)
 files_w_ext = Dir[*EXTS.map {|ext| BKG_DIR + "/*.#{ext}" }]
 
 bkg_prog = 
-  if `which hsetroot`.size > 0
-    'hsetroot -fill'
-  elsif `which feh`.size > 0
+  if `which feh`.size > 0
+    # feh is in official repos, so using it
     'feh --bg-fill'
+  elsif `which hsetroot`.size > 0
+    # putting feh as default since hsetroot seems a little flaky at moment
+    # (put into AUR from community)
+    'hsetroot -fill'
   else
     abort "need feh or hsetroot to work!"
   end

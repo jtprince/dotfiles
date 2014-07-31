@@ -1,1 +1,1 @@
-/usr/bin/st -f "Dejavu Sans Mono:size=10:style=medium:antialias=true"
+/usr/bin/st -f "Dejavu Sans Mono:size=10:style=medium:antialias=true" "$@"
