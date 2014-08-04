@@ -4,6 +4,12 @@ function cmd_exists {
     command -v "$1" >/dev/null 2>&1
 }
 
+containsElement () {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
+}
+
 if [ "$1" != "late" ]; then
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
     xrdb -merge ~/.Xdefaults
@@ -16,7 +22,11 @@ if [ "$1" != "late" ]; then
     start-pulseaudio-x11
     xmodmap ~/.config/xmodmap
     thunar --daemon &
-    xscreensaver &
+    if [ containsElement `hostname` aphelion prince levipes ]; then
+        xautolock -time 8 -locker fuzzy_lock.sh &
+    else
+        xscreensaver
+    fi
     # should probably install pavumeter and paprefs, too
     pasystray &   
     if cmd_exists nm-applet ; then
