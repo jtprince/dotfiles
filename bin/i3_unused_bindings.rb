@@ -27,12 +27,15 @@ bindings.map! do |line|
   line[/^bindsym (.*)/,1]
 end
 
-(mod_shift, others) = bindings.partition {|binding| binding =~ /^Mod4\+Shift/ }
-(mod_lines, others) = others.partition {|binding| binding =~ /^Mod4/ }
+(mod_ctrl_shift, leftovers) = bindings.partition {|binding| binding =~ /^Mod4\+Ctrl\+Shift/ }
+
+(mod_shift, leftovers) = leftovers.partition {|binding| binding =~ /^Mod4\+Shift/ }
+
+(mod_alone, leftovers) = leftovers.partition {|binding| binding =~ /^Mod4/ }
 
 puts "Mod+<letter> available:"
 ('a'..'z').each do |let|
-  taken = mod_lines.any? do |mod| 
+  taken = mod_alone.any? do |mod| 
     mod.split(' ').first.split('+').last == let
   end
   puts let unless taken
@@ -45,3 +48,13 @@ puts "Mod+Shift+<letter> available:"
   end
   puts let unless taken
 end
+
+puts "Mod+Ctrl+Shift+<letter> available:"
+('A'..'Z').each do |let|
+  taken = mod_ctrl_shift.any? do |mod| 
+    mod.split(' ').first.split('+').last == let
+  end
+  puts let unless taken
+end
+
+
