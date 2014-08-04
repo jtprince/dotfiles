@@ -22,12 +22,7 @@ if [ "$1" != "late" ]; then
     start-pulseaudio-x11
     xmodmap ~/.config/xmodmap
     thunar --daemon &
-    if [ containsElement `hostname` aphelion prince levipes ]; then
-        xautolock -time 8 -locker fuzzy_lock.sh &
-    else
-        xscreensaver
-    fi
-    # should probably install pavumeter and paprefs, too
+    xscreensaver
     pasystray &   
     if cmd_exists nm-applet ; then
         nm-applet &

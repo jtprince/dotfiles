@@ -113,8 +113,9 @@ URxvt.iso14755 : false
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 xscreensaver.timeout:	0:10:00
 xscreensaver.cycle:		0:08:00
-xscreensaver.lock:		False
-xscreensaver.lockTimeout:	0:30:00
+xscreensaver.lock:		True
+xscreensaver.lockTimeout:	0:10:00
+xscreensaver.newLoginCommand: dm-tool switch-to-greeter
 xscreensaver.passwdTimeout:	0:00:30
 xscreensaver.visualID:	default
 xscreensaver.installColormap:    True
@@ -135,9 +136,9 @@ xscreensaver.ignoreUninstalledPrograms:True
 xscreensaver.font:		*-medium-r-*-140-*-m-*
 xscreensaver.dpmsEnabled:	True
 xscreensaver.dpmsQuickOff:	False
-xscreensaver.dpmsStandby:	0:20:00
-xscreensaver.dpmsSuspend:	0:40:00
-xscreensaver.dpmsOff:	0:40:00
+!! for LCD screen off==standy==suspend
+!!xscreensaver.dpmsStandby:	0:20:00
+xscreensaver.dpmsOff:	0:10:00
 xscreensaver.grabDesktopImages:  True
 xscreensaver.grabVideoFrames:    False
 xscreensaver.chooseRandomImages: True
