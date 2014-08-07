@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require 'optparse'
+
+@auxdir = "aux"
+@cleanup_opt = "--CLEAN"
+
+if ARGV.size == 0
+  puts "usage: #{File.basename($0)} <args for latexmk>"
+  puts "  1. moves all auxiliary files from '#@auxdir' into pwd"
+  puts "  2. executes latexmk with given args"
+  puts "  3. moves all non-pdf files just created back into '#@auxdir'"
+  puts ""
+  puts "options: "
+  puts "  #@cleanup_opt   will delete traditional aux files from the dir and exit"
+  puts ""
+  puts "latexmk -h/-help/--help to see latexmk help"
+  exit
+end
+
+if ARGV.include?(@cleanup_opt)
+  globs = %w(aux bbl bcf blg dvi fdb_latexmk fls log run.xml).map {|st| "*.#{st}" }
+  to_remove = globs.flat_map {|glob| Dir[glob] }.uniq
+  FileUtils.rm to_remove
+  exit
+end
+
+# order of these is important
+
+FileUtils.mkdir(@auxdir) unless File.exist?(@auxdir)
+
+before = Dir["*"]
+
+FileUtils.mv Dir["#{@auxdir}/*"], Dir.pwd
+
+system "latexmk", *ARGV
+
+after = Dir["*"]
+
+new_files = after - before
+
+non_pdf = new_files.reject {|file| File.extname(file) == '.pdf' }
+
+FileUtils.mv non_pdf, @auxdir
+
