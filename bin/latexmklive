@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+if ARGV.size == 0
+  puts "latexlive [watch-list] <file>.tex"
+  puts ""
+  puts "single file project: "
+  puts "  latexlive <file>.tex"
+  puts ""
+  puts "multifile project: "
+  puts "  latexlive *.tex *.bib <master>.tex"
+  exit
+end
+
+real_tex = ARGV.last
+
+system "latexmk-clean", "-pdf", "-xelatex", "-gg", real_tex
+system "execute_on_modify.rb", *ARGV.uniq, "--", "latexmk-clean", "-pdf", "-xelatex", real_tex
+
+

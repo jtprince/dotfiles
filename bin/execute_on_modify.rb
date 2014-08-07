@@ -20,6 +20,7 @@ files, command =
     dash_i = ARGV.index {|arg| arg == div }
     files = ARGV[0...dash_i]
     command = ARGV[(dash_i+1)..-1]
+    [files, command]
   else
     [[ARGV.shift], ARGV.to_a]
   end
