@@ -62,7 +62,10 @@ export BSTINPUTS=$HOME/.config/latex/bst
 # init PATH on Xubuntu 12.10 "/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 
 #echo "$PATH" >> "/home/jtprince/INITIAL_PATH.txt"
-export PATH=$HOME/bin:$PATH:/usr/bin/X11
+export PATH=$HOME/bin:$HOME/.local/bin:$HOME/npm/bin:$PATH:/usr/bin/X11
+export PATH=$HOME/bin:$HOME/.local/bin:$PATH:/usr/bin/X11
+export npm_config_userconfig=$HOME/.config/npmrc
+
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init --no-rehash - zsh)"
 #eval "$(rbenv init -)"

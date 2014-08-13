@@ -20,7 +20,7 @@ if ARGV.size == 0
 end
 
 if ARGV.include?(@cleanup_opt)
-  globs = %w(aux bbl bcf blg dvi fdb_latexmk fls log run.xml).map {|st| "*.#{st}" }
+  globs = %w(aux bbl bcf blg dvi fdb_latexmk fls log out run.xml).map {|st| "*.#{st}" }
   to_remove = globs.flat_map {|glob| Dir[glob] }.uniq
   FileUtils.rm to_remove
   exit
