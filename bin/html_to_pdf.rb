@@ -7,6 +7,8 @@ unless `which wkhtmltopdf`.size > 0
   abort 'need wkhtmltopdf to run!'
 end
 
+$VERBOSE = true
+
 CSS =<<HERE
 h1 {
   font-size: 18pt;
@@ -34,7 +36,6 @@ pre {
   margin-left: 20px;
 }
 HERE
-
 
 
 opt = {
@@ -69,8 +70,9 @@ m = opt[:margin]
 ARGV.each do |file|
   base = file.chomp(File.extname(file))
   ss = "--user-style-sheet '#{cssfile}'" unless opt[:nocss]
-  cmd = "wkhtmltopdf '#{file}' #{ss} -s Letter  -B #{m}in -T #{m}in -L #{m}in -R #{m}in '#{base + ".pdf"}'"
+  cmd = "wkhtmltopdf #{ss} -s Letter  -B #{m}in -T #{m}in -L #{m}in -R #{m}in '#{file}' '#{base + ".pdf"}'"
   cmd << " > /dev/null 2>&1" unless $VERBOSE
+  puts cmd
   reply = `#{cmd}`
   puts reply if $VERBOSE
 end
