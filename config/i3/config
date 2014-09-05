@@ -40,9 +40,9 @@ exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 
 ## set to Win (then swap Win and Alt in gnome-keyboard)
 # alt=Mod1 win=Mod4
-#set $mod Mod4
+set $mod Mod4
 # MAC - keyboard (if not using plugged in keyboard)
-set $mod Mod1
+# set $mod Mod1
 ## left
 set $l Tab
 ## right
@@ -69,11 +69,11 @@ set $U K
 #font pango:Telegrama 10
 
 # most PC's
-#set $globalfontsize 8
+set $globalfontsize 8
 # MAC (intel card)
 #set $globalfontsize 12
 # MAC (nvidia card)
-set $globalfontsize 5
+#set $globalfontsize 5
 
 font pango:Droid Sans Mono $globalfontsize
 
@@ -380,11 +380,6 @@ bindsym $mod+Shift+ampersand move workspace 7:w7
 bindsym $mod+Shift+asterisk move workspace 8:w8
 #bindsym $mod+Shift+parenleft move workspace 9
 #bindsym $mod+Shift+parenright move workspace 10
-
-# MAC with 2 monitors to the right:
-workspace "1:w1" output DP-2
-workspace "2:w2" output DP-1
-workspace "3:w3" output HDMI-0
 
 #######################
 # RESIZE
