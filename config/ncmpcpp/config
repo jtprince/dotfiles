@@ -1,8 +1,8 @@
 
-ncmpcpp_directory = "~/.ncmpcpp"
+ncmpcpp_directory = "~/.config/ncmpcpp"
 
 ## defaults to ~/.lyrics since other MPD clients
-lyrics_directory = "~/.lyrics"
+lyrics_directory = "~/.config/lyrics"
 
 ## set it in order to make tag editor and renaming files work properly
 #

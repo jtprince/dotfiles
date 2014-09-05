@@ -40,9 +40,9 @@ exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 
 ## set to Win (then swap Win and Alt in gnome-keyboard)
 # alt=Mod1 win=Mod4
-set $mod Mod4
-# MAC
-#set $mod Mod1
+#set $mod Mod4
+# MAC - keyboard (if not using plugged in keyboard)
+set $mod Mod1
 ## left
 set $l Tab
 ## right
@@ -67,9 +67,15 @@ set $U K
 # font for window titles. ISO 10646 = Unicode
 #font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 #font pango:Telegrama 10
-font pango:Droid Sans Mono 8
-# MAC:
-#font pango:Droid Sans Mono 12
+
+# most PC's
+#set $globalfontsize 8
+# MAC (intel card)
+#set $globalfontsize 12
+# MAC (nvidia card)
+set $globalfontsize 5
+
+font pango:Droid Sans Mono $globalfontsize
 
 # colors                    border      background  text
 client.focused              #77994B     #006600     #FFFFFF
@@ -354,26 +360,31 @@ bindsym $mod+space focus mode_toggle
 # switch to workspace
 bindsym $mod+1 workspace 1:w1
 bindsym $mod+2 workspace 2:w2
-bindsym $mod+3 workspace 3:music
-bindsym $mod+4 workspace 4
-bindsym $mod+5 workspace 5
-bindsym $mod+6 workspace 6
-bindsym $mod+7 workspace 7
-bindsym $mod+8 workspace 8
+bindsym $mod+3 workspace 3:w3
+bindsym $mod+4 workspace 4:w4
+bindsym $mod+5 workspace 5:w5
+bindsym $mod+6 workspace 6:w6
+bindsym $mod+7 workspace 7:w7
+bindsym $mod+8 workspace 8:w8
 # bindsym $mod+9 workspace 9
 # bindsym $mod+0 workspace 10
 
 # move focused container to workspace
 bindsym $mod+Shift+exclam move workspace 1:w1
 bindsym $mod+Shift+at move workspace 2:w2
-bindsym $mod+Shift+numbersign move workspace 3:music
-bindsym $mod+Shift+dollar move workspace 4
-bindsym $mod+Shift+percent move workspace 5
-bindsym $mod+Shift+asciicircum move workspace 6
-bindsym $mod+Shift+ampersand move workspace 7
-bindsym $mod+Shift+asterisk move workspace 8
+bindsym $mod+Shift+numbersign move workspace 3:w3
+bindsym $mod+Shift+dollar move workspace 4:w4
+bindsym $mod+Shift+percent move workspace 5:w5
+bindsym $mod+Shift+asciicircum move workspace 6:w6
+bindsym $mod+Shift+ampersand move workspace 7:w7
+bindsym $mod+Shift+asterisk move workspace 8:w8
 #bindsym $mod+Shift+parenleft move workspace 9
 #bindsym $mod+Shift+parenright move workspace 10
+
+# MAC with 2 monitors to the right:
+workspace "1:w1" output DP-2
+workspace "2:w2" output DP-1
+workspace "3:w3" output HDMI-0
 
 #######################
 # RESIZE
@@ -479,7 +490,7 @@ bindsym $mod+r mode "resize"
 bar {
   mode dock
   position bottom
-  font pango:Droid Sans Mono, Icons 8
+  font pango:Droid Sans Mono, Icons $globalfontsize
   status_command status.rb
 
   # note: you need to set the primary output!, something like:

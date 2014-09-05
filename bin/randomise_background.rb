@@ -3,6 +3,8 @@
 require 'shellwords'
 #File.write("/home/jtprince/randomize_bgk_which_ruby.log", "using ruby: #{RUBY_VERSION} #{RUBY_RELEASE_DATE} #{`which ruby`}")
 
+$VERBOSE = ARGV.delete("-v") ? 3 : nil
+
 BKG_DIR = ENV['HOME'] + '/Dropbox/backgrounds'
 EXTS = %w(png jpg)
 
@@ -20,4 +22,6 @@ bkg_prog =
     abort "need feh or hsetroot to work!"
   end
 
-system "#{bkg_prog} '#{Shellwords.escape(files_w_ext.sample)}'"
+cmd = "#{bkg_prog} '#{Shellwords.escape(files_w_ext.sample)}'"
+puts cmd if $VERBOSE
+system cmd
