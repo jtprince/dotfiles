@@ -93,7 +93,8 @@ module SysMonitor
       "the inches we need are everywhere around us",
       "master everything important",
       "breathe in hostility, breathe out focus and peace",
-      "Our revealed truth should leave us stricken with the knowledge of how little we really know" #Hugh B. Brown
+      "Our revealed truth should leave us stricken with the knowledge of how little we really know", #Hugh B. Brown
+      "The master has failed more times than the beginner has tried" #Hugh B. Brown
     ]
 
     def get_data
