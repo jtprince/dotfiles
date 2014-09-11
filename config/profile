@@ -66,6 +66,13 @@ export PATH=$HOME/bin:$HOME/.local/bin:$HOME/npm/bin:$PATH:/usr/bin/X11
 export PATH=$HOME/bin:$HOME/.local/bin:$PATH:/usr/bin/X11
 export npm_config_userconfig=$HOME/.config/npmrc
 
+#####################################################
+# Language Specific
+#####################################################
+
+export WORKON_HOME=~/virtualenvs
+source /usr/bin/virtualenvwrapper.sh
+
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init --no-rehash - zsh)"
 #eval "$(rbenv init -)"
