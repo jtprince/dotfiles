@@ -234,24 +234,26 @@ floating_modifier $mod
 #########################
 # Preferred applications
 #########################
-# use the system default browser
-#set $browser x-www-browser
-set $browser chromium-browser
-set $newwindow --new-window
-#set $browser firefox
-#set $newwindow -new-window
+set $browser1 chromium
+set $newwindow1 --new-window
+set $browser2 firefox
+set $newwindow2 -new-window
 
 bindsym $mod+x exec x-terminal-emulator
 
-bindsym XF86HomePage exec $browser
-bindsym $mod+i exec $browser
-bindsym $mod+z exec firefox
+bindsym XF86HomePage exec $browser1
+bindsym $mod+i exec $browser1
+bindsym $mod+Shift+I exec $browser2
 
-bindsym XF86Mail exec $browser $newwindow http://gmail.com
-bindsym $mod+e exec $browser $newwindow http://gmail.com
+bindsym XF86Mail exec $browser1 $newwindow1 http://gmail.com
+bindsym $mod+e exec $browser1 $newwindow1 http://gmail.com
+bindsym $mod+Shift+E exec $browser2 $newwindow2 http://gmail.com
 
-bindsym $mod+c exec $browser $newwindow http://calendar.google.com
-bindsym $mod+y exec $browser $newwindow https://mail.google.com/tasks/ig
+bindsym $mod+c exec $browser1 $newwindow1 http://calendar.google.com
+bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow2 http://calendar.google.com
+
+bindsym $mod+y exec $browser1 $newwindow1 https://mail.google.com/tasks/ig
+bindsym $mod+Shift+Y exec $browser2 $newwindow2 https://mail.google.com/tasks/ig
 
 bindsym $mod+n exec file-manager
 
@@ -262,7 +264,7 @@ bindsym $mod+g exec gvim
 
 bindsym XF86Calculator exec x-terminal-emulator -x orpie
 
-bindsym XF86Phone exec $browser $newwindow http://voice.google.com
+bindsym XF86Phone exec $browser1 $newwindow1 http://voice.google.com
 
 bindsym Print exec sc --dir ~/screenshots --timestamp screenshot -o e
 #bindsym $mod+Print exec sc -w --dir ~/screenshots --timestamp window
