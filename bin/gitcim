@@ -1,9 +1,0 @@
-#!/usr/bin/env ruby
-
-reply = `git ci -a -m "#{ARGV.join(' ')}"`
-puts reply
-sleep 1
-reply = `git config --get remote.origin.url`
-if reply.size > 0
-  puts `git push`
-end
