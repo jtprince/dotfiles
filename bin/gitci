@@ -1,13 +1,35 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
 
-reply = `git ci -a -m "progress"`
-puts reply
-sleep 1
-reply = `git config --get remote.origin.url`
-if reply.size > 0
-  puts `git push`
-end
-puts "REPLY:"
-p reply
+import argparse
+import subprocess
+import time
+import textwrap
 
+parser = argparse.ArgumentParser()
+parser.add_argument("message", nargs='*', default="progress")
+parser.add_argument("-d", "--description", nargs="*", default="progress", help="the description lines (i.e., the text after 2 newlines in a text editor commit)")
+args = parser.parse_args()
 
+description_ar = args.description
+message_ar = args.message
+
+message = " ".join(message_ar)
+
+if description_ar:
+    description = " ".join(description_ar)
+    wrapped_desc = ''.join(textwrap.wrap(description, 72))
+    message += ("\n\n" + wrapped_desc)
+
+cmd = "git ci -a -m".split()
+cmd.append(message)
+
+output = subprocess.check_output(cmd)
+print(output)
+
+time.sleep(1)
+
+have_remote = subprocess.check_output("git config --get remote.origin.url".split())
+
+if have_remote:
+    push_reply = subprocess.check_output("git push".split())
+    print(push_reply)

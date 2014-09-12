@@ -1,29 +1,11 @@
 # userguide: http://i3wm.org/docs/userguide.html
 
+# use i3-get-window-critera to get window class, etc.
+# use i3-unused-bindings to see which key combos are available
+#
 # xmodmap -pke # to see most keybindings
 # use xev to interactively get most keynames
 # use evtest to determine hard-to-get keynames (?? can these be used??)
-#
-# keys on most of my keyboards not yet being used:
-# XF86Documents
-# XF86HomePage
-# XF86Mail
-# XF86Phone
-# XF86Back
-# XF86Forward
-# XF86Calculator
-# The alternate F-Lock keys:
-#   Help
-#   Undo
-#   Redo
-#   XF86New
-#   SunOpen
-#   XF86Close
-#   XF86Reply
-#   XF86MailForward
-#   XF86Send
-#   XF86Save
-#   Print
 
 ######################################
 # STARTUP PROGRAMS & SETTINGS (Early)
@@ -119,27 +101,6 @@ bindsym XF86AudioMute exec toggle_mute
 # Music player
 #########################
 
-#mode "musicplayer" {
-    #bindsym Shift+S exec mocp --toggle shuffle
-    #bindsym n exec mocp --next
-    #bindsym b exec mocp --previous
-    #bindsym s exec mocp --stop
-
-    #bindsym $mod+parenright exec mocp -v +4
-    #bindsym $mod+parenleft exec mocp -v -4
-
-    #bindsym Shift+< exec mocp -v +4
-    #bindsym Shift+> exec mocp -v -4
-
-    #bindsym Shift+C exec mocp --clear
-
-    #bindsym Return mode "default"
-    #bindsym Escape mode "default"
-#}
-
-#bindsym $mod+m mode "musicplayer"
-#bindsym $mod+Shift+M exec sakura -x "mocp -p"
-
 # commands for mpd
 bindsym XF86AudioNext exec mpc next
 bindsym XF86AudioPlay exec mpc toggle
@@ -171,39 +132,6 @@ mode "musicplayer" {
 }
 
 bindsym $mod+m mode "musicplayer"
-
-# commands for moc
-#bindsym XF86AudioNext exec mocp --next
-#bindsym XF86AudioPlay exec mocp --toggle-pause
-#bindsym XF86AudioPrev exec mocp --previous
-# key 1 on my microsoft keyboard
-#bindsym XF86Launch5 exec mocp --toggle shuffle
-# play the same song infinitely
-#bindsym XF86Favorites exec mocp --on repeat --off autonext
-# normal mode (no repeat) autonext
-#bindsym XF86Launch9 exec mocp --off repeat --on autonext
-
-# These are still tied into the main master, not sure why
-
-# commands for audacious (via audtool which comes with audacious)
-#bindsym $mod+m exec audacious
-#bindsym XF86AudioNext exec audtool playlist-advance
-#bindsym XF86AudioPlay exec audtool playback-playpause
-#bindsym XF86AudioPrev exec audtool playlist-reverse
-#bindsym XF86Launch5 exec audtool playlist-shuffle-toggle
-
-# http://wiki.linuxquestions.org/wiki/XF86_keyboard_symbols
-# http://praksh.wordpress.com/2010/06/13/moc-the-terminal-music-player-for-all-your-needs/
-
-#########################
-# DESKTOP MOVEMENT
-#########################
-
-bindsym $mod+period workspace next
-bindsym $mod+comma workspace prev
-bindsym $mod+Shift+period move workspace next
-bindsym $mod+Shift+comma move workspace prev
-
 #########################
 # DEFAULTS
 #########################
@@ -220,7 +148,7 @@ new_window normal
 ## border style for for floating windows <normal|1pixel|none>
 new_float 1pixel
 
-## Automatic back-and-forth when switching to the current workspace
+# hit same workspace focus key *again* and returns to previously focused
 workspace_auto_back_and_forth yes
 
 ## orientation for new workspaces <horizontal|vertical|auto>
@@ -230,6 +158,39 @@ default_orientation vertical
 floating_modifier $mod
 
 #force_focus_wrapping yes
+
+#########################
+# MOVEMENT PARADIGM
+#########################
+
+# mod + <X> => move focus
+# mod + Shift + <X> => move focus with selection
+# mod + Ctrl + Shift + <X> => move selection (but not focus)
+
+#########################
+# WORKSPACE MOVEMENT
+#########################
+
+# move focus
+bindsym $mod+period workspace next
+bindsym $mod+comma workspace prev
+
+# move with selection
+bindsym $mod+Shift+period move container to workspace next; workspace next
+bindsym $mod+Shift+comma move container to workspace prev; workspace prev
+
+# just move selection
+bindsym $mod+Ctrl+Shift+period move workspace next
+bindsym $mod+Ctrl+Shift+comma move workspace prev
+
+# go back to previously focused workspace
+bindsym $mod+z workspace back_and_forth
+
+# move selected to previously focused workspace and follow
+bindsym $mod+Shift+z move container to workspace back_and_forth; workspace back_and_forth
+
+# move selected to previously focused workspace
+bindsym $mod+Ctrl+Shift+z move container to workspace back_and_forth
 
 #########################
 # Preferred applications
@@ -262,7 +223,7 @@ bindsym $mod+Shift+T exec todo
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
 bindsym $mod+g exec gvim
 
-bindsym XF86Calculator exec x-terminal-emulator -x orpie
+bindsym XF86Calculator exec x-terminal-emulator -x python3
 
 bindsym XF86Phone exec $browser1 $newwindow1 http://voice.google.com
 
@@ -316,14 +277,14 @@ bindsym $mod+$u focus up
 bindsym $mod+a focus parent
 
 # focus the child container
-bindsym $mod+o focus child
+bindsym $mod+Shift+A focus child
 
 popup_during_fullscreen leave_fullscreen
 
 #######################
 # MOVEMENT
 #######################
-# move focused window
+# move focused
 bindsym $mod+Shift+$L move left
 bindsym $mod+Shift+$R move right
 bindsym $mod+Shift+$D move down
@@ -359,27 +320,36 @@ bindsym $mod+space focus mode_toggle
 # WORKSPACES
 #######################
 
+set $ws1 w1
+set $ws2 w2
+set $ws3 w3
+set $ws4 w4
+set $ws5 w5
+set $ws6 w6
+set $ws7 w7
+set $ws8 w8
+
 # switch to workspace
-bindsym $mod+1 workspace 1:w1
-bindsym $mod+2 workspace 2:w2
-bindsym $mod+3 workspace 3:w3
-bindsym $mod+4 workspace 4:w4
-bindsym $mod+5 workspace 5:w5
-bindsym $mod+6 workspace 6:w6
-bindsym $mod+7 workspace 7:w7
-bindsym $mod+8 workspace 8:w8
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
 # bindsym $mod+9 workspace 9
 # bindsym $mod+0 workspace 10
 
 # move focused container to workspace
-bindsym $mod+Shift+exclam move workspace 1:w1
-bindsym $mod+Shift+at move workspace 2:w2
-bindsym $mod+Shift+numbersign move workspace 3:w3
-bindsym $mod+Shift+dollar move workspace 4:w4
-bindsym $mod+Shift+percent move workspace 5:w5
-bindsym $mod+Shift+asciicircum move workspace 6:w6
-bindsym $mod+Shift+ampersand move workspace 7:w7
-bindsym $mod+Shift+asterisk move workspace 8:w8
+bindsym $mod+Shift+exclam move workspace $ws1
+bindsym $mod+Shift+at move workspace $ws2
+bindsym $mod+Shift+numbersign move workspace $ws3
+bindsym $mod+Shift+dollar move workspace $ws4
+bindsym $mod+Shift+percent move workspace $ws5
+bindsym $mod+Shift+asciicircum move workspace $ws6
+bindsym $mod+Shift+ampersand move workspace $ws7
+bindsym $mod+Shift+asterisk move workspace $ws8
 #bindsym $mod+Shift+parenleft move workspace 9
 #bindsym $mod+Shift+parenright move workspace 10
 
@@ -388,7 +358,7 @@ bindsym $mod+Shift+asterisk move workspace 8:w8
 #######################
 
 # resize window (you can also use the mouse for that - (Alt-right-click))
-# I only grow windows, never shrink
+# I only grow windows outside of resize mode
 
 #bindsym $l resize shrink left 10 px or 10 ppt
 bindsym $mod+Ctrl+Shift+$L resize grow   left 10 px or 10 ppt
@@ -413,50 +383,6 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-## this is cool because it shows you how to use modes... unfortunately it is
-## too much work and I just use the ones I care about without a 'mode'
-## uncomment if you want to try it out
-
-#mode "resize" {
-#    # These bindings trigger as soon as you enter the resize mode
-#
-#    # They resize the border in the direction you pressed, e.g.
-#    # when pressing left, the window is resized so that it has
-#    # more space on its left
-#
-#    bindsym $l resize shrink left 10 px or 10 ppt
-#    bindsym Shift+$L resize grow   left 10 px or 10 ppt
-#
-#    bindsym j resize shrink down 10 px or 10 ppt
-#    bindsym Shift+J resize grow   down 10 px or 10 ppt
-#
-#    bindsym k resize shrink up 10 px or 10 ppt
-#    bindsym Shift+K resize grow   up 10 px or 10 ppt
-#
-#    bindsym l resize shrink right 10 px or 10 ppt
-#    bindsym Shift+L resize grow   right 10 px or 10 ppt
-#
-#    # same bindings, but for the arrow keys
-#    bindsym Left resize shrink left 10 px or 10 ppt
-#    bindsym Shift+Left resize grow   left 10 px or 10 ppt
-#
-#    bindsym Down resize shrink down 10 px or 10 ppt
-#    bindsym Shift+Down resize grow   down 10 px or 10 ppt
-#
-#    bindsym Up resize shrink up 10 px or 10 ppt
-#    bindsym Shift+Up resize grow   up 10 px or 10 ppt
-#
-#    bindsym Right resize shrink right 10 px or 10 ppt
-#    bindsym Shift+Right resize grow   right 10 px or 10 ppt
-#
-#    # back to normal: Enter or Escape
-#    bindsym Return mode "default"
-#    bindsym Escape mode "default"
-#}
-#
-#bindsym $mod+r mode "resize"
-
-
 #######################
 # BAR
 #######################
@@ -466,23 +392,6 @@ bindsym $mod+r mode "resize"
 
 ## MISSING YOUR ICONS??!!! You probably need to configure your primary output!
 # xrandr --output <output> --primary
-
-#bar {
-
-    #status_command i3blocks -c ~/.config/i3/i3blocks.conf -d ~/.config/i3/i3blocks_scripts
-    #tray_output primary
-    #font pango:DejaVu Sans Mono, Icons 8
-
-    #colors {
-        #background #465C86
-        #statusline #CFCFCF
-        #separator #465C86
-        #focused_workspace #FFFFFF #006600
-        #active_workspace #FFFFFF #006600
-        #inactive_workspace #CFCFCF #333333
-        #urgent_workspace #000000 #F00000
-    #}
-#}
 
 bar {
   mode dock
@@ -521,7 +430,3 @@ bar {
 ######################################
 
 exec --no-startup-id autostart late
-
-# note that you should mount these once with nautilus and remember the
-# password, then you never have to type in the password!
-# exec /usr/bin/ruby /home/jtprince/Dropbox/env/bin/mount_chem_dirs.rb --startup all

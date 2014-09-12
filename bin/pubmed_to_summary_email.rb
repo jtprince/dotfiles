@@ -1,1 +1,0 @@
-/home/jtprince/dev/princelab-scripts/pubmed_to_summary_email.rb
