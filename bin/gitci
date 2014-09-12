@@ -7,7 +7,8 @@ import textwrap
 
 parser = argparse.ArgumentParser()
 parser.add_argument("message", nargs='*', default="progress")
-parser.add_argument("-d", "--description", nargs="*", default="progress", help="the description lines (i.e., the text after 2 newlines in a text editor commit)")
+parser.add_argument("-d", "--description", nargs="*", default="progress", 
+        help="description lines (i.e., text after 2 newlines in $EDITOR commit)")
 args = parser.parse_args()
 
 description_ar = args.description
@@ -23,13 +24,11 @@ if description_ar:
 cmd = "git ci -a -m".split()
 cmd.append(message)
 
-output = subprocess.check_output(cmd)
-print(output)
+subprocess.call(cmd)
 
 time.sleep(1)
 
 have_remote = subprocess.check_output("git config --get remote.origin.url".split())
 
 if have_remote:
-    push_reply = subprocess.check_output("git push".split())
-    print(push_reply)
+    subprocess.call("git push".split())
