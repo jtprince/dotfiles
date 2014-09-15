@@ -71,7 +71,6 @@ export npm_config_userconfig=$HOME/.config/npmrc
 #####################################################
 
 export WORKON_HOME=~/virtualenvs
-source /usr/bin/virtualenvwrapper.sh
 
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init --no-rehash - zsh)"

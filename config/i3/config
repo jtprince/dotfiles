@@ -320,14 +320,14 @@ bindsym $mod+space focus mode_toggle
 # WORKSPACES
 #######################
 
-set $ws1 w1
-set $ws2 w2
-set $ws3 w3
-set $ws4 w4
-set $ws5 w5
-set $ws6 w6
-set $ws7 w7
-set $ws8 w8
+set $ws1 1:w1
+set $ws2 2:w2
+set $ws3 3:w3
+set $ws4 4:w4
+set $ws5 5:w5
+set $ws6 6:w6
+set $ws7 7:w7
+set $ws8 8:w8
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1

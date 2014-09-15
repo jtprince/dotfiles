@@ -4,6 +4,8 @@
 # Monitors
 ######################################################################
 
+require 'json'
+
 module SysMonitor
   SLEEP = 2
 
@@ -197,6 +199,18 @@ module SysMonitor
     end
   end
 
+  class MPD
+    include SysMonitor
+    include Sleeper
+
+    def get_data
+      title = `mpc -f "%title%|%file%" current`.strip
+      title = File.basename(title) if title.include?("/")
+      artist = `mpc -f "%composer%|%artist%" current`.strip
+      "#{artist}-#{title}"
+    end
+  end
+
 end
 
 ######################################################################
@@ -213,7 +227,8 @@ class I3Bar < Array
 
   # sends to stdout, flushes stdout, clears the array
   def display!
-    puts("[" + self.join(",") + "],\n\n") || $stdout.flush
+    escaped = self.map(&:to_json)
+    puts("[" + escaped.join(",") + "],\n\n") || $stdout.flush
     self.clear
   end
 
@@ -339,6 +354,7 @@ end
 # insert character in vim with: <C-v>uXXXX
 # see https://www.dropbox.com/s/9iysh2i0gadi4ic/icons.pdf
 
+mpd = I3Bar::UI::SimpleText.new('mpd', '#FFA500', SysMonitor::MPD.new)
 quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
 bat = I3Bar::UI::UpDownBar.new('', '#0000FF', SysMonitor::Battery.new)
 cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
@@ -346,7 +362,7 @@ mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
 weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
 datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime.new)
 
-components = [quote, bat, cpu, mem, weather, datetime].select {|cell| cell[:monitor].valid? }
+components = [mpd, quote, bat, cpu, mem, weather, datetime].select {|cell| cell[:monitor].valid? }
 
 div = I3Bar::UI::Divider.new(" ◀▶ ", "#000000")
 
