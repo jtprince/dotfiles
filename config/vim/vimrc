@@ -278,6 +278,18 @@ cmap w!! w !sudo tee % >/dev/null
 " Toggle search highlighting
 nmap <silent> <leader>/ :set invhlsearch<CR>
 
+
+" TABS ======================================================================
+" vim -p <file> <file> ... # opens pages in tabs
+" close the current tab
+nnoremap <C-w> :tabclose<CR>
+nnoremap <C-S-tab> :tabprevious<CR>
+nnoremap <C-tab>   :tabnext<CR>
+nnoremap <C-t>     :tabnew<CR>
+inoremap <C-S-tab> <Esc>:tabprevious<CR>i
+inoremap <C-tab>   <Esc>:tabnext<CR>i
+inoremap <C-t>     <Esc>:tabnew<CR>
+
 " Short file type specific ==================================================
 
 autocmd Filetype html setlocal ts=2 sw=2 sts=2 expandtab
