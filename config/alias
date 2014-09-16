@@ -85,3 +85,6 @@ alias rgrep="grep -r"
 alias rgreptext="grep -r --binary-files=without-match"
 
 alias newterm="urxvtc"
+
+# MAC retina via HDMI to 1920x1080 (correct for overscan)
+alias overscancorrect="nvidia-settings -a CurrentMetaMode=\"DFP-3:2880x1800+0+0, DFP-2: 1920x1080+2880+0 { ViewPortOut=1820x1022+50+29 }\""
