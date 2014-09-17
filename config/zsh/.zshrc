@@ -87,6 +87,10 @@ alias bundlei="bundle install --jobs=$NUM_CPU_CORES"
 # Functions
 ###############################################################################
 
+function include () {
+    [[ -f "$1" ]] && source "$1"
+}
+
 function fix {
   x=$1
   y=${x#*:}
