@@ -244,14 +244,6 @@ if [[ $TERM == xterm-termite ]]; then
 fi
 
 ###############################################################################
-# environment setup
-###############################################################################
-
-# should clean up redundancy
-include /usr/bin/virtualenvwrapper.sh
-include /usr/local/bin/virtualenvwrapper.sh
-
-###############################################################################
 # ssh agent with envoy
 ###############################################################################
 # % sudo pacman -S envoy 

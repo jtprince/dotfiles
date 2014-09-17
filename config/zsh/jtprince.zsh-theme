@@ -2,6 +2,25 @@
 local user='%{$terminfo[bold]$FG[010]%}%n@%m%{$reset_color%}'
 local pwd='%{$terminfo[bold]$FG[069]%}%~%{$reset_color%}'
 
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX="("
+ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX=")"
+
+function virtualenv_prompt_info() {
+    if [ -n "$VIRTUAL_ENV" ]; then
+        if [ -f "$VIRTUAL_ENV/__name__" ]; then
+            local name=`cat $VIRTUAL_ENV/__name__`
+        elif [ `basename $VIRTUAL_ENV` = "__" ]; then
+            local name=$(basename $(dirname $VIRTUAL_ENV))
+        else
+            local name=$(basename $VIRTUAL_ENV)
+        fi
+        echo "$ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX$name$ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX"
+    fi
+}
+
+
 #local user='%{$terminfo[bold]$fg[green]%}%n@%m%{$reset_color%}'
 #local pwd='%{$terminfo[bold]$fg[blue]%}%~%{$reset_color%}'
 
@@ -33,4 +52,4 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$terminfo[bold]$fg[cyan]%}✭"
 PROMPT="
 ${user} ${pwd} $ "
 #RPROMPT="${return_code} ${git_branch} ${rbenv}"
-RPROMPT="${return_code} ${git_branch} ${virtualenv}"
+RPROMPT="${return_code} ${git_branch} ${virtualenv_promptinfo}"
