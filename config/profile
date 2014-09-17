@@ -72,7 +72,6 @@ if [ -d ~/virtualenvs ]; then
     # see ~/Dropbox/env/virtualenv/how_to.txt
     export WORKON_HOME=$HOME/virtualenvs
     export PROJECT_HOME=$HOME/dev
-    source `which virtualenvwrapper.sh`
 fi
 
 if [ -d ~/.rbenv ]; then
