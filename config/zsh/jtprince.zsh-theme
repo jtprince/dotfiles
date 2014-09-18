@@ -4,8 +4,8 @@ local pwd='%{$terminfo[bold]$FG[069]%}%~%{$reset_color%}'
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX="("
-ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX=")"
+ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX="‹"
+ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX="›"
 
 function virtualenv_prompt_info() {
     if [ -n "$VIRTUAL_ENV" ]; then
@@ -16,7 +16,7 @@ function virtualenv_prompt_info() {
         else
             local name=$(basename $VIRTUAL_ENV)
         fi
-        echo "$ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX$name$ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX"
+        echo "$name"
     fi
 }
 
@@ -25,14 +25,10 @@ if which rbenv &> /dev/null; then
     rbenv='%{$FG[249]%}‹%{$fg[magenta]%}$(rbenv version | sed -e "s/ (set.*$//")%{$FG[249]%}›%{$reset_color%}'
 fi
 
-#if $VIRTUAL_ENV
-    #virtualenv='%{$FG[249]%}‹%{$fg[magenta]%}$( $VIRTUAL_ENV )%{$FG[249]%}›%{$reset_color%}'
-virtualenv=$VIRTUAL_ENV
-#fi
-
+# run `spectrum_ls` to see available colors
 local return_code='%(?..%{$fg[red]%}%? ↵%{$reset_color%})'
 local git_branch='$(git_prompt_status)%{$reset_color%}$(git_prompt_info)%{$reset_color%}'
-local virtualenv_prompt='$(virtualenv_prompt_info)'
+local virtualenv_prompt='%{$FG[249]%}‹%{$FG[044]%}$(virtualenv_prompt_info)%{$FG[249]%}›%{$reset_color%}'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[green]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
