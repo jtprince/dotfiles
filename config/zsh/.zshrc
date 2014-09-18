@@ -248,7 +248,7 @@ fi
 ###############################################################################
 
 # not sure why this won't work in my profile...
-if [[ ! -z "$WORKON_HOME" ]]; then
+if [[ -n "$WORKON_HOME" ]]; then
     source `which virtualenvwrapper.sh`
 fi
 
