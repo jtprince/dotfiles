@@ -226,6 +226,8 @@ bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow2 http://calendar.google.com
 bindsym $mod+y exec $browser1 $newwindow1 https://mail.google.com/tasks/ig
 bindsym $mod+Shift+Y exec $browser2 $newwindow2 https://mail.google.com/tasks/ig
 
+bindsym $mod+Ctrl+Shift+I exec open-clipboard-url
+
 bindsym $mod+n exec file-manager
 
 bindsym $mod+Shift+T exec todo

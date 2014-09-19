@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+# opens the first url it finds on PRIMARY, then CLIPBOARD
+# if not, inotify's clipboard contents
+
+import subprocess
+import os
+
+def run(args): return subprocess.check_output(args).decode('8859').strip()
+
+cmd = "xclip -o".split()
+
+primary_clip = run(cmd)
+print(primary_clip)
+
+clipboard_clip = None
+
+url = None
+if primary_clip and primary_clip.startswith("http"):
+    url = primary_clip
+else:
+    cmd.extend("-selection clipboard".split())
+    clipboard_clip = run(cmd)
+    if clipboard_clip and clipboard_clip.startswith("http"):
+        url = clipboard_clip
+
+if url:
+    #subprocess.call(["xdg-open", url])
+    # less portable, but with better behavior
+    subprocess.call(["chromium", "--new-window", url])
+else:
+    progname = os.path.basename(__file__)
+    cmd = ['notify-send']
+    # todo: clean this up
+    cmd.append("'%s: not urls \"%s\" || \"%s\"'" % (progname, primary_clip, clipboard_clip))
+    subprocess.call(cmd)
