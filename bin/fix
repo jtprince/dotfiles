@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+
+import re
+import sys
+import subprocess
+
+#function fix {
+#  x=$1
+#  y=${x#*:}
+#  gvim +${y%:} ${x%%:*}
+#}
+
+# Example lines
+
+# python
+#  File "/home/jtprince/dev/doba.com/doba/apps/loggedout/tests.py", line 606, in test_HotProductsView
+#  File "scratch.py", line 7, in <module>
+# ./doba/apps/loggedout/views.py:698:33: E261 at least two spaces before inline comment
+# ruby:
+# /home/jtprince/bin/id3_rename.rb:5: syntax error, unexpected tIDENTIFIER, expecting end-of-input
+# flake8
+# ./doba/settings/common.py:325:1: E265 block comment should start with '# '
+
+if sys.argv[1:]:
+    line = " ".join(sys.argv[1:])
+else:
+    import subprocess
+    line = subprocess.check_output("xclip -o".split()).decode('8859').strip()
+x 
+if not line: raise ValueError("no reasonable file info to work from")
+
+regexs = (
+        r'File "(.*)", line (\d+)', 
+        r'(.*):(\d+):(\d+):',
+        r'(.*):(\d+):',
+        )
+
+filename = line.split()[0]
+linenum = None
+colnum = None
+
+for regex in regexs:
+    matchobj = re.match(regex, line)
+    if matchobj:
+        # todo: find better way to do this
+        #filename, linenum, colnum = matchobj.groups()
+        captures = matchobj.groups()
+        filename = captures[0]
+        linenum = captures[1]
+        if len(captures) > 2: colnum = captures[2]
+        break
+
+cmd = ["gvim"]
+if colnum:
+    cmd.append('+call cursor(%s, %s)' % (linenum, colnum) )
+elif linenum:
+    cmd.append("+%d" % int(linenum))
+
+cmd.append(filename.split(':')[0])
+
+print("running: %s" % " ".join(cmd))
+subprocess.call(cmd)

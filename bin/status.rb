@@ -202,12 +202,18 @@ module SysMonitor
   class MPD
     include SysMonitor
     include Sleeper
+    ARTIST_LENGTH = 60
+    TITLE_LENGTH = 60
 
     def get_data
       title = `mpc -f "%title%|%file%" current`.strip
       title = File.basename(title) if title.include?("/")
       artist = `mpc -f "%composer%|%artist%" current`.strip
-      "#{artist}-#{title}"
+      artist_short = artist[0..ARTIST_LENGTH]
+      title_short = title[0..TITLE_LENGTH]
+      artist_short << "..." if artist_short != artist
+      title_short << "..." if title_short != title
+      "#{artist_short} - #{title_short}"
     end
   end
 

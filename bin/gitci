@@ -6,8 +6,8 @@ import time
 import textwrap
 
 parser = argparse.ArgumentParser()
-parser.add_argument("message", nargs='*', default="progress")
-parser.add_argument("-d", "--description", nargs="*", default="progress", 
+parser.add_argument("message", nargs='*', default=["progress"])
+parser.add_argument("-d", "--description", nargs="*", default=[], 
         help="description lines (i.e., text after 2 newlines in $EDITOR commit)")
 args = parser.parse_args()
 
