@@ -242,7 +242,7 @@ fi
 ###############################################################################
 
 # not sure why this won't work in my profile...
-if [ $(which virtualenvwrapper.sh) ]; then
+if [ -x "$(which virtualenvwrapper.sh)" ]; then
     source `which virtualenvwrapper.sh`
 fi
 
