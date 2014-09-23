@@ -93,3 +93,5 @@ alias gitcim="gitci"
 
 alias findherei="find . -iname"
 alias findhere="find . -iname"
+
+alias exercism="exercism --config ~/.config/exercism.json"

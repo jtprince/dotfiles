@@ -25,17 +25,13 @@ if [ "$1" != "late" ]; then
     if cmd_exists dropbox ; then
         ( sleep 60 && dropbox start )&
     fi
-    if [ -e /usr/bin/CopyAgent ]; then
+    if cmd_exists CopyAgent ; then
         ( sleep 180 && CopyAgent& )&
     fi
     
     notify-send -u low 'initialized!'
 else
     randomise_background.rb
-    if [ `hostname` == "prince" ]; then
-        notify-send -u low 'chem dirs mounted!'
-        mount_chem_dirs.rb all
-    fi
     #if [ `hostname` == "altius" ]; then
     #    mount_wd15
     #fi
