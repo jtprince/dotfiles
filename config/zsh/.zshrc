@@ -3,6 +3,10 @@ if [ -z "$HAVE_READ_JTP_PROFILE" ]; then
     source ~/.profile
 fi
 
+function cmd_exists {
+    command -v "$1" >/dev/null 2>&1
+}
+
 ###############################################################################
 # Environment
 ###############################################################################
@@ -178,7 +182,7 @@ else
     alias -s txt=gvim
 fi
 
-if [[ -x `which libreoffice` ]]; then
+if cmd_exists libreoffice ; then
     WORDPROCESSOR='libreoffice --writer --minimized --nologo'
     SPREADSHEET='libreoffice --calc --minimized --nologo'
     PRESENTATION='libreoffice --impress --minimized --nologo'
@@ -194,15 +198,15 @@ if [[ -x `which libreoffice` ]]; then
     alias -s ppt=$PRESENTATION
 fi
 
-if [[ -x `which inkview` ]]; then
+if cmd_exists inkview ; then
     alias -s svg=inkview
 fi
 
-if [[ -x `which geeqie` ]]; then
+if cmd_exists geeqie ; then
     alias -s png=geeqie
 fi
 
-if [[ -x `which evince` ]]; then
+if cmd_exists evince ; then
     alias -s pdf='evince'
     alias -s ps='evince'
 fi
@@ -242,7 +246,7 @@ fi
 ###############################################################################
 
 # not sure why this won't work in my profile...
-if [ -x "$(which virtualenvwrapper.sh)" ]; then
+if cmd_exists virtualenvwrapper.sh ; then
     source `which virtualenvwrapper.sh`
 fi
 
@@ -251,5 +255,7 @@ fi
 ###############################################################################
 # % sudo pacman -S envoy 
 # % systemctl enable envoy@ssh-agent.socket
-envoy -t ssh-agent
-source <(envoy -p)
+if cmd_exists envoy ; then
+    envoy -t ssh-agent
+    source <(envoy -p)
+fi
