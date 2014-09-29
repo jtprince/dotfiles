@@ -4,22 +4,8 @@ import re
 import sys
 import subprocess
 
-#function fix {
-#  x=$1
-#  y=${x#*:}
-#  gvim +${y%:} ${x%%:*}
-#}
-
-# Example lines
-
-# python
-#  File "/home/jtprince/dev/doba.com/doba/apps/loggedout/tests.py", line 606, in test_HotProductsView
-#  File "scratch.py", line 7, in <module>
-# ./doba/apps/loggedout/views.py:698:33: E261 at least two spaces before inline comment
-# ruby:
-# /home/jtprince/bin/id3_rename.rb:5: syntax error, unexpected tIDENTIFIER, expecting end-of-input
-# flake8
-# ./doba/settings/common.py:325:1: E265 block comment should start with '# '
+# determine if local or ssh (local -> "urxvt", remote -> "sshd"):
+# cat /proc/$PPID/status | head -1 | cut -f2
 
 if sys.argv[1:]:
     line = " ".join(sys.argv[1:])
@@ -60,3 +46,17 @@ cmd.append(filename.split(':')[0])
 
 print("running: %s" % " ".join(cmd))
 subprocess.call(cmd)
+
+
+
+# Example lines
+
+# python
+#  File "/home/jtprince/dev/doba.com/doba/apps/loggedout/tests.py", line 606, in test_HotProductsView
+#  File "scratch.py", line 7, in <module>
+# ./doba/apps/loggedout/views.py:698:33: E261 at least two spaces before inline comment
+# ruby:
+# /home/jtprince/bin/id3_rename.rb:5: syntax error, unexpected tIDENTIFIER, expecting end-of-input
+# flake8
+# ./doba/settings/common.py:325:1: E265 block comment should start with '# '
+
