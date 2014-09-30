@@ -42,6 +42,10 @@ Bundle 'vim-scripts/colorsupport.vim'
 " Bundle 'vim-scripts/taglist.vim'
 " vim-endwise
 " Bundle 'tpope/vim-endwise'
+"
+Bundle 'ntpeters/vim-better-whitespace'
+" :ToggleWhitespace
+" :StripWhitespace
 
 " syntax additions
 Bundle 'tpope/vim-markdown'
