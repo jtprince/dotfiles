@@ -108,7 +108,7 @@ URxvt.iso14755 : false
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !https://github.com/muennich/urxvt-perls
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-URxvt.perl-ext-common: clipboard,keyboard-select
+URxvt.perl-ext-common: clipboard,font-size,keyboard-select
 URxvt.keysym.M-Escape: perl:keyboard-select:activate
 ! overwrites the default Meta-s binding and allows to activate keyboard-select directly in backward search mode
 URxvt.keysym.C-s: perl:keyboard-select:search
@@ -119,6 +119,15 @@ URxvt.keysym.C-s: perl:keyboard-select:search
 URxvt.keysym.C-C:   perl:clipboard:copy
 URxvt.keysym.C-V:   perl:clipboard:paste
 URxvt.keysym.M-C-V: perl:clipboard:paste_escaped
+
+! required for ctrl-shift bindings to work:
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+
+URxvt.keysym.C-Up:     perl:font-size:increase
+URxvt.keysym.C-Down:   perl:font-size:decrease
+URxvt.keysym.C-S-Up:   perl:font-size:incglobal
+URxvt.keysym.C-S-Down: perl:font-size:decglobal
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
