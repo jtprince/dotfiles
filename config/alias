@@ -91,3 +91,5 @@ alias findherei="find . -iname"
 alias findhere="find . -iname"
 
 alias exercism="exercism --config ~/.config/exercism.json"
+
+alias chromiumtest="chromium --user-data-dir=~/.config/chromium-test"
