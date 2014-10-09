@@ -1,0 +1,16 @@
+! caps lock as another Esc key
+remove Lock = Caps_Lock
+keysym Caps_Lock = Escape
+
+! mimick natural scrolling by swapping 4&5 on pointer
+! pointer = 1 2 3 5 4 7 6 8 9 10 11 12
+
+! shift+F9 is shift+Insert (paste primary)
+keycode 75 = Insert Insert Insert
+
+! swap left Alt with left Windows key
+remove mod1 = Alt_L
+remove mod4 = Super_L
+add mod1 = Super_L
+add mod4 = Alt_L
+
