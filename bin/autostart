@@ -6,9 +6,9 @@ function cmd_exists {
 
 if [ "$1" != "late" ]; then
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
-    xrdb -merge ~/.Xdefaults
-    if [ `hostname` == "aphelion" ]; then
-        xrdb -merge ~/.config/Xresources-aphelion
+    xrdb -merge ~/.Xresources
+    if [ -e ~/.config/Xresources-local ]; then
+        xrdb -merge ~/.config/Xresources-local
     fi
     xclip &  # provides a clipboard that can be used across applications
     #urxvtd --quiet --opendisplay --fork
@@ -18,7 +18,7 @@ if [ "$1" != "late" ]; then
     thunar --daemon &
     xscreensaver &
     # should probably install pavumeter and paprefs, too
-    pasystray &   
+    pasystray &
     if cmd_exists nm-applet ; then
         nm-applet &
     fi
@@ -28,13 +28,10 @@ if [ "$1" != "late" ]; then
     if cmd_exists CopyAgent ; then
         ( sleep 180 && CopyAgent& )&
     fi
-    
+
     notify-send -u low 'initialized!'
 else
     randomise_background.rb
-    #if [ `hostname` == "altius" ]; then
-    #    mount_wd15
-    #fi
 fi
 
 #eval `dbus-launch --sh-syntax --exit-with-session`

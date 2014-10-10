@@ -3,20 +3,28 @@ repo_cache "~/src/remote_dotfiles"
 github "jtprince/dotfiles/config" do
 
   cfg 'dotmation'
-  
+
   cfg 'alias'
 
   dot 'profile'
   dot 'xprofile'
 
   dot 'Xresources'
+  # Xdefaults is deprecated upstream, but make link til we don't need
   ln 'Xresources', '.Xdefaults'
+
+  # if desired:
+  # cfg 'Xresources-local'
 
   cfg 'xmodmap'
 
   cfg 'git'
-  
+
   dot 'gtkrc-2.0'
+
+  # if desired: 
+  # cfg 'gtkrc-2.0-local'
+
   cfg 'gtk-3.0'
 
   ln 'zsh/zshenv', '.zshenv'
@@ -37,13 +45,15 @@ github "jtprince/dotfiles/config" do
   ln 'okularpartrc', '.kde4/share/config/okularpartrc'
 
   cfg 'mpd'
-  # yaourt -S mpd mpc ncmpcpp-xdg-config 
+  # yaourt -S mpd mpc ncmpcpp-xdg-config
   # mkdir -p ~/.cache/mpd
   # touch ~/.cache/mpd{pid,state,tag_cache}
   # mkdir -p ~/Music/playlists
 
-  # use with ncmpcpp-xdg-config 
+  # use with ncmpcpp-xdg-config
   cfg 'ncmpcpp'
+
+  cfg 'pulseaudio-ctl
 end
 
 github "jtprince/dotfiles/config/vim" do

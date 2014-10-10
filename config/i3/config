@@ -91,17 +91,18 @@ bindsym XF86KbdBrightnessUp exec kbdlight up
 #########################
 
 ## parentheses left and right to change volume
-bindsym $mod+parenright exec pactl set-sink-volume 0 -- '+5%'
-bindsym $mod+parenleft exec pactl set-sink-volume 0 -- '-5%'
-bindsym $mod+minus exec toggle_mute
+set $volup /usr/bin/pulseaudio-ctl up
+set $voldown /usr/bin/pulseaudio-ctl down
+set $mute /usr/bin/pulseaudio-ctl mute
 
-# toggle_mute is two lines:
-#/usr/bin/pactl list sinks | grep -q Mute:.yes
-#/usr/bin/pactl set-sink-mute 0 ${PIPESTATUS[1]}
-bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 -- '+5%'
-bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -- '-5%'
-bindsym XF86AudioMute exec toggle_mute
- 
+bindsym $mod+parenright exec $volup
+bindsym $mod+parenleft exec $voldown
+bindsym $mod+minus exec $mute
+
+bindsym XF86AudioRaiseVolume exec $volup
+bindsym XF86AudioLowerVolume exec $voldown
+bindsym XF86AudioMute exec $mute
+
 # if not using pulseaudio:
 #bindsym $mod+parenright exec amixer set Master 5%+
 #bindsym $mod+parenleft exec amixer set Master 5%-
@@ -262,7 +263,7 @@ bindsym $mod+Shift+U restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+Q exit
 
-# power/on-off management: 
+# power/on-off management:
 # note, you may need to: sudo chmod u+s /sbin/poweroff
 bindsym $mod+Ctrl+Shift+P exec systemctl poweroff
 bindsym $mod+Ctrl+Shift+R exec systemctl reboot
