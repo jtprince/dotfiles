@@ -98,4 +98,4 @@ gtk-toolbar-icon-size = GTK_ICON_SIZE_SMALL_TOOLBAR
 # icons in the menus  (not sure I really need this)
 gtk-icon-sizes = "panel-menu=12,12"
 
-include '/home/jtprince/.config/gtkrc-2.0-aphelion'
+include '/home/jtprince/.config/gtkrc-2.0-local'
