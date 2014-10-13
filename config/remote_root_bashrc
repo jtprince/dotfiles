@@ -1,0 +1,17 @@
+# echo "*** sourcing .bashrc"
+
+source /home/jtprince/.profile
+
+export XDG_CONFIG_HOME=/home/jtprince/.config
+export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
+
+xset fp+ ~/.config/fontconfig/fonts.conf
+
+HISTCONTROL=ignoredups:erasedups
+HISTFILESIZE=65536
+HISTSIZE=65536
+shopt -s histappend
+
+source $XDG_CONFIG_HOME/alias
+
+alias gvim="vim"
