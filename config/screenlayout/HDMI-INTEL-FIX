@@ -1,1 +1,0 @@
-xrandr --output HDMI1 --set audio force-dvi
