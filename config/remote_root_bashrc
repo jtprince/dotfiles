@@ -1,0 +1,13 @@
+# echo "*** sourcing .bashrc"
+
+export JTPHOME="/home/jtprince"
+source $JTPHOME/.profile
+
+export XDG_CONFIG_HOME=$JTPHOME/.config
+export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
+
+source $XDG_CONFIG_HOME/alias
+
+export PATH=$PATH:$JTPHOME/bin
+
+alias gvim="vim"

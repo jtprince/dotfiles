@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+
+HDMI_ID = 'HDMI1'
+
+
+def get_video_card_name(possible_cards=['intel', 'nvidia', 'ati']):
+    """
+    returns one of the possible_cards None
+    """
+    p1 = subprocess.Popen(["lspci", "-k"], stdout=subprocess.PIPE)
+    output = subprocess.check_output(["grep", "VGA"], stdin=p1.stdout).decode('utf8')
+    for driver_ in possible_cards:
+        if any(word.lower() == driver_ for word in output.split()):
+            return driver_
+
+
+def correct(video_card_name, hdmi_id):
+    """
+    intel: calls "xrandr --output <HDMI-ID> --set audio force-dvi" as
+    described
+    http://ralsina.me/weblog/posts/overscan-fix-for-intel-on-a-cheap-tv.html
+
+    nvidia: assumes this is a mac retina and uses the viewport from
+    nvidia-settings for a 1920x1080p (todo: generalize to any nvidia)
+    """
+    if video_card_name == 'intel':
+        subprocess.call(("xrandr --output %s --set audio force-dvi" % hdmi_id).split())
+    elif video_card_name == 'nvidia':
+        subprocess.call([
+            'nvidia-settings',
+            '-a',
+            'CurrentMetaMode="DFP-3:2880x1800+0+0, DFP-2: 1920x1080+2880+0 { ViewPortOut=1820x1022+50+29 }"'
+        ])
+    elif video_card_name == 'ati':
+        raise NotImplementedError("don't know how to deal with ati cards")
+    else:
+        raise RuntimeError("unrecognized video card name")
+
+
+parser = argparse.ArgumentParser(description="corrects overscan (occurs with some TV-ish HDMI screens)")
+parser.add_argument("--hdmi-id", default=HDMI_ID, help="the desired xrandr HDMI identifier")
+args = parser.parse_args()
+
+cardname = get_video_card_name()
+correct(cardname, args.hdmi_id)
+
+

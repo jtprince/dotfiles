@@ -5,6 +5,7 @@ alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 export AWSID="i-68ec4467"
 alias AWSSTOP="aws ec2 stop-instances --instance-ids i-68ec4467"
 alias AWSSTART="aws ec2 start-instances --instance-ids i-68ec4467"
+alias gotoaws="ssh root@jtprince.dev -t 'source /home/jtprince/dotfiles/config/remote_root_bashrc; cd /home/build; bash -l'"
 
 
 alias sudoe="sudo -E"
@@ -81,9 +82,6 @@ alias rgrep="grep -r"
 alias rgreptext="grep -r --binary-files=without-match"
 
 alias newterm="urxvtc"
-
-# MAC retina via HDMI to 1920x1080 (correct for overscan)
-alias overscancorrect="nvidia-settings -a CurrentMetaMode=\"DFP-3:2880x1800+0+0, DFP-2: 1920x1080+2880+0 { ViewPortOut=1820x1022+50+29 }\""
 
 alias gitcim="gitci"
 
