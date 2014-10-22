@@ -182,6 +182,18 @@ floating_modifier $mod
 # WORKSPACE MOVEMENT
 #########################
 
+# move focus to next monitor
+bindsym $mod+Right focus output right
+bindsym $mod+Left focus output left
+
+# move workspace and focus to next monitor
+bindsym $mod+Shift+Right move workspace to output right; focus output right
+bindsym $mod+Shift+Left move workspace to output left; focus output left
+
+# just move workspace to next monitor
+bindsym $mod+Ctrl+Shift+Right move workspace to output right
+bindsym $mod+Ctrl+Shift+Left move workspace to output left
+
 # move focus
 bindsym $mod+period workspace next
 bindsym $mod+comma workspace prev

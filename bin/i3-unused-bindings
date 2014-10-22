@@ -3,14 +3,15 @@
 config = ENV["HOME"] + "/.config/i3/config"
 
 if ARGV.size == 0
-  puts "usage: #{File.basename(__FILE__)} used|unused [config]"
-  puts "usage: #{File.basename(__FILE__)} <anything_else=>unused>"
+  puts "usage: #{File.basename(__FILE__)} unused [config]"
   puts "outputs list of used/unused bindings"
+  puts ""
   puts "default config: #{config}"
   exit
 end
 
-type = ARGV[0] == 'used' ? :used : :unused
+#type = (ARGV[0] == 'used' ? :used : :unused)
+
 config = ARGV[1] || config
 
 config_s = IO.read(config)
@@ -35,7 +36,7 @@ end
 
 puts "Mod+<letter> available:"
 ('a'..'z').each do |let|
-  taken = mod_alone.any? do |mod| 
+  taken = mod_alone.any? do |mod|
     mod.split(' ').first.split('+').last == let
   end
   puts let unless taken
@@ -43,7 +44,7 @@ end
 
 puts "Mod+Shift+<letter> available:"
 ('A'..'Z').each do |let|
-  taken = mod_shift.any? do |mod| 
+  taken = mod_shift.any? do |mod|
     mod.split(' ').first.split('+').last == let
   end
   puts let unless taken
@@ -51,7 +52,7 @@ end
 
 puts "Mod+Ctrl+Shift+<letter> available:"
 ('A'..'Z').each do |let|
-  taken = mod_ctrl_shift.any? do |mod| 
+  taken = mod_ctrl_shift.any? do |mod|
     mod.split(' ').first.split('+').last == let
   end
   puts let unless taken
