@@ -10,7 +10,7 @@ EXTS = %w(png jpg)
 
 files_w_ext = Dir[*EXTS.map {|ext| BKG_DIR + "/*.#{ext}" }]
 
-bkg_prog = 
+bkg_prog =
   if `which feh`.size > 0
     # feh is in official repos, so using it
     'feh --bg-fill'

@@ -20,7 +20,7 @@ exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 # VARIABLES
 #########################
 
-## set to Win (then swap Win and Alt in gnome-keyboard)
+## set to Win (then swap Alt and Win with evdev or xmodmap etc.)
 # alt=Mod1 win=Mod4
 set $mod Mod4
 # MAC - keyboard (if not using plugged in keyboard)
@@ -257,6 +257,16 @@ bindsym XF86Phone exec $browser1 $newwindow1 http://voice.google.com
 bindsym Print exec sc --dir ~/screenshots --timestamp screenshot -o e
 #bindsym $mod+Print exec sc -w --dir ~/screenshots --timestamp window
 bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e
+
+###########################
+# Keyboard shortcuts
+###########################
+
+# F9 as middle click (paste primary)
+bindcode 75 exec --no-startup-id xdotool click 2
+
+# ☆ <Favorites> toggles monitor setting
+bindsym XF86Favorites exec --no-startup-id monitor_toggle auto && randomise-bkg
 
 ###########################
 # LIFE, DEATH, and SLEEPING

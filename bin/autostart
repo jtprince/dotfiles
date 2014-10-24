@@ -6,15 +6,19 @@ function cmd_exists {
 
 if [ "$1" != "late" ]; then
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+    xclip -silent &  # provides a clipboard that can be used across applications
     xrdb -merge ~/.Xresources
     if [ -e ~/.config/Xresources-local ]; then
         xrdb -merge ~/.config/Xresources-local
     fi
-    xclip &  # provides a clipboard that can be used across applications
     #urxvtd --quiet --opendisplay --fork
     dunst -config ~/.config/dunstrc &
     start-pulseaudio-x11
-    xmodmap ~/.config/xmodmap
+    if [ `hostname` != "luce" ]; then
+        # luce defines shortcuts in evdev
+        # yaourt -S xdotool
+        xmodmap ~/.config/xmodmap
+    fi
     thunar --daemon &
     xscreensaver &
     # should probably install pavumeter and paprefs, too

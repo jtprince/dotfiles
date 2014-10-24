@@ -1,0 +1,96 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import sys
+import re
+import os.path
+
+class Monitor(object):
+    def __init__(self, name, *args, **kwargs):
+        """
+        main attributes:
+            primary (bool)
+            resolution (list): [x, y]
+            position (list): [x position, y position]
+        """
+        self.name = name
+        for (key, val) in kwargs.items():
+            setattr(self, key, val)
+
+    def __repr__(self):
+        keyatts = ['name', 'connected', 'primary', 'resolution', 'position']
+        kvals = " ".join(["%s=%s" % (key,getattr(self, key)) for key in keyatts if hasattr(self, key)])
+        return "<%s %s>" % (self.__class__.__name__, kvals)
+
+    @classmethod
+    def get_monitors(cls):
+        """ always returns the primary monitor first """
+        lines = subprocess.check_output(['xrandr']).decode('utf-8').split("\n")
+        monitor_lines = [
+            line for line in lines
+            if re.match('^\w', line) and not re.match('^Screen', line)
+        ]
+        monitors = [cls._monitor_from_line(line) for line in monitor_lines]
+        primary = next(monitor for monitor in monitors if monitor.primary)
+        # primary first
+        monitors.remove(primary)
+        monitors.insert(0, primary)
+        return monitors
+
+    @classmethod
+    def _monitor_from_line(cls, line):
+        data = line.split(' ')
+
+        kw = {
+            'connected': (data[1] == 'connected')
+        }
+        try:
+            index = data.index('primary');
+            if data.pop(index): kw['primary'] = True
+        except:
+            kw['primary'] = False
+
+        if kw['connected'] and data[2][0] != '(':
+            (res_str, pos_str) = data[2].split('+',1)
+            kw['resolution'] = [int(res) for res in res_str.split('x')]
+            kw['position'] = [int(pos) for pos in pos_str.split('+')]
+
+        monitor = Monitor(data[0], **kw)
+        return monitor
+
+parser = argparse.ArgumentParser(description="smart toggling of monitors.Expects 'primary' to be designated (say in /etc/profile): 'xrandr --output <WHATEVER> --primary")
+parser.add_argument("action", choices=['auto'], help="do the right thing")
+
+if len(sys.argv) <= 1:
+    parser.print_help()
+    sys.exit(1)
+
+args = parser.parse_args()
+
+monitors = Monitor.get_monitors()
+connected = [monitor for monitor in monitors if monitor.connected]
+
+num_monitors = len(connected)
+if num_monitors == 1:
+    cmd_str = "xrandr --auto"
+    print("executing: ", cmd_str)
+    subprocess.call(cmd_str.split(' '))
+elif num_monitors == 2:
+
+    # ideal:
+    # two monitors connected
+    # 1. put HDMI or VGA to the right of the other
+    # 2. mirror output (xrandr --auto)
+    # 3. put HDMI or VGA to the left of primary
+
+    #tmpfile = "/tmp/monitor_toggle_state"
+    #if os.path.exists(tmpfile):
+    #    current_state = 0
+    #    else
+    #    current_state = 0
+    #    with open(tmpfile,'w') as out:
+
+    cmd_str = "xrandr --output {primary} --auto --output {other} --auto --right-of {primary}".format(other=connected[1].name, primary=connected[0].name)
+    subprocess.call(cmd_str.split(' '))
+    subprocess.call(['overscan-correct'])
