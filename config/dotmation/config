@@ -53,14 +53,9 @@ github "jtprince/dotfiles/config" do
   # use with ncmpcpp-xdg-config
   cfg 'ncmpcpp'
 
-  cfg 'pulseaudio-ctl
-end
+  cfg 'pulseaudio-ctl'
 
-github "jtprince/dotfiles/config/vim" do
-  cfg 'vimrc', 'vim/'
-  cfg 'colors', 'vim/'
-  cfg 'spell', 'vim/'
-  cfg 'plugin', 'vim/'
+  cfg 'vim'
 end
 
 github "jtprince/dotfiles/bin" do
@@ -68,5 +63,5 @@ github "jtprince/dotfiles/bin" do
 end
 
 github 'gmarik/vundle' do
-  cfg '.', 'vim/bundle/vundle'
+  cfg '.', 'vim-bundle/vundle'
 end

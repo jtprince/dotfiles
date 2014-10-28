@@ -1,8 +1,9 @@
 " John T. Prince
 
-set nocompatible      " vim, not vi (first because of side-effects)
+set nocompatible " vim, not vi (called first because of side-effects)
 
-" Environment (follow XDG specification) ====================================
+" ENVIRONMENT ================================================================
+"(follow XDG specification for heaven's sake)
 
 set directory=~/tmp,/tmp
 set backupdir=~/tmp,/tmp
@@ -10,77 +11,25 @@ set viminfo+=n~/tmp/viminfo
 set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
 let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc"
 
+" hail the all powerful leader key!
 let mapleader = ','
 
-" Vundle setup ==============================================================
+" use semicolon for all colon commands
+:noremap ; :
 
-" setup:
+" VUNDLE =====================================================================
+" (setup)
+
 filetype on
 filetype off                   " required!
-set rtp+=~/.config/vim/bundle/vundle/
-call vundle#rc( "~/.config/vim/bundle" )
+set rtp+=~/.config/vim-bundle/vundle
+call vundle#rc( "~/.config/vim-bundle" )
 Bundle 'gmarik/vundle'
 
+" to run from cmdline:
 " vim +BundleInstall +qall
 
-" Bundles ===================================================================
-
-" open and edit the file you want including path searching
-"   command-t needs C-extensions:
-"   ensure ruby-dev is installed, then 'rake make' in folder
-" Bundle 'git://git.wincent.com/Command-T.git'
-" powerful comment/uncomment for diff't languages
-Bundle 'scrooloose/nerdcommenter'
-" file view
-" Bundle 'scrooloose/nerdtree'
-" securely edit gpg files (.gpg .pgp or .asc)
-" Bundle 'jamessan/vim-gnupg'
-" ensure that gvim uses the proper 256 terminal colors
-Bundle 'vim-scripts/colorsupport.vim'
-" source code browser (e.g. methods and classes etc)
-" sudo apt-get install exuberant-ctags
-" Bundle 'vim-scripts/taglist.vim'
-" vim-endwise
-" Bundle 'tpope/vim-endwise'
-"
-Bundle 'ntpeters/vim-better-whitespace'
-" :ToggleWhitespace
-" :StripWhitespace
-
-" syntax additions
-Bundle 'tpope/vim-markdown'
-Bundle 'timcharper/textile.vim'
-Bundle 'vim-scripts/eruby.vim'
-Bundle 'vim-ruby/vim-ruby'
-Bundle 'gisraptor/vim-lilypond-integrator'
-
-"Bundle 'Eckankar/vim-latex-folding'
-"Bundle 'gerw/vim-latex-suite'
-" http://vim-latex.sourceforge.net/documentation/latex-suite/latex-folding.html
-" <leader>rf to remake folds
-
-" view ansi marked-up color in vim
-Bundle 'vim-scripts/AnsiEsc.vim'
-
-" allow doing diffs on small sections
-"Bundle 'AndrewRadev/linediff.vim'
-" remember old yanked things
-" Bundle 'vim-scripts/YankRing.vim'
-" do git things
-" "Bundle 'tpope/vim-fugitive'
-" change surround characters
-" "Bundle 'tpope/vim-surround'
-" ensure that things get closed up properly
-" "Bundle 'spf13/vim-autoclose'
-" line up programming structures
-" Bundle 'godlygeek/tabular'
-" view the undo tree
-" "Bundle 'mbbill/undotree'
-" fancy word substition and completion
-" "Bundle 'tpope/vim-abolish'
-
-Bundle 'kien/ctrlp.vim'
-
+" BUNDLES ====================================================================
 " Brief help
 " :BundleList          - list configured bundles
 " :BundleInstall(!)    - install(update) bundles
@@ -89,22 +38,46 @@ Bundle 'kien/ctrlp.vim'
 "
 " see :h vundle for more details or wiki for FAQ
 
-" ENABLE plugins ============================================================
+" powerful comment/uncomment for diff't languages
+Bundle 'scrooloose/nerdcommenter'
+
+" ensure that gvim uses the proper 256 terminal colors
+Bundle 'vim-scripts/colorsupport.vim'
+
+" highlight/remove trailing whitespace
+Bundle 'ntpeters/vim-better-whitespace'
+" :StripWhitespace (also :ToggleWhitespace)
+
+""" syntax additions
+" python
+Bundle 'nvie/vim-flake8'
+" ruby
+Bundle 'timcharper/textile.vim'
+Bundle 'vim-scripts/eruby.vim'
+Bundle 'vim-ruby/vim-ruby'
+" markdown
+Bundle 'tpope/vim-markdown'
+" lilypond
+Bundle 'gisraptor/vim-lilypond-integrator'
+" <F7> runs flake8
+
+" view ansi marked-up color in vim
+Bundle 'vim-scripts/AnsiEsc.vim'
+
+" find files to edit (other options Command-T or nerdtree)
+Bundle 'kien/ctrlp.vim'
+let g:ctrlp_custom_ignore = {
+\ 'dir':  '\.git$\|\.hg$\|\.svn$\|\.yardoc\|public\/images\|public\/system\|tmp$\|node_modules$',
+\ 'file': '\.pyc\.exe$\|\.so$\|\.dat$'
+\ }
+
+" ENABLE plugins =============================================================
 
 " filetype detection, filetype specific indenting and plugins
 " must be in this order
 filetype plugin indent on
 
-" FONT ======================================================================
-
-if has("win32")
-    set guifont=Andale_Mono:h8
-else
-    set guifont=Deja\ Vu\ Sans\ Mono\ 10
-    " set guifont=Ubuntu\ Mono\ 12
-endif
-
-" BASIC CONFIG ==============================================================
+" BASIC CONFIG ===============================================================
 
 set visualbell t_vb= " turn off error beep/flash
 set mousehide   " Hide the mouse when typing text
@@ -133,43 +106,48 @@ if exists("+spelllang")
 endif
 set spellfile=~/.config/vim/spell/jtprince.en.utf-8.add
 
-" set statusline=[%n]\ %<%.99f\ %h%w%m%r%{SL('CapsLockStatusline')}%y%{SL('fugitive#statusline')}%#ErrorMsg#%{SL('SyntasticStatuslineFlag')}%*%=%-14.(%l,%c%V%)\ %P
-
-" search ====================================================================
+" SEARCH =====================================================================
 
 set hls		         " Highlight search pattern matches
 set viminfo='100,f1  " Save up to 100 marks, enable capital marks
+" Toggle search highlighting
+nmap <silent> <leader>/ :set invhlsearch<CR>
 
-" swap files ================================================================
+" SWAP FILES =================================================================
 
 set nobackup    " no ~ files
 set noswapfile  " no .file.swp files
 set nowb        " no automatic write backup
 
-" persistent undo ===========================================================
+" PERSISTENT UNDO ============================================================
 " Keep undo history across sessions, by storing in file.
-" Only works all the time.
 
 silent !mkdir ~/tmp/.vim-backups > /dev/null 2>&1
 set undodir=~/tmp/.vim-backups
 set undofile
 
-" LANGUAGE EXTENSIONS =======================================================
+" SIMPLE LANGUAGE EXTENSIONS =================================================
 " markdown
 augroup mkd
-  autocmd BufRead *.mkd *.md set ai formatoptions+=l lbr formatoptions=tcroqn2 comments=n:> 
+  autocmd BufRead *.mkd *.md set ai formatoptions+=l lbr formatoptions=tcroqn2 comments=n:>
 augroup END
 " yaml
 autocmd BufRead *.yml set ts=2 sw=2 sts=2
 autocmd BufRead *.yaml set ts=2 sw=2 sts=2
+" latex
 autocmd BufRead *.tex set formatoptions+=l lbr
+" text and log
 autocmd BufRead *.txt set formatoptions+=l lbr
 autocmd BufRead *.log set formatoptions+=l lbr
+
 " make
 au FileType make setlocal noexpandtab   " turn off et for makefiles
+autocmd Filetype html setlocal ts=2 sw=2 sts=2 expandtab
+autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
+autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 noexpandtab
+autocmd Filetype tex setlocal foldmethod=syntax
 
-" FOLDING =======================================================
-
+" FOLDING ====================================================================
 " folding for latex
 let g:tex_fold_enabled=1
 
@@ -177,11 +155,11 @@ set foldenable          " Turn on folding
 set foldmethod=indent   " Make folding indent sensitive
 set foldlevel=100       " Don't autofold anything (but can still fold manually)
 set foldopen-=search    " don't open folds when you search into them
-set foldopen-=undo      " don't open folds when you undo stuff 
+set foldopen-=undo      " don't open folds when you undo stuff
 " NOTE--> zM closes all, zR opens all, zv expand to reveal cursor
-" NOTE--> current: za toogle, zo opens, zc closes 
+" NOTE--> current: za toogle, zo opens, zc closes
 
-" FIX TYPOS =======================================================
+" FIX TYPOS ==================================================================
 
 iab varibale variable
 iab varibales variables
@@ -189,8 +167,8 @@ iab pritn print
 iab pirnt print
 iab serach search
 iab boolena boolean
- 
-" ****************************************************************
+
+" SWAPPING ===================================================================
 " SWAP things around
 " For example, to swap "apple" and "orange" in the line below:
 "         int apple, lemon, orange;
@@ -208,29 +186,22 @@ vnoremap <C-X> <Esc>`.``gvP``P
 " swap current paragraph with next
 :nnoremap h{ {dap}p{
 
+" WORD WRAP ===================================================================
+":call WordWrap()
 function WordWrap()
     set formatoptions+=l
     set lbr
-" formatoptions+=l lbr
 endfunction
 
+":call NoWordWrap()
 function NoWordWrap()
     set formatoptions-=l
     set nolbr
 endfunction
-":call WordWrap()
 
-" *************************************************************************** 
-"noremap \ldf :Linediff<CR>
-"noremap \ldo :LinediffReset<CR>
-
-" *************************************************************************** 
-
-" use semicolon for all colon commands
-:noremap ; :
-
+" WINDOW NAV =================================================================
 " easier window control generally
-noremap ,w <C-w>
+noremap <leader>w <C-w>
 
 " easier window navigation by holding down Ctrl
 map <C-J> <C-W>j
@@ -238,8 +209,9 @@ map <C-K> <C-W>k
 map <C-H> <C-W>h
 map <C-L> <C-W>l
 
-" LEFT-HANDED NAVIGATION (right hand gets tired)
-" s (go left) g (go right) d (go down) f (go up) 
+" LEFT-HANDED NAVIGATION =====================================================
+"  (right hand gets tired)
+" s (go left) g (go right) d (go down) f (go up)
 " h = s  k = d  j = g
 noremap s h
 noremap g l
@@ -256,34 +228,29 @@ noremap hh gg
 noremap F <PAGEDOWN>M
 noremap D <PAGEUP>M
 
-" ****************************************************************
-
-" delete all contents of the buffer
-noremap <leader>ecc :1,$d<CR>
-
-" ****************************************************************
-" COPY & PASTE using the external clipboard
+" COPY AND PASTE ============================================================
+" (using the external clipboard)
 " F2-cut, F3-copy, F4-paste
 " cut
 map <F2> "+x
 " copy to global buffer (to paste outside of vim)
 map <F3> "+y
 " paste from clipboard
-imap <F4> <Esc>"+gP 
-map <F4> "+gP 
+imap <F4> <Esc>"+gP
+map <F4> "+gP
 
-" ****************************************************************
-" insert a debuggin line
-map <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
-imap <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
-  
+" TABS ======================================================================
+" vim -p <file> <file> ... # opens pages in tabs
+" close the current tab
+nnoremap <C-w> :tabclose<CR>
+nnoremap <C-S-tab> :tabprevious<CR>
+nnoremap <C-tab>   :tabnext<CR>
+nnoremap <C-t>     :tabnew<CR>
+inoremap <C-S-tab> <Esc>:tabprevious<CR>i
+inoremap <C-tab>   <Esc>:tabnext<CR>i
+inoremap <C-t>     <Esc>:tabnew<CR>
 
-" For when you forget to sudo.. Really Write the file.
-cmap w!! w !sudo tee % >/dev/null
-
-" Toggle search highlighting
-nmap <silent> <leader>/ :set invhlsearch<CR>
-
+" CURRENT FILENAME ===========================================================
 " http://stackoverflow.com/questions/916875/yank-file-name-path-of-current-buffer-in-vim
 " copy current file name (relative/absolute) to system clipboard (Linux version)
 if has("gui_gtk") || has("gui_gtk2") || has("gui_gnome") || has("unix")
@@ -300,23 +267,24 @@ if has("gui_gtk") || has("gui_gtk2") || has("gui_gnome") || has("unix")
   nnoremap <leader>ch :let @+=expand("%:p:h")<CR>
 endif
 
-" TABS ======================================================================
-" vim -p <file> <file> ... # opens pages in tabs
-" close the current tab
-nnoremap <C-w> :tabclose<CR>
-nnoremap <C-S-tab> :tabprevious<CR>
-nnoremap <C-tab>   :tabnext<CR>
-nnoremap <C-t>     :tabnew<CR>
-inoremap <C-S-tab> <Esc>:tabprevious<CR>i
-inoremap <C-tab>   <Esc>:tabnext<CR>i
-inoremap <C-t>     <Esc>:tabnew<CR>
+" MISC ======================================================================
+" delete all contents of the buffer
+noremap <leader>ecc :1,$d<CR>
 
-" Short file type specific ==================================================
+" insert a debugging line (clashing with flake8 right now)
+"map <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
+"imap <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
 
-autocmd Filetype html setlocal ts=2 sw=2 sts=2 expandtab
-autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
-autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 noexpandtab
-autocmd Filetype tex setlocal foldmethod=syntax
+" For when you forget to sudo.. Really Write the file.
+cmap w!! w !sudo tee % >/dev/null
+
+" FONT =======================================================================
+
+if has("win32")
+    set guifont=Andale_Mono:h8
+else
+    set guifont=Deja\ Vu\ Sans\ Mono\ 10
+endif
 
 " SIZE ======================================================================
 
@@ -325,8 +293,7 @@ if has('gui_running')
   set columns=80
 endif
 
-" *************************************************************************** 
-" COLOR CONFIG
+" COLOR CONFIG ===============================================================
 
 syntax enable             " Enable syntax highlighting
 if has('gui_running')
