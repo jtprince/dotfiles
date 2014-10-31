@@ -109,17 +109,6 @@ function oowriter {
     libreoffice --minimized --nologo --writer "$@" &
 }
 
-function nautilusnd {
-    local arg
-    if [ $# -lt 1 ]
-    then 
-        arg=`pwd`
-    else
-        arg=$@
-    fi
-    nautilus --no-desktop -n $arg &
-}
-
 # http://madebynathan.com/2011/10/04/a-nicer-way-to-use-xclip/
 # A shortcut function that simplifies usage of xclip.
 # - Accepts input from either stdin (pipe), or params.
@@ -157,12 +146,12 @@ clip() {
 # Aliases / functions leveraging the clip() function
 # ------------------------------------------------
 # Copy contents of a file
-function clipfile() { cat "$1" | clip; }  
-function clippath() { readlink -f "$1" | clip; }  
+function clipfile() { cat "$1" | clip; }
+function clippath() { readlink -f "$1" | clip; }
 # Copy SSH public key
-alias clipsshkey="clipfile ~/.ssh/id_rsa.pub"  
+alias clipsshkey="clipfile ~/.ssh/id_rsa.pub"
 # Copy current working directory
-alias clippwd="pwd | clip"  
+alias clippwd="pwd | clip"
 # Copy most recent command in bash history
 alias cliplastcommand="cat $HISTFILE | tail -n 1 | clip"
 
@@ -250,10 +239,23 @@ if cmd_exists virtualenvwrapper.sh ; then
     source `which virtualenvwrapper.sh`
 fi
 
+# git_is_merged origin/development DEV-907
+function git_is_devmerged() {
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    revlist=$(git rev-list -1 origin/development --not $current_branch)
+    if [ $? -eq 0 ]; then
+        if [ "$revlist" = "" ]; then
+            echo "origin/development IS merged into $current_branch."
+        else
+            echo "origin/development is NOT merged into $current_branch."
+        fi
+    fi
+}
+
 ###############################################################################
 # ssh agent with envoy
 ###############################################################################
-# % sudo pacman -S envoy 
+# % sudo pacman -S envoy
 # % systemctl enable envoy@ssh-agent.socket
 if cmd_exists envoy ; then
     envoy -t ssh-agent
