@@ -239,7 +239,7 @@ if cmd_exists virtualenvwrapper.sh ; then
     source `which virtualenvwrapper.sh`
 fi
 
-# git_is_merged origin/development DEV-907
+# has the current branch merged in development?
 function git_is_devmerged() {
     current_branch=$(git rev-parse --abbrev-ref HEAD)
     revlist=$(git rev-list -1 origin/development --not $current_branch)
