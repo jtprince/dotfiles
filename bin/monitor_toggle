@@ -94,3 +94,8 @@ elif num_monitors == 2:
     cmd_str = "xrandr --output {primary} --auto --output {other} --auto --right-of {primary}".format(other=connected[1].name, primary=connected[0].name)
     subprocess.call(cmd_str.split(' '))
     subprocess.call(['overscan-correct'])
+
+elif num_monitors == 3:
+    cmd_str = "xrandr --output {primary} --off --output {other1} --auto --left-of {primary} --output {other2} --left-of {other1}".format(primary=connected[0].name, other1=connected[1].name, other2=connected[2].name )
+    subprocess.call(cmd_str.split(' '))
+    subprocess.call(['overscan-correct'])

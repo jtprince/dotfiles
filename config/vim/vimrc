@@ -147,6 +147,9 @@ autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 noexpandtab
 autocmd Filetype tex setlocal foldmethod=syntax
 
+" reads in ftplugin/python.vim
+autocmd BufRead,BufNewFile *.py setfiletype python
+
 " FOLDING ====================================================================
 " folding for latex
 let g:tex_fold_enabled=1
@@ -270,10 +273,6 @@ endif
 " MISC ======================================================================
 " delete all contents of the buffer
 noremap <leader>ecc :1,$d<CR>
-
-" insert a debugging line (clashing with flake8 right now)
-"map <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
-"imap <F7> <Esc>O<Esc>0iprintf("%s %d\n", __FILE__, __LINE__);<Esc>j0
 
 " For when you forget to sudo.. Really Write the file.
 cmap w!! w !sudo tee % >/dev/null
