@@ -35,7 +35,7 @@ if [ "$1" != "late" ]; then
 
     notify-send -u low 'initialized!'
 else
-    randomise_background.rb
+    randomise-bkg
 fi
 
 #eval `dbus-launch --sh-syntax --exit-with-session`
