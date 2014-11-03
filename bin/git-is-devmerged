@@ -1,0 +1,12 @@
+#!/bin/bash
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+revlist=$(git rev-list -1 origin/development --not $current_branch)
+if [ $? -eq 0 ]; then
+    if [ "$revlist" = "" ]; then
+        echo "origin/development IS merged into $current_branch."
+    else
+        echo "origin/development is NOT merged into $current_branch."
+    fi
+fi
+

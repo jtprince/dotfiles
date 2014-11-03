@@ -239,19 +239,6 @@ if cmd_exists virtualenvwrapper.sh ; then
     source `which virtualenvwrapper.sh`
 fi
 
-# has the current branch merged in development?
-function git_is_devmerged() {
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
-    revlist=$(git rev-list -1 origin/development --not $current_branch)
-    if [ $? -eq 0 ]; then
-        if [ "$revlist" = "" ]; then
-            echo "origin/development IS merged into $current_branch."
-        else
-            echo "origin/development is NOT merged into $current_branch."
-        fi
-    fi
-}
-
 ###############################################################################
 # ssh agent with envoy
 ###############################################################################
