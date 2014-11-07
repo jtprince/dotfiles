@@ -96,6 +96,10 @@ elif num_monitors == 2:
     subprocess.call(['overscan-correct'])
 
 elif num_monitors == 3:
+    # WAKE UP!: seems to be necessary to wake up my monitor attached by micro hdmi
+    subprocess.call(['xrandr', '--auto'])
+
     cmd_str = "xrandr --output {primary} --off --output {other1} --auto --left-of {primary} --output {other2} --left-of {other1}".format(primary=connected[0].name, other1=connected[1].name, other2=connected[2].name )
     subprocess.call(cmd_str.split(' '))
+
     subprocess.call(['overscan-correct'])

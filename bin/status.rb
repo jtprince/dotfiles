@@ -5,12 +5,13 @@
 ######################################################################
 
 require 'json'
+require 'time'
 
 module SysMonitor
   SLEEP = 2
 
   def valid?
-    true 
+    true
   end
 
   class DateTime
@@ -45,12 +46,27 @@ module SysMonitor
       @last_update = Time.now - @update_sec # set to immediately update
     end
 
-    def data 
+    def data
       if ((now=Time.now) - @last_update) >= @update_sec
         @last_update = now
         @data = get_data
       end
       @data
+    end
+  end
+
+  class Days
+    include SysMonitor
+    include LongTimer
+
+    def initialize
+      super
+      @start = Time.new(2014, 11, 4, 19, 0, 0, "-07:00")
+    end
+
+    def data
+      seconds = Time.new - @start
+      (seconds.to_f / 60 / 60 / 24).floor.to_i.to_s
     end
   end
 
@@ -91,7 +107,7 @@ module SysMonitor
       #"I am no lover of disorder and doubt as such. Rather do I fear to lose truth by the pretension to possess it already wholly." # -- William James
       "I fear to lose truth by the pretension to possess it already wholly.",
       "If patience is worth anything, it must endure to the end of time.", # Ghandi
-      "A living faith will last in the midst of the blackest storm.", #Ghandi 
+      "A living faith will last in the midst of the blackest storm.", #Ghandi
       "the inches we need are everywhere around us",
       "master everything important",
       "breathe in hostility, breathe out focus and peace",
@@ -249,7 +265,7 @@ class I3Bar < Array
     end
 
     def to_s
-      pairs = self.map do |k,v| 
+      pairs = self.map do |k,v|
         if !v.nil?
           [k, v]
         end
@@ -291,7 +307,7 @@ class I3Bar < Array
       # data is an array of direction and percent. returns self
       def display!(data)
         bar = Bar::LEVELS[ (data[1].to_f / self[:denom]).floor ]
-        direction_glyph = 
+        direction_glyph =
           case data[0]
           when '+' then '⇡'
           when '-' then '⇣'
@@ -306,13 +322,13 @@ class I3Bar < Array
     class WeatherDisplay < UI
       def display!(data)
         (temp, condition_st, intensity) = data
-        st = 
-          if condition_st 
+        st =
+          if condition_st
             "#{temp}°C #{condition_st*intensity}"
           else
             "[NC]"
           end
-        self[:full_text] = st 
+        self[:full_text] = st
       end
     end
 
@@ -366,11 +382,13 @@ bat = I3Bar::UI::UpDownBar.new('', '#0000FF', SysMonitor::Battery.new)
 cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
 mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
 weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
+days = I3Bar::UI::SimpleText.new('days', '#0404B4', SysMonitor::Days.new)
 datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime.new)
 
-components = [mpd, quote, bat, cpu, mem, weather, datetime].select {|cell| cell[:monitor].valid? }
+components = [mpd, quote, bat, cpu, mem, weather, days, datetime].select {|cell| cell[:monitor].valid? }
 
-div = I3Bar::UI::Divider.new(" ◀▶ ", "#000000")
+thin_space = ' '
+div = I3Bar::UI::Divider.new("#{thin_space}◀▶#{thin_space}", "#000000")
 
 i3bar = I3Bar.new
 
