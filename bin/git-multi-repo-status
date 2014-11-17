@@ -16,14 +16,14 @@ class GitRepo(object):
         self.bring_remotes_uptodate()
 
     def bring_remotes_uptodate(self):
-       self.sys("git remote update")
+       self.sys("git remote update --prune")
 
     def sys(self, string):
-        return subprocess.check_output(string.split(' ')).strip()
+        return subprocess.check_output(string.split(' ')).decode('utf-8').strip()
 
     def is_uptodate(self):
         uptodate_str = "is up-to-date with"
-        reply = self.sys("git status -uno").decode("utf-8")
+        reply = self.sys("git status -uno")
         return uptodate_str in reply
 
     def current_branch(self):
@@ -31,6 +31,12 @@ class GitRepo(object):
 
     def pull(self):
         return self.sys("git pull")
+
+    def has_remote(self, branch):
+        lines = self.sys("git branch -a").split("\n")
+        for line in lines:
+            if ("remotes/origin/" + branch) in line:
+                return True
 
 @contextmanager
 def cd(path):
@@ -51,6 +57,7 @@ parser = argparse.ArgumentParser(description="check git branch status and more")
 parser.add_argument("--root", default=ROOTDIR, help="where to begin looking")
 # parser.add_argument("-c", "--checkout", help="checkout a branch on repos where it exists")
 parser.add_argument("-p", "--pull", action="store_true", help="pull from origin")
+parser.add_argument("--has-remote", help="display repos with that remote branch")
 
 args = parser.parse_args()
 
@@ -62,8 +69,16 @@ with cd(args.root):
                 repo = GitRepo()
                 repo_is_not_diff = repo.is_uptodate()
                 repo_is_uptodate = repo_is_not_diff
+
+                ## pull
                 if not repo_is_uptodate and args.pull:
                     repo.pull()
                     print("pulling on << {} >>".format(repo.name))
-                uptodate = '✔' if repo.is_uptodate() else '✘'
-                print("({}{}) {}".format(repo.current_branch(), uptodate, repo.name))
+
+                if args.has_remote:
+                    if repo.has_remote(args.has_remote):
+                        print("{} has remote branch {}".format(repo.name, args.has_remote))
+                else:
+                    ## status
+                    uptodate = '✔' if repo.is_uptodate() else '✘'
+                    print("({}{}) {}".format(repo.current_branch(), uptodate, repo.name))
