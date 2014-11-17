@@ -58,6 +58,8 @@ parser.add_argument("--root", default=ROOTDIR, help="where to begin looking")
 # parser.add_argument("-c", "--checkout", help="checkout a branch on repos where it exists")
 parser.add_argument("-p", "--pull", action="store_true", help="pull from origin")
 parser.add_argument("--has-remote", help="display repos with that remote branch")
+parser.add_argument("--co-remote", help="checkout the remote branch if it exists")
+parser.add_argument("--cmd", help="execute an arbitrary command in git repos")
 
 args = parser.parse_args()
 
@@ -74,6 +76,14 @@ with cd(args.root):
                 if not repo_is_uptodate and args.pull:
                     repo.pull()
                     print("pulling on << {} >>".format(repo.name))
+
+                if args.cmd:
+                    reply = repo.sys(args.cmd)
+                    print(reply)
+
+                if args.co_remote:
+                    if repo.has_remote(args.co_remote):
+                        repo.sys("git co {}".format(args.co_remote))
 
                 if args.has_remote:
                     if repo.has_remote(args.has_remote):
