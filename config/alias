@@ -56,6 +56,9 @@ alias sl="ls"
 alias givm="gvim"
 alias gvmi="gvim"
 alias gimv="gvim"
+alias sgvim="sudo -E gvim"
+alias sgivm="sudo -E gvim"
+alias sgimv="sudo -E gvim"
 alias mdkir="mkdir"
 alias eixt="exit"
 
@@ -66,7 +69,8 @@ alias latexmk="latexmk -pdf -xelatex"
 alias rgrep="grep -rs"
 alias rgreptext="grep -rs --binary-files=without-match"
 alias gg="git grep"
-alias findit="find . -iname"
+# -L follow links
+alias findit="find -L . -iname"
 
 # git
 alias gitcim="gitci"

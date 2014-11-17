@@ -304,10 +304,10 @@ bindsym $mod+Shift+Q exit
 
 # power/on-off management:
 # note, you may need to: sudo chmod u+s /sbin/poweroff
-bindsym $mod+Ctrl+Shift+P exec systemctl poweroff
-bindsym $mod+Ctrl+Shift+R exec systemctl reboot
+bindsym $mod+Ctrl+Shift+P exec --no-startup-id systemctl poweroff
+bindsym $mod+Ctrl+Shift+R exec --no-startup-id systemctl reboot
 # suspend (RAM)
-bindsym $mod+Ctrl+Shift+S exec systemctl suspend
+bindsym $mod+Ctrl+Shift+S exec --no-startup-id systemctl suspend
 # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
 bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
 

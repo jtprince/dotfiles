@@ -1,0 +1,68 @@
+#!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+
+# can bump version up when dev boxes acquire python 3
+
+import argparse
+import subprocess
+import os
+from contextlib import contextmanager
+
+class GitRepo(object):
+
+    def __init__(self):
+        self.root = os.getcwd()
+        self.name = os.path.basename(self.root)
+        self.bring_remotes_uptodate()
+
+    def bring_remotes_uptodate(self):
+       self.sys("git remote update")
+
+    def sys(self, string):
+        return subprocess.check_output(string.split(' ')).strip()
+
+    def is_uptodate(self):
+        uptodate_str = "is up-to-date with"
+        reply = self.sys("git status -uno").decode("utf-8")
+        return uptodate_str in reply
+
+    def current_branch(self):
+        return self.sys("git rev-parse --abbrev-ref HEAD")
+
+    def pull(self):
+        return self.sys("git pull")
+
+@contextmanager
+def cd(path):
+    old_dir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(old_dir)
+
+def get_immediate_git_repos(a_dir):
+    return [name for name in os.listdir(a_dir)
+            if os.path.isdir(os.path.join(a_dir, name))]
+
+ROOTDIR = "/home/build"
+
+parser = argparse.ArgumentParser(description="check git branch status and more")
+parser.add_argument("--root", default=ROOTDIR, help="where to begin looking")
+# parser.add_argument("-c", "--checkout", help="checkout a branch on repos where it exists")
+parser.add_argument("-p", "--pull", action="store_true", help="pull from origin")
+
+args = parser.parse_args()
+
+with cd(args.root):
+    print("looking for git repos in root project dir: {}".format(args.root))
+    for dir in os.listdir("."):
+        with cd(dir):
+            repo = GitRepo()
+            repo_is_not_diff = repo.is_uptodate()
+            repo_is_uptodate = repo_is_not_diff
+            if not repo_is_uptodate and args.pull:
+                repo.pull()
+                print("pulling on << {} >>".format(repo.name))
+            uptodate = '✔' if repo.is_uptodate() else '✘'
+            print("({}{}) {}".format(repo.current_branch(), uptodate, repo.name))

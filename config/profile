@@ -62,6 +62,9 @@ if [ -d ~/npm ]; then
     export npm_config_userconfig=$HOME/.config/npmrc
 fi
 
+export IPYTHONDIR=$XDG_CONFIG_HOME/ipython
+
+
 #####################################################
 # LOCAL
 #####################################################
