@@ -58,7 +58,7 @@ with cd(args.root):
     print("looking for git repos in root project dir: {}".format(args.root))
     for dir in os.listdir("."):
         with cd(dir):
-            if os.path.exists(".git")
+            if os.path.exists(".git"):
                 repo = GitRepo()
                 repo_is_not_diff = repo.is_uptodate()
                 repo_is_uptodate = repo_is_not_diff
