@@ -100,6 +100,9 @@ bindsym XF86KbdBrightnessUp exec --no-startup-id asus-kbd-backlight up
 # TODO: fix this:
 # bindsym XF86ToggleTouchpad exec --no-startup-id
 
+# favorites #1 key
+bindsym XF86Launch5 exec --no-startup-id laptop-keyboard keyboard toggle
+
 #########################
 # SOUND
 #########################

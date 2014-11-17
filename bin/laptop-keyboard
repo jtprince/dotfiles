@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+import re
+
+class Property(object):
+    """ 
+    Args:
+      name (str): the name of the property
+      id (int): the id of the property
+      value (str): the value
+    """
+
+    def __repr__(self):
+        return "<{} ({}):{}>".format(self.name, self.id, self.value)
+
+
+class Device(object):
+    """
+    Args (set with kwargs):
+      name (str): the name of the device
+      id (int): device id
+      master (bool): master (True) or slave (False)
+      type (str): device type (pointer|keyboard)
+      unknown (int): the thing in parentheses (a 3 or a 2)
+      properties (list): list of Property objects (read-only)
+    """
+    @classmethod
+    def devices(cls):
+        """ calls xinput, "creates" and returns all devices """
+        lines = subprocess.check_output(["xinput"]).decode("utf-8").split("\n")
+
+        matcher = re.compile(r'[⎡⎣⎜↳\s]+(?P<name>.*?)\s+id=(?P<id>\d+)\s+\[(?P<master>\w+)\s+(?P<type>\w+)\s+\((?P<unknown>\d+)\)\]')
+
+        devices_ = []
+        for line in lines:
+            match = matcher.search(line)
+            if match:
+                device = Device(*match.groups())
+                device.master = (device.master == 'master')
+                devices_.append(device)
+        
+        return devices_
+
+    def __init__(self, *args):
+        atts = ('name', 'id', 'master', 'type', 'unknown')
+        for (key, val) in zip(atts, args):
+            setattr(self, key, val)
+
+    def __repr__(self):
+        return "<Device name='{}' id={} master={} type={}>".format(self.name, self.id, self.master, self.type)
+
+    def status(self):
+        pass
+
+    def set(self, property_ish, value):
+        prop = property_ish.id if isinstance(property_ish, Property) else property_ish
+        subprocess.call(["xinput", 'set-prop', str(self.id), str(prop), str(value)])
+
+    @property
+    def properties(self):
+        return self._get_properties()
+
+    def _get_properties(self):
+        lines = subprocess.check_output(['xinput', '--list-props', self.id]).decode("utf-8").split("\n")
+        lines.pop(0)  # remove device line
+
+        properties_ = []
+        for line in lines:
+            if ':' in line:
+                prop = Property()
+                (name_id, value) = line.split('):')
+                (name, id) = name_id.split(' (')
+                prop.name = name.strip()
+                prop.id = int(id)
+                prop.value = value.strip()
+                properties_.append(prop)
+                
+        return properties_
+
+    def is_enabled(self):
+        return bool(int(self.properties[0].value))
+
+    def enable(self):
+        enabled_property = self.properties[0]
+        self.set(enabled_property, 1)
+
+    def disable(self):
+        enabled_property = self.properties[0]
+        self.set(enabled_property, 0)
+
+    def toggle(self):
+        if self.is_enabled():
+            self.disable()
+        else:
+            self.enable()
+         
+
+# all the laptop keyboards that I have use this name for the keyboard
+# case insensitive just to give a little more flexibility
+LAPTOP_KEYBOARD_RE = re.compile(r'(AT Translated Set 2 keyboard)', re.IGNORECASE)
+
+def get_laptop_keyboard(devices, regexp=LAPTOP_KEYBOARD_RE):
+    """ returns the laptop keyboard device """
+    for device in devices: 
+        match = regexp.search(device.name)
+        if match:
+            return device
+
+parser = argparse.ArgumentParser(description="easily manipulate the laptop keyboard or touchpad")
+parser.add_argument("device", choices=['keyboard', 'touchpad'])
+parser.add_argument("action", choices=['status', 'enable', 'disable', 'toggle'])
+
+args = parser.parse_args()
+device = args.device
+action = args.action
+if action == 'status': 
+    action = 'is_enabled'
+
+devices = Device.devices()
+
+if device == 'keyboard':
+    keyboard = get_laptop_keyboard(devices)
+    reply = getattr(keyboard, action)()
+    if reply is None:
+        reply = keyboard.is_enabled()
+        status = "ENABLED" if reply else "DISABLED"
+        print("{} is now {}".format(device, status))
+    else:
+        status = "ENABLED" if reply else "DISABLED"
+        print("{} is {}".format(device, status))
+else:
+    raise NotImplementedError("device {} not yet implemented".format(device))
