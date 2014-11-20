@@ -1,0 +1,9 @@
+#!/bin/bash
+
+me=`basename $0`
+echo "executing: $me"
+
+source $XDG_CONFIG_HOME/alias
+
+alias gvim="vim"
+alias python='python2.7'

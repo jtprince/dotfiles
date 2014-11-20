@@ -95,7 +95,7 @@ URxvt*termName:                        rxvt-256color
 ! URxvt*boldFont:                        xft:Dejavu Sans Mono:pixelsize=10.5
 !URxvt*font:                            xft:Ubuntu Mono:size=13
 !URxvt*boldFont:                        xft:Ubuntu Mono:bold:size=13
-URxvt*font:                            xft:Dejavu Sans Mono:size=10
+URxvt*font:                            xft:Dejavu Sans Mono:size=12
 !URxvt*boldFont:                        xft:Dejavu Sans Mono:bold:size=13
 URxvt*colorBD:                         white
 
