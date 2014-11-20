@@ -28,4 +28,5 @@ fi
 #source ~/.xprofile
 
 #exec i3 -V -d all >~/.config/i3/i3log-$(date +'%F-%k-%M-%S') 2>&1
-exec i3
+#exec i3
+exec startlxde

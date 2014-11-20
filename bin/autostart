@@ -6,12 +6,10 @@ function cmd_exists {
 
 if [ "$1" != "late" ]; then
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
-    xclip -silent &  # provides a clipboard that can be used across applications
     xrdb -merge ~/.Xresources
     if [ -e ~/.config/Xresources-local ]; then
         xrdb -merge ~/.config/Xresources-local
     fi
-    #urxvtd --quiet --opendisplay --fork
     dunst -config ~/.config/dunstrc &
     start-pulseaudio-x11
     if [ `hostname` != "luce" ]; then
@@ -20,9 +18,13 @@ if [ "$1" != "late" ]; then
         xmodmap ~/.config/xmodmap
     fi
     thunar --daemon &
-    xscreensaver &
-    # should probably install pavumeter and paprefs, too
+    # xscreensaver &
+    xautolock -time 10 -locker fuzzy_lock
+    # yaourt -S pasystray-git pavucontrol paprefs pavumeter
+    # also
+    # echo "load-module module-device-manager" > /etc/pulse/default.pa
     pasystray &
+    xclip -silent &
     if cmd_exists nm-applet ; then
         nm-applet &
     fi
