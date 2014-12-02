@@ -2,7 +2,7 @@
 export AWSID="i-68ec4467"
 alias AWSSTOP="aws ec2 stop-instances --instance-ids i-68ec4467"
 alias AWSSTART="aws ec2 start-instances --instance-ids i-68ec4467"
-alias gotoaws="ssh $RMT -t 'source /home/jtprince/dotfiles/config/remote_root_bashrc; cd /home/build; bash -l -c /home/jtprince/dotfiles/config/remote_root_bashrc_later'"
+alias gotoaws="ssh $RMT -t 'source /home/jtprince/dotfiles/config/remote_root_bashrc; cd /home/build; bash -l'"
 
 # apt-get
 alias apti='sudo apt-get install'
@@ -85,4 +85,4 @@ alias chromiumtest="chromium --user-data-dir=~/.config/chromium-test"
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
 # not using right now
-#alias tmux="tmux -f ~/.config/tmux/config"
+alias tmux="tmux -f ~/.config/tmux/config"
