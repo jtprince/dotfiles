@@ -23,4 +23,5 @@ passwd =
   SecureRandom.base64(6) +
   word(words)
 
-puts passwd
+len = ARGV[0] || passwd.size
+puts passwd[0,len.to_i]

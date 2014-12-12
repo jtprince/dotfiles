@@ -61,7 +61,9 @@ module SysMonitor
 
     def initialize
       super
-      @start = Time.new(2014, 11, 4, 19, 0, 0, "-07:00")
+      line = IO.read(ENV['HOME'] + "/Dropbox/env/counter.txt")
+      parts = line.split(", ").map(&:to_i)
+      @start = Time.new(*parts, "-07:00")
     end
 
     def data
