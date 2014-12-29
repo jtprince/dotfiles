@@ -372,6 +372,12 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 #######################
+# App/Window Prefs
+#######################
+
+for_window [class="Hangouts"] floating enable
+
+#######################
 # WORKSPACES
 #######################
 

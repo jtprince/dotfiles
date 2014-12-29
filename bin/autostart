@@ -19,7 +19,7 @@ if [ "$1" != "late" ]; then
     fi
     thunar --daemon &
     # xscreensaver &
-    xautolock -time 10 -locker fuzzy_lock
+    xautolock -time 10 -locker fuzzy_lock &
     # yaourt -S pasystray-git pavucontrol paprefs pavumeter
     # also
     # echo "load-module module-device-manager" > /etc/pulse/default.pa
@@ -29,10 +29,12 @@ if [ "$1" != "late" ]; then
         nm-applet &
     fi
     if cmd_exists dropbox ; then
-        ( sleep 60 && dropbox start )&
+        dropbox start
+        #( sleep 60 && dropbox start )&
     fi
     if cmd_exists CopyAgent ; then
-        ( sleep 180 && CopyAgent& )&
+        #( sleep 180 && CopyAgent& )&
+        CopyAgent&
     fi
 
     notify-send -u low 'initialized!'
