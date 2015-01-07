@@ -26,7 +26,7 @@ h4 {
 }
 body {
   margin-left: 20px;
-  font-family: sans serif;
+  /*font-family: sans serif;*/
 }
 code {
   font-family: mono;

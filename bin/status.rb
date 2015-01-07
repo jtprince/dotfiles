@@ -220,8 +220,8 @@ module SysMonitor
   class MPD
     include SysMonitor
     include Sleeper
-    ARTIST_LENGTH = 60
-    TITLE_LENGTH = 60
+    ARTIST_LENGTH = 30
+    TITLE_LENGTH = 30
 
     def get_data
       title = `mpc -f "%title%|%file%" current`.strip
