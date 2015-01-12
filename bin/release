@@ -1,0 +1,25 @@
+#!/bin/bash
+
+progname=`basename $0`
+if [[ $# -eq 0 ]] ; then
+    echo "usage: $progname <server|action>"
+    echo "options:"
+    echo "  $progname staging"
+    exit 2
+fi
+
+case $var in
+    staging)
+        ssh $STAGING '/home/build/update.sh production'
+        ;;
+    #banana)
+        #echo 'Hm, a bit awry, no?'
+        #;;
+    #orange|tangerine)
+        #echo $'Eeeks! I don\'t like those!\nGo away!'
+        #exit 1
+        #;;
+    #*)
+        #echo "Unknown fruit - sure it isn't toxic?"
+esac
+
