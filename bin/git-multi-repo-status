@@ -4,9 +4,11 @@
 # can bump version up when dev boxes acquire python 3
 
 import argparse
-import subprocess
 import os
+import subprocess
+import sys
 from contextlib import contextmanager
+
 
 class GitRepo(object):
 
@@ -65,9 +67,11 @@ args = parser.parse_args()
 
 with cd(args.root):
     print("looking for git repos in root project dir: {}".format(args.root))
-    for dir in os.listdir("."):
+    subdirectories = [fn for fn in os.listdir(".") if os.path.isdir(fn)]
+    for dir in subdirectories:
         with cd(dir):
             if os.path.exists(".git"):
+                sys.stdout.write("--> %s " % dir)
                 repo = GitRepo()
                 repo_is_not_diff = repo.is_uptodate()
                 repo_is_uptodate = repo_is_not_diff

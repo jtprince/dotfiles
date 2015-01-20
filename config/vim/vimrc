@@ -51,6 +51,7 @@ Bundle 'ntpeters/vim-better-whitespace'
 """ syntax additions
 " python
 Bundle 'nvie/vim-flake8'
+" <F7> runs flake8
 " ruby
 Bundle 'timcharper/textile.vim'
 Bundle 'vim-scripts/eruby.vim'
@@ -59,7 +60,6 @@ Bundle 'vim-ruby/vim-ruby'
 Bundle 'tpope/vim-markdown'
 " lilypond
 Bundle 'gisraptor/vim-lilypond-integrator'
-" <F7> runs flake8
 
 " view ansi marked-up color in vim
 Bundle 'vim-scripts/AnsiEsc.vim'
@@ -112,6 +112,9 @@ set hls		         " Highlight search pattern matches
 set viminfo='100,f1  " Save up to 100 marks, enable capital marks
 " Toggle search highlighting
 nmap <silent> <leader>/ :set invhlsearch<CR>
+
+" DEBUG ======================================================================
+" <leader> p is reserved for a debugging statement in different languages
 
 " SWAP FILES =================================================================
 

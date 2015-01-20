@@ -10,7 +10,7 @@ fi
 
 case $var in
     staging)
-        ssh $STAGING '/home/build/update.sh production'
+        ssh $STAGING 'cd /home/build ; /home/build/update.sh production'
         ;;
     #banana)
         #echo 'Hm, a bit awry, no?'
