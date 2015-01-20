@@ -1,0 +1,7 @@
+#!/bin/sh
+
+output=$HOME/.cache/pylint-output
+
+pylint -f parseable $@ > $output &
+
+pylint $@

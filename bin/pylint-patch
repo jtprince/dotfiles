@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+from itertools import dropwhile
+
+# requires that your pylint tee to file $HOME/.cache/pylint-output, like this:
+#     #!/usr/sh
+#     output=$HOME/.cache/pylint-output
+#     pylint $@ | tee $output
+
+import os
+
+from collections import namedtuple
+
+class Lint(object):
+    def __init__(self, fname, row, id, error, message):
+        self.fname, self.row, self.id, self.error, self.message = fname, row, id, error, message
+
+    @classmethod
+    def from_parseable_line(cls, line):
+        (fname, row_str, the_rest) = line.split(':', 2)
+        (id_error, message) = the_rest.split('), ]')
+        (id, error) = id_error[2:].split('(')
+        return cls(fname, int(row_str), id, error, message)
+
+    def __str__(self):
+        return "{fname}:{row}: [{id}({error}), ] {message}".format(
+            fname=self.fname,
+            row=self.row,
+            id=self.id,
+            error=self.error,
+            message=self.message,
+        )
+
+    def row_plus_plus(self):
+        self.row += 1
+
+    def patch(self, line):
+        if " # pylint:" in line:
+            line + ", " + self.error
+        else:
+            line + "  # pylint: disable={}".format(self.error)
+
+    def basename_noext(self):
+        return os.path.splitext(os.path.basename(self.fname))[0]
+
+    def insert(self):
+        """ merely returns a line to be inserted """
+        if self.message == 'Missing module docstring':
+            return '""" {} """'.format(self.basename_noext().replace('_', ' '))
+        else:
+            return "# pylint: disable={}".format(self.error)
+
+
+pylint_fn = os.path.join(os.environ['HOME'], '.cache', 'pylint-output')
+
+stars = '*************'
+
+with open(pylint_fn, 'r') as pfname:
+    alllines = pfname.readlines()
+
+lines = list(dropwhile(lambda line: stars in line, alllines))
+lints = [Lint.from_parseable_line(line) for line in lines]
+
+with open(pylint_fn, 'w') as out:
+    out.write(''.join((str(lint) for lint in lints)))
