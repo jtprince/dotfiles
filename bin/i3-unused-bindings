@@ -10,7 +10,7 @@ if ARGV.size == 0
   exit
 end
 
-#type = (ARGV[0] == 'used' ? :used : :unused)
+type = (ARGV[0] == 'used' ? :used : :unused)
 
 config = ARGV[1] || config
 
@@ -34,28 +34,26 @@ end
 
 (mod_alone, leftovers) = leftovers.partition {|binding| binding =~ /^Mod4/ }
 
-puts "Mod+<letter> available:"
-('a'..'z').each do |let|
-  taken = mod_alone.any? do |mod|
-    mod.split(' ').first.split('+').last == let
+def partition(bindings, letters)
+  letters.partition do |let|
+    bindings.any? do |mod|
+      mod.split(' ').first.split('+').last == let
+    end
   end
-  puts let unless taken
 end
 
-puts "Mod+Shift+<letter> available:"
-('A'..'Z').each do |let|
-  taken = mod_shift.any? do |mod|
-    mod.split(' ').first.split('+').last == let
+cats = {
+  'mod+letter' => [mod_alone, 'a'..'z'],
+  'mod+shift+letter' => [mod_shift, 'A'..'Z'],
+  'mod+ctrl+shift+letter' => [mod_ctrl_shift, 'A'..'Z'],
+}
+
+cats.each do |cat, (bindings, letters)|
+  puts cat
+  (used, unused) = partition(bindings, letters)
+  if type == :used
+    puts used
+  else
+    puts unused
   end
-  puts let unless taken
 end
-
-puts "Mod+Ctrl+Shift+<letter> available:"
-('A'..'Z').each do |let|
-  taken = mod_ctrl_shift.any? do |mod|
-    mod.split(' ').first.split('+').last == let
-  end
-  puts let unless taken
-end
-
-

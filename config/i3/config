@@ -464,6 +464,13 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 #######################
+# MISC - editing
+#######################
+bindsym $mod+Shift+F exec pylint-patch fix
+bindsym $mod+Shift+G exec pylint-patch auto
+bindsym $mod+Shift+D exec pylint-patch delete
+bindsym $mod+Shift+O exec pylint-patch top
+#######################
 # BAR
 #######################
 

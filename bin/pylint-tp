@@ -2,6 +2,8 @@
 
 output=$HOME/.cache/pylint-output
 
-pylint -f parseable $@ > $output &
+pylint --rcfile=.pylintrc --msg-template={path}:{line}:{msg_id}:{symbol}:{msg}:{obj} $@ > $output &
 
-pylint $@
+pylint --rcfile=.pylintrc $@
+
+echo "# DIR: $(pwd)" >> $output

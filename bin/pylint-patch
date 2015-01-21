@@ -1,65 +1,168 @@
 #!/usr/bin/env python
 
+import contextlib
+import argparse
+import os
+import re
+import subprocess
+from collections import namedtuple
 from itertools import dropwhile
 
-# requires that your pylint tee to file $HOME/.cache/pylint-output, like this:
-#     #!/usr/sh
-#     output=$HOME/.cache/pylint-output
-#     pylint $@ | tee $output
 
-import os
+# requires that your pylint tee to file $HOME/.cache/pylint-output and record the repo directory
+# see ~/bin/pylint-tp for example
 
-from collections import namedtuple
+def _patch_inline(lint, line):
+    if " # pylint:" in line:
+        return line.rstrip() + ", " + lint.error + "\n"
+    else:
+        return line.rstrip() + "  # pylint: disable={}".format(lint.error) + "\n"
+
+def _patch_above(lint, line, msg=None):
+    if msg:
+        return msg + "\n" + line
+    else:
+        if " # pylint:" in line:
+            return line.rstrip() + ", " + lint.error + "\n" + line
+        else:
+            return line.rstrip() + "# pylint: disable={}".format(lint.error) + "\n" + line
+
+def _delete_line(lint, line):
+    return ''
+
 
 class Lint(object):
-    def __init__(self, fname, row, id, error, message):
-        self.fname, self.row, self.id, self.error, self.message = fname, row, id, error, message
+    """ row is 1 less than shown in pylint output (we zero index) """
+
+    stars = '*************'
 
     @classmethod
+    def set_dir(cls, dir):
+        cls.dir = dir
+        return cls
+
+    @classmethod
+    def get_dir(cls):
+        return cls.dir
+
+    def __init__(self, dir, path, row, id, error, message, obj=None):
+        self.dir, self.path, self.row, self.id, self.error, self.message, self.obj = dir, path, row, id, error, message, obj
+
+    @property
+    def line(self):
+        return self.row + 1
+
+    def module_doc(self):
+        package_name_like = self.basename_noext()
+        if package_name_like == '__init__':
+            package_name_like = os.path.splitext(self.path)[0].split('/')[-2] + " package"
+
+        return '""" {} """'.format(package_name_like.replace('_', ' '))
+
+    @classmethod
+    def lints_from_file(cls, pylint_fname):
+        with open(pylint_fname, 'r') as infile:
+            lines = infile.readlines()
+
+        lints = []
+        for line in lines:
+            if not cls.stars in line and not line[0] == ' ' and re.search(r':\d+:', line):
+                lints.append(cls.from_parseable_line(line.strip()))
+
+        return lints
+    @classmethod
     def from_parseable_line(cls, line):
-        (fname, row_str, the_rest) = line.split(':', 2)
-        (id_error, message) = the_rest.split('), ]')
-        (id, error) = id_error[2:].split('(')
-        return cls(fname, int(row_str), id, error, message)
+        (path, line, msg_id, error, message, obj) = (line.split(':') + [None]*1)[:6]
+        return cls(cls.get_dir(), path, int(line)-1, msg_id, error, message, obj)
 
     def __str__(self):
-        return "{fname}:{row}: [{id}({error}), ] {message}".format(
-            fname=self.fname,
-            row=self.row,
-            id=self.id,
-            error=self.error,
-            message=self.message,
+
+        format_string = "{path}:{line}:{msg_id}:{symbol}:{msg}:{obj}"
+        ## need to show var (and eventually detail)
+        return format_string.format(
+            path=self.path,
+            line=self.row+1,
+            msg_id=self.id,
+            symbol=self.error,
+            msg=self.message,
+            obj=self.obj,
         )
 
     def row_plus_plus(self):
         self.row += 1
 
-    def patch(self, line):
-        if " # pylint:" in line:
-            line + ", " + self.error
+    def is_inline(self):
+        """ returns True if should be applied inline """
+        return True
+
+    def is_missing_module_docstring(self):
+        return self.message == 'Missing module docstring'
+
+    def patch(self, action):
+        if action == 'delete':
+            self._patch_file(_delete_line)
+        elif self.is_missing_module_docstring():
+            print("module doc")
+            self._patch_file(_patch_above, self.module_doc())
+        elif action == 'top':
+            self._patch_file(_patch_above)
+        elif self.is_inline():
+            self._patch_file(_patch_inline)
+
+
+
+    def _patch_file(self, patch_line_method, extra=None):
+        with open(self.path, 'r') as in_file:
+            lines = in_file.readlines()
+
+        if len(lines) == 0:
+            lines = ['']
+
+        if extra:
+            lines[self.row] = patch_line_method(self, lines[self.row], extra)
         else:
-            line + "  # pylint: disable={}".format(self.error)
+            lines[self.row] = patch_line_method(self, lines[self.row])
+
+        alert_msg = "%s applied to %s to %s:%d" % (patch_line_method.__name__, self.error, self.path, self.row+1)
+        print(alert_msg)
+        os.system("notify-send -u low --expire-time=1 '%s'" % alert_msg)
+
+        with open(self.path, 'w') as out_file:
+            out_file.write("".join(lines))
 
     def basename_noext(self):
-        return os.path.splitext(os.path.basename(self.fname))[0]
-
-    def insert(self):
-        """ merely returns a line to be inserted """
-        if self.message == 'Missing module docstring':
-            return '""" {} """'.format(self.basename_noext().replace('_', ' '))
-        else:
-            return "# pylint: disable={}".format(self.error)
-
+        return os.path.splitext(os.path.basename(self.path))[0]
 
 pylint_fn = os.path.join(os.environ['HOME'], '.cache', 'pylint-output')
 
-stars = '*************'
+parser = argparse.ArgumentParser()
+parser.add_argument("action", choices=['auto', 'inline', 'fix', 'top', 'delete'], help='takes the action specified')
+args = parser.parse_args()
 
-with open(pylint_fn, 'r') as pfname:
-    alllines = pfname.readlines()
 
-lines = list(dropwhile(lambda line: stars in line, alllines))
-lints = [Lint.from_parseable_line(line) for line in lines]
+with open(pylint_fn, 'r') as pylint_fname:
+    alllines = pylint_fname.readlines()
+
+dirline = alllines.pop()
+repo_dir = dirline.split(': ')[1].strip()
+if not os.path.exists(repo_dir):
+    abort("repo_dir does not exist: %s" % repo_dir)
+
+Lint.set_dir(repo_dir)
+
+os.chdir(Lint.get_dir())
+
+lints = Lint.lints_from_file(pylint_fn)
+
+lint = lints.pop(0)
+
+
+if args.action == 'fix':
+    os.system(" ".join(["gvim", "+" + str(lint.line), os.path.join(lint.dir, lint.path)]))
+    #subprocess.call("gvim", "+" + str(lint.line), os.path.join(lint.dir, lint.path))
+else:
+    lint.patch(args.action)
 
 with open(pylint_fn, 'w') as out:
-    out.write(''.join((str(lint) for lint in lints)))
+    out.write('\n'.join((str(lint) for lint in lints))+ "\n")
+    out.write(dirline)
