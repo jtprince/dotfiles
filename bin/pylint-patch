@@ -144,9 +144,14 @@ with open(pylint_fn, 'r') as pylint_fname:
     alllines = pylint_fname.readlines()
 
 dirline = alllines.pop()
-repo_dir = dirline.split(': ')[1].strip()
-if not os.path.exists(repo_dir):
-    abort("repo_dir does not exist: %s" % repo_dir)
+
+if "DIR: " in dirline:
+    repo_dir = dirline.split(': ')[1].strip()
+else:
+    alert_msg = "no repo dirline!"
+    os.system("notify-send -u critical --expire-time=4 '******** %s ********'" % alert_msg)
+    print(alert_msg)
+    exit(1)
 
 Lint.set_dir(repo_dir)
 

@@ -12,11 +12,11 @@ if sys.argv[1:]:
 else:
     import subprocess
     line = subprocess.check_output("xclip -o".split()).decode('8859').strip()
- 
+
 if not line: raise ValueError("no reasonable file info to work from")
 
 regexs = (
-        r'File "(.*)", line (\d+)', 
+        r'File "(.*)", line (\d+)',
         r'(.*):(\d+):(\d+):',
         r'(.*):(\d+):',
         )

@@ -2,8 +2,8 @@
 
 output=$HOME/.cache/pylint-output
 
-pylint --rcfile=.pylintrc --msg-template={path}:{line}:{msg_id}:{symbol}:{msg}:{obj} $@ > $output &
+(pylint --rcfile=.pylintrc --msg-template={path}:{line}:{msg_id}:{symbol}:{msg}:{obj} $@ > $output ; echo "# DIR: $(pwd)" >> $output) &
 
 pylint --rcfile=.pylintrc $@
 
-echo "# DIR: $(pwd)" >> $output
+
