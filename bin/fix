@@ -16,6 +16,7 @@ else:
 if not line: raise ValueError("no reasonable file info to work from")
 
 regexs = (
+        r'^#\d+ (.*)?\((\d+)\):',
         r'File "(.*)", line (\d+)',
         r'(.*):(\d+):(\d+):',
         r'(.*):(\d+):',

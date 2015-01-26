@@ -72,8 +72,8 @@ export IPYTHONDIR=$XDG_CONFIG_HOME/ipython
 export RMT="root@jtprince.dev.doba.com"
 export RMTSCP="scp://root@jtprince.dev.doba.com//home/build"
 
-export STAGING="root@direct.staging.doba.com"
-export SALTSERVER="ec2-user@direct.salt.doba.com"
+export STAGING="root@staging.doba.com"
+export SALTSERVER="ec2-user@salt.doba.com"
 
 #####################################################
 # Language Specific
