@@ -69,6 +69,7 @@ export IPYTHONDIR=$XDG_CONFIG_HOME/ipython
 # LOCAL
 #####################################################
 
+# jtprince.dev.doba.com
 export RMT="root@jtprince.dev.doba.com"
 export RMTSCP="scp://root@jtprince.dev.doba.com//home/build"
 

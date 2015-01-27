@@ -20,6 +20,7 @@ regexs = (
         r'File "(.*)", line (\d+)',
         r'(.*):(\d+):(\d+):',
         r'(.*):(\d+):',
+        r'(.*):(\d+)',
         )
 
 filename = line.split()[0]

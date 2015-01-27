@@ -157,7 +157,7 @@ mode "musicplayer" {
 
     bindsym s exec mpc stop
     bindsym Shift+P exec mpc toggle  # pause/play
-    bindsym Shift+z exec mpc random
+    bindsym Shift+Z exec mpc random
 
     bindsym q exec mpd --kill
     bindsym Shift+Q exec mpd --kill
@@ -453,10 +453,10 @@ bindsym $mod+Ctrl+Shift+$D resize grow   down 10 px or 10 ppt
 bindsym $mod+Ctrl+Shift+$U resize grow   up 10 px or 10 ppt
 
 mode "resize" {
-    bindsym $mod+Ctrl+Shift+$R resize shrink   left 10 px or 10 ppt
-    bindsym $mod+Ctrl+Shift+$L resize shrink   right 10 px or 10 ppt
-    bindsym $mod+Ctrl+Shift+$U resize shrink   down 10 px or 10 ppt
-    bindsym $mod+Ctrl+Shift+$D resize shrink   up 10 px or 10 ppt
+    bindsym $mod+Ctrl+Shift+$R resize shrink left 10 px or 10 ppt
+    bindsym $mod+Ctrl+Shift+$L resize shrink right 10 px or 10 ppt
+    bindsym $mod+Ctrl+Shift+$U resize shrink down 10 px or 10 ppt
+    bindsym $mod+Ctrl+Shift+$D resize shrink up 10 px or 10 ppt
 
     bindsym Return mode "default"
     bindsym Escape mode "default"
@@ -470,6 +470,9 @@ bindsym $mod+Shift+F exec pylint-patch fix
 bindsym $mod+Shift+G exec pylint-patch auto
 bindsym $mod+Shift+D exec pylint-patch delete
 bindsym $mod+Shift+O exec pylint-patch top
+
+bindsym $mod+Shift+M exec fix
+
 #######################
 # BAR
 #######################

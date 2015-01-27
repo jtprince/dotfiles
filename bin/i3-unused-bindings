@@ -1,59 +1,171 @@
 #!/usr/bin/env ruby
 
-config = ENV["HOME"] + "/.config/i3/config"
+class I3Config
+  CONFIG = ENV["HOME"] + "/.config/i3/config"
+  DEFAULT_MODE = 'default'
 
-if ARGV.size == 0
-  puts "usage: #{File.basename(__FILE__)} unused [config]"
-  puts "outputs list of used/unused bindings"
-  puts ""
-  puts "default config: #{config}"
-  exit
-end
+  attr_accessor :definitions, :keybindings, :commands
 
-type = (ARGV[0] == 'used' ? :used : :unused)
-
-config = ARGV[1] || config
-
-config_s = IO.read(config)
-config_lines = IO.readlines(config)
-
-search_and_replace = config_s.scan(%r{^set (\$\w+) ([^\s]+)})
-
-bindings = config_lines.select {|line| line =~ /^bindsym/ }
-bindings.map! do |line|
-  line.chomp!
-  line = search_and_replace.inject(line) do |str, pair|
-    str.gsub(*pair)
+  def self.from_file(file)
+    lines = file.readlines
+    (definitions, other_lines) = get_definitions(lines)
+    self.new(definitions, *get_keybindings_and_commands(other_lines, definitions))
   end
-  line[/^bindsym (.*)/,1]
+
+  def initialize(definitions, keybindings, commands)
+    self.definitions, self.keybindings, self.commands = definitions, keybindings, commands
+  end
+
+  def self.get_keybindings_and_commands(lines, definitions)
+    keybindings = []
+    commands = []
+    mode = DEFAULT_MODE
+    lines.each do |line|
+      stripped_line = line.strip
+      definitions.each do |from, to|
+        stripped_line.gsub!(from, to)
+      end
+      parts = stripped_line.split(/\s+/)
+      next unless parts.size > 0
+
+      if parts.first == 'mode'
+        mode = parts[1].chomp('"').reverse.chomp('"').reverse
+      elsif parts[0] == '}'
+        mode = DEFAULT_MODE
+      elsif parts.first == 'bindsym'
+        keybindings << Keybinding.from_parts(parts, mode)
+      else
+        commands << Command.from_parts(parts)
+      end
+    end
+    [keybindings, commands]
+  end
+
+  def self.get_definitions(lines)
+    (setlines, other_lines) = lines.partition {|line| line =~ /\Aset / }
+    definitions = setlines.map {|line|
+      line.strip!
+      parts = line.split(/\s+/, 3)
+      parts[1,2]
+    }.to_h
+    [definitions, other_lines]
+  end
 end
 
-(mod_ctrl_shift, leftovers) = bindings.partition {|binding| binding =~ /^Mod4\+Ctrl\+Shift/ }
+Command = Struct.new(:command, :flags, :exec) do
+  def self.from_parts(parts)
+    flags = [parts.delete("--no-startup-id")].compact
+    exec =
+      if parts[0] == 'exec'
+        parts.shift
+        true
+      end
+    self.new(parts.join(' '), flags, !!exec)
+  end
+end
 
-(mod_shift, leftovers) = leftovers.partition {|binding| binding =~ /^Mod4\+Shift/ }
+Keycombo = Struct.new(:key, :ctrl, :shift, :mod) do
+  def self.from_string(string)
+    parts = string.split('+')
+    (ctrl, parts) = parts.partition {|part| part.downcase == 'ctrl' }
+    (shift, parts) = parts.partition {|part| part.downcase == 'shift' }
+    (mod, parts) = parts.partition {|part| part.downcase[0,3] == 'mod' }
+    self.new(parts.pop, ctrl.size > 0, shift.size > 0, mod.size > 0)
+  end
+end
 
-(mod_alone, leftovers) = leftovers.partition {|binding| binding =~ /^Mod4/ }
+Keybinding = Struct.new(:keycombo, :command, :mode) do
+  def self.from_parts(parts, mode=nil)
+    raise ArgumentError("first part should be 'bindsym'") unless parts[0] == 'bindsym'
+    keycombo = Keycombo.from_string(parts[1])
+    command = Command.from_parts(parts[2..-1])
+    self.new(keycombo, command, mode)
+  end
+end
 
-def partition(bindings, letters)
-  letters.partition do |let|
-    bindings.any? do |mod|
-      mod.split(' ').first.split('+').last == let
+if $0 == __FILE__
+  class Object
+    def eq_(other, msg='')
+      if self != other
+        abort "ERROR: #{self.inspect} not equal to #{other.inspect}"
+      end
     end
   end
+
+  def test(config)
+    config.definitions.eq_( {"$globalfontsize"=>"8", "$mod"=>"Mod4", "$l"=>"Tab", "$r"=>"l", "$backlight"=>"intel_backlight", "$majorlightadjust"=>"100", "$volup"=>"/usr/bin/pulseaudio-ctl up"} )
+    config.keybindings.size.eq_ 6
+    config.keybindings.select {|keybinding| keybinding.mode == 'musicplayer'}.size.eq_ 3
+
+    # keybinding (simple)
+    keybinding = config.keybindings.first
+    keybinding.command.exec.eq_ true
+    keybinding.command.flags.eq_ ["--no-startup-id"]
+    keybinding.keycombo.key.eq_ 'XF86MonBrightnessDown'
+    [:ctrl, :shift, :mod].each {|modifier| keybinding.keycombo.send(modifier).eq_ false }
+
+    # keybinding complex
+    keybinding = config.keybindings[2]
+    keybinding.command.exec.eq_ true
+    keybinding.command.flags.eq_ ["--no-startup-id"]
+    keybinding.keycombo.ctrl.eq_ true
+    keybinding.keycombo.shift.eq_ true
+    keybinding.keycombo.mod.eq_ true
+    keybinding.mode.eq_ 'default'
+    keybinding.keycombo.key.eq_ 'parenright'
+
+    config.keybindings[-1].command.exec.eq_ false
+    config.keybindings[-1].command.command.eq_ "mode \"default\""
+    config.keybindings[-1].mode.eq_ 'musicplayer'
+
+    # todo: better test commands
+    config.commands.size.eq_ 3
+  end
+
+  if ARGV.size == 0
+    puts "usage: #{File.basename(__FILE__)} report [config]"
+    puts "outputs list of used and unused bindings"
+    puts ""
+    puts "default config: #{I3Config::CONFIG}"
+    exit
+  end
+
+  if ARGV[0] == 'test'
+    test I3Config.from_file(DATA)
+  else
+    config_fn = ARGV[1] || I3Config::CONFIG
+
+    i3config = File.open(config_fn) do |io|
+      I3Config.from_file(io)
+    end
+    puts i3config.keybindings
+  end
+
 end
 
-cats = {
-  'mod+letter' => [mod_alone, 'a'..'z'],
-  'mod+shift+letter' => [mod_shift, 'A'..'Z'],
-  'mod+ctrl+shift+letter' => [mod_ctrl_shift, 'A'..'Z'],
+
+__END__
+set $globalfontsize 8
+exec --no-startup-id autostart
+
+set $mod Mod4
+set $l Tab
+set $r l
+
+font pango:Droid Sans Mono $globalfontsize
+
+set $backlight intel_backlight
+set $majorlightadjust 100
+bindsym XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness $backlight '-' $majorlightadjust
+
+set $volup /usr/bin/pulseaudio-ctl up
+bindsym $mod+parenright exec --no-startup-id $volup
+bindsym $mod+Shift+Ctrl+parenright exec --no-startup-id $volup
+
+mode "musicplayer" {
+    bindsym Shift+M exec mpd
+    bindsym Return exec mpc play
+    bindsym $mod+m mode "default"
 }
 
-cats.each do |cat, (bindings, letters)|
-  puts cat
-  (used, unused) = partition(bindings, letters)
-  if type == :used
-    puts used
-  else
-    puts unused
-  end
-end
+workspace_layout stacking
