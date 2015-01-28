@@ -80,7 +80,7 @@ elif num_monitors == 2:
 
     # ideal:
     # two monitors connected
-    # 1. put HDMI or VGA to the right of the other
+    # 1. put connected HDMI to the left of the Main one
     # 2. mirror output (xrandr --auto)
     # 3. put HDMI or VGA to the left of primary
 
@@ -91,7 +91,7 @@ elif num_monitors == 2:
     #    current_state = 0
     #    with open(tmpfile,'w') as out:
 
-    cmd_str = "xrandr --output {primary} --auto --output {other} --auto --right-of {primary}".format(other=connected[1].name, primary=connected[0].name)
+    cmd_str = "xrandr --output {primary} --auto --output {other} --auto --left-of {primary}".format(other=connected[1].name, primary=connected[0].name)
     subprocess.call(cmd_str.split(' '))
     subprocess.call(['overscan-correct'])
 
