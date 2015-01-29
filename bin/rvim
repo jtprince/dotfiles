@@ -19,10 +19,6 @@ else:
     # create virtual path from pwd and target
     remote_path = os.path.join(os.getcwd(), target)
 
-print("HIYA")
-print(remote_path)
-
 cmd = ['gvim', os.environ['RMTSCP'] + '/' + remote_path]
-print(" ".join(cmd))
 
-#subprocess.call(cmd)
+subprocess.call(cmd)
