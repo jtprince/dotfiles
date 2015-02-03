@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# COMMITS_AGO = $1 || 4     #<- were this ruby
+
+DEFAULT_COMMITS_AGO=4
+COMMITS_AGO="${1:-$DEFAULT_COMMITS_AGO}"
+
+git diff --name-only HEAD~$COMMITS_AGO | cat

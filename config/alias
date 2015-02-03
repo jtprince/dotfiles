@@ -86,3 +86,6 @@ alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
 # not using right now
 alias tmux="tmux -f ~/.config/tmux/config"
+
+# clear the screen (so no scrollback)
+alias clearscreen="echo -ne '\033c'"
