@@ -379,11 +379,6 @@ bindsym $mod+Shift+space floating toggle
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
 
-#######################
-# App/Window Prefs
-#######################
-
-for_window [class="Hangouts"] floating enable
 
 #######################
 # WORKSPACES
@@ -433,6 +428,14 @@ bindsym $mod+Ctrl+Shift+ampersand move workspace $ws7
 bindsym $mod+Ctrl+Shift+asterisk move workspace $ws8
 #bindsym $mod+Shift+parenleft move workspace 9
 #bindsym $mod+Shift+parenright move workspace 10
+
+#######################
+# App/Window Prefs
+#######################
+
+for_window [title="Hangouts"] move container to workspace $ws7
+for_window [window_role="pop-up"] floating enabled
+#for_window [class="Hangouts"] floating enable
 
 #######################
 # RESIZE
