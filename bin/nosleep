@@ -8,7 +8,8 @@
 #############################################################################
 
 function nosleep_on {
-    killall xscreensaver
+    #killall xscreensaver
+    killall xautolock
     xset s off
     xset -dpms
 }
@@ -16,7 +17,8 @@ function nosleep_on {
 function nosleep_off {
     xset s on
     xset +dpms
-    xscreensaver &
+    #xscreensaver &
+    xautolock -time 10 -locker fuzzy_lock &
 }
 
 if [ "$#" == "0" ]; then
