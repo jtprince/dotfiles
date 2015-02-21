@@ -28,9 +28,9 @@ if [ "$1" != "late" ]; then
     if cmd_exists nm-applet ; then
         nm-applet &
     fi
-    if cmd_exists dropbox-cli ; then
-        dropbox-cli start
-        #( sleep 60 && dropbox-cli start )&
+    if cmd_exists dropbox ; then
+        dropbox start
+        #( sleep 60 && dropbox start )&
     fi
     if cmd_exists CopyAgent ; then
         #( sleep 180 && CopyAgent& )&
