@@ -4,14 +4,14 @@ import argparse
 import subprocess
 import os
 
-path_to_password_files = os.path.join(os.getenv("HOME"), "Dropbox", "env", "doba", "passwords", "mysql")
+PATH_TO_PASSWORD_FILES = os.path.join(os.getenv("HOME"), "Dropbox", "env", "doba", "passwords", "mysql")
 
-host_to_fully_qualified = {
+HOST_TO_FULLY_QUALIFIED = {
     'web00': 'root@Web00.doba.com',
     'jtprince': 'root@jtprince.dev.doba.com',
 }
 
-host_to_password_filename = {
+HOST_TO_PASSWORD_FILENAME = {
     'web00': 'coredb',
     'jtprince': 'jtprince',
 }
@@ -19,9 +19,26 @@ host_to_password_filename = {
 # hosts that use doba instead of wholemark
 WHOLEMARK_TO_DOBA = ['jtprince']
 
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("query", help='the query')
+    parser.add_argument("--use", default='wholemark', help='database to use')
+    parser.add_argument("-n", "--nodb", action='store_true')
+    parser.add_argument("--host", default='web00', help='host (e.g. "jtprince")')
+    parser.add_argument("-j", "--jtprince", action='store_true', help="use host jtprince")
+    parser.add_argument("-g", "--vertical", action='store_true', help="mysql output vertical")
+    parser.add_argument("--dry", action='store_true', help="just show the commands")
+    args = parser.parse_args()
+    return args
+
 def prepare_host(args):
     if args.jtprince:
         args.host = 'jtprince'
+
+def prepare_extra_args(args):
+    args.extra_args = []
+    if args.vertical:
+        args.extra_args.append('--vertical')
 
 def prepare_query(args):
     args.query = args.query.strip()
@@ -34,66 +51,62 @@ def prepare_query(args):
     if args.query[-1] != ';':
         args.query += ";"
 
+def write_query_file(args):
+    query_file = "/tmp/jtprince-mysqlquery.tmp"
+    with open(query_file, 'w') as outfile:
+        if args.dry:
+            print("<query>: " + '"' + args.query + '"')
+        else:
+            outfile.write(args.query)
 
-def prepare_extra_args(args):
-    args.extra_args = []
-    if args.vertical:
-        args.extra_args.append('--vertical')
+def transfer_query_file(args):
+    full_host = HOST_TO_FULLY_QUALIFIED[args.host]
+    scp_cmd = ["scp", query_file, full_host + ":" + query_file]
+    if args.dry:
+        print(" ".join(scp_cmd))
+    else:
+        subprocess.call(scp_cmd)
 
-def get_password(host):
-    password_file = os.path.join(path_to_password_files, host_to_password_filename[host])
-    with open(password_file) as infile:
-        return infile.read().strip()
+def prepare_command_string(args):
+    cmd_parts = [
+        "ssh",
+        full_host,
+        '"mysql {extra_args} {mysql_connection} < {query_file}"'.format(
+            extra_args=" ".join(args.extra_args),
+            mysql_connection=_get_mysql_connection_string(args.host),
+            query_file=query_file,
+        ),
+    ]
 
-def get_mysql_connection_string(host):
-    mysql_password = get_password(host)
+    return " ".join(cmd_parts)
+
+def run_command(cmd, args):
+    if args.dry:
+        print(cmd)
+    else:
+        os.system(cmd)
+
+def _get_mysql_connection_string(host):
+    mysql_password = _get_password(host)
     if host == 'web00':
         return "-h10.10.11.41 -udoba -p'{}'".format(mysql_password)
     elif host == 'jtprince':
         return "-uroot -p'{}'".format(mysql_password)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("query", help='the query')
-parser.add_argument("--use", default='wholemark', help='database to use')
-parser.add_argument("-n", "--nodb", action='store_true')
-parser.add_argument("--host", default='web00', help='host (e.g. "jtprince")')
-parser.add_argument("-j", "--jtprince", action='store_true', help="use host jtprince")
-parser.add_argument("-g", "--vertical", action='store_true', help="mysql output vertical")
-parser.add_argument("--dry", action='store_true', help="just show the commands")
-args = parser.parse_args()
+def _get_password(host):
+    password_file = os.path.join(PATH_TO_PASSWORD_FILES, HOST_TO_PASSWORD_FILENAME[host])
+    with open(password_file) as infile:
+        return infile.read().strip()
+
+
+args = get_args()
 
 prepare_host(args)
 prepare_extra_args(args)
 prepare_query(args)
 
-query_file = "/tmp/jtprince-mysqlquery.tmp"
-with open(query_file, 'w') as outfile:
-    if args.dry:
-        print("<query>: " + '"' + args.query + '"')
-    else:
-        outfile.write(args.query)
+write_query_file(args)
+transfer_query_file(args)
 
-full_host = host_to_fully_qualified[args.host]
-scp_cmd = ["scp", query_file, full_host + ":" + query_file]
-if args.dry:
-    print(" ".join(scp_cmd))
-else:
-    subprocess.call(scp_cmd)
-
-
-cmd_parts = [
-    "ssh",
-    full_host,
-    '"mysql {extra_args} {mysql_connection} < {query_file}"'.format(
-        extra_args=" ".join(args.extra_args),
-        mysql_connection=get_mysql_connection_string(args.host),
-        query_file=query_file,
-    ),
-]
-
-cmd = " ".join(cmd_parts)
-
-if args.dry:
-    print(cmd)
-else:
-    os.system(cmd)
+cmd = prepare_command_string(args)
+run_command(cmd)
