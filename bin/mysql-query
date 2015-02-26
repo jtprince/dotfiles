@@ -19,9 +19,30 @@ host_to_password_filename = {
 # hosts that use doba instead of wholemark
 WHOLEMARK_TO_DOBA = ['jtprince']
 
+def prepare_host(args):
+    if args.jtprince:
+        args.host = 'jtprince'
+
+def prepare_query(args):
+    args.query = args.query.strip()
+
+    if not args.nodb:
+        if args.use == 'wholemark' and args.host in WHOLEMARK_TO_DOBA:
+            args.use = 'Doba'
+        args.query = "use {}; ".format(args.use) + args.query
+
+    if args.query[-1] != ';':
+        args.query += ";"
+
+
+def prepare_extra_args(args):
+    args.extra_args = []
+    if args.vertical:
+        args.extra_args.append('--vertical')
+
 def get_password(host):
     password_file = os.path.join(path_to_password_files, host_to_password_filename[host])
-    with open(password_file) as infile: 
+    with open(password_file) as infile:
         return infile.read().strip()
 
 def get_mysql_connection_string(host):
@@ -38,40 +59,41 @@ parser.add_argument("-n", "--nodb", action='store_true')
 parser.add_argument("--host", default='web00', help='host (e.g. "jtprince")')
 parser.add_argument("-j", "--jtprince", action='store_true', help="use host jtprince")
 parser.add_argument("-g", "--vertical", action='store_true', help="mysql output vertical")
+parser.add_argument("--dry", action='store_true', help="just show the commands")
 args = parser.parse_args()
 
-if args.jtprince:
-    args.host = 'jtprince'
-
-password = get_password(args.host)
-
-query = args.query.strip()
-
-if not args.nodb:
-    if args.use == 'wholemark' and args.host in WHOLEMARK_TO_DOBA:
-        args.use = 'Doba'
-    query = "use {}; ".format(args.use) + query
-
-if query[-1] != ';':
-    query += ";"
-
-vertical = '--vertical' if args.vertical else ''
+prepare_host(args)
+prepare_extra_args(args)
+prepare_query(args)
 
 query_file = "/tmp/jtprince-mysqlquery.tmp"
 with open(query_file, 'w') as outfile:
-    outfile.write(query)
+    if args.dry:
+        print("<query>: " + '"' + args.query + '"')
+    else:
+        outfile.write(args.query)
 
 full_host = host_to_fully_qualified[args.host]
 scp_cmd = ["scp", query_file, full_host + ":" + query_file]
-print(" ".join(scp_cmd))
-subprocess.call(scp_cmd)
+if args.dry:
+    print(" ".join(scp_cmd))
+else:
+    subprocess.call(scp_cmd)
 
-mysql_connection = get_mysql_connection_string(args.host)
-cmd = [
+
+cmd_parts = [
     "ssh",
     full_host,
-    '"mysql {vertical} {mysql_connection} < {query_file}"'.format(mysql_connection=mysql_connection, query_file=query_file, vertical=vertical),
+    '"mysql {extra_args} {mysql_connection} < {query_file}"'.format(
+        extra_args=" ".join(args.extra_args),
+        mysql_connection=get_mysql_connection_string(args.host),
+        query_file=query_file,
+    ),
 ]
-print(" ".join(cmd))
 
-os.system(" ".join(cmd))
+cmd = " ".join(cmd_parts)
+
+if args.dry:
+    print(cmd)
+else:
+    os.system(cmd)
