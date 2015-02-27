@@ -19,6 +19,9 @@ HOST_TO_PASSWORD_FILENAME = {
 # hosts that use doba instead of wholemark
 WHOLEMARK_TO_DOBA = ['jtprince']
 
+LOCAL_QUERY_FILE = "/tmp/jtprince-mysqlquery.tmp"
+REMOTE_QUERY_FILE = LOCAL_QUERY_FILE
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("query", help='the query')
@@ -34,6 +37,7 @@ def get_args():
 def prepare_host(args):
     if args.jtprince:
         args.host = 'jtprince'
+    args.host_full = HOST_TO_FULLY_QUALIFIED[args.host]
 
 def prepare_extra_args(args):
     args.extra_args = []
@@ -52,29 +56,28 @@ def prepare_query(args):
         args.query += ";"
 
 def write_query_file(args):
-    query_file = "/tmp/jtprince-mysqlquery.tmp"
-    with open(query_file, 'w') as outfile:
+    with open(LOCAL_QUERY_FILE, 'w') as outfile:
         if args.dry:
             print("<query>: " + '"' + args.query + '"')
         else:
             outfile.write(args.query)
 
 def transfer_query_file(args):
-    full_host = HOST_TO_FULLY_QUALIFIED[args.host]
-    scp_cmd = ["scp", query_file, full_host + ":" + query_file]
+    scp_cmd = ["scp", LOCAL_QUERY_FILE, args.host_full + ":" + REMOTE_QUERY_FILE]
     if args.dry:
         print(" ".join(scp_cmd))
     else:
-        subprocess.call(scp_cmd)
+        with open(os.devnull, 'w') as devnull:
+            subprocess.call(scp_cmd, stdout=devnull)
 
 def prepare_command_string(args):
     cmd_parts = [
         "ssh",
-        full_host,
+        args.host_full,
         '"mysql {extra_args} {mysql_connection} < {query_file}"'.format(
             extra_args=" ".join(args.extra_args),
             mysql_connection=_get_mysql_connection_string(args.host),
-            query_file=query_file,
+            query_file=REMOTE_QUERY_FILE,
         ),
     ]
 
@@ -109,4 +112,4 @@ write_query_file(args)
 transfer_query_file(args)
 
 cmd = prepare_command_string(args)
-run_command(cmd)
+run_command(cmd, args)
