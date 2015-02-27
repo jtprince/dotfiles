@@ -17,9 +17,18 @@ from joblib import Parallel, delayed
 from os.path import expanduser
 
 class Action(object):
-    def __init__(self, request, response=None):
-        self.request = request
-        self.response = response
+    def __init__(self, methd, *args, **kwargs):
+        self.methd = methd
+        self.args = args
+        self.kwargs = kwargs
+
+    def __repr__(self):
+        parts = [self.methd]
+        if len(self.args):
+            parts.append(", ".join(self.args))
+        if len(self.kwargs):
+            parts.append(repr(self.kwargs))
+        return " ".join(parts)
 
 def process(path, actions, remote):
     repo = GitRepo(path, remote)
@@ -28,7 +37,7 @@ def process(path, actions, remote):
     return repo
 
 class GitRepo(object):
-    NOT_ACTIONS = ['run_and_log', 'sys', 'actions', '__init__']
+    NOT_ACTIONS = ['run_and_log', 'execute', 'actions', '__init__']
 
     @classmethod
     def actions(cls):
@@ -43,10 +52,10 @@ class GitRepo(object):
         self.actions = []
 
     def run_and_log(self, action):
-        action.response = getattr(self, action.request)()
+        action.response = getattr(self, action.methd)(*action.args, **action.kwargs)
         self.actions.append(action)
 
-    def sys(self, string):
+    def execute(self, string):
         return subprocess.check_output(string.split(' ')).decode('utf-8').strip()
 
     def status(self):
@@ -55,30 +64,30 @@ class GitRepo(object):
 
     def is_uptodate(self):
         uptodate_str = "is up-to-date with"
-        reply = self.sys("git status -uno")
+        reply = self.execute("git status -uno")
         return uptodate_str in reply
 
     def bring_remotes_uptodate(self):
-       return self.sys("git remote update --prune")
+       return self.execute("git remote update --prune")
 
     def current_branch(self):
-        return self.sys("git rev-parse --abbrev-ref HEAD")
+        return self.execute("git rev-parse --abbrev-ref HEAD")
 
     def pull(self):
         if not self.is_uptodate():
-            return self.sys("git pull")
+            return self.execute("git pull")
         else:
             return 'already up-to-date'
 
     def has_remote(self):
-        lines = self.sys("git branch -a").split("\n")
+        lines = self.execute("git branch -a").split("\n")
         for line in lines:
             if ("remotes/origin/" + self.remote) in line:
                 return True
 
     def checkout_remote(self):
         if self.has_remote():
-            return self.sys("git co {}".format(self.remote))
+            return self.execute("git co {}".format(self.remote))
 
 
 @contextmanager
@@ -105,6 +114,7 @@ parser.add_argument("--root", default=rootdir, help="where to begin looking")
 parser.add_argument("--remote", help='the remote branch to deal with')
 parser.add_argument("actions", nargs="*", help='actions to perform', default=['status'])
 parser.add_argument("--list", action='store_true', help="list available actions and exit")
+parser.add_argument("-e", "--execute", help="perform some specified action on all repos")
 #parser.add_argument("--has-remote", help="display repos with that remote branch")
 #parser.add_argument("--co-remote", help="checkout the remote branch if it exists")
 #parser.add_argument("--cmd", help="execute an arbitrary command in git repos")
@@ -119,6 +129,9 @@ actions = []
 for action in args.actions:
     actions.append(Action(action))
 
+if args.execute:
+    actions.append(Action('execute', args.execute))
+
 with cd(args.root):
     git_dirs = [os.path.abspath(fn) for fn in os.listdir(".") if os.path.isdir(fn) and os.path.exists(os.path.join(fn, ".git"))]
 
@@ -126,9 +139,10 @@ repos = Parallel(n_jobs=len(git_dirs))(delayed(process)(dir, actions, args.remot
 
 for repo in repos:
     for action in repo.actions:
-        if action.request == 'status':
+        if action.methd == 'status':
             sys.stdout.write(action.response)
             print(" " + repo.name)
         else:
             print(repo.name)
-            print("    {}: {}".format(action.request, action.response))
+            print("|__|-> " + repr(action))
+            print(action.response)
