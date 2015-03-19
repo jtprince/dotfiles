@@ -5,6 +5,7 @@ echo "executing: $me"
 
 export HOME="/home/jtprince"
 source $HOME/.profile
+source /home/jtprince/.local/bin/virtualenvwrapper.sh
 
 export XDG_CONFIG_HOME=$HOME/.config
 export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'

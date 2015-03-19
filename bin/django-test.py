@@ -46,6 +46,9 @@ if args.search:
 if args.exclude:
     files = filter(lambda fn: not args.exclude.search(fn), files)
 
+if not len(files):
+    sys.exit("no files to test!")
+
 cmd = ["./manage.py", "test"]
 if args.individually:
     for fn in files:
