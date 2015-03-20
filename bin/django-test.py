@@ -16,6 +16,7 @@ parser.add_argument("-s", "--search", type=regex, help="search against specific 
 parser.add_argument("-e", "--exclude", type=regex, help="exclude specific test files")
 parser.add_argument("-i", "--individually", action='store_true', help="run tests individually")
 parser.add_argument("-d", "--dry", action='store_true', help="don't run, just print")
+parser.add_argument("--capture", action='store_true', help="don't use --nocapture")
 args = parser.parse_args()
 
 if not os.path.isfile("manage.py"):
@@ -52,7 +53,7 @@ if args.exclude:
 if not len(files):
     sys.exit("no files to test!")
 
-cmd = ["./manage.py", "test"]
+cmd = ["./manage.py", "test", "--nocapture"]
 if args.individually:
     for fn in files:
         run_cmd(cmd + [fn])
