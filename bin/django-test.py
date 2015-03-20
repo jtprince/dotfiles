@@ -18,6 +18,9 @@ parser.add_argument("-i", "--individually", action='store_true', help="run tests
 parser.add_argument("-d", "--dry", action='store_true', help="don't run, just print")
 args = parser.parse_args()
 
+if not os.path.isfile("manage.py"):
+    exit("not in django project root!")
+
 root = '.'
 
 def run_cmd(cmd):
