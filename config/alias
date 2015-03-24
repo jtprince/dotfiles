@@ -89,3 +89,5 @@ alias tmux="tmux -f ~/.config/tmux/config"
 
 # clear the screen (so no scrollback)
 alias clearscreen="echo -ne '\033c'"
+
+alias open="xdg-open"

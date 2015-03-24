@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+pull_into = ARGV.shift || 'development'
+
+if pull_into =~ /\Aprod/
+  pull_into = "production"
+end
+
+branch = `git rev-parse --abbrev-ref HEAD`.chomp
+
+def get_origin()
+  # origin	git@github.com:DobaTech/doba.com.git (push)
+  git_address = `git remote -v`.split("\n").find {|line| line["(push)"] }.split(/\s+/)[1]
+  git_address.split(':',2).last.chomp(".git")
+end
+
+origin = get_origin
+
+puts "Creating pull request for branch #{branch} into #{pull_into}"
+
+cmd = ["xdg-open", "https://github.com/#{origin}/compare/#{pull_into}...#{branch}?expand=1"]
+system *cmd
