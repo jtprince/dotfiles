@@ -1,0 +1,13 @@
+#!/bin/bash
+
+yourbranch=`git rev-parse --abbrev-ref HEAD`
+
+echo $yourbranch
+
+git push origin $yourbranch -f
+
+echo "******************************************************************************"
+echo "if the branch is used in other places, execute the following statement there:"
+echo "******************************************************************************"
+echo ""
+echo "git checkout $yourbranch; git fetch; git reset --hard origin/$yourbranch"
