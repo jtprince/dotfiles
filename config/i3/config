@@ -60,7 +60,7 @@ set $globalfontsize 8
 font pango:Droid Sans Mono $globalfontsize
 
 # colors                    border      background  text
-client.focused              #77994B     #006600     #FFFFFF
+client.focused              #C35817     #006600     #FFFFFF
 client.focused_inactive     #77994B     #465C86     #FFFFFF
 client.unfocused            #465C86     #333333     #CFCFCF
 client.urgent               #F00000     #F00000     #000000
@@ -503,7 +503,7 @@ bar {
     background #465C86
     statusline #CFCFCF
     separator #465C86
-    focused_workspace #FFFFFF #006600
+    focused_workspace #FFA500 #003300
     active_workspace #FFFFFF #006600
     inactive_workspace #CFCFCF #333333
     urgent_workspace #000000 #F00000
