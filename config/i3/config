@@ -78,10 +78,10 @@ client.urgent               #F00000     #F00000     #000000
 # https://bbs.archlinux.org/viewtopic.php?id=167209
 # udevadm control --reload  # or maybe reboot
 # common options: acpi_video0 acpi_video1 intel_backlight gmux_backlight (Macbook Pro)
-set $backlight intel_backlight
-set $majorlightadjust 100
-set $mediumlightadjust 25
-set $lowlightadjust 5
+set $backlight acpi_video0
+set $majorlightadjust 15
+set $mediumlightadjust 4
+set $lowlightadjust 2
 set $finelightadjust 1
 
 bindsym XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness $backlight '-' $majorlightadjust

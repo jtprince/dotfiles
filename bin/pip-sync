@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import subprocess
+
+
+def partition(condition, iterable):
+    trues = []
+    falses = []
+    for item in iterable:
+        if condition(item):
+            trues.append(item)
+        else:
+            falses.append(item)
+    return trues, falses
+
+
+def read_requirements(fn):
+    fn_path = os.path.dirname(os.path.abspath(fn))
+    with open(fn) as infile:
+        lines = [line for line in infile.read().splitlines() if line]
+    other_files, requirements = partition(lambda line: line.startswith("-r"), lines)
+
+    for other_file_line in other_files:
+        other_file = other_file_line.split(' ')[1]
+        requirements.extend(read_requirements(os.path.join(fn_path, other_file)))
+    return requirements
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("requirements_file", help="the requirements file")
+args = parser.parse_args()
+
+
+print(args.requirements_file)
+
+print(read_requirements(args.requirements_file))
+
+
+
+
+
