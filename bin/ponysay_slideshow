@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+ponies_blah = `ponysay --all`
+
+ponies = ponies_blah.split(/\s/)
+
+ponies.select! {|pony| pony.size > 0 }
+
+ponies.map! {|pony| pony.gsub(/[^a-zA-Z]/, '') }
+
+ponies.each do |pony|
+    print `ponysay --pony #{pony} Hi Elizabeth! my name is #{pony}`
+    sleep(1)
+end
