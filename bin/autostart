@@ -19,7 +19,7 @@ if [ "$1" != "late" ]; then
     fi
     thunar --daemon &
     # xscreensaver &
-    xautolock -time 10 -locker fuzzy_lock &
+    xautolock-start
     # yaourt -S pasystray-git pavucontrol paprefs pavumeter
     # also
     # echo "load-module module-device-manager" > /etc/pulse/default.pa

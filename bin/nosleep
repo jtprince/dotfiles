@@ -18,7 +18,7 @@ function nosleep_off {
     xset s on
     xset +dpms
     #xscreensaver &
-    xautolock -time 10 -locker fuzzy_lock &
+    xautolock-start
 }
 
 if [ "$#" == "0" ]; then
