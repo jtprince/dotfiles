@@ -15,4 +15,4 @@ rm /tmp/screen_locked.png
 i3lock -i /tmp/screen_locked_blurred.png
 
 # Turn the screen off after a delay.
-sleep 60; pgrep i3lock && xset dpms force off
+sleep 4; pgrep i3lock && xset dpms force off

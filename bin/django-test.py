@@ -16,17 +16,23 @@ parser.add_argument("-s", "--search", type=regex, help="search against specific 
 parser.add_argument("-e", "--exclude", type=regex, help="exclude specific test files")
 parser.add_argument("-i", "--individually", action='store_true', help="run tests individually")
 parser.add_argument("-d", "--dry", action='store_true', help="don't run, just print")
+parser.add_argument("--fresh-db", action='store_true', help="don't reuse the DB")
 parser.add_argument("--capture", action='store_true', help="don't use --nocapture")
 args = parser.parse_args()
 
 if not os.path.isfile("manage.py"):
     exit("not in django project root!")
 
+print("export REUSE_DB=1   # if you want faster tests")
+
 root = '.'
 
-def run_cmd(cmd):
+def run_cmd(cmd, args):
     start = time()
     if not args.dry:
+        # this isn't working!!!!
+        #if not args.fresh_db:
+            #os.environ['REUSE_DB'] = "1"
         subprocess.call(cmd)
         print("[Total Test Time: %f s]\n" % (time() - start))
     else:
@@ -53,10 +59,16 @@ if args.exclude:
 if not len(files):
     sys.exit("no files to test!")
 
-cmd = ["./manage.py", "test", "--nocapture"]
+cmd = []
+
+cmd.extend(["./manage.py", "test"])
+
+if not args.capture:
+    cmd.append("--nocapture")
+
 if args.individually:
     for fn in files:
-        run_cmd(cmd + [fn])
+        run_cmd(cmd + [fn], args)
 else:
     start = time()
-    run_cmd(cmd + files)
+    run_cmd(cmd + files, args)
