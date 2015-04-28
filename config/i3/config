@@ -115,17 +115,17 @@ bindsym XF86Launch5 exec --no-startup-id laptop-keyboard keyboard toggle
 #########################
 
 ## parentheses left and right to change volume
-set $volup /usr/bin/pulseaudio-ctl up
-set $voldown /usr/bin/pulseaudio-ctl down
-set $mute /usr/bin/pulseaudio-ctl mute
+set $volup exec --no-startup-id /usr/bin/pulseaudio-ctl up 2
+set $voldown exec --no-startup-id /usr/bin/pulseaudio-ctl down 2
+set $mute exec --no-startup-id /usr/bin/pulseaudio-ctl mute
 
-bindsym $mod+parenright exec --no-startup-id $volup
-bindsym $mod+parenleft exec --no-startup-id $voldown
-bindsym $mod+minus exec --no-startup-id $mute
+bindsym $mod+parenright $volup
+bindsym $mod+parenleft $voldown
+bindsym $mod+minus $mute
 
-bindsym XF86AudioRaiseVolume exec --no-startup-id $volup
-bindsym XF86AudioLowerVolume exec --no-startup-id $voldown
-bindsym XF86AudioMute exec --no-startup-id $mute
+bindsym XF86AudioRaiseVolume $volup
+bindsym XF86AudioLowerVolume $voldown
+bindsym XF86AudioMute $mute
 
 # if not using pulseaudio:
 #bindsym $mod+parenright exec amixer set Master 5%+
@@ -135,16 +135,21 @@ bindsym XF86AudioMute exec --no-startup-id $mute
 #########################
 # Music player
 #########################
+set $playpause exec --no-startup-id playerctl-prince play-pause
+set $nextsong exec --no-startup-id playerctl-prince next
+set $previoussong exec --no-startup-id playerctl-prince previous
 
-# commands for mpd
-bindsym XF86AudioNext exec mpc next
-bindsym XF86AudioPlay exec mpc toggle
-bindsym XF86AudioPrev exec mpc prev
+# commands for music player
+bindsym XF86AudioPlay $playpause
+bindsym XF86AudioNext $nextsong
+bindsym XF86AudioPrev $previoussong
 # key 1 on my microsoft keyboard
 # shuffle the playlist
 #bindsym XF86Launch5 exec mpc shuffle
 #
-bindsym $mod+Shift+P exec mpc toggle  # pause/play
+bindsym $mod+p $playpause
+bindsym $mod+bracketright $nextsong
+bindsym $mod+bracketleft $previoussong
 
 mode "musicplayer" {
     bindsym Shift+M exec mpd
@@ -301,7 +306,7 @@ bindsym XF86Display exec --no-startup-id monitor_toggle auto && randomise-bkg
 bindsym $mod+Shift+C kill
 
 # start dmenu (a program launcher)
-bindsym $mod+p exec dmenu_run
+bindsym $mod+Shift+P exec dmenu_run
 
 # reload the configuration file
 bindsym $mod+Shift+R reload
