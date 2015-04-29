@@ -115,22 +115,21 @@ bindsym XF86Launch5 exec --no-startup-id laptop-keyboard keyboard toggle
 #########################
 
 ## parentheses left and right to change volume
-set $volup exec --no-startup-id /usr/bin/pulseaudio-ctl up 2
-set $voldown exec --no-startup-id /usr/bin/pulseaudio-ctl down 2
+set $volup exec --no-startup-id /usr/bin/pulseaudio-ctl up
+set $voldown exec --no-startup-id /usr/bin/pulseaudio-ctl down
 set $mute exec --no-startup-id /usr/bin/pulseaudio-ctl mute
 
-bindsym $mod+parenright $volup
-bindsym $mod+parenleft $voldown
+bindsym $mod+parenright $volup 2
+bindsym $mod+parenleft $voldown 2
+bindsym $mod+Shift+parenright $volup 5
+bindsym $mod+Shift+parenleft $voldown 5
+bindsym $mod+Ctrl+Shift+parenright $volup 20
+bindsym $mod+Ctrl+Shift+parenleft $voldown 20
 bindsym $mod+minus $mute
 
-bindsym XF86AudioRaiseVolume $volup
-bindsym XF86AudioLowerVolume $voldown
+bindsym XF86AudioRaiseVolume $volup 4
+bindsym XF86AudioLowerVolume $voldown 4
 bindsym XF86AudioMute $mute
-
-# if not using pulseaudio:
-#bindsym $mod+parenright exec amixer set Master 5%+
-#bindsym $mod+parenleft exec amixer set Master 5%-
-#bindsym $mod+m exec amixer set Master toggle
 
 #########################
 # Music player
@@ -419,8 +418,6 @@ bindsym $mod+Shift+percent move container to workspace $ws5; workspace $ws5
 bindsym $mod+Shift+asciicircum move container to workspace $ws6; workspace $ws6
 bindsym $mod+Shift+ampersand move container to workspace $ws7; workspace $ws7
 bindsym $mod+Shift+asterisk move container to workspace $ws8; workspace $ws8
-#bindsym $mod+Shift+parenleft move workspace 9
-#bindsym $mod+Shift+parenright move workspace 10
 
 # move focused container to workspace
 bindsym $mod+Ctrl+Shift+exclam move workspace $ws1
@@ -431,8 +428,6 @@ bindsym $mod+Ctrl+Shift+percent move workspace $ws5
 bindsym $mod+Ctrl+Shift+asciicircum move workspace $ws6
 bindsym $mod+Ctrl+Shift+ampersand move workspace $ws7
 bindsym $mod+Ctrl+Shift+asterisk move workspace $ws8
-#bindsym $mod+Shift+parenleft move workspace 9
-#bindsym $mod+Shift+parenright move workspace 10
 
 #######################
 # App/Window Prefs
