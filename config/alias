@@ -78,6 +78,7 @@ alias gitcim="gitci"
 # media
 alias vlisten="vlc --intf rc -Vdummy"
 alias mp="mpd ; ncmpcpp ; mpd --kill"
+alias mplayer="mplayer -af scaletempo"
 
 # applications
 alias exercism="exercism --config ~/.config/exercism.json"

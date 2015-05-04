@@ -33,6 +33,7 @@ def get_args():
     parser.add_argument("--dry", action='store_true', help="just show the commands")
     parser.add_argument("-c", "--column", action='store_true', help="interpret the query as a column on which to find info")
     parser.add_argument("-t", "--table", action='store_true', help="interpret the query as a table on which to find info")
+    parser.add_argument("-l", "--like", action='store_true', help='use LIKE in column/table query')
     args = parser.parse_args()
     return args
 
@@ -51,7 +52,8 @@ def prepare_query(args):
 
     if args.column or args.table:
         type = "column" if args.column else "table"
-        args.query = "SELECT  table_schema,     table_name,      column_name,      data_type,     ordinal_position  FROM  INFORMATION_SCHEMA.COLUMNS WHERE {}_name = '{}'".format(type, args.query)
+        query_type = 'LIKE' if args.like else '='
+        args.query = "SELECT  table_schema,     table_name,      column_name,      data_type,     ordinal_position  FROM  INFORMATION_SCHEMA.COLUMNS WHERE {}_name {} '{}'".format(type, query_type, args.query)
         args.nodb == True
 
     if not args.nodb:
