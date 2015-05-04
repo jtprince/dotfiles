@@ -16,6 +16,10 @@ parser.add_argument(
     "-t", "--tmp", action='store_true',
     help="prepends {} to the commit message".format(tmp_prefix),
 )
+parser.add_argument(
+    "-n", "--no-push", action='store_true',
+    help="don't push to remote"
+)
 args = parser.parse_args()
 
 description_ar = args.description
@@ -38,7 +42,8 @@ subprocess.call(cmd)
 
 time.sleep(1)
 
-have_remote = subprocess.check_output("git config --get remote.origin.url".split())
+if not args.no_push:
+    have_remote = subprocess.check_output("git config --get remote.origin.url".split())
 
-if have_remote:
-    subprocess.call("git push".split())
+    if have_remote:
+        subprocess.call("git push".split())
