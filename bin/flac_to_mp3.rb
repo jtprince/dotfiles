@@ -6,7 +6,7 @@ class String
   def shell_escape() Shellwords.escape(self) end
 end
 
-LAME_OPTS = "--preset standard -q0"
+LAME_OPTS = "--preset extreme -q0"
 
 if ARGV.size == 0
   puts "usage: #{File.basename(__FILE__)} <file>.flac ..."
@@ -32,6 +32,6 @@ ARGV.each do |file|
     ["--#{key}", data.shell_escape]
   end
   mp3name = file.chomp(File.extname(file)) + ".mp3"
-  cmd = "flac -dc #{file.shell_escape} | lame #{LAME_OPTS} #{tag_opts.join(" ")} --id3v2-only - #{mp3name.shell_escape}"
+  cmd = "flac -dc #{file.shell_escape} | lame #{LAME_OPTS} #{tag_opts.join(" ")} --tc '#{LAME_OPTS}' --id3v2-only - #{mp3name.shell_escape}"
   system cmd
 end
