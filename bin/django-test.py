@@ -18,6 +18,8 @@ parser.add_argument("-i", "--individually", action='store_true', help="run tests
 parser.add_argument("-d", "--dry", action='store_true', help="don't run, just print")
 parser.add_argument("--fresh-db", action='store_true', help="don't reuse the DB")
 parser.add_argument("--capture", action='store_true', help="don't use --nocapture")
+#parser.add_argument("-n", "--test-on-network", action='store_true', help="activate tests using network connection")
+
 args = parser.parse_args()
 
 if not os.path.isfile("manage.py"):
@@ -62,6 +64,9 @@ if not len(files):
 cmd = []
 
 cmd.extend(["./manage.py", "test"])
+
+#if args.test_on_network:
+    #cmd.extend(["--settings", "doba.settings.test_on_network"])
 
 if not args.capture:
     cmd.append("--nocapture")
