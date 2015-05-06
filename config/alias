@@ -92,3 +92,6 @@ alias tmux="tmux -f ~/.config/tmux/config"
 alias clearscreen="echo -ne '\033c'"
 
 alias open="xdg-open"
+
+# pip2 install --user yolk
+alias pip-versions-available="yolk -V"

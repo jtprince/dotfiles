@@ -18,7 +18,7 @@ parser.add_argument("-i", "--individually", action='store_true', help="run tests
 parser.add_argument("-d", "--dry", action='store_true', help="don't run, just print")
 parser.add_argument("--fresh-db", action='store_true', help="don't reuse the DB")
 parser.add_argument("--capture", action='store_true', help="don't use --nocapture")
-#parser.add_argument("-n", "--test-on-network", action='store_true', help="activate tests using network connection")
+parser.add_argument("-n", "--test-on-network", action='store_true', help="activate tests using network connection")
 
 args = parser.parse_args()
 
@@ -61,12 +61,11 @@ if args.exclude:
 if not len(files):
     sys.exit("no files to test!")
 
-cmd = []
+cmd = ["./manage.py"]
 
-cmd.extend(["./manage.py", "test"])
+test_type = "test-on-network" if args.test_on_network else "test"
 
-#if args.test_on_network:
-    #cmd.extend(["--settings", "doba.settings.test_on_network"])
+cmd.append(test_type)
 
 if not args.capture:
     cmd.append("--nocapture")
