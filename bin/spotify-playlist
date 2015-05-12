@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'spotify-client'
+
+if ARGV.size == 0
+  puts "usage: #{File.basename($0)} playlist"
+  puts "toggles between annotated and not annotated"
+  puts "playlist line: 'spotify:track:6Oze1PjASg4V4lA2HrpD6g'"
+  puts "playlist line annotated: 'spotify:track:6Oze1PjASg4V4lA2HrpD6g <Info>'"
+  exit
+end
+
+
+def is_annotated?(line)
+  !!(line =~ /\s+/)
+end
+
+def strip_annotation(line)
+  line.split(/\s+/)[0]
+end
+
+def add_annotation(client, line)
+  track = client.track(line.split(':').last)
+  [line, track['track_number'], track['name']].join(" ")
+end
+
+
+file = ARGV.pop
+
+tracklines = IO.readlines(file).reject {|line| line.strip.size == 0 || line[0] == '#' }.map(&:strip)
+
+is_annotated = is_annotated?(tracklines.first)
+
+if is_annotated
+  tracklines.map! {|line| strip_annotation(line) }
+else
+  client = Spotify::Client.new
+  tracklines.map! {|line| sleep 0.2 ; add_annotation(client, line) }
+end
+
+base = file.chomp(File.extname(file))
+
+ext = is_annotated ? ".stripped" : ".annotated"
+
+File.write(base + ext, tracklines.map {|line| line + "\n" }.join)
