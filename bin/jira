@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import requests
+import argparse
+import os
+
+USERNAME = 'jtprince'
+choices = "view".split(' ')
+
+parser = argparse.ArgumentParser(description="interact with jira")
+parser.add_argument("cmd", help="the command", choices=choices)
+parser.add_argument("issue", help="the issue")
+
+args = parser.parse_args()
+
+passwd_file = os.path.join(os.environ['HOME'], "Dropbox", "env", "jira", "password")
+with open(passwd_file) as infile:
+    password = infile.read()
+
+base_url = "https://jira.atlassian.com/rest/api/latest/issue/"
+
+if args.cmd == 'view':
+    reply = requests.get(base_url + args.issue + "/", auth=(USERNAME, password))
+    print(reply)

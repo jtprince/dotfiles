@@ -16,7 +16,7 @@ end
 
 origin = get_origin
 
-puts "Creating pull request for branch #{branch} into #{pull_into}"
+puts "*proposed* pull request for branch #{branch} into #{pull_into}"
 
 cmd = ["xdg-open", "https://github.com/#{origin}/compare/#{pull_into}...#{branch}?expand=1"]
 system *cmd
