@@ -1,5 +1,9 @@
 #!/usr/bin/ruby -w
 
+if ARGV.include?("-h") or ARGV.include?("--help")
+  puts "usage: #{File.basename(__FILE__)} [(l)ocal]]"
+  exit
+end
 
 if ARGV[0] && ARGV[0][0] == 'l'
   if `uname -r` =~ /ARCH/
