@@ -19,7 +19,7 @@ if ARGV.size == 0
 end
 
 ARGV.each do |file|
-  cmd = 
+  cmd =
     if $KEEP
       base + " < #{file} > #{file.chomp(File.extname(file))}"
     else

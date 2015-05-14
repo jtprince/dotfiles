@@ -6,7 +6,7 @@ require 'io/console'
 
 emails = {
   gmail: '"John T. Prince" <jtprince@gmail.com>',
-  chem: '"John T. Prince" <jtprince@chem.byu.edu>',
+  doba: '"John T. Prince" <jtprince@doba.com>',
 }
 
 opt = {}
@@ -18,7 +18,7 @@ opt[:attachments] = []
 parser = OptionParser.new do |op|
   prog = File.basename(__FILE__)
   op.banner = "usage: #{prog} to ... [-s subject] [-m message] [-a attachment]"
-  op.on('-f', '--from <from>', "'from email (1st is def: #{emails.keys.join('|')})", "can give key or real email") do |v| 
+  op.on('-f', '--from <from>', emails.keys.join('|') + " (or full email address)") do |v|
     opt[:from] = v.include?('@') ? v : emails[v.to_sym]
   end
   op.on('-m', '--message <message>', "'my message' def: '#{opt[:message]}'") {|v| opt[:body] = v}
@@ -35,16 +35,15 @@ if ARGV.size < 1
   exit
 end
 
-unless opt[:dry]
-  print "gmail password: "
-  gmail_password = STDIN.noecho(&:gets).chomp
+my_email_gmail_app_password = IO.read(ENV['HOME'] + "/Dropbox/env/email/gmail_email_app_password")
 
+unless opt[:dry]
   Mail.defaults do
     delivery_method :smtp, {
       address: "smtp.gmail.com",
       port: 587,
       user_name: 'jtprince',
-      password: gmail_password,
+      password: my_email_gmail_app_password,
       authentication: :plain,
       enable_starttls_auto: true,
     }
