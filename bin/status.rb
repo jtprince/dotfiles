@@ -73,7 +73,7 @@ module SysMonitor
   end
 
   class Weather
-    PROGRAM = 'weather_simple.rb'
+    PROGRAM = 'weather-simple'
     LOCATION = 'provo'
     include SysMonitor
     include LongTimer
