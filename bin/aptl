@@ -1,2 +1,0 @@
-export TLMGR_PATH_TMP=`which tlmgr`
-sudo "$TLMGR_PATH_TMP" "$@"
