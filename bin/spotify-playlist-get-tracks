@@ -1,0 +1,37 @@
+#!/usr/bin/env python2.7
+
+# the authorization doesn't work well in spotipy -- should try another client I think
+
+import argparse
+import spotipy
+import spotipy.util as util
+
+USERNAME = 'jtprince549'
+SCOPE = 'user-library-read'
+
+def parse_code(code):
+    if ':' in code:
+        (_, _ ,user_code, _, playlist_code) = code.split(':')
+    else:
+        (_ ,user_code, _, playlist_code) = code.split('/')
+
+    return (user_code, playlist_code)
+
+parser = argparse.ArgumentParser(description="retrieves track information")
+parser.add_argument("user_playlist_code", help="spotify URI (or with '/'): spotify:user:<user>:playlist:<playlist>")
+args = parser.parse_args()
+
+token = util.prompt_for_user_token(USERNAME, SCOPE, 'c19ae9bef3f049d68f4754c49a56441f', '90bdde08ecaa4ca188ee8755fc9d7493')
+
+sp = spotipy.Spotify(auth=token)
+
+#sp = spotipy.Spotify()
+
+user_code, playlist_code = parse_code(args.user_playlist_code)
+
+print(dir(sp))
+
+sp.user_playlist_tracks(user_code, playlist_code)
+
+print(results)
+
