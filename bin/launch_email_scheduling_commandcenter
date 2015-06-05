@@ -1,0 +1,28 @@
+#!/bin/bash
+
+browser="chromium --new-window"
+workdatadir="~/.config/chromium-doba"
+workbrowser="$browser --user-data-dir=$workdatadir"
+
+gmail="https://gmail.com"
+calendar="https://calendar.google.com"
+
+delay="0.5"
+
+# personal email
+$browser $gmail &
+
+sleep $delay
+
+# work email
+$workbrowser $gmail &
+
+sleep $delay
+
+# work calendar
+$workbrowser $calendar &
+
+sleep $delay
+
+# personal calendar
+$browser $calendar &
