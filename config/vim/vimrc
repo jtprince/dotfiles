@@ -72,8 +72,8 @@ let g:ctrlp_custom_ignore = {
 \ }
 
 " (vim-fugitive is a dependency for conflicted)
-Bundle 'tpope/vim-fugitive'
-Bundle 'christoomey/vim-conflicted'
+" Bundle 'tpope/vim-fugitive'
+" Bundle 'christoomey/vim-conflicted'
 
 " ENABLE plugins =============================================================
 
