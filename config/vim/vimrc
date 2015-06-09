@@ -71,6 +71,10 @@ let g:ctrlp_custom_ignore = {
 \ 'file': '\.pyc\.exe$\|\.so$\|\.dat$'
 \ }
 
+" (vim-fugitive is a dependency for conflicted)
+Bundle 'tpope/vim-fugitive'
+Bundle 'christoomey/vim-conflicted'
+
 " ENABLE plugins =============================================================
 
 " filetype detection, filetype specific indenting and plugins

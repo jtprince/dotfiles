@@ -1,37 +1,33 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
-# the authorization doesn't work well in spotipy -- should try another client I think
-
+from bs4 import BeautifulSoup
+import requests
 import argparse
-import spotipy
-import spotipy.util as util
+import re
 
-USERNAME = 'jtprince549'
-SCOPE = 'user-library-read'
-
-def parse_code(code):
-    if ':' in code:
-        (_, _ ,user_code, _, playlist_code) = code.split(':')
-    else:
-        (_ ,user_code, _, playlist_code) = code.split('/')
-
-    return (user_code, playlist_code)
-
-parser = argparse.ArgumentParser(description="retrieves track information")
-parser.add_argument("user_playlist_code", help="spotify URI (or with '/'): spotify:user:<user>:playlist:<playlist>")
+parser = argparse.ArgumentParser()
+parser.add_argument("playlist", help="playlist as string or url")
+parser.add_argument("-a", "--annotate", action='store_true', help="add a trailer annotation string")
 args = parser.parse_args()
 
-token = util.prompt_for_user_token(USERNAME, SCOPE, 'c19ae9bef3f049d68f4754c49a56441f', '90bdde08ecaa4ca188ee8755fc9d7493')
+playlist_baseurl = "https://open.spotify.com/user/spotify/playlist/"
 
-sp = spotipy.Spotify(auth=token)
+if not args.playlist.startswith("http"):
+    args.playlist = playlist_baseurl + args.playlist
 
-#sp = spotipy.Spotify()
+response = requests.get(args.playlist)
 
-user_code, playlist_code = parse_code(args.user_playlist_code)
+soup = BeautifulSoup(response.text)
 
-print(dir(sp))
+rows = soup.find_all("tr", attrs={"data-uri": re.compile(r'spotify:track')})
 
-sp.user_playlist_tracks(user_code, playlist_code)
+pipes = re.compile(r'\s{2,}')
 
-print(results)
+for tr in rows:
+    track_code = tr['data-uri']
 
+    to_print = [track_code]
+    if args.annotate:
+        to_print.append(pipes.sub(' | ', tr.get_text().strip()).replace("\n", " "))
+
+    print(" ".join(to_print))

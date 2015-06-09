@@ -4,7 +4,7 @@ require 'spotify-client'
 
 if ARGV.size == 0
   puts "usage: #{File.basename($0)} playlist"
-  puts "toggles between annotated and not annotated"
+  puts "toggles between annotated (.annotated) and not annotated (.stripped)"
   puts "playlist line: 'spotify:track:6Oze1PjASg4V4lA2HrpD6g'"
   puts "playlist line annotated: 'spotify:track:6Oze1PjASg4V4lA2HrpD6g <Info>'"
   exit
