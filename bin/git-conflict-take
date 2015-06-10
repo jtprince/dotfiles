@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 
 import argparse
+from collections import namedtuple
 
-description = """takes ours or theirs merge branches"""
+Match = namedtuple('Match', 
+
+def _prep_match(match_str):
+
+description = """takes ours or theirs unmerged paths"""
 
 parser = argparse.ArgumentParser(description=description)
-parser.add_argument("-m", "--match", help="*only* for paths that match")
+parser.add_argument("stage", nargs='*', choices=['ours', 'theirs'])
+parser.add_argument("-m", "--match", help="*only* for paths that match the regex. path[:stage]")
 args = parser.parse_args
 
-if args
+_prep_match(args.match)
 
+if args
