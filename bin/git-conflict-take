@@ -1,19 +1,40 @@
 #!/usr/bin/env python
 
 import argparse
+import subprocess
 from collections import namedtuple
 
-Match = namedtuple('Match', 
+parser = argparse.ArgumentParser(description='ours or theirs')
+parser.add_argument("-o", "--ours", nargs="*", help="take ours for any paths given")
+parser.add_argument("-t", "--theirs", nargs="*", help="take theirs for any paths given")
+parser.add_argument("-u", "--unmatched", action='store_true', help='go ahead and merge for those not matching with ours or theirs that was unspecified as an argument. (only works if only -o or -t are used).')
+args = parser.parse_args()
 
-def _prep_match(match_str):
+conflicted_paths = subprocess.check_output(['git-ls-conflicted']).decode('utf-8').split('\n')
 
-description = """takes ours or theirs unmerged paths"""
+ours = []
+theirs = []
 
-parser = argparse.ArgumentParser(description=description)
-parser.add_argument("stage", nargs='*', choices=['ours', 'theirs'])
-parser.add_argument("-m", "--match", help="*only* for paths that match the regex. path[:stage]")
-args = parser.parse_args
+def populate_it(match_list, our_paths, other_paths):
+    out_our_paths = []
+    out_other_paths = []
 
-_prep_match(args.match)
+    if isinstance(our_paths, list):
+        if len(our_paths) == 0 and other_paths is None:
+            ours = conflicted_paths
+        else:
+            for conflicted_path in conflicted_paths:
+                for match_path in args.ours:
+                    if conflicted_path.startswith(match_path):
+                        ours.append(path)
+elif isinstance(args.theirs, list):
+    if len(args.theirs) == 0 and args.oursis None:
+        theirs = conflicted_paths
+    else:
 
-if args
+
+
+
+
+
+
