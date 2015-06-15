@@ -1,0 +1,6 @@
+#!/bin/bash
+
+find $1 -type f | xargs stat --format '%Y :%y %n' | sort -nr | cut -d: -f2- | head
+
+# for files with whitespace:
+# find $1 -type f -exec stat --format '%Y :%y %n' "{}" \; | sort -nr | cut -d: -f2- | head

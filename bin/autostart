@@ -12,17 +12,17 @@ if [ "$1" != "late" ]; then
     fi
     dunst -config ~/.config/dunstrc &
     start-pulseaudio-x11
-    if [ `hostname` != "luce" ]; then
+    #if [ `hostname` != "luce" ]; then
         # luce defines shortcuts in evdev
         # yaourt -S xdotool
-        xmodmap ~/.config/xmodmap
-    fi
+    xmodmap ~/.config/xmodmap
+    #fi
     thunar --daemon &
     # xscreensaver &
     xautolock-start
     # yaourt -S pasystray-git pavucontrol paprefs pavumeter
     # also
-    # echo "load-module module-device-manager" > /etc/pulse/default.pa
+    # echo "load-module module-device-manager" >> /etc/pulse/default.pa
     pasystray &
     xclip -silent &
     if cmd_exists nm-applet ; then
