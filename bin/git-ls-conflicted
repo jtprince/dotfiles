@@ -1,3 +1,26 @@
-#!/bin/sh
+#!/usr/bin/env ruby
 
-git diff --name-only --diff-filter=U | cat
+unresolved_marker = '<<<<<<<'
+
+if ARGV.size == 0
+  puts "usage: #{File.basename(__FILE__)} [u]nresolved | [r]esolved | [a]ll"
+  puts "  unresolved: files with #{unresolved_marker} in them"
+  puts "    resolved: files that no longer have the 'conflicted' marker in them."
+  puts "         all: any file that was ever conflicted in this round of merging"
+  exit
+end
+
+type = ARGV.shift
+
+unresolved = `grep -lr '#{unresolved_marker}' .`.strip.split("\n")
+all = `git diff --name-only --diff-filter=U`.strip.split("\n")
+resolved = all - unresolved
+
+case type[0]
+when 'u'
+  puts unresolved
+when 'r'
+  puts resolved
+when 'a'
+  puts all
+end

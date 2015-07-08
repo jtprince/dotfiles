@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+if ARGV.size == 0
+  puts "usage: #{File.basename(__FILE__)} [o]urs|[t]heirs"
+  exit
+end
+
+which = ARGV.shift
+
+ours_or_theirs =
+  case which[0]
+  when 'o'
+    'ours'
+  when 't'
+    'theirs'
+  else
+    raise "local or remote, please"
+  end
+
+cmd = "git-ls-conflicted | xargs git checkout --#{ours_or_theirs}"
+p cmd
+#system cmd

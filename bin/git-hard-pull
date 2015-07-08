@@ -1,0 +1,6 @@
+#!/bin/bash
+
+currentbranch=`git rev-parse --abbrev-ref HEAD`
+git fetch
+git reset --hard origin/$currentbranch
+git pull

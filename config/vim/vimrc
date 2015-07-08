@@ -252,7 +252,9 @@ map <F4> "+gP
 " TABS ======================================================================
 " vim -p <file> <file> ... # opens pages in tabs
 " close the current tab
-nnoremap <C-w> :tabclose<CR>
+"
+" this conflicts with all the movement... need better mapping
+" nnoremap <C-w> :tabclose<CR>
 nnoremap <C-S-tab> :tabprevious<CR>
 nnoremap <C-tab>   :tabnext<CR>
 nnoremap <C-t>     :tabnew<CR>
