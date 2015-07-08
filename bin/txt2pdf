@@ -15,7 +15,7 @@ end
 DEFAULT_MARGIN = 0.75
 $DRY = false
 
-opt = { 
+opt = {
   :word_wrap => '--word-wrap',
   :header => '--no-header',
 }
