@@ -1,7 +1,16 @@
-[Default Applications]
 # soft link into ~/.config/ (new xdg spec) and into ~/.local/share/applications/ (for xdg-open)
+[Default Applications]
 image/jpeg=eog.desktop
 image/png=eog.desktop
 image/svg+xml=eog.desktop;inkscape.desktop
 text/html=chromium.desktop
 text/plain=gvim.desktop
+inode/directory=thunar.desktop;
+
+[Added Associations]
+image/jpeg=eog.desktop
+image/png=eog.desktop
+image/svg+xml=eog.desktop;inkscape.desktop
+text/html=chromium.desktop
+text/plain=gvim.desktop
+inode/directory=thunar.desktop;
