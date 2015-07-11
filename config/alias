@@ -33,12 +33,14 @@ alias wine64="export WINEARCH=win64; export WINEPREFIX=~/.wine64; wine"
 alias winecfg64="export WINEARCH=win64; export WINEPREFIX=~/.wine64; winecfg"
 
 # navigation
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-alias ......='cd ../../../../..'
+alias .........='cd ../../../../../../../..'
+alias ........='cd ../../../../../../..'
 alias .......='cd ../../../../../..'
+alias ......='cd ../../../../..'
+alias .....='cd ../../../..'
+alias ....='cd ../../..'
+alias ...='cd ../..'
+alias ..='cd ..'
 
 # ruby
 alias be="bundle exec"

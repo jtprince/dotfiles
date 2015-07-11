@@ -57,7 +57,7 @@ class Lint(object):
         if package_name_like == '__init__':
             package_name_like = os.path.splitext(self.path)[0].split('/')[-2] + " package"
 
-        return '""" {} """'.format(package_name_like.replace('_', ' '))
+        return '""" The {} module. """'.format(package_name_like.replace('_', ' '))
 
     @classmethod
     def lints_from_file(cls, pylint_fname):
