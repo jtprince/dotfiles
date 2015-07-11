@@ -297,8 +297,8 @@ bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e
 bindcode 75 exec --no-startup-id xdotool click 2
 
 # ☆ <Favorites> toggles monitor setting
-bindsym XF86Favorites exec --no-startup-id monitor_toggle auto && randomise-bkg
-bindsym XF86Display exec --no-startup-id monitor_toggle auto && randomise-bkg
+bindsym XF86Favorites exec --no-startup-id monitor_toggle auto && randomise-bkg && xmodmap ~/.config/xmodmap
+bindsym XF86Display exec --no-startup-id monitor_toggle auto && randomise-bkg && xmodmap ~/.config/xmodmap
 
 ###########################
 # LIFE, DEATH, and SLEEPING
