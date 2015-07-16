@@ -72,7 +72,10 @@ cmd = ["./manage.py"]
 
 test_type = "test-on-network" if args.test_on_network else "test"
 
-cmd.append(test_type)
+cmd.append("test")
+
+if args.test_on_network:
+    cmd.extend(["--settings", "doba.settings.test_on_network"])
 
 if not args.capture:
     cmd.append("--nocapture")

@@ -2,6 +2,10 @@
 
 require 'ostruct'
 
+if ARGV[0] == '--desktop'
+  $DESKTOP_FILES = true
+end
+
 class App < OpenStruct
   class << self
     def from_desktop_file(file)
@@ -34,18 +38,22 @@ dirs = [
 
 desktop_files = dirs.flat_map {|dir| Dir[dir + '/' + desktop_glob] }
 
-objs = desktop_files.map {|f| App.from_desktop_file(f) }.compact
+if $DESKTOP_FILES
+  puts desktop_files.join("\n")
+else
+  objs = desktop_files.map {|f| App.from_desktop_file(f) }.compact
 
-cats = objs.each_with_object(Hash.new {|h,k| h[k] = [] }) do |app, cat_to_objs|
-  app.cats.each do |cat|
-    cat_to_objs[cat] << app
+  cats = objs.each_with_object(Hash.new {|h,k| h[k] = [] }) do |app, cat_to_objs|
+    app.cats.each do |cat|
+      cat_to_objs[cat] << app
+    end
   end
-end
 
-sorted = cats.sort_by {|cat,objs| -objs.size }
-sorted.each do |cat, objs|
-  puts cat
-  objs.each do |obj|
-    puts "  #{obj.name}: #{obj.exec}"
+  sorted = cats.sort_by {|cat,objs| -objs.size }
+  sorted.each do |cat, objs|
+    puts cat
+    objs.each do |obj|
+      puts "  #{obj.name}: #{obj.exec}"
+    end
   end
 end
