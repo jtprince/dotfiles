@@ -5,6 +5,12 @@ image/svg+xml=eog.desktop;inkscape.desktop
 text/html=chromium.desktop
 text/plain=gvim.desktop
 inode/directory=thunar.desktop
+# spreadsheets
+application/vnd.ms-excel=libreoffice-calc.desktop
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop
+application/xls=libreoffice-calc.desktop
+text/csv=libreoffice-calc.desktop
+text/tsv=libreoffice-calc.desktop
 
 # I'm not sure the difference between Default Applications and Added
 # Associations, but I've seen other programs put entries in *both*, so I'll
@@ -15,4 +21,10 @@ image/png=eog.desktop
 image/svg+xml=eog.desktop;inkscape.desktop
 text/html=chromium.desktop
 text/plain=gvim.desktop
-inode/directory=thunar.desktop;
+inode/directory=thunar.desktop
+# spreadsheets
+application/vnd.ms-excel=libreoffice-calc.desktop
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop
+application/xls=libreoffice-calc.desktop
+text/csv=libreoffice-calc.desktop
+text/tsv=libreoffice-calc.desktop
