@@ -473,10 +473,11 @@ bindsym $mod+r mode "resize"
 #######################
 # MISC - editing
 #######################
+## keep the dangerous ones off until needed
 bindsym $mod+Shift+F exec pylint-patch fix
-bindsym $mod+Shift+G exec pylint-patch auto
-bindsym $mod+Shift+D exec pylint-patch delete
-bindsym $mod+Shift+O exec pylint-patch top
+# bindsym $mod+Shift+G exec pylint-patch auto
+# bindsym $mod+Shift+D exec pylint-patch delete
+# bindsym $mod+Shift+O exec pylint-patch top
 
 bindsym $mod+Shift+M exec fix
 
