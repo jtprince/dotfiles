@@ -7,6 +7,8 @@
 require 'json'
 require 'time'
 
+DROPBOX = ENV['HOME'] + "/Dropbox"
+
 module SysMonitor
   SLEEP = 2
 
@@ -61,7 +63,7 @@ module SysMonitor
 
     def initialize
       super
-      line = IO.read(ENV['HOME'] + "/Dropbox/env/counter.txt")
+      line = IO.read(DROPBOX + "/env/counter.txt")
       parts = line.split(", ").map(&:to_i)
       @start = Time.new(*parts, "-07:00")
     end
@@ -87,35 +89,7 @@ module SysMonitor
   class Quote
     include SysMonitor
     include LongTimer
-    QUOTES = [
-      #'move-eat-sleep-relax-connect',
-      #'1-act-on-important, 2-extraordinary, 3-bigrocks, 4-ruletech, 5-fire',
-      #'to a mind that is still the whole universe surrenders',
-      #'be the change you wish to see in the world',
-      #'see everything as if it were your first or last time',
-      # Kurt Vonnegut '"We are what we pretend to be, so we must be careful about what we pretend to be."
-      #'For my soul delighteth in plainness; for after this manner doth the Lord God work among the children of men'
-      'whatsoever is light, is good, because it is discernible',
-      'my soul delighteth in plainness',
-      'see that all these things are done in wisdom and order',
-      'he should be diligent, that thereby he might win the prize',
-      'mourn with those that mourn',
-      'my grace is sufficient for all men that humble themselves before me',
-      'he hath all power unto the fulfilling of all his words',
-      'I am in your midst, and I have not forsaken you',
-      'what you do is who you become',
-      #'if you have time to browse internet, you have time to read scriptures & exercise',
-      #'We are what we pretend to be, so careful what you pretend.',
-      #"I am no lover of disorder and doubt as such. Rather do I fear to lose truth by the pretension to possess it already wholly." # -- William James
-      "I fear to lose truth by the pretension to possess it already wholly.",
-      "If patience is worth anything, it must endure to the end of time.", # Ghandi
-      "A living faith will last in the midst of the blackest storm.", #Ghandi
-      "the inches we need are everywhere around us",
-      "master everything important",
-      "breathe in hostility, breathe out focus and peace",
-      "Our revealed truth should leave us stricken with the knowledge of how little we really know", #Hugh B. Brown
-      "The master has failed more times than the beginner has tried"
-    ]
+    QUOTES = IO.readlines(DROPBOX + "/quotes/short.txt").map(&:chomp).reject {|line| line[0] == '#' }
 
     def get_data
       QUOTES.sample

@@ -8,7 +8,7 @@ map <leader>s <Esc>o""" [self documenting] """<Esc>0
 command! -range=% Isort :<line1>,<line2>! isort -
 
 " :Isortdoba will sort all your imports according to PEP8 and GSG
-command! -range=% Isort :<line1>,<line2>! isort-doba -
+command! -range=% Isortdoba :<line1>,<line2>! isort-doba -
 
 " opens a print statement based on the given word
 " print('DBG: %r" % <var>)
