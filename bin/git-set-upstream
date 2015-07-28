@@ -1,0 +1,4 @@
+#!/bin/sh
+
+yourbranch=`git rev-parse --abbrev-ref HEAD`
+git branch --set-upstream-to=origin/$yourbranch $yourbranch
