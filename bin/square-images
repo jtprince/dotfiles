@@ -1,0 +1,7 @@
+#!/bin/sh
+
+for image in "$@"
+do
+  convert "$image" \( +clone -rotate 90 +clone -mosaic +level-colors transparent \) +swap -gravity center -composite "$image".square
+  mv "$image".square "$image"
+done
