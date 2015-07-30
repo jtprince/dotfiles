@@ -2,7 +2,7 @@
 
 require 'shellwords'
 
-def dims(image_escaped)
+def dimensions(image_escaped)
   size_data = `file #{image_escaped}`
   size_data[/, (\d+ x \d+),/, 1].split(' x ').map(&:to_i)
 end
@@ -10,10 +10,13 @@ end
 def square(image, pad_color='transparent')
   image_esc = Shellwords.escape(image)
 
-  maxdim = dims(image_esc).max
-  geometry = "#{maxdim}x#{maxdim}"
+  dims = dimensions(image_esc)
+  if dims.uniq.size == 2
+    maxdim = dims.max
+    geometry = "#{maxdim}x#{maxdim}"
 
-  system "mogrify -resize #{geometry} -background #{pad_color} -gravity center -extent #{geometry} -format png #{image_esc}"
+    system "mogrify -resize #{geometry} -background #{pad_color} -gravity center -extent #{geometry} -format png #{image_esc}"
+  end
 end
 
 ARGV.each do |image|
