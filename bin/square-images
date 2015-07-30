@@ -1,7 +1,22 @@
-#!/bin/sh
+#!/usr/bin/env ruby
 
-for image in "$@"
-do
-  convert "$image" \( +clone -rotate 90 +clone -mosaic +level-colors transparent \) +swap -gravity center -composite "$image".square
-  mv "$image".square "$image"
-done
+require 'shellwords'
+
+def dims(image_escaped)
+  size_data = `file #{image_escaped}`
+  size_data[/, (\d+ x \d+),/, 1].split(' x ').map(&:to_i)
+end
+
+def square(image, pad_color='transparent')
+  image_esc = Shellwords.escape(image)
+
+  maxdim = dims(image_esc).max
+  geometry = "#{maxdim}x#{maxdim}"
+
+  system "mogrify -resize #{geometry} -background #{pad_color} -gravity center -extent #{geometry} -format png #{image_esc}"
+end
+
+ARGV.each do |image|
+  square(image)
+end
+
