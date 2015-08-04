@@ -16,6 +16,8 @@ if ARGV.size == 0
   exit
 end
 
+device = ARGV.shift
+
 mac = device_to_mac[device]
 
 system `echo -e 'power on\nagent on\nconnect #{mac}\nquit' | bluetoothctl`

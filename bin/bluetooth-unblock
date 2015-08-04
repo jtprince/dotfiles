@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
+## assumes this state, which is no good
+# 0: asus-wlan: Wireless LAN
+# 	Soft blocked: no
+# 	Hard blocked: no
+# 1: asus-bluetooth: Bluetooth
+# 	Soft blocked: yes
+# 	Hard blocked: no
+# 3: phy0: Wireless LAN
+# 	Soft blocked: no
+# 	Hard blocked: no
+# 5: hci0: Bluetooth
+# 	Soft blocked: yes
+# 	Hard blocked: no
+
+## we want this state
+# 0: asus-wlan: Wireless LAN
+# 	Soft blocked: no
+# 	Hard blocked: no
+# 1: asus-bluetooth: Bluetooth
+# 	Soft blocked: yes
+# 	Hard blocked: no
+# 3: phy0: Wireless LAN
+# 	Soft blocked: no
+# 	Hard blocked: no
+# 6: hci0: Bluetooth
+# 	Soft blocked: no
+# 	Hard blocked: no
+
+echo 1 > /sys/class/rfkill/rfkill5/state
+echo 1 > /sys/class/rfkill/rfkill1/state
+echo 0 > /sys/class/rfkill/rfkill1/state
+rfkill
