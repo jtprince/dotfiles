@@ -8,11 +8,15 @@ parser = ArgumentParser(description="search an entire database for a value")
 parser.add_argument("dbname", help="the name of the database to search")
 parser.add_argument("searchstring", help="the exact value to search for")
 parser.add_argument("-u", "--user", default='root', help="the mysql username")
+parser.add_argument("-h", "--host", help="the mysql host url")
 parser.add_argument("-p", "--password", help="the mysql password")
 parser.add_argument("-a", "--all", action="store_true", help="show all matches")
 args = parser.parse_args()
 
-base_cmd = "mysql {} -u{} -p{} -s -e ".format(args.dbname, args.user, args.password)
+base_cmd = "mysql {} -u{} -p{}".format(args.dbname, args.user, args.password)
+if args.host:
+    base_cmd += " -h " + args.host
+base_cmd += " -s -e "
 
 Field = namedtuple('Field', 'name type null key default extra')
 
