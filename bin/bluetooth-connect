@@ -6,26 +6,6 @@ echo -e "agent on\n" | bluetoothctl
 sleep 1
 echo -e "connect 08:DF:1F:44:3E:C6\n" | bluetoothctl
 
-#!/usr/bin/env ruby
-
-#require 'yaml'
-
-#devices_file = ENV['HOME'] + "/Dropbox/env/bluetooth/devices"
-
-#device_to_mac = YAML.load_file(devices_file)
-
-#if ARGV.size == 0
-  #puts "usage: #{File.basename(__FILE__)} <device>"
-  #puts "assumes the device has already been paired and is trusted. "
-  #puts "see https://wiki.archlinux.org/index.php/Bluetooth"
-  #puts
-  #puts "devices:"
-  #puts device_to_mac
-  #exit
-#end
-
-#device = ARGV.shift
-
-#mac = device_to_mac[device]
-
-#system `echo -e 'power on\n'agent on\nconnect #{mac}\nquit' | bluetoothctl`
+sleep 1
+# 2 should be bose
+pacmd set-default-sink 2
