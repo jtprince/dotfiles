@@ -1,0 +1,3 @@
+#!/bin/bash
+
+http -a testapi@hubspot.com:HubSpot "$@"

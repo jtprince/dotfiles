@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+from argparse import ArgumentParser
+import subprocess
+from collections import namedtuple
+
+parser = ArgumentParser(description="search an entire database for a value")
+parser.add_argument("dbname", help="the name of the database to search")
+parser.add_argument("searchstring", help="the exact value to search for")
+parser.add_argument("-u", "--user", default='root', help="the mysql username")
+parser.add_argument("-p", "--password", help="the mysql password")
+parser.add_argument("-a", "--all", action="store_true", help="show all matches")
+args = parser.parse_args()
+
+base_cmd = "mysql {} -u{} -p{} -s -e ".format(args.dbname, args.user, args.password)
+
+Field = namedtuple('Field', 'name type null key default extra')
+
+Match = namedtuple('Match', 'table fieldname query')
+
+def query(sql):
+    return subprocess.check_output(base_cmd + "'" + sql + "'", shell=True).decode('utf-8').split("\n")[0:-1]
+
+def get_all_tables():
+    return query("show tables")
+
+def get_column_names(table):
+    return [
+        Field(*row.split("\t"))
+        for row in query("DESCRIBE %s" % table)
+    ]
+
+def is_in_field(table, field, searchstring):
+    try:
+        sql = 'SELECT * from `{}` WHERE `{}`="{}"'.format(table, field, searchstring)
+        if len(query(sql)) > 0:
+            return sql
+    except UnicodeDecodeError:
+        return False
+
+def get_matches(quit_on_match=True):
+    for table in get_all_tables():
+        fields = get_column_names(table)
+        for field in fields:
+            reply = is_in_field(table, field.name, args.searchstring)
+            if reply:
+                print(Match(table, field.name, reply))
+                if quit_on_match:
+                    exit()
+
+get_matches(not args.all)
