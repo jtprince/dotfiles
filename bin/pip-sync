@@ -4,6 +4,7 @@ import argparse
 import os
 import subprocess
 
+
 def partition(condition, iterable):
     trues = [] ; falses = []
     for item in iterable:
@@ -13,12 +14,17 @@ def partition(condition, iterable):
 
 
 def read_file_requirements(fn):
+    """ Returns file requirements (-r) and normal requirements <x>==<version>. """
     with open(fn) as infile:
         lines = [line for line in infile.read().splitlines() if line and line[0] != '#']
-    return partition(lambda line: line.startswith("-r"), lines)
+    file_requires, explicit_requires = partition(lambda line: line.startswith("-r"), lines)
+
+    explicit_requires_wo_comments = [line.split(" ", 1)[0] for line in explicit_requires]
+    return file_requires, explicit_requires_wo_comments
 
 
 def read_requirements(fn):
+    """ Returns list of all requirements (recursively retrieves file requirements). """
     other_file_lines, requirements = read_file_requirements(fn)
 
     fn_path = os.path.dirname(os.path.abspath(fn))
@@ -30,6 +36,7 @@ def read_requirements(fn):
 
 
 def get_pip_requirements(pip):
+    """ Returns a list of all pip requirements. """
     output = subprocess.check_output([pip, "freeze"]).decode('utf-8')
     return output.strip().splitlines()
 
