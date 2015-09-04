@@ -7,7 +7,9 @@ $VERBOSE = ARGV.delete("-v") ? 3 : nil
 
 def dual_monitors()
   xrandr_output = `xrandr`
-  return !!(xrandr_output["HDMI1 connected"] && xrandr_output["HDMI2 connected"])
+  work_setup = !!(xrandr_output["HDMI1 connected"] && xrandr_output["HDMI2 connected"])
+  home_basement_setup = !!(xrandr_output["eDP1 connected"] && xrandr_output["HDMI1 connected"])
+  work_setup || home_basement_setup
 end
 
 $DUAL_MONITORS = dual_monitors
