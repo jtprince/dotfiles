@@ -1,11 +1,11 @@
 #!/bin/bash
 
 echo -e "power on\n" | bluetoothctl
-sleep 1
+sleep 2
 echo -e "agent on\n" | bluetoothctl
-sleep 1
+sleep 2
 echo -e "connect 08:DF:1F:44:3E:C6\n" | bluetoothctl
 
-sleep 1
+sleep 3
 # 2 should be bose
 pacmd set-default-sink 2
