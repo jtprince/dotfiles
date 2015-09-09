@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import os
+from argparse import ArgumentParser
+from subprocess import call
+
+def compact(iterable):
+    return [item for item in iterable if item is not None]
+
+parser = ArgumentParser(description="convert a document. Use pandoc-static in AUR")
+parser.add_argument("filename", help="the filename of the file to convert")
+parser.add_argument("--pdf", action='store_const', const='.pdf', help="convert to pdf")
+parser.add_argument("--html", action='store_const', const='.html', help="conver to html")
+parser.add_argument("--toc", action='store_true', help="use a table of contents")
+parser.add_argument("--toc-depth", type=int, help="depth of table of contents")
+parser.add_argument("--no-standalone", help="do not include the standalone option")
+parser.add_argument("--number-sections", help="number the sections")
+parser.add_argument("--margins", default=1.0, help="margin size in inches")
+
+args = parser.parse_args()
+base_filename = os.path.splitext(args.filename)[0]
+
+args.standalone = not args.no_standalone
+del args.no_standalone
+
+base_cmd = ["pandoc"]
+
+options = compact([
+    args.filename,
+    "--toc" if args.toc else None,
+    "--toc-depth" if args.toc_depth else None,
+    args.toc_depth if args.toc_depth else None,
+    "--standalone" if args.standalone else None,
+    "--number-sections" if args.number_sections else None,
+    "-V" if args.margins else None,
+    "geometry:margin={}in".format(args.margins) if args.margins else None,
+])
+
+for ext in compact([args.html, args.pdf]):
+    cmd = base_cmd + options + ["-o", base_filename + ext]
+    call(cmd)
