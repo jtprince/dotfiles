@@ -24,3 +24,6 @@ function! SmallerFont()
   call AdjustFontSize(-1)
 endfunction
 command! SmallerFont call SmallerFont()
+
+noremap <leader>+ :LargerFont<CR>
+noremap <leader>- :SmallerFont<CR>

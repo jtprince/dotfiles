@@ -106,7 +106,7 @@ def run_command(cmd, args):
 def _get_mysql_connection_string(host):
     mysql_password = _get_password(host)
     if host == 'web00':
-        return "-h10.10.11.41 -udoba -p'{}'".format(mysql_password)
+        return "-hcoredb02.c5v3xfyz81wc.us-west-2.rds.amazonaws.com -udoba_ro -p'{}'".format(mysql_password)
     elif host in ('jtprince', 'staging'):
         return "-uroot -p'{}'".format(mysql_password)
 
