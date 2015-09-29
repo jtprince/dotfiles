@@ -36,6 +36,10 @@ if [ "$1" != "late" ]; then
         #( sleep 180 && CopyAgent& )&
         CopyAgent&
     fi
+    if cmd_exists copy ; then
+        #( sleep 180 && CopyAgent& )&
+        copy&
+    fi
 
     notify-send -u low 'initialized!'
 else

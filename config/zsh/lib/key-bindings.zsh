@@ -1,4 +1,5 @@
-# TODO: Explain what some of this does..
+# To determine the code for any key, press Ctrl+v (Ctrl with 'v') followed by the keycode
+# (e.g., Ctrl+<rightarrow> Ctrl plus right arrow)
 
 bindkey -e
 bindkey '\ew' kill-region
@@ -40,6 +41,9 @@ bindkey "\e[3~" delete-char
 #bindkey '^[[B' down-line-or-search
 bindkey '^[^[[C' emacs-forward-word
 bindkey '^[^[[D' emacs-backward-word
+bindkey '^[[1;5C' emacs-forward-word
+bindkey '^[[1;5D' emacs-backward-word
+#
 #
 #bindkey -s '^X^Z' '%-^M'
 #bindkey '^[e' expand-cmd-path
