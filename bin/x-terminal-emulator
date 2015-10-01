@@ -1,3 +1,3 @@
-lxterminal
+xfce4-terminal
 #/usr/bin/urxvt
 #/usr/bin/st -f "Dejavu Sans Mono:size=10:style=medium:antialias=true" "$@"
