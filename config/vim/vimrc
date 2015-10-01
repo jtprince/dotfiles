@@ -23,8 +23,8 @@ let mapleader = ','
 filetype on
 filetype off                   " required!
 set rtp+=~/.config/vim-bundle/vundle
-call vundle#rc( "~/.config/vim-bundle" )
-Bundle 'gmarik/vundle'
+call vundle#begin( "~/.config/vim-bundle" )
+Plugin 'VundleVim/Vundle.vim'
 
 " to run from cmdline:
 " vim +BundleInstall +qall
@@ -39,41 +39,43 @@ Bundle 'gmarik/vundle'
 " see :h vundle for more details or wiki for FAQ
 
 " powerful comment/uncomment for diff't languages
-Bundle 'scrooloose/nerdcommenter'
+Plugin 'scrooloose/nerdcommenter'
 
 " ensure that gvim uses the proper 256 terminal colors
-Bundle 'vim-scripts/colorsupport.vim'
+Plugin 'vim-scripts/colorsupport.vim'
 
 " highlight/remove trailing whitespace
-Bundle 'ntpeters/vim-better-whitespace'
+Plugin 'ntpeters/vim-better-whitespace'
 " :StripWhitespace (also :ToggleWhitespace)
 
 """ syntax additions
 " python
-Bundle 'nvie/vim-flake8'
+Plugin 'nvie/vim-flake8'
 " <F7> runs flake8
 " ruby
-Bundle 'timcharper/textile.vim'
-Bundle 'vim-scripts/eruby.vim'
-Bundle 'vim-ruby/vim-ruby'
+Plugin 'timcharper/textile.vim'
+Plugin 'vim-scripts/eruby.vim'
+Plugin 'vim-ruby/vim-ruby'
 " markdown
-Bundle 'tpope/vim-markdown'
+Plugin 'tpope/vim-markdown'
 " lilypond
-Bundle 'gisraptor/vim-lilypond-integrator'
+Plugin 'gisraptor/vim-lilypond-integrator'
 
 " view ansi marked-up color in vim
-Bundle 'vim-scripts/AnsiEsc.vim'
+Plugin 'vim-scripts/AnsiEsc.vim'
 
 " find files to edit (other options Command-T or nerdtree)
-Bundle 'kien/ctrlp.vim'
+Plugin 'kien/ctrlp.vim'
 let g:ctrlp_custom_ignore = {
 \ 'dir':  '\.git$\|\.hg$\|\.svn$\|\.yardoc\|public\/images\|public\/system\|tmp$\|node_modules$',
 \ 'file': '\.pyc\.exe$\|\.so$\|\.dat$'
 \ }
 
+call vundle#end()
+
 " (vim-fugitive is a dependency for conflicted)
-" Bundle 'tpope/vim-fugitive'
-" Bundle 'christoomey/vim-conflicted'
+" Plugin 'tpope/vim-fugitive'
+" Plugin 'christoomey/vim-conflicted'
 
 " ENABLE plugins =============================================================
 
