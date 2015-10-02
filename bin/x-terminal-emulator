@@ -1,3 +1,6 @@
-xfce4-terminal
-#/usr/bin/urxvt
-#/usr/bin/st -f "Dejavu Sans Mono:size=10:style=medium:antialias=true" "$@"
+#!/bin/sh
+if grep -q Ubuntu /etc/issue; then
+    /usr/bin/xfce4-terminal
+else
+    /usr/bin/urxvt
+fi
