@@ -3,46 +3,20 @@ repo_cache "~/src/remote_dotfiles"
 github "jtprince/dotfiles/config" do
 
   cfg 'dotmation'
-
   cfg 'alias'
-
-  dot 'profile'
-  dot 'xprofile'
-
-  dot 'Xresources'
-  # Xdefaults is deprecated upstream, but make link til we don't need
-  ln 'Xresources', '.Xdefaults'
-
-  # if desired:
-  # cfg 'Xresources-local'
-
   cfg 'xmodmap'
-
   cfg 'git'
-
-  dot 'gtkrc-2.0'
-
-  # if desired: 
-  # cfg 'gtkrc-2.0-local'
-
   cfg 'gtk-3.0'
-
-  ln 'zsh/zshenv', '.zshenv'
   cfg 'zsh'
-
   cfg 'fontconfig'
-
   cfg 'texlive'
-
-  dot 'pryrc'
-  dot 'irbrc'
-
   cfg 'dunst'
   cfg 'i3'
-
   cfg 'latex'
 
-  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
+  cfg 'ncmpcpp'
+  cfg 'pulseaudio-ctl'
+  cfg 'vim'
 
   cfg 'mpd'
   # yaourt -S mpd mpc ncmpcpp-xdg-config
@@ -50,18 +24,30 @@ github "jtprince/dotfiles/config" do
   # touch ~/.cache/mpd{pid,state,tag_cache}
   # mkdir -p ~/Music/playlists
 
-  # use with ncmpcpp-xdg-config
-  cfg 'ncmpcpp'
 
-  cfg 'pulseaudio-ctl'
+  dot 'profile'
+  dot 'xprofile'
+  dot 'Xresources'
+  dot 'gtkrc-2.0'
+  dot 'pryrc'
+  dot 'irbrc'
 
-  cfg 'vim'
+  # Xdefaults is deprecated upstream, but make link til we don't need
+  ln 'Xresources', '.Xdefaults'
+  ln 'zsh/zshenv', '.zshenv'
+  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
+
+  # if desired:
+  # cfg 'Xresources-local'
+
+  # if desired: 
+  # cfg 'gtkrc-2.0-local'
 end
 
 github "jtprince/dotfiles/bin" do
   ln '.'
 end
 
-github 'gmarik/vundle' do
+github 'VundleVim/Vundle.vim' do
   cfg '.', 'vim-bundle/vundle'
 end
