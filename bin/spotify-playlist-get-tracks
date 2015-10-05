@@ -16,6 +16,9 @@ if not args.playlist.startswith("http"):
     args.playlist = playlist_baseurl + args.playlist
 
 response = requests.get(args.playlist)
+if response.status_code == 404:
+    print("Playlist not found!! (404 response)")
+    exit(0)
 
 soup = BeautifulSoup(response.text)
 

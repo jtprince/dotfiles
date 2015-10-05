@@ -27,7 +27,7 @@ call vundle#begin( "~/.config/vim-bundle" )
 Plugin 'VundleVim/Vundle.vim'
 
 " to run from cmdline:
-" vim +BundleInstall +qall
+" vim +PluginInstall +qall
 
 " BUNDLES ====================================================================
 " Brief help
@@ -101,6 +101,7 @@ set fo=l        " autoformating (l - long lines not broken on insert)
 set printoptions=paper:letter
 set guioptions-=m " remove the menu bar
 set guioptions-=T " remove the gui toolbar
+set guioptions-=r " remove the right scrollbar
 set gcr=a:blinkon0 "Disable cursor blink
 set autoread    " Reload files changed outside vim
 set hidden      " buffers can exist in bkg w/o window
