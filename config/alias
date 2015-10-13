@@ -12,6 +12,7 @@ alias aptsearch='aptitude search'
 alias aptr='sudo aptitude remove --purge-unused'
 alias aptremove='sudo aptitude remove --purge-unused'
 alias aptshow='apt-cache show'
+alias aptupdate='sudo apt-get update && sudo apt-get dist-upgrade'
 alias aptaddkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
 alias dependenciesr="apt-cache --recurse depends"
 alias dependencies="apt-cache depends"
