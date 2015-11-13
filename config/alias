@@ -17,6 +17,7 @@ alias aptaddkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
 alias dependenciesr="apt-cache --recurse depends"
 alias dependencies="apt-cache depends"
 alias depends_on="apt-cache rdepends"
+alias aptppa='sudo add-apt-repository'
 
 # pacman and yaourt
 alias yinstall='yaourt -S --noconfirm'

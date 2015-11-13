@@ -32,6 +32,7 @@ github "jtprince/dotfiles/config" do
   dot 'gtkrc-2.0'
   dot 'pryrc'
   dot 'irbrc'
+  dot 'gemrc'
 
   # Xdefaults is deprecated upstream, but make link til we don't need
   ln 'Xresources', '.Xdefaults'
@@ -41,7 +42,7 @@ github "jtprince/dotfiles/config" do
   # if desired:
   # cfg 'Xresources-local'
 
-  # if desired: 
+  # if desired:
   # cfg 'gtkrc-2.0-local'
 end
 
