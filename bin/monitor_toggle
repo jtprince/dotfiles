@@ -69,9 +69,11 @@ if len(sys.argv) <= 1:
 args = parser.parse_args()
 
 monitors = Monitor.get_monitors()
+print(monitors)
 connected = [monitor for monitor in monitors if monitor.connected]
 
 num_monitors = len(connected)
+print(num_monitors)
 if num_monitors == 1:
     cmd_str = "xrandr --auto"
     print("executing: ", cmd_str)
@@ -95,7 +97,7 @@ elif num_monitors == 2:
     subprocess.call(cmd_str.split(' '))
     subprocess.call(['overscan-correct'])
 
-elif num_monitors == 3:
+elif num_monitors in (3, 4):
     # WAKE UP!: seems to be necessary to wake up my monitor attached by micro hdmi
     subprocess.call(['xrandr', '--auto'])
 
