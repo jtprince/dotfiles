@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+require 'shellwords'
+require 'optparse'
+
+parser = OptionParser.new do |op|
+  op.banner = "usage: #{File.basename(__FILE__)} <file>.xls ..."
+end
+parser.parse!
+
+files = ARGV
+
+files.each do |file|
+  cmd = "libreoffice --headless --convert-to csv #{Shellwords.escape(file)}"
+  system cmd
+end
