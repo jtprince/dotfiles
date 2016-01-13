@@ -1,0 +1,3 @@
+#!/bin/sh
+
+run-desktop chrome-timer.desktop

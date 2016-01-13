@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+def all_desktop_files
+  branch = 'share/applications'
+  desktop_glob = "*.desktop"
+
+  dirs = [
+    ENV['HOME'] + "/Desktop",          # desktop
+    ENV['HOME'] + "/.local/#{branch}", # home
+    "/usr/#{branch}",                  # shared
+  ]
+
+  dirs.flat_map {|dir| Dir[dir + '/' + desktop_glob] }
+end
+
+def basename_to_path()
+  all_desktop_files.group_by {|file| File.basename(file) }
+end
+
+def get_executable(file)
+  IO.readlines(file).find {|v| v =~ /^Exec=/}.split('=', 2).last.chomp
+end
+
+# given a .desktop basename, find the best path
+def find_best_desktop_path(basename)
+  possibles = basename_to_path[basename]
+  if possibles
+    possibles.first
+  end
+end
+
+# ensure the filename has proper extensions
+def get_file_with_ext(file)
+  desktop_ext = ".desktop"
+  ext = File.extname(file)
+  if ext != desktop_ext
+    file + desktop_ext
+  else
+    file
+  end
+end
+
+parser = OptionParser.new do |op|
+  op.banner = "usage: #{File.basename(__FILE__)} <file>"
+  op.separator "runs the executable.  (will have problems if takes arguments)"
+  op.separator "First checks for the filename as path (w or w/o .desktop),"
+  op.separator "then for any desktop files."
+end
+parser.parse!
+
+file = ARGV.shift
+
+unless file
+  puts parser
+  exit
+end
+
+
+path =
+  if File.exist?(file)
+    file
+  else
+    file_w_ext = get_file_with_ext(file)
+    find_best_desktop_path(file_w_ext)
+  end
+
+if path
+  executable = get_executable(path)
+  system executable
+end
