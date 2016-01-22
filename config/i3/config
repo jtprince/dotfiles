@@ -127,7 +127,7 @@ bindsym $mod+Shift+parenleft $voldown 5
 bindsym $mod+Ctrl+Shift+parenright $volup 20
 bindsym $mod+Ctrl+Shift+parenleft $voldown 20
 bindsym $mod+minus $mute
-bindsym $mod+Ctrl+Shift minus $mutefor 50
+bindsym $mod+Ctrl+Shift minus $mutefor 60
 bindsym $mod+Shift minus $mutefor 25
 
 bindsym XF86AudioRaiseVolume $volup 4
