@@ -10,6 +10,11 @@ parser.parse!
 
 files = ARGV
 
+if files.size == 0
+  puts parser
+  exit
+end
+
 files.each do |file|
   cmd = "libreoffice --headless --convert-to csv #{Shellwords.escape(file)}"
   system cmd
