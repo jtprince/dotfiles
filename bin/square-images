@@ -4,7 +4,20 @@ require 'shellwords'
 
 def dimensions(image_escaped)
   size_data = `file #{image_escaped}`
-  size_data[/, (\d+ x \d+),/, 1].split(' x ').map(&:to_i)
+  begin
+    size_data[/, (\d+ x \d+),/, 1].split(' x ').map(&:to_i)
+  rescue
+    begin
+      pieces = size_data.chomp.split(", ")
+      [
+        pieces.find {|piece| piece =~ /xresolution=(\d+)/ }.split('=').last.to_i,
+        pieces.find {|piece| piece =~ /yresolution=(\d+)/ }.split('=').last.to_i,
+      ]
+    rescue
+      nil
+    end
+  end
+
 end
 
 def square(image, pad_color='transparent')
