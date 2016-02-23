@@ -475,7 +475,7 @@ bindsym $mod+r mode "resize"
 #######################
 ## keep the dangerous ones off until needed
 bindsym $mod+Shift+F exec pylint-patch fix
-# bindsym $mod+Shift+G exec pylint-patch auto
+bindsym $mod+Shift+G exec pylint-patch auto
 # bindsym $mod+Shift+D exec pylint-patch delete
 # bindsym $mod+Shift+O exec pylint-patch top
 

@@ -17,8 +17,12 @@ parser.add_argument(
     help="prepends {} to the commit message".format(tmp_prefix),
 )
 parser.add_argument(
-    "-n", "--no-push", action='store_true',
+    "--no-push", action='store_true',
     help="don't push to remote"
+)
+parser.add_argument(
+    "--no-add", action='store_true',
+    help="don't use -a/--all during the commit"
 )
 args = parser.parse_args()
 
@@ -35,7 +39,11 @@ if description_ar:
     wrapped_desc = ''.join(textwrap.wrap(description, 72))
     message += ("\n\n" + wrapped_desc)
 
-cmd = "git ci -a -m".split()
+cmd = ["git", "commit"]
+if not args.no_add:
+    cmd.append("--all")
+
+cmd.append("--message")
 cmd.append(message)
 
 subprocess.call(cmd)

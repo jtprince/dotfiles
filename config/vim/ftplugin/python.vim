@@ -30,3 +30,5 @@ map <leader>C <Esc>0wea<Enter><Esc>$bba<Enter><Enter><Esc>d0k$o<Enter><Esc>kkd
 " turn a single multi-line comment into a single line comment (geared around 4
 " lines of comment).
 map <leader>c <Esc>0JJJJ)b
+
+map <leader>p <Esc>$a  # pylint: disable=
