@@ -8,3 +8,6 @@ pdfx/Languages/PDFXVW_TR.xml
 .vim/colors
 .vim/.netrwhist
 Gemfile.lock
+*.pyc
+__pycache__
+*.egg-info
