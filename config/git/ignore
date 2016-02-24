@@ -11,3 +11,4 @@ Gemfile.lock
 *.pyc
 __pycache__
 *.egg-info
+.idea
