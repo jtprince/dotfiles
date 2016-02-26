@@ -24,6 +24,10 @@ parser.add_argument(
     "--no-add", action='store_true',
     help="don't use -a/--all during the commit"
 )
+parser.add_argument(
+    "--no-branch", action='store_true',
+    help="don't append the branch name to the commit message"
+)
 args = parser.parse_args()
 
 description_ar = args.description
@@ -38,6 +42,15 @@ if description_ar:
     description = " ".join(description_ar)
     wrapped_desc = ''.join(textwrap.wrap(description, 72))
     message += ("\n\n" + wrapped_desc)
+
+if not args.no_branch:
+    branch = subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).rstrip("\n")
+    if branch in ('development', 'production'):
+        raise Exception("You are appending dev or production as branch!  Do you really want that?")
+    message += ("\n\n" + branch + "\n")
+
+print("COMMIT MESSAGE:")
+print(message)
 
 cmd = ["git", "commit"]
 if not args.no_add:
