@@ -81,6 +81,9 @@ alias findit="find -L . -iname"
 # git
 alias gitcim="gitci"
 
+# chat
+alias hangouts="chromium https://hangouts.google.com/ -new-window"
+
 # media
 alias vlisten="vlc --intf rc -Vdummy"
 alias mp="mpd ; ncmpcpp ; mpd --kill"
