@@ -45,7 +45,7 @@ if description_ar:
     message += ("\n\n" + wrapped_desc)
 
 if not args.no_branch:
-    branch = subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode("utf-8").rstrip("\n")
+    branch = subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode('utf-8').rstrip("\n")
     if branch in ('development', 'production'):
         raise Exception("You are appending dev or production as branch!  Do you really want that?")
     message += ("\n\n" + branch + "\n")
