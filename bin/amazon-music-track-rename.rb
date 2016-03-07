@@ -9,10 +9,12 @@ if files.size == 0
   exit
 end
 
-files.each do |file|
-  track, content = file.split(' - ', 2)
+files.each do |orig|
+  track, content = orig.split(/ ?- ?/, 2)
   track = "0" + track if track.size == 2
   track = "00" + track if track.size == 1
   newname = track + '-' + content
-  File.rename(file, newname)
+  if orig != newname
+    File.rename(orig, newname)
+  end
 end
