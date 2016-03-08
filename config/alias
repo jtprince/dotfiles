@@ -82,7 +82,7 @@ alias findit="find -L . -iname"
 alias gitcim="gitci"
 
 # chat
-alias hangouts="chromium https://hangouts.google.com/ -new-window"
+alias hangouts="chromium https://hangouts.google.com/ --new-window"
 
 # media
 alias vlisten="vlc --intf rc -Vdummy"

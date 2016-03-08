@@ -32,10 +32,6 @@ if [ "$1" != "late" ]; then
         dropbox start
         #( sleep 60 && dropbox start )&
     fi
-    if cmd_exists CopyAgent ; then
-        #( sleep 180 && CopyAgent& )&
-        CopyAgent&
-    fi
     notify-send -u low 'initialized!'
 else
     randomise-bkg
