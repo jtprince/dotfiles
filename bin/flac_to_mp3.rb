@@ -25,18 +25,21 @@ tag_convert = {
   tn: "TRACKNUMBER",
   tg: "GENRE",
   ty: "DATE",
+  tc: "COMMENT",
 }
 
 ARGV.each do |file|
-  tag_opts = []
+  tag_opts = {}
   tag_convert.each do |key,val|
     flactag = `metaflac --show-tag=#{val} #{file.shell_escape}`.strip
     if flactag.size > 0
-      data = flactag.split("=",2).last.strip
-      tag_opts << "--#{key}" << data.shell_escape
+      tag_opts[key] = flactag.split("=",2).last.strip
     end
   end
+  tag_opts['tc'] = [tag_opts['tc'], "lame opts: #{LAME_OPTS}"].compact.join("; ")
+  tag_flags = tag_opts.map {|key, val| "--#{key} #{val.shell_escape}" }
+
   mp3name = file.chomp(File.extname(file)) + ".mp3"
-  cmd = "flac -dc #{file.shell_escape} | lame #{LAME_OPTS} #{tag_opts.join(" ")} --tc '#{LAME_OPTS}' --id3v2-only - #{mp3name.shell_escape}"
+  cmd = "flac -dc #{file.shell_escape} | lame #{LAME_OPTS} #{tag_flags.join(" ")} --id3v2-only - #{mp3name.shell_escape}"
   system cmd
 end
