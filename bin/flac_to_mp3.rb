@@ -40,6 +40,7 @@ ARGV.each do |file|
   tag_flags = tag_opts.map {|key, val| "--#{key} #{val.shell_escape}" }
 
   mp3name = file.chomp(File.extname(file)) + ".mp3"
-  cmd = "flac -dc #{file.shell_escape} | lame #{LAME_OPTS} #{tag_flags.join(" ")} --id3v2-only - #{mp3name.shell_escape}"
+  id3v2_only = "--id3v2-only"
+  cmd = "flac -dc #{file.shell_escape} | lame #{LAME_OPTS} #{tag_flags.join(" ")} #{id3v2_only} - #{mp3name.shell_escape}"
   system cmd
 end
