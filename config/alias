@@ -1,7 +1,7 @@
 # amazon cloud EC2 instances:
-export AWSID="i-68ec4467"
-alias AWSSTOP="aws ec2 stop-instances --instance-ids i-68ec4467"
-alias AWSSTART="aws ec2 start-instances --instance-ids i-68ec4467"
+export AWSID="i-b5a0196f"
+alias AWSSTOP="aws ec2 stop-instances --instance-ids $AWSID"
+alias AWSSTART="aws ec2 start-instances --instance-ids $AWSID"
 alias gotoaws="ssh $RMT -t 'source /home/jtprince/dotfiles/config/remote_root_bashrc; cd /home/build; bash -l'"
 
 # apt-get

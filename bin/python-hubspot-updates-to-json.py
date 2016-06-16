@@ -1,14 +1,16 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 """usage: {} <file.txt>
 
 example line:
     {'email': u'a@b.com', u'address_2': u'123 way'}
 
-another example line:
+other lines that will work (contact_data and update_request):
     message=503 <blah>; contact_data={u'company': u'acme', 'email': u'a@b.com'}
+    message=(2006 <blah>); update_request={'options': <whatever> }
 
 output: writes a line of json for each to stdout
 """
+LEADERS = ('contact_data=', 'update_request=')
 
 import sys
 import json
@@ -24,8 +26,9 @@ with open(filename) as infile:
     for line in infile:
         line = line.rstrip()
         try:
-            if "contact_data=" in line:
-                line = line.split("contact_data=")[-1]
+            for leader in LEADERS:
+                if leader in line:
+                    line = line.split(leader)[-1]
             data = eval(line)
             print(json.dumps(data))
         except:
