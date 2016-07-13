@@ -8,5 +8,7 @@ parser.add_argument("start_dir", help="the root dir for traversing down")
 args = parser.parse_args()
 
 for dir_name, subdirs, file_list in os.walk(args.start_dir):
+    if '__pycache__' in dir_name:
+        continue
     if '__init__.py' not in file_list:
         print(dir_name)

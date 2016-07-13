@@ -1,17 +1,30 @@
 #!/usr/bin/env ruby
 
-if ARGV.size == 0
-  puts "usage: #{File.basename($0)} <branch> [local|remote]"
+if ARGV.size == 0 || ARGV[0].include?("-h")
+  puts "usage: #{File.basename($0)} [local|remote] <branch> ..."
   puts "default action is to delete *both* local and remote branch"
   exit
 end
 
-(branch, where) = ARGV
+args = ARGV.dup
 
-unless where == 'remote'
-  %x{git branch -D #{branch}}
+both = ['local', 'remote']
+if both.include?(args.first)
+  where = [args.shift]
+else
+  where = both
 end
 
-unless where == 'local'
-  %x{git push origin :#{branch}}
+branches = args
+
+branches.each do |branch|
+  if where.include?('local')
+    puts "Deleting LOCALLY: #{branch}"
+    %x{git branch -D #{branch}}
+  end
+
+  if where.include?('remote')
+    puts "Deleting REMOTELY: #{branch}"
+    %x{git push origin :#{branch}}
+  end
 end

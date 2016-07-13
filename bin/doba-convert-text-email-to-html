@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+
+require 'redcarpet'
+
+if ARGV.size == 0
+  puts "usage: #{File.basename(__FILE__)} <file>.txt ..."
+  puts "output: text and html, ready for sql upload"
+  puts ""
+  puts "notes:"
+  puts '* will properly interpret \\n chars in the text'
+  puts '* will produce \\n chars in the html output ready for SQL insert'
+  puts "* converts the doba text email into one with html chars"
+  puts "* depends on redcarpet markdown converter (gem install redcarpet)"
+end
+
+# convert newlines into the '\n' character for sql upload
+class String
+  def for_sql_insert
+    self.split("\n").join('\\n')
+  end
+end
+
+options = {
+  autolink: true,  # so the link will get hyperlinked
+  lax_spacing: true,  # so we don't need a space between intro and the list
+}
+
+converter = Redcarpet::Markdown.new(Redcarpet::Render::HTML, **options)
+
+ARGV.each do |file|
+  text = IO.read(file)
+
+  # we may be given text from the SQL insert statement that contains newline
+  # characters (not the newline itself).  Convert these into actual newlines.
+  text.gsub!('\\n', "\n")
+
+  puts text.for_sql_insert
+
+  # make 1 space indented list flush with the beginning of the line
+  text.gsub!(/^ * /, '')
+
+  # embolden the "Doba <whatever> Package" at the start of the email
+  text.gsub!(/(Doba \w+ Package)\:/, '**\1**:')
+
+  html = converter.render(text)
+
+  puts html.for_sql_insert
+end
+
+
