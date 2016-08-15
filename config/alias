@@ -88,6 +88,7 @@ alias hangouts="chromium https://hangouts.google.com/ --new-window"
 alias vlisten="vlc --intf rc -Vdummy"
 alias mp="mpd ; ncmpcpp ; mpd --kill"
 alias mplayer="mplayer -af scaletempo"
+alias youtube-dl="youtube-dl --prefer-ffmpeg"
 
 # applications
 alias exercism="exercism --config ~/.config/exercism.json"

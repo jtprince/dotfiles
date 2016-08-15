@@ -1,7 +1,9 @@
 #!/bin/bash
 
+ARG1=${1:-development}
+
 current_branch=$(git rev-parse --abbrev-ref HEAD)
-git checkout development
+git checkout "$ARG1"
 git pull
 git checkout "$current_branch"
-git merge development
+git merge "$ARG1"
