@@ -18,5 +18,11 @@ origin = get_origin
 
 puts "*proposed* pull request for branch #{branch} into #{pull_into}"
 
-cmd = ["xdg-open", "https://github.com/#{origin}/compare/#{pull_into}...#{branch}?expand=1"]
-system *cmd
+url = "https://github.com/#{origin}/compare/#{pull_into}...#{branch}?expand=1"
+cmd = ["xdg-open", url]
+
+puts url
+
+unless `hostname` == 'jtprince'
+  system *cmd
+end
