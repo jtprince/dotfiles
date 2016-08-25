@@ -19,6 +19,11 @@ alias dependencies="apt-cache depends"
 alias depends_on="apt-cache rdepends"
 alias aptppa='sudo add-apt-repository'
 
+# docker
+export DOCKERWEB="cd /home/jtprince/dev/docker.doba.com && docker-compose run --service-ports web"
+alias dkbash="$DOCKERWEB bash"
+# see `dk` command for running things
+
 # pacman and yaourt
 alias yinstall='yaourt -S --noconfirm'
 
