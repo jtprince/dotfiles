@@ -5,7 +5,7 @@ example line:
     {'email': u'a@b.com', u'address_2': u'123 way'}
 
 other lines that will work (contact_data and update_request):
-    message=503 <blah>; contact_data={u'company': u'acme', 'email': u'a@b.com'}
+    message=503 <blah>; contact_data={'company': 'acme', 'email': 'a@b.com'}
     message=(2006 <blah>); update_request={'options': <whatever> }
 
 output: writes a line of json for each to stdout

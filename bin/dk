@@ -8,7 +8,6 @@ SRC_PATH = File.join(DOCKER_PATH, 'src')
 ALLOWABLE_PATHS = Dir.chdir(SRC_PATH) do
   Dir.glob('*').select {|file| File.directory?(file) }
 end
-p Dir.pwd
 
 DEFAULT_REPO = 'new.doba.com'
 
