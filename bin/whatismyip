@@ -6,6 +6,7 @@ if ARGV.include?("-h") or ARGV.include?("--help")
 end
 
 if ARGV[0] && ARGV[0][0] == 'l'
+  # LAN IP
   if `uname -r` =~ /ARCH/
     reply = `ip addr`.split("\n")
     addr_lines = reply.select do |line|
@@ -18,7 +19,7 @@ if ARGV[0] && ARGV[0][0] == 'l'
     puts "can't parse this distro ip addr yet"
   end
 else
-  require 'open-uri'
-  url = 'http://bot.whatismyipaddress.com'
-  open(url) {|x| puts x.read }
+  # WAN IP
+  ip = `dig +short myip.opendns.com @resolver1.opendns.com`.chomp
+  puts ip
 end
