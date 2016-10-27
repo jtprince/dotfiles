@@ -4,5 +4,6 @@ if grep -q Ubuntu /etc/issue; then
 elif grep -q Mint /etc/issue; then
     /usr/bin/xfce4-terminal --hide-menubar --hide-toolbar
 else
-    /usr/bin/urxvt
+    #/usr/bin/urxvt
+    /usr/bin/xfce4-terminal --hide-menubar --hide-toolbar
 fi
