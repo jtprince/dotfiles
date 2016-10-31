@@ -19,7 +19,7 @@ let g:colors_name = "tortejtp"
 " GUI Comment : #80a0ff = Light blue
 
 " GUI
-highlight Normal     guifg=Grey80	guibg=None
+highlight Normal     guifg=Grey80	guibg=NONE
 highlight Search     guifg=Black	guibg=Red	gui=bold
 highlight Visual     guifg=Grey25			gui=bold
 highlight Cursor     guifg=Black	guibg=Green	gui=bold
@@ -30,7 +30,7 @@ highlight Statement  guifg=Yellow			gui=NONE
 highlight Type						gui=NONE
 
 " Console
-highlight Normal     ctermfg=LightGrey	ctermbg=None
+highlight Normal     ctermfg=LightGrey	ctermbg=NONE
 highlight Search     ctermfg=Black	ctermbg=Red	cterm=NONE
 highlight Visual					cterm=reverse
 highlight Cursor     ctermfg=Black	ctermbg=Green	cterm=bold
