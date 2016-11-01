@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+require 'shellwords'
+
+if ARGV.size == 0
+  puts "usage: #{File.basename(__FILE__)} <file>.md"
+  puts "output: <file>.html --and-- <file>.pdf"
+  puts "(the html is tweaked for wordpress)"
+end
+
+class String
+  def string_between_markers(marker1, marker2)
+    self[/#{Regexp.escape(marker1)}(.*?)#{Regexp.escape(marker2)}/m, 1]
+  end
+
+  def esc
+    return Shellwords.escape(self)
+  end
+end
+
+ARGV.each do |filename|
+  basename = filename.chomp(File.extname(filename))
+  pdf_filename = basename + ".pdf"
+  html_filename = basename + ".html"
+
+  base = %w(pandoc --smart --standalone) + [filename.esc]
+
+  html_options = %w(--to html5)
+  pdf_options = %w()
+
+  [base + html_options + ['-o', html_filename.esc], base + pdf_options + ['-o', pdf_filename.esc]].each do |args|
+    `#{args.join(' ')}`
+  end
+
+  document = IO.read(html_filename)
+  IO.write(html_filename, document.string_between_markers('</header>', '</body>').strip)
+end

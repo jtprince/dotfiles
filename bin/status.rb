@@ -178,16 +178,17 @@ module SysMonitor
       `which acpi`.size.>(0)
     end
 
-    # returns [direction, percent] where direction is +/- or 0
+    # returns [direction, percent, time_until] where direction is +/- or 0
     def get_data
-      (status, percent) = `acpi -b`.split(': ').last.split(', ')
+      all_acpi_info = `acpi -b`.split(': ').last
+      (status, percent_str, time_str) = all_acpi_info.split(', ')
       direction  =
         case status
         when 'Discharging' then '-'
         when 'Charging' then '+'
         else '0'
         end
-      [direction, percent[0...-1].to_f]
+      [direction, percent_str[0...-1].to_f, time_str.split(" ").first]
     end
   end
 
@@ -272,7 +273,7 @@ class I3Bar < Array
       ]
     end
 
-    # a single directional bar (can be up, down, or zero)
+    # a single *directional* bar (can be up, down, or zero)
     class UpDownBar < UI
       def initialize(*args)
         self[:denom] = 100.0 / (Bar::LEVELS.size - 1)
@@ -282,17 +283,35 @@ class I3Bar < Array
 
       # data is an array of direction and percent. returns self
       def display!(data)
-        bar = Bar::LEVELS[ (data[1].to_f / self[:denom]).floor ]
-        direction_glyph =
-          case data[0]
-          when '+' then '⇡'
-          when '-' then '⇣'
-          else '⧫'
-          end
-        self[:full_text] = (self[:symbol] || self[:name]) + self[:ends] + direction_glyph + bar + self[:ends]
+        self[:full_text] = (self[:symbol] || self[:name]) + self[:ends] + core_display(data) + self[:ends]
         self
       end
+
+      def bar(percentage)
+        bar = Bar::LEVELS[ (percentage.to_f / self[:denom]).floor ]
+      end
+
+      def direction_glyph(sign)
+        case sign
+        when '+' then '⇡'
+        when '-' then '⇣'
+        else '⧫'
+        end
+      end
+
+      def core_display(data)
+        direction_glyph(data[0]) + bar(data[1])
+      end
     end
+
+    # a single *directional* bar with accompanying text
+    class UpDownInfoBar < UpDownBar
+      def core_display(data)
+        super(data) + " " + data[2]
+      end
+    end
+
+
 
     # ad hoc for weather.  Expects [temp (int), condition string, intensity (int)]
     class WeatherDisplay < UI
@@ -354,7 +373,7 @@ end
 
 #mpd = I3Bar::UI::SimpleText.new('mpd', '#FFA500', SysMonitor::MPD.new)
 quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
-bat = I3Bar::UI::UpDownBar.new('', '#0000FF', SysMonitor::Battery.new)
+bat = I3Bar::UI::UpDownInfoBar.new('', '#0000FF', SysMonitor::Battery.new)
 cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
 mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
 #weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
