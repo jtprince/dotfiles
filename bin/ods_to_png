@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+ARGV.each do |file|
+  basename = file.chomp(File.extname(file))
+  pdf_filename = basename + ".pdf"
+  png_filename = basename + ".png"
+
+  puts `odf_to_pdf.rb #{file}`
+  puts `convert -density 300 #{pdf_filename} -quality 9 -background white -alpha remove -trim +repage -bordercolor white -border 30x30 #{png_filename}`
+end
+
+
