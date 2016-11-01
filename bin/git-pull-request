@@ -1,10 +1,6 @@
 #!/usr/bin/env ruby
 
-pull_into = ARGV.shift || 'development'
-
-if pull_into =~ /\Aprod/
-  pull_into = "production"
-end
+pull_into = ARGV.shift || 'master'
 
 branch = `git rev-parse --abbrev-ref HEAD`.chomp
 
