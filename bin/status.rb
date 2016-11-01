@@ -377,11 +377,11 @@ bat = I3Bar::UI::UpDownInfoBar.new('', '#0000FF', SysMonitor::Battery.new)
 cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
 mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
 #weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
-days = I3Bar::UI::SimpleText.new('days', '#0404B4', SysMonitor::Days.new)
+#days = I3Bar::UI::SimpleText.new('days', '#0404B4', SysMonitor::Days.new)
 datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime.new)
 
 #components = [quote, bat, cpu, mem, weather, days, datetime].select {|cell| cell[:monitor].valid? }
-components = [quote, bat, cpu, mem, days, datetime].select {|cell| cell[:monitor].valid? }
+components = [quote, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
 
 thin_space = ' '
 div = I3Bar::UI::Divider.new("#{thin_space}◀▶#{thin_space}", "#000000")
