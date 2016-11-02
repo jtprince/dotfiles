@@ -137,9 +137,9 @@ bindsym XF86AudioMute $mute
 #########################
 # Music player
 #########################
-set $playpause exec --no-startup-id playerctl-prince play-pause
-set $nextsong exec --no-startup-id playerctl-prince next
-set $previoussong exec --no-startup-id playerctl-prince previous
+set $playpause exec --no-startup-id playerctl play-pause
+set $nextsong exec --no-startup-id playerctl next
+set $previoussong exec --no-startup-id playerctl previous
 
 # commands for music player
 bindsym XF86AudioPlay $playpause

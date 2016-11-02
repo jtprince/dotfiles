@@ -188,7 +188,7 @@ module SysMonitor
         when 'Charging' then '+'
         else '0'
         end
-      [direction, percent_str[0...-1].to_f, time_str.split(" ").first]
+      [direction, percent_str[0...-1].to_f, time_str&.split(" ")&.first || 'NA']
     end
   end
 

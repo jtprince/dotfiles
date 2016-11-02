@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from __future__ import unicode_literals
-
 import argparse
 import subprocess
 import time
@@ -26,8 +24,8 @@ parser.add_argument(
     help="don't use -a/--all during the commit"
 )
 parser.add_argument(
-    "--no-branch", action='store_true',
-    help="don't append the branch name to the commit message"
+    "-m", "--master", action='store_true',
+    help="this is a commit to master (don't append branch name)"
 )
 args = parser.parse_args()
 
@@ -44,11 +42,11 @@ if description_ar:
     wrapped_desc = ''.join(textwrap.wrap(description, 72))
     message += ("\n\n" + wrapped_desc)
 
-if not args.no_branch:
+if not args.master:
     branch = subprocess.check_output("git rev-parse --abbrev-ref HEAD".split()).decode('utf-8').rstrip("\n")
-    if branch in ('development', 'production'):
-        raise Exception("You are appending dev or production as branch!  Do you really want that?")
-    message += ("\n\n" + branch + "\n")
+    if branch == 'master':
+        raise Exception("You are appending master as the branch!  If you really want that: gitci -m")
+    message += ("\n\n" + branch)
 
 print("COMMIT MESSAGE:")
 print(message)

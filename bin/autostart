@@ -20,9 +20,8 @@ if [ "$1" != "late" ]; then
     thunar --daemon &
     # xscreensaver &
     xautolock-start
-    # yaourt -S pasystray-git pavucontrol paprefs pavumeter
-    # also
-    # echo "load-module module-device-manager" >> /etc/pulse/default.pa
+
+    # sound tray
     pasystray &
     xclip -silent &
     if cmd_exists nm-applet ; then
