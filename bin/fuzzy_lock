@@ -3,16 +3,18 @@
 notify-send -u low --expire-time=2 'LOCKING SCREEN!'
 
 # Take a screenshot
-sc /tmp/screen_locked.png
+# sc /tmp/screen_locked.png
 
 # Pixellate it 10x (note that convert is 2X as fast as mogrify)
-convert  /tmp/screen_locked.png -scale 10% -scale 1000% /tmp/screen_locked_blurred.png
+#convert  /tmp/screen_locked.png -scale 10% -scale 1000% /tmp/screen_locked_blurred.png
 
 # delete original
-rm /tmp/screen_locked.png
+#rm /tmp/screen_locked.png
 
 # Lock screen displaying this image.
-i3lock -i /tmp/screen_locked_blurred.png
+# (hint: it has to be a png because cairo can't load a jpg)
+# convert /usr/local/share/backgrounds/Braunwald_switzerland.jpg /usr/local/share/backgrounds/Braunwald_switzerland.png
+i3lock -i /usr/local/share/backgrounds/Braunwald_switzerland.png
 
 # Turn the screen off after a delay.
-sleep 3; pgrep i3lock && xset dpms force off
+sleep 2; pgrep i3lock && xset dpms force off
