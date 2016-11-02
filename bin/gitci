@@ -49,7 +49,9 @@ if not args.master:
     message += ("\n\n" + branch)
 
 print("COMMIT MESSAGE:")
+print("---")
 print(message)
+print("---")
 
 cmd = ["git", "commit"]
 if not args.no_add:
