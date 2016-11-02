@@ -5,19 +5,19 @@ alias AWSSTART="aws ec2 start-instances --instance-ids $AWSID"
 alias gotoaws="ssh $RMT -t 'source /home/jtprince/dotfiles/config/remote_root_bashrc; cd /home/build; bash -l'"
 
 # apt-get
-alias apti='sudo apt-get install'
-alias aptinstall='sudo apt-get install'
-alias apts='aptitude search'
-alias aptsearch='aptitude search'
-alias aptr='sudo aptitude remove --purge-unused'
-alias aptremove='sudo aptitude remove --purge-unused'
-alias aptshow='apt-cache show'
-alias aptupdate='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get autoremove'
-alias aptaddkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
-alias dependenciesr="apt-cache --recurse depends"
-alias dependencies="apt-cache depends"
-alias depends_on="apt-cache rdepends"
-alias aptppa='sudo add-apt-repository'
+# alias apti='sudo apt-get install'
+# alias aptinstall='sudo apt-get install'
+# alias apts='aptitude search'
+# alias aptsearch='aptitude search'
+# alias aptr='sudo aptitude remove --purge-unused'
+# alias aptremove='sudo aptitude remove --purge-unused'
+# alias aptshow='apt-cache show'
+# alias aptupdate='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get autoremove'
+# alias aptaddkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
+# alias dependenciesr="apt-cache --recurse depends"
+# alias dependencies="apt-cache depends"
+# alias depends_on="apt-cache rdepends"
+# alias aptppa='sudo add-apt-repository'
 
 # docker
 export DOCKERWEB="cd /home/jtprince/dev/docker.doba.com && docker-compose run --service-ports web"
@@ -25,7 +25,8 @@ alias dkbash="$DOCKERWEB bash"
 # see `dk` command for running things
 
 # pacman and yaourt
-alias yinstall='yaourt -S --noconfirm'
+alias pinstall='pacaur -S --noconfirm'
+alias pint=pinstall
 
 # extraction & compression
 alias utar='dtrx -n'
@@ -91,9 +92,9 @@ alias hangouts="chromium https://hangouts.google.com/ --new-window"
 
 # media
 alias vlisten="vlc --intf rc -Vdummy"
-alias mp="mpd ; ncmpcpp ; mpd --kill"
+#alias mp="mpd ; ncmpcpp ; mpd --kill"
 alias mplayer="mplayer -af scaletempo"
-alias youtube-dl="youtube-dl --prefer-ffmpeg"
+#alias youtube-dl="youtube-dl --prefer-ffmpeg"
 
 # applications
 alias exercism="exercism --config ~/.config/exercism.json"
