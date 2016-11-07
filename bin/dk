@@ -1,31 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'optparse'
-
-DOCKER_PATH = File.join(ENV['HOME'], 'dev', 'docker.doba.com')
-SRC_PATH = File.join(DOCKER_PATH, 'src')
-
-ALLOWABLE_PATHS = Dir.chdir(SRC_PATH) do
-  Dir.glob('*').select {|file| File.directory?(file) }
-end
-
-DEFAULT_REPO = 'new.doba.com'
-
-repo =
-  if ALLOWABLE_PATHS.include?(ARGV[0])
-    ARGV.shift
-  else
-    DEFAULT_REPO
-  end
-
 if ARGV.size == 0
-  puts "usage: #{File.basename(__FILE__)} [repo] cmd"
-  puts "will cd into #{repo}"
+  puts "usage: #{File.basename(__FILE__)} cmd"
   exit
 end
 
-cmd = "docker-compose run web bash -c \"cd #{repo} && #{ARGV.join(' ')}\""
-
-Dir.chdir(DOCKER_PATH) do
-  system cmd
-end
+cmd = "docker-compose run web bash -c \"#{ARGV.join(' ')}\""
+system cmd
