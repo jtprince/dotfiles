@@ -45,7 +45,7 @@ elif linenum:
     cmd.append("+%d" % int(linenum))
 
 file_to_call = filename.split(':')[0]
-file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwido
+file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwidow")
 
 cmd.append(file_to_call)
 
