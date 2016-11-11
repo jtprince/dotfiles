@@ -44,7 +44,10 @@ if colnum:
 elif linenum:
     cmd.append("+%d" % int(linenum))
 
-cmd.append(filename.split(':')[0])
+file_to_call = filename.split(':')[0]
+file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwido
+
+cmd.append(file_to_call)
 
 print("running: %s" % " ".join(cmd))
 subprocess.call(cmd)
@@ -61,4 +64,6 @@ subprocess.call(cmd)
 # /home/jtprince/bin/id3_rename.rb:5: syntax error, unexpected tIDENTIFIER, expecting end-of-input
 # flake8
 # ./doba/settings/common.py:325:1: E265 block comment should start with '# '
+
+#  File "/drone/src/blackwidow/libs/utils/tests/test_json.py", line 41, in test_object_with_to_dict
 
