@@ -5,5 +5,11 @@ if ARGV.size == 0
   exit
 end
 
-cmd = "docker-compose run web bash -c \"#{ARGV.join(' ')}\""
+blackwidow_web_container_name = "blackwidow_web_1"
+
+container_id = `docker ps -a --no-trunc --filter name=#{blackwidow_web_container_name} --format "{{.ID}}"`.chomp
+
+cmd = %Q{docker exec -it #{container_id} bash -c "#{ARGV.join(' ')}"}
+
+puts "RUNNING: #{cmd}"
 system cmd
