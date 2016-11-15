@@ -6,6 +6,7 @@
 
 require 'json'
 require 'time'
+require 'yaml'
 
 DROPBOX = ENV['HOME'] + "/Dropbox"
 
@@ -192,24 +193,40 @@ module SysMonitor
     end
   end
 
-  class MPD
+  class SongInfo
+    MAX_FIELD_LENGTH = 30
+
+    def shorten(string, max_length=MAX_FIELD_LENGTH)
+      string_short = string[0..max_length]
+      string_short << "..." if string_short != string
+      return string_short
+    end
+  end
+
+  class MPD < SongInfo
     include SysMonitor
     include Sleeper
-    ARTIST_LENGTH = 30
-    TITLE_LENGTH = 30
 
     def get_data
       title = `mpc -f "%title%|%file%" current`.strip
       title = File.basename(title) if title.include?("/")
       artist = `mpc -f "%composer%|%artist%" current`.strip
-      artist_short = artist[0..ARTIST_LENGTH]
-      title_short = title[0..TITLE_LENGTH]
-      artist_short << "..." if artist_short != artist
-      title_short << "..." if title_short != title
-      "#{artist_short} - #{title_short}"
+      "#{shorten(artist)} - #{shorten(title)}"
     end
   end
 
+  class Spotify < SongInfo
+    include SysMonitor
+    include Sleeper
+
+    def get_data
+      data = YAML.load(`spotify-info`)
+      (artist, album, title, tracknum) = ['artist', 'album', 'title'].map do |key|
+        shorten(data['xesam:' + key])
+      end
+      "#{artist} (#{title}) #{data['xesam:trackNumber']}-#{title}"
+    end
+  end
 end
 
 ######################################################################
@@ -372,6 +389,7 @@ end
 # see https://www.dropbox.com/s/9iysh2i0gadi4ic/icons.pdf
 
 #mpd = I3Bar::UI::SimpleText.new('mpd', '#FFA500', SysMonitor::MPD.new)
+spotify = I3Bar::UI::SimpleText.new('spotifyinfo', '#FFA500', SysMonitor::Spotify.new)
 quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
 bat = I3Bar::UI::UpDownInfoBar.new('', '#0000FF', SysMonitor::Battery.new)
 cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
@@ -381,7 +399,8 @@ mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
 datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime.new)
 
 #components = [quote, bat, cpu, mem, weather, days, datetime].select {|cell| cell[:monitor].valid? }
-components = [quote, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+#components = [quote, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+components = [spotify, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
 
 thin_space = ' '
 div = I3Bar::UI::Divider.new("#{thin_space}◀▶#{thin_space}", "#000000")

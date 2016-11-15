@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+
+=begin
+Returns the current spotify info as yaml
+---
+mpris:trackid: spotify:track:3GqoSwOYAHt83rx4FYP7e2
+mpris:length: 107000000
+mpris:artUrl: https://open.spotify.com/image/8a1eb3f79700a535b21b53a7482645d7da963f72
+xesam:album: Tales And Dreams
+xesam:albumArtist: Kwoon
+xesam:artist: Kwoon
+xesam:autoRating: 0.13
+xesam:discNumber: 1
+xesam:title: Intro
+xesam:trackNumber: 1
+xesam:url: https://open.spotify.com/track/3GqoSwOYAHt83rx4FYP7e2
+=end
+
+require 'yaml'
+
+track_info = `dbus-send --print-reply --session --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'`
+
+def extract_string_value(line)
+  line[/ "(.*)"/, 1]
+end
+
+def load_variant(lines)
+  if lines[0] =~ /array/
+    extract_string_value(lines[1])
+  else
+    _, type, value = lines[0].split(/\s+/, 3)
+    if type =~ /int/
+      value.to_i
+    elsif type == 'double'
+      value.to_f
+    else
+      value[/\"(.*)\"/, 1]
+    end
+  end
+end
+
+def split_into_dicts(lines)
+  dicts = []
+  in_dict = false
+  lines.each do |line|
+    line.strip!
+    if line == ")"
+      in_dict = false
+      next
+    end
+
+    if line =~ /dict entry\(/
+      in_dict = true
+      dicts << []
+      next
+    end
+
+    if in_dict
+      dicts.last.push(line)
+    end
+  end
+
+  dicts.map do |lines|
+    key = extract_string_value(lines[0])
+    value = load_variant(lines[1..-1])
+    [key, value]
+  end.to_h
+end
+
+info = split_into_dicts(track_info.split("\n"))
+
+puts info.to_yaml
