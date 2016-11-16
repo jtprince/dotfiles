@@ -76,13 +76,19 @@ client.urgent               #F00000     #F00000     #000000
 # Also: need systemd file with this command: setpci -v -H1 -s 00:01.00 BRIDGE_CONTROL=0
 # (see Dropbox/env/backlight for example file)
 # https://bbs.archlinux.org/viewtopic.php?id=167209
-# udevadm control --reload  # or maybe reboot
+# sudo udevadm control --reload  # or maybe reboot
 # common options: acpi_video0 acpi_video1 intel_backlight gmux_backlight (Macbook Pro)
-set $backlight acpi_video0
-set $majorlightadjust 15
-set $mediumlightadjust 4
-set $lowlightadjust 2
-set $finelightadjust 1
+#set $backlight acpi_video0
+#set $majorlightadjust 15
+#set $mediumlightadjust 4
+#set $lowlightadjust 2
+#set $finelightadjust 1
+#
+set $backlight intel_backlight
+set $majorlightadjust 50
+set $mediumlightadjust 25
+set $lowlightadjust 10
+set $finelightadjust 2
 
 bindsym XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness $backlight '-' $majorlightadjust
 bindsym XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness $backlight '+' $majorlightadjust
