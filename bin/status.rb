@@ -221,7 +221,7 @@ module SysMonitor
 
     def get_data
       data = YAML.load(`spotify-info`)
-      if data.size > 0
+      if data.size > 0 && data['xesam:title'].size > 0
         (artist, album, title) = ['artist', 'album', 'title'].map do |key|
           shorten(data['xesam:' + key])
         end

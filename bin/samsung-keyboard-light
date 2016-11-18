@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+if ARGV[0] =~ /-h/
+  puts "usage: #{File.basename(__FILE__)} [+|-] [increment]"
+  puts "if nothing specified, increments up by 1"
+  exit
+end
+
+operation = ARGV[0] || "+"
+increment = ARGV[1]&.to_i || 1
+
+resource = "/sys/class/leds/samsung::kbd_backlight/"
+brightness_resource = resource + "brightness"
+max_brightness_resource = resource + "max_brightness"
+
+def get(resource)
+  `cat #{resource}`.to_i
+end
+
+def set(resource, value)
+  `echo #{value} > #{resource}`
+end
+
+current_brightness = get(brightness_resource)
+max_brightness = get(max_brightness_resource)
+
+new_brightness = current_brightness.send(operation, increment)
+
+new_brightness = 0 if new_brightness < 0
+new_brightness = max_brightness if new_brightness > max_brightness
+
+if new_brightness != current_brightness
+  set(brightness_resource, new_brightness)
+end
+
+puts "#{get(brightness_resource)} / #{max_brightness}"

@@ -1,30 +1,68 @@
 #!/usr/bin/env ruby
 
+# ENV variables required:
+# $BACKLIGHT (one of: acpi_video0 acpi_video1 intel_backlight gmux_backlight)
+# If no BACKLIGHT env variable then uses acpi_video0 if exists, else intel_backlight
+
+
 backlight_dir ="/sys/class/backlight"
-default_inc = 20
+default_increment_type = :major
 
 # note that you also need to create file </etc/udev/rules.d/97-intel_backlight.rules> with contents (no #):
 # KERNEL=="intel_backlight", SUBSYSTEM=="backlight", RUN+="/usr/bin/chmod 666 /sys/class/backlight/%k/brightness"
 # https://bbs.archlinux.org/viewtopic.php?id=167209
 # udevadm control --reload  # or maybe reboot
 
+video_cards = Dir[backlight_dir + "/*"].map {|v| File.basename(v) }
 if ARGV.size == 0
-  video_cards = Dir[backlight_dir + "/*"].map {|v| File.basename(v) }
-  puts "usage: #{File.basename($0)} <video_card> [+|-] [increment=#{default_inc}]"
-  puts "video card should be one of: "
+  puts "usage: #{File.basename($0)} <video_card> [+|-] [increment=#{default_increment_type}]"
+  puts "video card should be 'auto' or one of: "
   puts "    #{video_cards.join(", ")}"
+  puts "auto respects BACKLIGHT env variable, otherwise acpi_video0 or intel_backlight"
   puts "always *prints* current brightness to stdout"
   exit
 end
 
-(video_card, operation, increment) = ARGV
+
+def make_increment(max_val, factor)
+  (max_val.to_f / factor).round.to_i
+end
+
+
+(video_card, operation, increment_type) = ARGV
 operation = operation ? operation.to_sym : nil
-increment = increment ? increment.to_i : default_inc
+increment_type = increment_type ? increment_type.to_sym : default_increment_type
+
+video_card =
+  if video_card == 'auto'
+    if ENV.key?('BACKLIGHT')
+      ENV['BACKLIGHT']
+    else
+      ['acpi_video0', 'intel_backlight'].find do |preferred_card|
+        video_cards.include?(preferred_card)
+      end
+    end
+  else
+    video_card
+  end
+
+
 backlight_base ="#{backlight_dir}/#{video_card}"
+max_val = `cat #{backlight_base }/max_brightness`.to_i
+
+increments =
+{
+    major: 6.6,
+    medium: 25.0,
+    minor: 50.0,
+    fine: 100.0,
+}.map {|key, factor| [key, make_increment(max_val, factor)] }.to_h
+
+
 brightness_pipe = backlight_base  + "/brightness"
 current_brightness = `cat #{brightness_pipe}`.to_i
 if operation
-  new_brightness = current_brightness.send(operation, increment)
+  new_brightness = current_brightness.send(operation, increments[increment_type])
   if operation == :+
     max_val = `cat #{backlight_base }/max_brightness`.to_i
     new_brightness = max_val if new_brightness > max_val
@@ -35,4 +73,6 @@ if operation
   #puts cmd
   `#{cmd}`
 end
-print current_brightness.to_s
+
+current_brightness = `cat #{brightness_pipe}`.to_i
+puts "#{current_brightness.to_s} / #{max_val}"
