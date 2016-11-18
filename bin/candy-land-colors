@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+colors = %w(red purple yellow blue orange green pink)
+
+rare = %w(peppermint-candy peanut lollipop ice-cream)
+
+rare_rate = 1.0/20.0
+
+double_rate = 1.0/4.0
+
+
+loop do
+  rand_num = rand
+  if rand_num <= rare_rate
+    puts rare.sample
+  else
+    color = colors.sample
+    rand_num = rand
+    if rand_num <= double_rate
+      puts ([color]*2).join("-")
+    else
+      puts color
+    end
+  end
+  8.times { puts }
+  gets
+  100.times { puts }
+end
+
