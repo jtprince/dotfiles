@@ -5,35 +5,56 @@ function cmd_exists {
 }
 
 if [ "$1" != "late" ]; then
+
+    # gnome keyring
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+
+    # Xresources
     xrdb -merge ~/.Xresources
     if [ -e ~/.config/Xresources-local ]; then
         xrdb -merge ~/.config/Xresources-local
     fi
+
+    # dunst
     dunst -config ~/.config/dunstrc &
+
+    # pulseaudio
     start-pulseaudio-x11
-    #if [ `hostname` != "luce" ]; then
-        # luce defines shortcuts in evdev
-        # yaourt -S xdotool
+
+    # xmodmap
     xmodmap ~/.config/xmodmap
-    #fi
+
+    # thunar
     thunar --daemon &
-    # xscreensaver &
+
+    # lock screen
     xautolock-start
 
     # sound tray
     pasystray &
+
+    # clipboard
     xclip -silent &
+
+    # network manager applet
     if cmd_exists nm-applet ; then
         nm-applet &
     fi
+
+    # dropbox
     if cmd_exists dropbox ; then
         dropbox start
-        #( sleep 60 && dropbox start )&
     fi
-    notify-send -u low 'initialized!'
-else
-    randomise-bkg
-fi
 
-#eval `dbus-launch --sh-syntax --exit-with-session`
+    # pcloud
+    if cmd_exists psyncgui ; then
+        ( sleep 10 && psyncgui )&
+    fi
+
+    notify-send -u low 'initialized!'
+
+else
+
+    randomise-bkg
+
+fi
