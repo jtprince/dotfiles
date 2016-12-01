@@ -22,8 +22,6 @@ alias gotoaws="ssh $RMT -t 'source /home/jtprince/dotfiles/config/remote_root_ba
 # docker
 export DOCKERDOBAWEB="cd /home/jtprince/dev/docker.doba.com && docker-compose run --service-ports web"
 alias dkdobabash="$DOCKERDOBAWEB bash"
-alias dkbash="docker exec -it  `docker ps -a --no-trunc --filter name=blackwidow_web_1 --format '{{.ID}}'` bash"
-# see `dk` command for running things
 
 # pacman and yaourt
 alias pinstall='pacaur -S --noconfirm'
