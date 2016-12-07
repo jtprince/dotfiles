@@ -218,6 +218,10 @@ module SysMonitor
   class Spotify < SongInfo
     include SysMonitor
     include Sleeper
+    def initialize(*args)
+      @musical_sequence = %w(♩ ♪ ♬ ♫)
+      super(*args)
+    end
 
     def get_data
       data = YAML.load(`spotify-info`)
@@ -225,7 +229,18 @@ module SysMonitor
         (artist, album, title) = ['artist', 'album', 'title'].map do |key|
           shorten(data['xesam:' + key])
         end
-        "#{artist} (#{album}) #{data['xesam:trackNumber']}-#{title}"
+
+        player_status = `playerctl status`.chomp.downcase.to_sym
+        display_status =
+          case player_status
+          when :playing
+            @musical_sequence.rotate!.join + " "
+          when :paused
+            "▮▮ "
+          else
+            ''
+          end
+        "#{display_status}#{artist} (#{album}) #{data['xesam:trackNumber']}-#{title}"
       else
         "NA"
       end
