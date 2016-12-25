@@ -3,7 +3,8 @@
 require 'shellwords'
 # --smart gets me proper curly quotes and apostrophes!
 # but they will not look right unless --standalone is also used
-default_options = "--smart --standalone -V geometry:margin=1.7in --variable urlcolor=Blue"
+#default_options = "--smart --standalone -V geometry:margin=1.7in --variable urlcolor=Blue"
+default_options = "--smart -N --standalone -V geometry:margin=1.7in --variable urlcolor=Blue"
 
 if ARGV.size == 0
   puts "usage: #{File.basename(__FILE__)} [OPT] <file>.md ..."
