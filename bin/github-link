@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+require 'optparse'
+
+BASE_URL = "https://github.com"
+GOOGLE_VIEWER_LINK = "https://docs.google.com/viewer?url="
+
+opts = {
+  filetype: "raw",
+}
+parser = OptionParser.new do |op|
+  op.banner = "usage: #{File.basename(__FILE__)} <file>"
+  op.separator "output: the github url of the file"
+  op.on("-b", "--blob", "use the blob instead of raw") {|v| opts[:filetype] = "blob"}
+  op.on("-m", "--master", "use the master branch instead of current version") {|v| opts[:branch] = "master" }
+  op.on("--branch", "use specific branch instead of current version") {|v| opts[:branch] = v }
+  op.on("--view", "make a raw pdf viewable") {|v| opts[:viewable_link] = v }
+end
+parser.parse!
+
+if ARGV.size == 0
+  puts parser
+  exit
+end
+
+filepath = ARGV.first
+
+pathname = Pathname.new(File.absolute_path(filepath))
+dir = pathname.dirname
+
+hash, topdir, url = Dir.chdir(dir) do
+  [
+    `git rev-parse HEAD`.chomp,
+    `git rev-parse --show-toplevel`.chomp,
+    `git remote show origin 2>/dev/null`.split("\n").map do |line|
+      line[/Push\s+URL: (.*)/, 1]
+    end.compact.first
+  ]
+end
+
+repo_path = Pathname.new(topdir)
+relative_path = pathname.relative_path_from(repo_path)
+
+base = "https://github.com"
+
+user, repo = url.split(":", 2).last.split(".git").first.split("/")
+
+def assemble_github_url(user, repo, relative_path, version_specifier, filetype, base_url=BASE_URL)
+  [base_url, user, repo, filetype, version_specifier, relative_path].join("/")
+end
+
+github_url = assemble_github_url(user, repo, relative_path.to_s, opts[:branch] || hash, opts[:filetype])
+
+final_url = opts[:viewable_link] ? GOOGLE_VIEWER_LINK + github_url : github_url
+
+puts final_url

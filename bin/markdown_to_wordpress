@@ -26,7 +26,7 @@ ARGV.each do |filename|
   base = %w(pandoc -fmarkdown-implicit_figures --smart --standalone) + [filename.esc]
 
   html_options = %w(--to html5)
-  pdf_options = %w()
+  pdf_options = %w(--variable urlcolor=Blue)
 
   [base + html_options + ['-o', html_filename.esc], base + pdf_options + ['-o', pdf_filename.esc]].each do |args|
     `#{args.join(' ')}`
