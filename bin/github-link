@@ -16,6 +16,7 @@ parser = OptionParser.new do |op|
   op.on("-m", "--master", "use the master branch instead of current version") {|v| opts[:branch] = "master" }
   op.on("--branch", "use specific branch instead of current version") {|v| opts[:branch] = v }
   op.on("--view", "make a raw pdf viewable") {|v| opts[:viewable_link] = v }
+  op.on("--base", "return the repo base link") {|v| opts[:repo_base] = v }
 end
 parser.parse!
 
@@ -27,7 +28,12 @@ end
 filepath = ARGV.first
 
 pathname = Pathname.new(File.absolute_path(filepath))
-dir = pathname.dirname
+dir =
+if pathname.directory?
+  pathname
+else
+  pathname.dirname
+end
 
 hash, topdir, url = Dir.chdir(dir) do
   [
@@ -50,8 +56,12 @@ def assemble_github_url(user, repo, relative_path, version_specifier, filetype, 
   [base_url, user, repo, filetype, version_specifier, relative_path].join("/")
 end
 
-github_url = assemble_github_url(user, repo, relative_path.to_s, opts[:branch] || hash, opts[:filetype])
-
-final_url = opts[:viewable_link] ? GOOGLE_VIEWER_LINK + github_url : github_url
+final_url =
+if opts[:repo_base]
+  [BASE_URL, user, repo].join("/")
+else
+  github_url = assemble_github_url(user, repo, relative_path.to_s, opts[:branch] || hash, opts[:filetype])
+  final_url = opts[:viewable_link] ? GOOGLE_VIEWER_LINK + github_url : github_url
+end
 
 puts final_url
