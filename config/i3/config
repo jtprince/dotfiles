@@ -308,7 +308,7 @@ bindsym $mod+Shift+Q exit
 bindsym $mod+Ctrl+Shift+P exec --no-startup-id systemctl poweroff
 bindsym $mod+Ctrl+Shift+R exec --no-startup-id systemctl reboot
 # suspend (RAM)
-bindsym $mod+Ctrl+Shift+S exec --no-startup-id systemctl suspend
+bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
 # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
 bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
 

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+fuzzy_lock
+sleep 1
+systemctl suspend
