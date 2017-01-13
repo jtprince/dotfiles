@@ -5,9 +5,9 @@ if ARGV.size == 0
   exit
 end
 
-blackwidow_web_container_name = "blackwidow_web_1"
+web_container_name = "thanos_web_1"
 
-container_id = `docker ps -a --no-trunc --filter name=#{blackwidow_web_container_name} --format "{{.ID}}"`.chomp
+container_id = `docker ps -a --no-trunc --filter name=#{web_container_name} --format "{{.ID}}"`.chomp
 
 cmd = %Q{docker exec -it #{container_id} bash -c "#{ARGV.join(' ')}"}
 
