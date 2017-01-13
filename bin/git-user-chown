@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+EMAIL_EXTENSION = "@gmail.com"
+GITHUB_PREFIX = 'git@github.com:'
+
+def run(cmd)
+  `#{cmd}`.chomp
+end
+
+def add_to_remote_origin(name, remote_origin)
+  trailer = remote_origin.split(GITHUB_PREFIX).last
+  if trailer == remote_origin
+    puts "**note: remote origin not changed.**"
+    remote_origin
+  else
+    git_prefix_with_name = GITHUB_PREFIX.dup
+    git_prefix_with_name.insert(-2, "-#{name}")
+    git_prefix_with_name + trailer
+  end
+end
+
+def alter_remote_origin(name)
+  remote_origin = run "git config --get remote.origin.url"
+  new_remote_origin = add_to_remote_origin(name, remote_origin)
+  run "git config remote.origin.url #{new_remote_origin}"
+end
+
+if ARGV.size == 0
+  puts "usage: #{File.basename(__FILE__)} <name> [email]"
+  puts "(should be performed within the git repo)"
+  puts "appends a '#{EMAIL_EXTENSION}' to <name> if no email supplied"
+  puts "also appends remote origin url '#{github_prefix[0...-1]}' with '-<name>'"
+  exit
+end
+
+name = ARGV.shift
+email = ARGV.shift || name + EMAIL_EXTENSION
+
+alter_remote_origin(name)
+
+{name: name, email: email}.each do |key, val|
+  run "git config user.#{key} #{val}"
+end
+
+%w(user.name user.email remote.origin.url).each do |key|
+  puts "#{key}: " + run("git config --get #{key}")
+end
