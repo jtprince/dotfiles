@@ -2,8 +2,5 @@
 
 ARG1=${1:-master}
 
-current_branch=$(git rev-parse --abbrev-ref HEAD)
-git checkout "$ARG1"
-git pull
-git checkout "$current_branch"
-git merge "$ARG1"
+git fetch -p
+git merge "origin/$ARG1"
