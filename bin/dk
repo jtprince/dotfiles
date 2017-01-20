@@ -1,15 +1,26 @@
 #!/usr/bin/env ruby
 
 if ARGV.size == 0
-  puts "usage: #{File.basename(__FILE__)} cmd"
+  puts "usage: #{File.basename(__FILE__)} [db] cmd"
   exit
 end
 
-web_container_name = "thanos_web_1"
+cmd_args = ARGV.dup
 
-container_id = `docker ps -a --no-trunc --filter name=#{web_container_name} --format "{{.ID}}"`.chomp
+container_name =
+  if cmd_args[0] == 'db'
+    cmd_args.shift
+    cmd_args.push('mysql', '-uroot', '-proot', 'thanos')
+    'thanos_mysql-local_1'
+  else
+    "thanos_web_1"
+  end
 
-cmd = %Q{docker exec -it #{container_id} bash -c "#{ARGV.join(' ')}"}
+
+container_id = `docker ps -a --no-trunc --filter name=#{container_name} --format "{{.ID}}"`.chomp
+
+cmd = %Q{docker exec -it #{container_id} bash -c "#{cmd_args.join(' ')}"}
+p cmd
 
 puts "RUNNING: #{cmd}"
 system cmd
