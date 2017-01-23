@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd ~/dev/thanos
+dk pip install -U -r requirements.txt
