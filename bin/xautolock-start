@@ -1,3 +1,4 @@
 #!/bin/sh
 
-xautolock -time 10 -locker fuzzy_lock -notify 20 -notifier 'xset dpms force off' &
+xautolock -time 5 -locker fuzzy_lock -notify 20 -notifier 'xset dpms force off' &
+xautolock -time 7 -locker "systemctl suspend" &
