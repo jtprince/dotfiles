@@ -2,5 +2,14 @@
 
 ARG1=${1:-master}
 
-git fetch -p
-git merge "origin/$ARG1"
+if [[ -z $(git status -s) ]]; then
+    git fetch -p
+    git merge "origin/$ARG1"
+else
+    echo "********************************************************"
+    echo "** Will not merge while you have uncommitted changes! **"
+    echo ""
+    echo "uncommitted:"
+    git status -s
+    echo "********************************************************"
+fi
