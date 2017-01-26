@@ -2,7 +2,7 @@
 
 ARG1=${1:-master}
 
-if [[ -z $(git status -s) ]]; then
+if [[ -z $(git status -s -uno) ]]; then
     git fetch -p
     git merge "origin/$ARG1"
 else
