@@ -16,11 +16,20 @@ container_name =
     "thanos_web_1"
   end
 
+def escape_quote(arg)
+  '\"' + arg + '\"'
+end
+
+cmd_args.map! do |arg|
+  if arg.start_with?("--") && arg.include?('=')
+    flag, val = arg.split('=', 2)
+    [flag, escape_quote(val)].join("=")
+  else
+    arg
+  end
+end
 
 container_id = `docker ps -a --no-trunc --filter name=#{container_name} --format "{{.ID}}"`.chomp
 
 cmd = %Q{docker exec -it #{container_id} bash -c "#{cmd_args.join(' ')}"}
-p cmd
-
-puts "RUNNING: #{cmd}"
 system cmd

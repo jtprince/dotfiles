@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+rm -f **/migrations/000*.py &>/dev/null
+dk ./manage.py makemigrations &>/dev/null
+
+echo "************** FLAKE8 **************"
+dk flake8 .
+echo "************** PYLINT **************"
+dk pylint apps django_utils
+echo "************** TESTS ***************"
+dk ./manage.py test --settings=thanos.settings.docker
