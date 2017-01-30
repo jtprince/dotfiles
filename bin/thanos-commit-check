@@ -6,6 +6,6 @@ dk ./manage.py makemigrations &>/dev/null
 echo "************** FLAKE8 **************"
 dk flake8 .
 echo "************** PYLINT **************"
-dk pylint apps django_utils
+dk pylint --msg-template="{path}:{line}   ({msg_id}-{symbol}) {msg}-{obj}" apps django_utils
 echo "************** TESTS ***************"
 dk ./manage.py test --settings=thanos.settings.docker
