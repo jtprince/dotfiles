@@ -48,6 +48,15 @@ file_to_call = filename.split(':')[0]
 file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwidow")
 file_to_call = file_to_call.replace("/drone/src", "/home/jtprince/dev/thanos")
 
+# Sometimes we get a module path:
+if "/" not in file_to_call:
+    file_to_call = file_to_call.replace(".", "/")
+    file_to_call = file_to_call + ".py"
+
+# Sometimes the module path starts with '=='
+if file_to_call.startswith("=="):
+    file_to_call = file_to_call.replace("==", 1)
+
 cmd.append(file_to_call)
 
 print("running: %s" % " ".join(cmd))
@@ -65,6 +74,8 @@ subprocess.call(cmd)
 # /home/jtprince/bin/id3_rename.rb:5: syntax error, unexpected tIDENTIFIER, expecting end-of-input
 # flake8
 # ./doba/settings/common.py:325:1: E265 block comment should start with '# '
+# django_utils.tests.test_utils:34
+# ==django_utils.tests.test_utils:34
 
 #  File "/drone/src/blackwidow/libs/utils/tests/test_json.py", line 41, in test_object_with_to_dict
 
