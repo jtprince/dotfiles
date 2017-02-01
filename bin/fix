@@ -55,7 +55,7 @@ if "/" not in file_to_call:
 
 # Sometimes the module path starts with '=='
 if file_to_call.startswith("=="):
-    file_to_call = file_to_call.replace("==", 1)
+    file_to_call = file_to_call.replace("==", '', 1)
 
 cmd.append(file_to_call)
 
