@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'shellwords'
 
 if ARGV.size == 0
   puts "usage: #{File.basename(__FILE__)} [db] cmd"
