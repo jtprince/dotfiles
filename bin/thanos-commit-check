@@ -3,9 +3,9 @@
 rm -f **/migrations/000*.py &>/dev/null
 dk ./manage.py makemigrations &>/dev/null
 
-echo "************** FLAKE8 **************"
+echo "******************* FLAKE 8 *******************"
 dk flake8 .
-echo "************** PYLINT **************"
+echo "******************* PYLINT ********************"
 dk pylint --msg-template="{path}:{line}   ({msg_id}-{symbol}) {msg}-{obj}" apps django_utils
-echo "************** TESTS ***************"
+echo "******************* TESTS *********************"
 dk ./manage.py test --settings=thanos.settings.docker
