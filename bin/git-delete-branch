@@ -6,11 +6,10 @@ opts = {
   remote: false,
   local: true,
 }
-parser = OptionParser do |op|
+parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename($0)} [options] <branch> ..."
   op.separator "default action is to delete the local branch"
-  op.on("-r", "--remote", "delete only the remote branch") {|v| opts[:remote] = true }
-  op.on("-n", "--no-local", "do not delete the local branch") {|v| opts[:local] = false }
+  op.on("-r", "--remote", "delete *only* the remote branch") {|v| opts[:remote] = true; opts[:local] = false }
   op.on("-a", "--all", "delete local and remote branch") {|v| opts[:remote] = true; opts[:local] = true }
 end
 parser.parse!
@@ -20,16 +19,19 @@ if ARGV.size == 0
   exit
 end
 
+def run(cmd)
+  puts cmd
+  %x(#{cmd})
+end
+
 branches = ARGV.dup
 
 branches.each do |branch|
   if opts[:local]
-    puts "Deleting LOCALLY: #{branch}"
-    %x{git branch -D #{branch}}
+    run "git branch -D #{branch}"
   end
 
   if opts[:remote]
-    puts "Deleting REMOTELY: #{branch}"
-    %x{git push origin :#{branch}}
+    run "git push origin :#{branch}"
   end
 end
