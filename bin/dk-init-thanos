@@ -1,5 +1,6 @@
 #!/bin/bash
 
 cd ~/dev/thanos
-dk pip install -U -r requirements.txt
-dk ./manage.py makemigrations
+rm -f **/migrations/000*.py
+dk -c pip install -U -r requirements.txt
+dk -c ./manage.py makemigrations
