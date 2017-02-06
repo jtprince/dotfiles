@@ -31,7 +31,7 @@ if [ "$1" != "late" ]; then
     xautolock-start
 
     # battery icon
-    if cmd_exists cbatticon ; then 
+    if cmd_exists cbatticon ; then
         cbatticon &
     fi
 
@@ -54,6 +54,11 @@ if [ "$1" != "late" ]; then
     # pcloud
     if cmd_exists psyncgui ; then
         ( sleep 10 && psyncgui )&
+    fi
+
+    # blockify
+    if cmd_exists blockify ; then
+        blockify &
     fi
 
     notify-send -u low 'initialized!'

@@ -1,29 +1,34 @@
 #!/usr/bin/env ruby
 
-if ARGV.size == 0 || ['-h', '--help'].include?(ARGV[0])
-  puts "usage: #{File.basename($0)} [local|remote] <branch> ..."
-  puts "default action is to delete *both* local and remote branch"
+require 'optparse'
+
+opts = {
+  remote: false,
+  local: true,
+}
+parser = OptionParser do |op|
+  op.banner = "usage: #{File.basename($0)} [options] <branch> ..."
+  op.separator "default action is to delete the local branch"
+  op.on("-r", "--remote", "delete only the remote branch") {|v| opts[:remote] = true }
+  op.on("-n", "--no-local", "do not delete the local branch") {|v| opts[:local] = false }
+  op.on("-a", "--all", "delete local and remote branch") {|v| opts[:remote] = true; opts[:local] = true }
+end
+parser.parse!
+
+if ARGV.size == 0
+  puts parser
   exit
 end
 
-args = ARGV.dup
-
-both = ['local', 'remote']
-if both.include?(args.first)
-  where = [args.shift]
-else
-  where = both
-end
-
-branches = args
+branches = ARGV.dup
 
 branches.each do |branch|
-  if where.include?('local')
+  if opts[:local]
     puts "Deleting LOCALLY: #{branch}"
     %x{git branch -D #{branch}}
   end
 
-  if where.include?('remote')
+  if opts[:remote]
     puts "Deleting REMOTELY: #{branch}"
     %x{git push origin :#{branch}}
   end

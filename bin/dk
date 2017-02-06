@@ -1,35 +1,59 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
+require 'shellwords'
+
+opts = {
+  container: false,
+  db: false,
+}
+parser = OptionParser.new do |op|
+  op.banner = "usage: #{File.basename(__FILE__)} [options] cmd"
+  op.on("-c", "--container", "use an already running container") {|v| opts[:container] = v }
+  op.on("--db", "drop into the running db; flips container to true") {|v| opts[:db] = opts[:container] = v }
+end
+valid_args = %w(-c --container --db)
+
+docker_args_start_index = (ARGV.index {|arg| valid_args.include?(arg) } || -1) + 1
+
+args = ARGV[0...docker_args_start_index]
+parser.parse!(args)
+
 if ARGV.size == 0
-  puts "usage: #{File.basename(__FILE__)} [db] cmd"
+  puts parser
   exit
 end
 
-cmd_args = ARGV.dup
+cmd_args = ARGV[docker_args_start_index..-1]
 
-container_name =
-  if cmd_args[0] == 'db'
-    cmd_args.shift
-    cmd_args.push('mysql', '-uroot', '-proot', 'thanos')
-    'thanos_mysql-local_1'
-  else
-    "thanos_web_1"
+if opts[:container]
+  container_name =
+    if opts[:db]
+      cmd_args.push('mysql', '-uroot', '-proot', 'thanos')
+      'thanos_mysql-local_1'
+    else
+      "thanos_web_1"
+    end
+
+  def escape_quote(arg)
+    '\"' + arg + '\"'
   end
 
-def escape_quote(arg)
-  '\"' + arg + '\"'
-end
-
-cmd_args.map! do |arg|
-  if arg.start_with?("--") && arg.include?('=')
-    flag, val = arg.split('=', 2)
-    [flag, escape_quote(val)].join("=")
-  else
-    arg
+  cmd_args.map! do |arg|
+    if arg.start_with?("--") && arg.include?('=')
+      flag, val = arg.split('=', 2)
+      [flag, escape_quote(val)].join("=")
+    else
+      arg
+    end
   end
+
+  container_id = `docker ps -a --no-trunc --filter name=#{container_name} --format "{{.ID}}"`.chomp
+
+  cmd = %Q{docker exec -it #{container_id} bash -c "#{cmd_args.join(' ')}"}
+  system cmd
+else
+  cmd = "docker-compose run web #{cmd_args.map {|arg| Shellwords.escape(arg) }.join(' ')}"
+  puts cmd
+  system cmd
 end
-
-container_id = `docker ps -a --no-trunc --filter name=#{container_name} --format "{{.ID}}"`.chomp
-
-cmd = %Q{docker exec -it #{container_id} bash -c "#{cmd_args.join(' ')}"}
-system cmd
