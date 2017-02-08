@@ -1,4 +1,4 @@
 #!/bin/bash
 
-dk coverage run --source='.' manage.py test --settings=thanos.settings.docker
-dk coverage report -m
+dk coverage run --source='.' manage.py test --settings=thanos.settings.test
+dk coverage report --omit="thanos/wsgi.py,*/apps.py" -m

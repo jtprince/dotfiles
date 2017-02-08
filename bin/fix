@@ -16,7 +16,7 @@ else:
 if not line: raise ValueError("no reasonable file info to work from")
 
 regexs = (
-        '^([^\s]+)\s+\d+\s+\d+\s+\d+\%\s+(\d+)-?',
+        '^([^\s]+)\s+\d+\s+\d+\s+\d+\%\s+(\d+)-?',  # python coverage
         r'^#\d+ (.*)?\((\d+)\):',
         r'File "(.*)", line (\d+)',
         r'(.*):(\d+):(\d+):',
