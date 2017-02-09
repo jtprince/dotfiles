@@ -5,13 +5,15 @@ require 'optparse'
 require 'shellwords'
 
 opts = {
-  container: false,
+  container: true,
   db: false,
 }
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [options] cmd"
-  op.on("-c", "--container", "use an already running container") {|v| opts[:container] = v }
+  #op.on("-c", "--container", "use an already running container") {|v| opts[:container] = v }
+  op.on("-r", "--run", "docker-compose run <whatever>") {|v| opts[:container] = false }
   op.on("--db", "drop into the running db; flips container to true") {|v| opts[:db] = opts[:container] = v }
+  op.on("-v", "--verbose", "talk about it") {|v| $VERBOSE = 3 }
 end
 valid_args = %w(-c --container --db)
 
@@ -23,6 +25,13 @@ parser.parse!(args)
 if ARGV.size == 0
   puts parser
   exit
+end
+
+def run(cmd)
+  if $VERBOSE
+    puts "RUNNING: #{cmd}"
+  end
+  system cmd
 end
 
 cmd_args = ARGV[docker_args_start_index..-1]
@@ -51,10 +60,7 @@ if opts[:container]
 
   container_id = `docker ps -a --no-trunc --filter name=#{container_name} --format "{{.ID}}"`.chomp
 
-  cmd = %Q{docker exec -it #{container_id} bash -c "#{cmd_args.join(' ')}"}
-  system cmd
+  run %Q{docker exec -it #{container_id} bash -c "#{cmd_args.join(' ')}"}
 else
-  cmd = "docker-compose run web #{cmd_args.map {|arg| Shellwords.escape(arg) }.join(' ')}"
-  puts cmd
-  system cmd
+  run "docker-compose run web #{cmd_args.map {|arg| Shellwords.escape(arg) }.join(' ')}"
 end
