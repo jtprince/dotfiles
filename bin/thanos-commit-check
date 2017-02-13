@@ -1,11 +1,11 @@
 #!/bin/zsh
 
 rm -f **/migrations/000*.py &>/dev/null
-dk -c ./manage.py makemigrations &>/dev/null
+dk ./manage.py makemigrations &>/dev/null
 
 echo "******************* FLAKE 8 *******************"
 dk flake8 .
 echo "******************* PYLINT ********************"
-dk -c pylint --msg-template="{path}:{line}   ({msg_id}-{symbol}) {msg}-{obj}" apps django_utils
+dk pylint --msg-template="{path}:{line}   ({msg_id}-{symbol}) {msg}-{obj}" apps django_utils
 echo "******************* TESTS *********************"
 dk-coverage
