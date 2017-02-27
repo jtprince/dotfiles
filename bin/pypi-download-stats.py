@@ -41,14 +41,15 @@ def get_download_stats(pkg_name):
     with urlopen(url) as infile:
         data = json.loads(infile.read())
         for release, release_data_list in data['releases'].items():
-            release_data = release_data_list[0]
-            data_points.append(
-                DownloadDataPoint(
-                    release_data['downloads'],
-                    release,
-                    to_datetime(release_data['upload_time']),
-                ),
-            )
+            if release_data_list:
+                release_data = release_data_list[0]
+                data_points.append(
+                    DownloadDataPoint(
+                        release_data['downloads'],
+                        release,
+                        to_datetime(release_data['upload_time']),
+                    ),
+                )
 
     return data_points
 
