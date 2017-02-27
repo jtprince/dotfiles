@@ -1,6 +1,5 @@
 
 ln -s ~/dotfiles/config/dotmation ~/.config/
-ln -s ~/dotfiles/config/dotmation ~/.config/
 ln -s ~/dotfiles/config/alias ~/.config/
 ln -s ~/dotfiles/config/xmodmap ~/.config/
 ln -s ~/dotfiles/config/git ~/.config/
