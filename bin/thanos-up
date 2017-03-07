@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd ~/dev/thanos
+docker-compose up

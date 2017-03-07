@@ -1,6 +1,0 @@
-#!/bin/bash
-
-cd ~/dev/blackwidow
-
-dk ./manage.py makemigrations
-dk ./manage.py migrate

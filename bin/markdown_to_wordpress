@@ -33,5 +33,5 @@ ARGV.each do |filename|
   end
 
   document = IO.read(html_filename)
-  IO.write(html_filename, document.string_between_markers('</header>', '</body>').strip)
+  IO.write(html_filename, document.string_between_markers('</head>', '</body>').strip)
 end
