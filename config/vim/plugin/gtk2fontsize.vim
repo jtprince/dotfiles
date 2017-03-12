@@ -25,5 +25,5 @@ function! SmallerFont()
 endfunction
 command! SmallerFont call SmallerFont()
 
-noremap <leader>+ :LargerFont<CR>
-noremap <leader>- :SmallerFont<CR>
+noremap <leader>) :LargerFont<CR>
+noremap <leader>( :SmallerFont<CR>

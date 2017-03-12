@@ -47,7 +47,7 @@ elif linenum:
 
 file_to_call = filename.split(':')[0]
 file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwidow")
-file_to_call = file_to_call.replace("/drone/src", "/home/jtprince/dev/thanos")
+file_to_call = file_to_call.replace("/thanos", "/home/jtprince/dev/thanos")
 
 # Sometimes we get a module path:
 if "/" not in file_to_call:
