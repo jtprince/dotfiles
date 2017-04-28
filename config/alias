@@ -109,7 +109,4 @@ alias clearscreen="echo -ne '\033c'"
 
 alias open="xdg-open"
 
-# pip2 install --user yolk
-alias pip-versions-available="yolk -V"
-
 alias conky="conky --config ~/.config/conky/conky.conf"
