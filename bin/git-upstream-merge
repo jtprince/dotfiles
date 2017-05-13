@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Merges the upstream branch (default master) into this repos master
+
+ARG1=${1:-master}
+
+git fetch -p
+git checkout "master"
+git merge "upstream/$ARG1"
