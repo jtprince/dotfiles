@@ -200,6 +200,7 @@ module SysMonitor
       string_short = string[0..max_length]
       string_short << "..." if string_short != string
       return string_short
+      return ""
     end
   end
 

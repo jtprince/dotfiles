@@ -27,7 +27,7 @@ def extract_string_value(line)
 end
 
 def load_variant(lines)
-  if lines[0] =~ /^array/
+  if lines[0] =~ /array \[/
     extract_string_value(lines[1])
   else
     _, type, value = lines[0].split(/\s+/, 3)
