@@ -27,7 +27,7 @@ def extract_string_value(line)
 end
 
 def load_variant(lines)
-  if lines[0] =~ /array/
+  if lines[0] =~ /^array/
     extract_string_value(lines[1])
   else
     _, type, value = lines[0].split(/\s+/, 3)
@@ -63,13 +63,9 @@ def split_into_dicts(lines)
   end
 
   dicts.map do |lines|
-    unless lines[0].nil?
-      key = extract_string_value(lines[0])
-      value = load_variant(lines[1..-1])
-      [key, value]
-    else
-      ['unknown', 'unknown']
-    end
+    key = extract_string_value(lines[0])
+    value = load_variant(lines[1..-1])
+    [key, value]
   end.to_h
 end
 
