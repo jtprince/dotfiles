@@ -21,7 +21,9 @@ require 'yaml'
 track_info = `dbus-send --print-reply --session --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'`
 
 def extract_string_value(line)
-  line[/ "(.*)"/, 1]
+  unless line.nil?
+    line[/ "(.*)"/, 1]
+  end
 end
 
 def load_variant(lines)
@@ -61,9 +63,13 @@ def split_into_dicts(lines)
   end
 
   dicts.map do |lines|
-    key = extract_string_value(lines[0])
-    value = load_variant(lines[1..-1])
-    [key, value]
+    unless lines[0].nil?
+      key = extract_string_value(lines[0])
+      value = load_variant(lines[1..-1])
+      [key, value]
+    else
+      ['unknown', 'unknown']
+    end
   end.to_h
 end
 
