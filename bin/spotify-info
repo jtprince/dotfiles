@@ -21,11 +21,13 @@ require 'yaml'
 track_info = `dbus-send --print-reply --session --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'`
 
 def extract_string_value(line)
-  line[/ "(.*)"/, 1]
+  unless line.nil?
+    line[/ "(.*)"/, 1]
+  end
 end
 
 def load_variant(lines)
-  if lines[0] =~ /array/
+  if lines[0] =~ /array \[/
     extract_string_value(lines[1])
   else
     _, type, value = lines[0].split(/\s+/, 3)
