@@ -34,4 +34,6 @@ map <leader>C <Esc>0wea<Enter><Esc>$bba<Enter><Enter><Esc>d0k$o<Enter><Esc>kkd
 " lines of comment).
 map <leader>c <Esc>0JJJJ)b
 
-map <leader>p <Esc>$a  # pylint: disable=
+" pylint disable using the X11 buffer (highlight 'E1101-no-member' and it will
+" inject the trailer:  pylint: disable=no-member
+map <leader>p <Esc>$a  # pylint: disable=<Esc>"*p<Esc>?=<Enter>wkwx<Esc>:noh<Enter>$

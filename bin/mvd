@@ -21,6 +21,7 @@ opts = OptionParser.new do |op|
   op.on("-l", "--list", "just list the contents, don't move them") {|v| opt[:list] = v }
   op.on("-d", "--dir <path>", "look in path (default: #{opt[:dir]})") {|v| opt[:dir] = File.expand_path(v) }
   op.on("-t", "--tmp", "look in /tmp") {|v| opt[:dir] = "/tmp" }
+  op.on("-s", "--screenshots", "look in ~/screenshots/") {|v| opt[:dir] = ENV['HOME'] + "/screenshots" }
 end
 opts.parse!
 
