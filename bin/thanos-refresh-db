@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+cd ~/dev/thanos
+rm -f **/migrations/000*.py
+dk ./manage.py makemigrations
