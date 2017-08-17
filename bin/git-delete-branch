@@ -5,12 +5,14 @@ require 'optparse'
 opts = {
   remote: false,
   local: true,
+  force: false,
 }
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename($0)} [options] <branch> ..."
   op.separator "default action is to delete the local branch"
   op.on("-r", "--remote", "delete *only* the remote branch") {|v| opts[:remote] = true; opts[:local] = false }
   op.on("-a", "--all", "delete local and remote branch") {|v| opts[:remote] = true; opts[:local] = true }
+  op.on("-f", "--force", "delete local branch with -D") {|v| opts[:force] = true}
 end
 parser.parse!
 
@@ -27,8 +29,9 @@ end
 branches = ARGV.dup
 
 branches.each do |branch|
+  delete_opt = opts[:force] ? '-D' : '-d'
   if opts[:local]
-    run "git branch -D #{branch}"
+    run "git branch #{delete_opt} #{branch}"
   end
 
   if opts[:remote]
