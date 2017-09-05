@@ -297,6 +297,10 @@ else
     set guifont=Deja\ Vu\ Sans\ Mono\ 10
 endif
 
+" font resizing done through plugin/fontzoom.vim
+" <Ctrl>-scrollwheel will resize
+" Or + and - (that's <Shift><+=> key and just the <-_> without <Shift>)
+
 " SIZE ======================================================================
 
 if has('gui_running')
