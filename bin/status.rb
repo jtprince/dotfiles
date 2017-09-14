@@ -201,7 +201,11 @@ module SysMonitor
         else
           0
         end
-      ' ' * amt
+      if direction == '-'
+        ' ' * amt
+      else
+        ''
+      end
     end
   end
 
