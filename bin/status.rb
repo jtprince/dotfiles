@@ -189,7 +189,19 @@ module SysMonitor
         when 'Charging' then '+'
         else '0'
         end
-      [direction, percent_str[0...-1].to_f, time_str&.split(" ")&.first || 'NA']
+      percent = percent_str[0...-1].to_f
+      #[direction, percent, time_str&.split(" ")&.first || 'NA']
+      # for now, we just return spaces equivalent to battery danger
+      amt =
+        if percent <= 5 then 150
+        elsif percent <= 10 then 100
+        elsif percent <= 20 then 50
+        elsif percent <= 30 then 25
+        elsif percent <= 40 then 5
+        else
+          0
+        end
+      ' ' * amt
     end
   end
 
@@ -371,6 +383,19 @@ class I3Bar < Array
       end
     end
 
+    # just text
+    class BatteryWarning < SimpleText
+      def initialize(*args)
+        [:name, :color, :background, :monitor].zip(args).each {|pair| store(*pair) }
+      end
+
+      def display!(data)
+        self[:full_text] =  data
+      end
+    end
+
+
+
     class VBars < UI
       DEFAULTS = {
         join: '⋮',
@@ -411,7 +436,7 @@ end
 #mpd = I3Bar::UI::SimpleText.new('mpd', '#FFA500', SysMonitor::MPD.new)
 spotify = I3Bar::UI::SimpleText.new('spotifyinfo', '#FFA500', SysMonitor::Spotify.new)
 quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
-#bat = I3Bar::UI::UpDownInfoBar.new('', '#0000FF', SysMonitor::Battery.new)
+bat = I3Bar::UI::BatteryWarning.new('batteryinfo', '#0000FF', '#FF0000', SysMonitor::Battery.new)
 cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
 mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
 #weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
@@ -421,7 +446,7 @@ datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime
 #components = [quote, bat, cpu, mem, weather, days, datetime].select {|cell| cell[:monitor].valid? }
 #components = [quote, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
 #components = [spotify, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
-components = [spotify, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+components = [bat, spotify, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
 
 thin_space = ' '
 div = I3Bar::UI::Divider.new("#{thin_space}◀▶#{thin_space}", "#000000")

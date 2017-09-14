@@ -70,6 +70,8 @@ let g:ctrlp_custom_ignore = {
 \ 'dir':  '\.git$\|\.hg$\|\.svn$\|\.yardoc\|public\/images\|public\/system\|tmp$\|node_modules$',
 \ 'file': '\.pyc\.exe$\|\.so$\|\.dat$'
 \ }
+let g:ctrlp_follow_symlinks = 1
+
 
 call vundle#end()
 
