@@ -35,9 +35,6 @@ if [ "$1" != "late" ]; then
         cbatticon &
     fi
 
-    # sound tray
-    pasystray &
-
     # clipboard
     xclip -silent &
 
@@ -60,6 +57,9 @@ if [ "$1" != "late" ]; then
     if cmd_exists psyncgui ; then
         ( sleep 10 && psyncgui )&
     fi
+
+    # sound tray
+    pasystray &
 
     notify-send -u low 'initialized!'
 
