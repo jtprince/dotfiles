@@ -10,6 +10,10 @@ json = `http GET "#{hostname}/api/organizations/dev/tokens/"`
 
 data = JSON.parse(json)
 
-user_data = data.find {|user| user['email_address'].include?(email_address_fragment)}
+if email_address_fragment.include?("-l")
+  puts data.map {|user| user['email_address'] }
+else
+  user_data = data.find {|user| user['email_address'].include?(email_address_fragment)}
+  print user_data['api_token']
+end
 
-print user_data['api_token']

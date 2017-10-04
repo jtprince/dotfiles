@@ -20,5 +20,6 @@ ARGV.each do |file|
   base = file.chomp(File.extname(file))
   outfile = base + '.pdf'
   cmd = "pandoc #{default_options} #{Shellwords.escape(file)} -o #{Shellwords.escape(outfile)}"
+  print cmd
   system cmd
 end

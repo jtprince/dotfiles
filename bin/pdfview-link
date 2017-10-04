@@ -35,4 +35,4 @@ clip () {
 
 
 
-clip `github-link --view "$@"`
+clip `github-link --pdf-view "$@"`

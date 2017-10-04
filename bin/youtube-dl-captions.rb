@@ -41,6 +41,7 @@ cmd = %w(youtube-dl --skip-download --all-subs -o %(title)s.%(ext)s --restrict-f
 
 urls.each do |url|
   out, err, st = Open3.capture3(*(cmd + [url]))
+  p out
   subtitle_file_line = out.split("\n").find {|line| line =~ /\[info\] Writing video subtitles to:/ }
   filename_w_quotes = subtitle_file_line.split(': ').last
   filename = filename_w_quotes.gsub('"', '')
