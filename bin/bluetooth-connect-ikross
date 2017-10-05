@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo -e "power on\n" | bluetoothctl
+sleep 2
+echo -e "connect 00:1A:7D:88:81:66\n" | bluetoothctl
+sleep 3
