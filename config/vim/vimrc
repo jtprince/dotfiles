@@ -161,6 +161,7 @@ autocmd Filetype tex setlocal foldmethod=syntax
 
 " reads in ftplugin/python.vim
 autocmd BufRead,BufNewFile *.py setfiletype python
+autocmd BufWritePost *.py call Flake8()
 
 " FOLDING ====================================================================
 " folding for latex

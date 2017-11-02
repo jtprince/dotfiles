@@ -87,7 +87,7 @@ URxvt.scrollBar: false
 !URxvt*scrollBar_floating:             true
 !URxvt*scrollBar_right:                true
 URxvt*cursorColor:                     darkorange1
-URxvt*foreground:                      white 
+URxvt*foreground:                      white
 URxvt*background:                      black
 URxvt*cursorBlink:                     false
 URxvt*termName:                        rxvt-256color
@@ -111,6 +111,7 @@ URxvt.iso14755 : false
 URxvt.perl-ext-common: clipboard,font-size,keyboard-select
 URxvt.keysym.M-Escape: perl:keyboard-select:activate
 ! overwrites the default Meta-s binding and allows to activate keyboard-select directly in backward search mode
+! psttt--thats hitting <ctrl>-s to search backwards, which is what you almost always want!
 URxvt.keysym.C-s: perl:keyboard-select:search
 !URxvt.perl-ext-common: ...,clipboard
 !!! could enable these when I get xclip working properly

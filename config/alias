@@ -96,6 +96,8 @@ alias vlisten="vlc --intf rc -Vdummy"
 alias mplayer="mplayer -af scaletempo"
 #alias youtube-dl="youtube-dl --prefer-ffmpeg"
 
+alias xmod="xmodmap ~/.config/xmodmap"
+
 # applications
 alias exercism="exercism --config ~/.config/exercism.json"
 alias chromiumtest="chromium --user-data-dir=~/.config/chromium-test"
