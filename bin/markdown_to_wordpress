@@ -24,7 +24,7 @@ ARGV.each do |filename|
   #pdf_filename = basename + ".pdf"
   html_filename = basename + ".html"
 
-  base = %w(pandoc -fmarkdown-implicit_figures --smart --standalone) + [filename.esc]
+  base = %w(pandoc -fmarkdown+implicit_figures+smart --standalone) + [filename.esc]
 
   html_options = %w(--to html5)
   #pdf_options = %w(--variable urlcolor=Blue)
