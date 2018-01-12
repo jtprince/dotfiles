@@ -77,6 +77,8 @@ bindsym $mod+Shift+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brigh
 bindsym $mod+Ctrl+Shift+XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $finelightadjust
 bindsym $mod+Ctrl+Shift+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $finelightadjust
 
+bindsym $mod+o exec --no-startup-id /home/jtprince/advance-paste.rb
+
 ## keyboard backlights
 # (macbook)
 # keyboard backlights (need kbdlight package installed)

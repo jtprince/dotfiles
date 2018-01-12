@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ~/dev/thanos
+cd ~/dev/crux-api
 rm -f **/migrations/000*.py
 dk pip install -U -r requirements.txt
 dk ./manage.py makemigrations

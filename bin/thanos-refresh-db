@@ -1,5 +1,5 @@
 #!/bin/zsh
 
-cd ~/dev/thanos
+cd ~/dev/crux-api
 rm -f **/migrations/000*.py
 dk ./manage.py makemigrations
