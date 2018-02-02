@@ -16,6 +16,14 @@ ln -s ~/dotfiles/config/blockify ~/.config/
 ln -s ~/dotfiles/config/pulseaudio-ctl ~/.config/
 ln -s ~/dotfiles/config/vim ~/.config/
 
+# xdg-open standard location
+ln -s ~/dotfiles/config/mimeapps.list ~/.config/
+
+# remove any existing mimeapps.list and link in my own
+mkdir -p ~/.local/share/applications/
+rm -f ~/.local/share/applications/mimeapps.list
+ln -s ~/dotfiles/config/mimeapps.list ~/.local/share/applications/
+
 ln -s ~/dotfiles/config/profile ~/.profile
 ln -s ~/dotfiles/config/xprofile ~/.xprofile
 ln -s ~/dotfiles/config/Xresources ~/.Xresources
