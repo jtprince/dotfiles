@@ -112,3 +112,5 @@ alias clearscreen="echo -ne '\033c'"
 alias open="xdg-open"
 
 alias conky="conky --config ~/.config/conky/conky.conf"
+
+alias mp3encodinginfo="ffprobe -show_format 2>/dev/null"
