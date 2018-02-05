@@ -18,7 +18,10 @@ xesam:url: https://open.spotify.com/track/3GqoSwOYAHt83rx4FYP7e2
 
 require 'yaml'
 
-track_info = `dbus-send --print-reply --session --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'`
+def get_track_info
+  response = `dbus-send --print-reply --session --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'`
+  $? == 256 ? nil : response
+end
 
 def extract_string_value(line)
   unless line.nil?
@@ -69,6 +72,12 @@ def split_into_dicts(lines)
   end.to_h
 end
 
-info = split_into_dicts(track_info.split("\n"))
+track_info = get_track_info
+info =
+  if track_info
+    split_into_dicts(track_info.split("\n"))
+  else
+    {}
+  end
 
 puts info.to_yaml
