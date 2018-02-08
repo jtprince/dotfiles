@@ -47,7 +47,10 @@ elif linenum:
 
 file_to_call = filename.split(':')[0]
 file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwidow")
-file_to_call = file_to_call.replace("/crux-api", "/home/jtprince/dev/crux-api")
+file_to_call = file_to_call.replace("/thanos", "/home/jtprince/dev/crux-api")
+
+# once we switch top level docker image dir to crux or something else:
+# file_to_call = file_to_call.replace("/crux-api", "/home/jtprince/dev/crux-api")
 
 # Sometimes we get a module path:
 if "/" not in file_to_call:
