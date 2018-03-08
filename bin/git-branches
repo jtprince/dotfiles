@@ -2,4 +2,4 @@
 
 git fetch -p
 echo "*********************************************"
-git branch -a
+git branch -a | cat

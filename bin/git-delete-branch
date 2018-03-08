@@ -9,6 +9,7 @@ opts = {
 }
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename($0)} [options] <branch> ..."
+  op.banner = "usage: #{File.basename($0)} [options] origin/<branch> ... [removes the origin]"
   op.separator "default action is to delete the local branch"
   op.on("-r", "--remote", "delete *only* the remote branch") {|v| opts[:remote] = true; opts[:local] = false }
   op.on("-a", "--all", "delete local and remote branch") {|v| opts[:remote] = true; opts[:local] = true }
@@ -27,6 +28,10 @@ def run(cmd)
 end
 
 branches = ARGV.dup
+
+# remove any leading origin tags (makes it easier to copy and paste from
+# the branch output
+branches.map! {|branch| branch.sub('origin/', '') }
 
 branches.each do |branch|
   delete_opt = opts[:force] ? '-D' : '-d'
