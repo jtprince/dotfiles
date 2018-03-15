@@ -4,8 +4,7 @@ require 'shellwords'
 
 if ARGV.size == 0
   puts "usage: #{File.basename(__FILE__)} <file>.md"
-  #puts "output: <file>.html --and-- <file>.pdf"
-  puts "output: <file>.html"
+  puts "output: <file>.wordpress.html"
   puts "(the html is tweaked for wordpress)"
 end
 
@@ -21,17 +20,11 @@ end
 
 ARGV.each do |filename|
   basename = filename.chomp(File.extname(filename))
-  #pdf_filename = basename + ".pdf"
-  html_filename = basename + ".html"
+  html_filename = basename + ".wordpress.html"
 
   base = %w(pandoc -fmarkdown+implicit_figures+smart --standalone) + [filename.esc]
 
   html_options = %w(--to html5)
-  #pdf_options = %w(--variable urlcolor=Blue)
-
-  #[base + html_options + ['-o', html_filename.esc], base + pdf_options + ['-o', pdf_filename.esc]].each do |args|
-  #  `#{args.join(' ')}`
-  #end
 
   args = base + html_options + ['-o', html_filename.esc]
   `#{args.join(' ')}`
