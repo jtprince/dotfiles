@@ -5,7 +5,7 @@ require 'optparse'
 
 BASE_URL = "https://github.com"
 GOOGLE_VIEWER_LINK = "https://docs.google.com/viewer?url="
-GITHUB_HTML_PREVIEW_LINK = "https://htmlpreview.github.io/?"
+GITHUB_HTML_PREVIEW_LINK = "https://cdn.rawgit.com"
 
 opts = {
   filetype: "raw",
@@ -17,7 +17,7 @@ parser = OptionParser.new do |op|
   op.on("-m", "--master", "use the master branch instead of current version") {|v| opts[:branch] = "master" }
   op.on("--branch", "use specific branch instead of current version") {|v| opts[:branch] = v }
   op.on("--pdf-view", "make a raw pdf viewable") {|v| opts[:view_pdf] = v }
-  op.on("--html-view", "make a raw html doc viewable") {|v| opts[:view_html] = v }
+  op.on("--html-view", "make a raw html doc viewable") {|v| opts[:view_html] = v; opts[:filetype] = nil }
   op.on("--base", "return the repo base link") {|v| opts[:repo_base] = v }
 end
 parser.parse!
@@ -50,24 +50,20 @@ end
 repo_path = Pathname.new(topdir)
 relative_path = pathname.relative_path_from(repo_path)
 
-base = "https://github.com"
-
 user, repo = url.split(":", 2).last.split(".git").first.split("/")
 
-def assemble_github_url(user, repo, relative_path, version_specifier, filetype, base_url=BASE_URL)
-  [base_url, user, repo, filetype, version_specifier, relative_path].join("/")
+def assemble_github_url(user, repo, relative_path, version_specifier, filetype, base_url)
+  [base_url, user, repo, filetype, version_specifier, relative_path].compact.join("/")
 end
 
 final_url =
 if opts[:repo_base]
   [BASE_URL, user, repo].join("/")
 else
-  github_url = assemble_github_url(user, repo, relative_path.to_s, opts[:branch] || hash, opts[:filetype])
+  github_url = assemble_github_url(user, repo, relative_path.to_s, opts[:branch] || hash, opts[:filetype], opts[:view_html] ? GITHUB_HTML_PREVIEW_LINK : BASE_URL)
   viewer =
     if opts[:view_pdf]
       GOOGLE_VIEWER_LINK
-    elsif opts[:view_html]
-      GITHUB_HTML_PREVIEW_LINK
     else
       ""
     end

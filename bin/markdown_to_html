@@ -3,7 +3,7 @@
 require 'shellwords'
 # --smart gets me proper curly quotes and apostrophes!
 # but they will not look right unless --standalone and/or --to html5 are also used
-default_options = "--smart --standalone --to html5"
+default_options = "-fmarkdown+implicit_figures+smart --standalone --to html5"
 #default_options = "--smart --standalone --to html5"
 #default_options = "--smart --standalone --to html5 --number-sections"
 
