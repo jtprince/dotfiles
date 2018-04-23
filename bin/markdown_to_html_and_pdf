@@ -1,0 +1,4 @@
+#!/bin/bash
+
+markdown_to_pdf "$@"
+markdown_to_html "$@"
