@@ -42,7 +42,7 @@ if opts[:container]
       cmd_args.push('mysql', '-uroot', '-proot', 'thanos')
       'thanos_mysql-local_1'
     else
-      "cruxapi_web_1"
+      "crux-api_web_1"
     end
 
   def escape_quote(arg)

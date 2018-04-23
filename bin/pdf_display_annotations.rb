@@ -41,8 +41,8 @@ end
 ARGV.each do |file|
   input_uri = "file://#{File.expand_path(file)}"
   Poppler::Document.new(input_uri).each do |page|
-    page.annotation_mapping.each do |obj|
-      puts display_annotation(obj.annotation), "\n"
+    page.annot_mapping.each do |obj|
+      puts display_annotation(obj.annot), "\n"
     end
   end
 end
