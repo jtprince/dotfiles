@@ -14,7 +14,11 @@ ln -s ~/dotfiles/config/conky ~/.config/
 ln -s ~/dotfiles/config/blockify ~/.config/
 
 ln -s ~/dotfiles/config/pulseaudio-ctl ~/.config/
-ln -s ~/dotfiles/config/vim ~/.config/
+ln -s ~/dotfiles/config/nvim ~/.config/
+
+# defaults for forked nvim in new term
+ln -s ~/dotfiles/config/Xdefaults-nvimgui ~/.config/
+
 
 # xdg-open standard location
 ln -s ~/dotfiles/config/mimeapps.list ~/.config/
@@ -46,7 +50,3 @@ ln -s ~/dotfiles/config/zsh/zshenv ~/.zshenv
 end
 
 ln -s ~/dotfiles/bin ~/
-
-github 'VundleVim/Vundle.vim' do
-  cfg '.', 'vim-bundle/vundle'
-end

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+XENVIRONMENT=~/.config/Xdefaults-nvimgui urxvt -e nvim +'colorscheme jtplight' "$@" &

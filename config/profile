@@ -24,8 +24,7 @@ export GPG_AGENT_INFO
 export GNOME_KEYRING_CONTROL
 export GNOME_KEYRING_PID
 
-export EDITOR=vim
-export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
+export EDITOR=nvim
 export INTERF=/etc/network/interfaces
 export WINEPREFIX="$HOME/.wine"
 # prevents wine from using windows apps as default applications
