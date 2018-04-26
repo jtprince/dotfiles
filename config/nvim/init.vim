@@ -137,6 +137,31 @@ map <C-K> <C-W>k
 map <C-H> <C-W>h
 map <C-L> <C-W>l
 
+" SIMPLE LANGUAGE EXTENSIONS =================================================
+" markdown
+augroup mkd
+  autocmd BufRead *.mkd *.md set ai formatoptions+=l lbr formatoptions=tcroqn2 comments=n:>
+augroup END
+" yaml
+autocmd BufRead *.yml set ts=2 sw=2 sts=2
+autocmd BufRead *.yaml set ts=2 sw=2 sts=2
+" latex
+autocmd BufRead *.tex set formatoptions+=l lbr
+" text and log
+autocmd BufRead *.txt set formatoptions+=l lbr
+autocmd BufRead *.log set formatoptions+=l lbr
+
+" make
+autocmd FileType make setlocal noexpandtab   " turn off et for makefiles
+autocmd Filetype html setlocal ts=2 sw=2 sts=2 expandtab
+autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
+autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 noexpandtab
+autocmd Filetype tex setlocal foldmethod=syntax
+
+" reads in ftplugin/python.vim
+autocmd BufRead,BufNewFile *.py setfiletype python
+autocmd BufWritePost *.py call Flake8()
+
 " LEFT-HANDED NAVIGATION =====================================================
 "  (right hand gets tired)
 " s (go left) g (go right) d (go down) f (go up)
