@@ -45,14 +45,10 @@ set nofoldenable
 let g:pymode_options = 0
 setlocal complete+=t
 setlocal formatoptions-=t
-"if v:version > 702 && !&relativenumber
-"    setlocal number
-"endif
-setlocal nowrap
-setlocal textwidth=79
 setlocal commentstring=#%s
 setlocal define=^\s*\\(def\\\\|class\\)
-
+let g:pymode_rope = 1
+let g:pymode_rope_autoimport=1
 let g:pymode_options_max_line_length=120
 
 " Ctrl-P config
