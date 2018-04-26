@@ -12,6 +12,7 @@ call plug#begin('~/.local/share/vimplugins')
 "
 " Must use single quotes
 
+" pacaur -S universal-ctags-git
 Plug 'ludovicchabant/vim-gutentags'
 let g:gutentags_ctags_tagfile='.tags'
 " CTRL+] to navigate to tag under cursor

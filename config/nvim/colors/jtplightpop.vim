@@ -17,14 +17,14 @@ hi Normal       ctermbg=230     ctermfg=16  " Cornsilk1 and Grey0
 hi Comment                      ctermfg=69 " CornflowerBlue
 hi Constant                     ctermfg=21  " Blue1
 hi Special      cterm=bold      ctermfg=124 " Red3
-hi Identifier                   ctermfg=16  " Grey0
+hi Identifier   cterm=bold      ctermfg=22  " DarkGreen
 
 hi Statement    cterm=bold      ctermfg=18  " DarkBlue
 hi PreProc                      ctermfg=16  " Grey0
-hi Type                         ctermfg=88  " DarkRed
-hi Function                     ctermfg=88  " DarkRed
+hi Type         cterm=bold      ctermfg=201
+hi Function     cterm=bold      ctermfg=88  " DarkRed
 hi Repeat                       ctermfg=88  " DarkRed
-hi Operator                     ctermfg=16  " Grey0
+hi Operator     cterm=bold      ctermfg=88  " DarkRed
 hi Ignore                       ctermfg=16  " Grey0
 hi Error        cterm=reverse   ctermbg=196 ctermfg=231 " Red1 on Grey100
 hi Todo         cterm=standout  ctermbg=226 ctermfg=21  " Yellow1 on Blue1
