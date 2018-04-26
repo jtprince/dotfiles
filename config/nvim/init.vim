@@ -158,9 +158,10 @@ autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 noexpandtab
 autocmd Filetype tex setlocal foldmethod=syntax
 
+" superceded by pymode for now
 " reads in ftplugin/python.vim
-autocmd BufRead,BufNewFile *.py setfiletype python
-autocmd BufWritePost *.py call Flake8()
+" autocmd BufRead,BufNewFile *.py setfiletype python
+" autocmd BufWritePost *.py call Flake8()
 
 " LEFT-HANDED NAVIGATION =====================================================
 "  (right hand gets tired)
