@@ -1,0 +1,5 @@
+#!/bin/sh
+
+function join_by { local IFS="$1"; shift; echo "$*"; }
+
+XENVIRONMENT=~/.config/Xdefaults-nvimgui urxvt -T "$1" -e nvim +'colorscheme jtplight' "$@" &

@@ -7,8 +7,7 @@ command! -range=% Isort :<line1>,<line2>! isort -
 " :Isortdoba will sort all your imports according to PEP8 and GSG
 command! -range=% Isortdoba :<line1>,<line2>! isort-doba -
 
-" :Isortdoba will sort all your imports according to PEP8 and GSG
-command! -range=% ISortdoba :<line1>,<line2>! isort-doba -
+map <leader>o <Esc>mw:Isortdoba<Enter>`w
 
 " uses john's mapping for movement
 " turn a single line comment into a multi-line comment.
@@ -20,4 +19,7 @@ map <leader>c <Esc>0JJJJ)b
 
 " pylint disable using the X11 buffer (highlight 'E1101-no-member' and it will
 " inject the trailer:  pylint: disable=no-member
-map <leader>p <Esc>$a  # pylint: disable=<Esc>"*p<Esc>?=<Enter>wkwx<Esc>:noh<Enter>$
+map <leader>a <Esc>$a  # pylint: disable=<Esc>"*p<Esc>?=<Enter>wkwx<Esc>:noh<Enter>$
+
+" The movement down one line (with left hand navigation) assumes that an import line was added
+map <leader>i <Esc>mw:PymodeRopeAutoImport<Enter>1<Enter><Esc>:Isortdoba<Enter>`wf

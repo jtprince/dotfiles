@@ -64,9 +64,13 @@ alias includeatlas=atlasinclude
 
 # common spelling mistakes
 alias sl="ls"
-alias givm="gvim"
-alias gvmi="gvim"
-alias gimv="gvim"
+
+alias gvim="nvim-qt"
+alias givm="nvim-qt"
+alias gvmi="nvim-qt"
+alias gimv="nvim-qt"
+alias gim="nvim-qt"
+
 alias gti="git"
 alias svim="sudo -E nvim"
 alias sgvim="sudo -E nvim"

@@ -37,18 +37,19 @@ Plug 'vim-scripts/AnsiEsc.vim'
 
 Plug 'kien/ctrlp.vim'
 
+" python mode is the only reliable way to get at rope functionality
 Plug 'python-mode/python-mode', { 'branch': 'develop' }
 let g:pymode_python = 'python3'
-" pymode is too aggressive with folding
-set nofoldenable
 " turn off default pymode options and just set what we want
 let g:pymode_options = 0
-setlocal complete+=t
-setlocal formatoptions-=t
-setlocal commentstring=#%s
-setlocal define=^\s*\\(def\\\\|class\\)
+" setlocal complete+=t
+" setlocal formatoptions-=t
+" setlocal commentstring=#%s
+" setlocal define=^\s*\\(def\\\\|class\\)
+
 let g:pymode_rope = 1
-let g:pymode_rope_autoimport=1
+let g:pymode_rope_complete_on_dot = 0
+let g:pymode_rope_autoimport = 1
 let g:pymode_options_max_line_length=120
 
 " Ctrl-P config
@@ -60,6 +61,8 @@ let g:ctrlp_follow_symlinks = 1
 
 call plug#end()
 
+" Rope autocomplete
+" pip install --user rope ropevim
 " must be in this order for plugins
 
 " META LEVEL =================================================================
@@ -101,9 +104,19 @@ set guioptions-=r               " remove the right scrollbar
 
 set list listchars=tab:»·       " Indicate tabs (so 2 tabs: »···»···)
 set wrap                        " Use word wrap by default
+set title                       " Window shows filename being edited
+set completeopt=menu            " Only show the popup menu, not the preview buffer
 
 " NOTE: Holding down SHIFT enables before mousing over a selection enables
 " a terminal to grab the selection for pasting
+
+" SEARCH =====================================================================
+
+set hlsearch              " Highlight search pattern matches
+nmap <silent> <leader>/ :set invhlsearch<CR>
+
+" DEBUG ======================================================================
+" <leader> p is reserved for a debugging statement in different languages
 
 " FIX TYPOS ==================================================================
 
@@ -133,6 +146,30 @@ map <C-J> <C-W>j
 map <C-K> <C-W>k
 map <C-H> <C-W>h
 map <C-L> <C-W>l
+
+" SWAP FILES =================================================================
+
+set nobackup    " no ~ files
+set noswapfile  " no .file.swp files
+set nowb        " no automatic write backup
+
+" TABS ======================================================================
+" vim -p <file> <file> ... # opens pages in tabs
+" close the current tab
+"
+" this conflicts with all the movement... need better mapping
+" nnoremap <C-w> :tabclose<CR>
+nnoremap <C-S-tab> :tabprevious<CR>
+nnoremap <C-tab>   :tabnext<CR>
+inoremap <C-S-tab> <Esc>:tabprevious<CR>i
+inoremap <C-tab>   <Esc>:tabnext<CR>i
+
+" PERSISTENT UNDO ============================================================
+" Keep undo history across sessions, by storing in file.
+
+silent !mkdir ~/tmp/.vim-backups > /dev/null 2>&1
+set undodir=~/tmp/.vim-backups
+set undofile
 
 " SIMPLE LANGUAGE EXTENSIONS =================================================
 " markdown
