@@ -39,7 +39,7 @@ for regex in regexs:
         if len(captures) > 2: colnum = captures[2]
         break
 
-cmd = ["gvim"]
+cmd = ["nvim-qt"]
 if colnum:
     cmd.append('+call cursor(%s, %s)' % (linenum, colnum) )
 elif linenum:
