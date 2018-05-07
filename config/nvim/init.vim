@@ -171,6 +171,9 @@ silent !mkdir ~/tmp/.vim-backups > /dev/null 2>&1
 set undodir=~/tmp/.vim-backups
 set undofile
 
+" avoid ~/.config/nvim/.netrwhist
+let g:netrw_home=$XDG_CACHE_HOME.'/nvim'
+
 " SIMPLE LANGUAGE EXTENSIONS =================================================
 " markdown
 augroup mkd
