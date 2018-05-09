@@ -141,27 +141,6 @@ bindsym $mod+p $playpause
 bindsym $mod+bracketright $nextsong
 bindsym $mod+bracketleft $previoussong
 
-mode "musicplayer" {
-    bindsym Shift+M exec mpd
-
-    bindsym Return exec mpc play
-    bindsym Shift+less exec mpc prev
-    bindsym Shift+greater exec mpc next
-
-    bindsym BackSpace mpc seek 0
-
-    bindsym s exec mpc stop
-    bindsym Shift+P exec mpc toggle  # pause/play
-    bindsym Shift+Z exec mpc random
-
-    bindsym q exec mpd --kill
-    bindsym Shift+Q exec mpd --kill
-
-    bindsym Escape mode "default"
-    bindsym $mod+m mode "default"
-}
-
-bindsym $mod+m mode "musicplayer"
 #########################
 # DEFAULTS
 #########################
@@ -424,16 +403,15 @@ bindsym $mod+Ctrl+Shift+asterisk move workspace $ws8
 # App/Window Prefs
 #######################
 
-for_window [title="Hangouts"] move container to workspace $ws7
+# for_window [title="Hangouts"] move container to workspace $ws7
 for_window [window_role="pop-up"] floating enabled
-#for_window [class="Hangouts"] floating enable
 
 #######################
 # RESIZE
 #######################
 
 # resize window (you can also use the mouse for that - (Alt-right-click))
-# I only grow windows outside of resize mode
+# I only *grow* windows, for simplicity's sake
 
 #bindsym $l resize shrink left 10 px or 10 ppt
 bindsym $mod+Ctrl+Shift+$L resize grow   left 10 px or 10 ppt
@@ -446,17 +424,6 @@ bindsym $mod+Ctrl+Shift+$D resize grow   down 10 px or 10 ppt
 
 #bindsym k resize shrink up 10 px or 10 ppt
 bindsym $mod+Ctrl+Shift+$U resize grow   up 10 px or 10 ppt
-
-mode "resize" {
-    bindsym $mod+Ctrl+Shift+$R resize shrink left 10 px or 10 ppt
-    bindsym $mod+Ctrl+Shift+$L resize shrink right 10 px or 10 ppt
-    bindsym $mod+Ctrl+Shift+$U resize shrink down 10 px or 10 ppt
-    bindsym $mod+Ctrl+Shift+$D resize shrink up 10 px or 10 ppt
-
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-bindsym $mod+r mode "resize"
 
 #######################
 # MISC - editing
