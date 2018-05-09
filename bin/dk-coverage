@@ -1,4 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 
-dk coverage run --source='.' manage.py test "$@"
-dk coverage report --omit="thanos/wsgi.py,*/apps.py,*/decorators.py,*/management/commands/*.py" -m
+appname = ARGV.shift
+if appname.nil?
+    puts "usage: #{File.basename(__FILE__)} <appname>"
+    puts "example: #{File.basename(__FILE__)} products"
+    puts "output: <a coverage report>"
+    exit
+end
+
+`dk coverage run --source=apps/#{appname} ./manage.py test apps.#{appname}.tests --settings=thanos.settings.drone`
+print `dk coverage report -m --include="apps/#{appname}/*"`
