@@ -1,5 +1,0 @@
-#!/usr/bin/env ruby
-
-if ARGV[0] && ARGV[0] == "start"
-  system "~/src/copy_agent/copy/x86_64/CopyAgent &"
-end

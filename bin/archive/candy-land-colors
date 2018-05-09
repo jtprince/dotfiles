@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# produces a new candy-land color at the touch of a button
+# useful if you lost your candy-land cards and your daughter still wants to
+# play!
 
 colors = %w(red purple yellow blue orange green pink)
 
