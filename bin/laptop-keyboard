@@ -5,7 +5,7 @@ import subprocess
 import re
 
 class Property(object):
-    """ 
+    """
     Args:
       name (str): the name of the property
       id (int): the id of the property
@@ -40,7 +40,7 @@ class Device(object):
                 device = Device(*match.groups())
                 device.master = (device.master == 'master')
                 devices_.append(device)
-        
+
         return devices_
 
     def __init__(self, *args):
@@ -76,7 +76,7 @@ class Device(object):
                 prop.id = int(id)
                 prop.value = value.strip()
                 properties_.append(prop)
-                
+
         return properties_
 
     def is_enabled(self):
@@ -95,7 +95,7 @@ class Device(object):
             self.disable()
         else:
             self.enable()
-         
+
 
 # all the laptop keyboards that I have use this name for the keyboard
 # case insensitive just to give a little more flexibility
@@ -103,7 +103,7 @@ LAPTOP_KEYBOARD_RE = re.compile(r'(AT Translated Set 2 keyboard)', re.IGNORECASE
 
 def get_laptop_keyboard(devices, regexp=LAPTOP_KEYBOARD_RE):
     """ returns the laptop keyboard device """
-    for device in devices: 
+    for device in devices:
         match = regexp.search(device.name)
         if match:
             return device
@@ -115,7 +115,7 @@ parser.add_argument("action", choices=['status', 'enable', 'disable', 'toggle'])
 args = parser.parse_args()
 device = args.device
 action = args.action
-if action == 'status': 
+if action == 'status':
     action = 'is_enabled'
 
 devices = Device.devices()
