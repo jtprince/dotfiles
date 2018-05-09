@@ -19,7 +19,8 @@ if ARGV[0] && ARGV[0][0] == 'l'
     puts "can't parse this distro ip addr yet"
   end
 else
-  # WAN IP
-  ip = `dig +short myip.opendns.com @resolver1.opendns.com`.chomp
-  puts ip
+  puts `curl --silent -4 icanhazip.com`
+
+  # or for ipv6
+  # puts `curl --silent -6 icanhazip.com`
 end
