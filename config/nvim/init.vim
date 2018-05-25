@@ -5,6 +5,8 @@
 "   curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 "      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 "   mkdir ~/.local/share/vimplugins
+"
+"   After altering, run :PlugInstall to update
 call plug#begin('~/.local/share/vimplugins')
 " automatically sets:
 " filetype plugin indent on
@@ -58,6 +60,8 @@ let g:ctrlp_custom_ignore = {
     \ 'file': '\.pyc\.exe$\|\.so$\|\.dat$'
 \ }
 let g:ctrlp_follow_symlinks = 1
+
+Plug 'ambv/black'
 
 call plug#end()
 
