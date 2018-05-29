@@ -120,7 +120,7 @@ bindsym XF86AudioRaiseVolume $volup 4
 bindsym XF86AudioLowerVolume $voldown 4
 bindsym XF86AudioMute $mute
 
-bindsym $mod+backslash exec pavucontrol
+bindsym $mod+backslash exec pavucontrol --tab 5
 
 #########################
 # Music player

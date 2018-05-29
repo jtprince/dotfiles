@@ -96,7 +96,7 @@ alias hangouts="chromium https://hangouts.google.com/ --new-window"
 # media
 alias vlisten="vlc --intf rc -Vdummy"
 #alias mp="mpd ; ncmpcpp ; mpd --kill"
-alias mplayer="mplayer -af scaletempo"
+alias mplayer="mplayer -ao pulse -af scaletempo"
 #alias youtube-dl="youtube-dl --prefer-ffmpeg"
 
 alias xmod="xmodmap ~/.config/xmodmap"
