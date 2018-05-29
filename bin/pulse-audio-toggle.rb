@@ -1,60 +1,92 @@
 #!/usr/bin/env ruby
 
-require 'yaml'
+class String
+  def remove_gt_lt
+    self.sub('<', '').chomp('>')
+  end
+end
+
+Card = Struct.new(:index, :name, :profiles, :profile_availability) do
+  def to_s
+    lines = [
+      "#{self.name}",
+      "profiles: ",
+    ]
+    profile_lines = self.profiles.select(&:maybe_available).map do |profile|
+      selected = (profile.code == self.profile_availability) ? '* ' : '  '
+      "  " + selected + [profile.code, profile.description].join(' ')
+    end
+    (lines + profile_lines).join("\n")
+  end
+end
 
 Profile = Struct.new(:code, :description, :availability) do
   def name()
     self.code.split(':').last
   end
+
   def output()
     self.io_type == 'output'
   end
+
   def input()
     self.io_type == 'input'
   end
+
   def io_type()
     self.code.split(':').first
   end
+
   def maybe_available()
-    ['yes', 'unknown'].include?(self.availibility)
+    ['yes', 'unknown'].include?(self.availability)
   end
 end
+
 
 # returns a Profile object
 #
 # Takes a line like this:
 #   output:hdmi-stereo: Digital Stereo (HDMI) Output (priority 5400, available: unknown)
 # And returns a s
-def profile_line(line)
+def create_profile(line)
   profile, desc_and_avail = line.strip.split(': ', 2)
   if desc_and_avail.include?(' Output ')
     desc, priority_avail = desc_and_avail.split(' Output ')
   else
     desc, priority_avail = desc_and_avail.split(' (', 2)
   end
-  availibility = priority_avail.chomp(')').split(', ').last.split(': ').last
-  Profile.new(profile, desc, availibility)
+  availability = priority_avail.chomp(')').split(', ').last.split(': ').last
+  Profile.new(profile, desc, availability)
 end
 
-# returns the card name, the profiles, and the active profile
-def get_info(lines)
-  index = lines.shift.split(': ').last.to_i
-  name = lines.shift.split(': ').last.sub('<','').chomp('>')
+# Expects all the lines related to a single card
+# returns Card
+def get_card(card_lines)
+  index = card_lines.shift.split(': ').last.to_i
+  name = card_lines.shift.split(': ').last.remove_gt_lt
 
   profiles = []
   reading_profiles = false
   active_profile = nil
-  lines.each do |line|
-    if line =~ /\A\s+active profile: /
-      active_profile = line.split(': ').last 
-      reading_profiles = false
+  card_lines.each do |line|
+    if line =~ /^\s+active profile: /
+      active_profile = line.split(': ').last.remove_gt_lt
+      break
     elsif reading_profiles
-      profiles << profile_line(line)
-    elsif line =~ /\A\s+profiles:/
+      profiles << create_profile(line)
+    elsif line =~ /^\s+profiles:/
       reading_profiles = true
     end
   end
-  [name, profiles, active_profile]
+  Card.new(index, name, profiles, active_profile)
+end
+
+def breakup_lines_by_card(lines)
+  cards = []
+  lines.each do |line|
+    line =~ /^\s*index: \d+$/ ? (cards << [line]) : (cards.last << line)
+  end
+  cards
 end
 
 
@@ -63,8 +95,12 @@ lines = info.split("\n")
 nesting = "    "
 
 num_cards = lines.shift.split(/\s+/)[0].to_i
-puts "NUM CARDS: #{num_cards}"
-p get_info(lines)
+
+cards = breakup_lines_by_card(lines).map do |chunk_of_lines|
+  get_card(chunk_of_lines)
+end
+
+puts cards.map(&:to_s).join("\n\n")
 
 
 # An example of the output that we're parsing.
