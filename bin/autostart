@@ -22,7 +22,9 @@ if [ "$1" != "late" ]; then
     start-pulseaudio-x11
 
     # xmodmap
-    xmodmap ~/.config/xmodmap
+    if [ ! -e "/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd" ]; then 
+        xmodmap ~/.config/xmodmap
+    fi
 
     # thunar
     thunar --daemon &

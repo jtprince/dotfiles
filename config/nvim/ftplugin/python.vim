@@ -22,4 +22,4 @@ map <leader>c <Esc>0JJJJ)b
 map <leader>a <Esc>$a  # pylint: disable=<Esc>"*p<Esc>?=<Enter>wkwx<Esc>:noh<Enter>$
 
 " The movement down one line (with left hand navigation) assumes that an import line was added
-map <leader>i <Esc>mw:PymodeRopeAutoImport<Enter>1<Enter><Esc>:Isortdoba<Enter>`wf
+map <leader>i <Esc>mw:PymodeRopeAutoImport<Enter>1<Enter><Esc>:ISortdoba<Enter>`wf
