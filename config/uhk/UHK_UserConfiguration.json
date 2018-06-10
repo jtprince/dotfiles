@@ -5809,7 +5809,10 @@
                 null,
                 null,
                 null,
-                null,
+                {
+                  "keyActionType": "mouse",
+                  "mouseAction": "scrollUp"
+                },
                 null,
                 null,
                 null,
@@ -5833,7 +5836,10 @@
                 null,
                 null,
                 null,
-                null,
+                {
+                  "keyActionType": "mouse",
+                  "mouseAction": "scrollDown"
+                },
                 null,
                 null,
                 {

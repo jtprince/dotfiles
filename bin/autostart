@@ -23,6 +23,7 @@ if [ "$1" != "late" ]; then
 
     # xmodmap
     if [ ! -e "/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd" ]; then 
+        # if the UHK keyboard is not plugged in, then remap some keys!
         xmodmap ~/.config/xmodmap
     fi
 
