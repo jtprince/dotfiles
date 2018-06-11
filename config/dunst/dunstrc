@@ -29,10 +29,10 @@
 
 
 [shortcuts]
-# this is Alt-Shift-N if you remapped Win/Alt
-#    close = mod4+n
+# This is <SUPER>+ctrl+space
     close = mod4+ctrl+space
 #    close_all = ctrl+shift+space
+# This is <SUPER>+ctrl+TILDE
     history = mod4+ctrl+grave
 
 [urgency_low]
