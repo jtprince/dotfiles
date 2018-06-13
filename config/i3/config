@@ -246,7 +246,7 @@ bindsym $mod+n exec file-manager
 bindsym $mod+Shift+T exec todo
 
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
-bindsym $mod+g exec nvim-qt
+bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk
 
 bindsym XF86Calculator exec x-terminal-emulator -x python3
 

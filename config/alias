@@ -63,13 +63,11 @@ alias atlasinclude="export C_INCLUDE_PATH=/usr/include/atlas && export CPLUS_INC
 alias includeatlas=atlasinclude
 
 # common spelling mistakes
-LAUNCH_NVIM_GTK="env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk"
 alias sl="ls"
-alias gvim="$LAUNCH_NVIM_GTK"
-alias givm="$LAUNCH_NVIM_GTK"
-alias gvmi="$LAUNCH_NVIM_GTK"
-alias gimv="$LAUNCH_NVIM_GTK"
-alias gim="$LAUNCH_NVIM_GTK"
+alias givm="gvim"
+alias gvmi="gvim"
+alias gimv="gvim"
+alias gim="gvim"
 
 alias gti="git"
 alias svim="sudo -E nvim"
