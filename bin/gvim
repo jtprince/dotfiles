@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # no header and fork it
-env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk "$@" &
+env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- "$@" &

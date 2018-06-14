@@ -110,6 +110,7 @@ set list listchars=tab:»·       " Indicate tabs (so 2 tabs: »···»···)
 set wrap                        " Use word wrap by default
 set title                       " Window shows filename being edited
 set completeopt=menu            " Only show the popup menu, not the preview buffer
+set foldlevel=20                " Start with a deep foldlevel
 
 " NOTE: Holding down SHIFT enables before mousing over a selection enables
 " a terminal to grab the selection for pasting
