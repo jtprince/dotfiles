@@ -10,7 +10,6 @@ import subprocess
 if sys.argv[1:]:
     line = " ".join(sys.argv[1:])
 else:
-    import subprocess
     line = subprocess.check_output("xclip -o".split()).decode('8859').strip()
 
 if not line: raise ValueError("no reasonable file info to work from")
@@ -61,7 +60,7 @@ if "/" not in file_to_call:
 if file_to_call.startswith("=="):
     file_to_call = file_to_call.replace("==", '', 1)
 
-cmd.append(file_to_call)
+cmd.insert(1, file_to_call)
 
 print("running: %s" % " ".join(cmd))
 subprocess.call(cmd)
