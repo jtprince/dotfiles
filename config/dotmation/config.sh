@@ -12,6 +12,9 @@ ln -s ~/dotfiles/config/i3 ~/.config/
 ln -s ~/dotfiles/config/latex ~/.config/
 ln -s ~/dotfiles/config/conky ~/.config/
 ln -s ~/dotfiles/config/blockify ~/.config/
+ 
+# create the actual git config file:
+cat ~/dotfiles/config/git/config-public ~/Dropbox/env/dotfiles-private/git/config > ~/.config/git/config
 
 ln -s ~/dotfiles/config/pulseaudio-ctl ~/.config/
 ln -s ~/dotfiles/config/nvim ~/.config/
@@ -39,6 +42,8 @@ ln -s ~/dotfiles/config/gemrc ~/.gemrc
 # Xdefaults is deprecated upstream, but make link til we don't need
 ln -s ~/dotfiles/config/Xresources ~/.Xdefaults
 ln -s ~/dotfiles/config/zsh/zshenv ~/.zshenv
+
+
 
 #  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
 
