@@ -22,7 +22,7 @@ if [ "$1" != "late" ]; then
     start-pulseaudio-x11
 
     # xmodmap
-    if [ ! -e "/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd" ]; then 
+    if [ ! -e "/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd" ]; then
         # if the UHK keyboard is not plugged in, then remap some keys!
         xmodmap ~/.config/xmodmap
     fi
@@ -31,7 +31,9 @@ if [ "$1" != "late" ]; then
     thunar --daemon &
 
     # lock screen
-    xautolock-start
+    if [ `hostname` != "sazedlinux" ]; then
+        xautolock-start
+    fi
 
     # battery icon
     if cmd_exists cbatticon ; then
