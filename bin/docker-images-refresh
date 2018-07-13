@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# stop all images
+docker-compose stop
+# remove all images
+docker-compose rm
+# pull new images
+docker-compose pull
