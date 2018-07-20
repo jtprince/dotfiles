@@ -288,8 +288,8 @@ bindsym $mod+Shift+Q exit
 
 # power/on-off management:
 # note, you may need to: sudo chmod u+s /sbin/poweroff
-bindsym $mod+Ctrl+Shift+P exec --no-startup-id systemctl poweroff
-bindsym $mod+Ctrl+Shift+R exec --no-startup-id systemctl reboot
+bindsym $mod+Ctrl+Shift+P exec --no-startup-id before-i3-exit && systemctl poweroff
+bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboot
 # suspend (RAM)
 bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
 # turn off display (called as a shortcut it immediately wakes up w/o sleep added)

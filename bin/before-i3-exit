@@ -1,0 +1,7 @@
+#!/bin/sh
+
+killall --quiet --signal 15 chromium
+killall --quiet --signal 15 chrome
+killall --quiet --signal 15 urxvt
+
+exit 0
