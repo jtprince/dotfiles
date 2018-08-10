@@ -1,7 +1,7 @@
 #!/bin/bash
 
 browser="chromium --new-window"
-workdatadir="~/.config/chromium-doba"
+workdatadir="~/.config/chromium-crux"
 workbrowser="$browser --user-data-dir=$workdatadir"
 
 gmail="https://gmail.com"
