@@ -37,14 +37,22 @@ def cmd(command, arg)
   `#{bluetoothctl_cmd}`.chomp
 end
 
-def ensure_power_on!(sleep_for = 1)
-  response = cmd('power', 'on')
-  if response == BLUETOOTHCTL.power_is_on
+def ensure_power_on!(tries = 3, sleep_for = 1.5)
+  power_is_on = false
+  response = nil
+  tries.times.each do
+    response = cmd('power', 'on')
+    if response == BLUETOOTHCTL.power_is_on
+      power_is_on = true
+      break
+    end
+    sleep sleep_for
+  end
+  if power_is_on
     puts response
   else
     abort MSGS.failure_to_poweron_bluetooth
   end
-  sleep sleep_for
 end
 
 # returns true if successful connect, false otherwise
