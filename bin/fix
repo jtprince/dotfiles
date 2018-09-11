@@ -8,6 +8,7 @@ import sys
 # determine if local or ssh (local -> "urxvt", remote -> "sshd"):
 # cat /proc/$PPID/status | head -1 | cut -f2
 
+
 # forks the process
 def spawnDaemon(func, *args):
     # do the UNIX double-fork magic, see Stevens' "Advanced
@@ -73,7 +74,8 @@ for regex in regexs:
             colnum = captures[2]
         break
 
-cmd = ["urxvt", "-e", "nvim"]
+cmd = ["xfce4-terminal", "-e"]
+nvim_cmd = ["nvim"]
 
 file_to_call = filename.split(':')[0]
 file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwidow")
@@ -91,15 +93,19 @@ if "/" not in file_to_call:
 if file_to_call.startswith("=="):
     file_to_call = file_to_call.replace("==", '', 1)
 
-cmd.append(file_to_call)
+nvim_cmd.append(file_to_call)
 
 if colnum:
     # nvim can't do the call cursor() :(
-    cmd.extend(["-c", ":call cursor({}, {})".format(linenum, colnum)])
+    nvim_cmd.extend(["-c", ":call cursor({}, {})".format(linenum, colnum)])
 elif linenum:
-    cmd.extend(["-c", ":{}".format(int(linenum))])
+    nvim_cmd.extend(["-c", ":{}".format(int(linenum))])
 
-print("running: %s" % " ".join(cmd))
+
+nvim_str = " ".join(nvim_cmd)
+cmd.append(nvim_str)
+
+print(f"running: {' '.join(cmd)}")
 
 spawnDaemon(subprocess.call, cmd)
 
