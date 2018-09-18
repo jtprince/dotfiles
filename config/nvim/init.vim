@@ -49,6 +49,7 @@ let g:pymode_options = 0
 " setlocal commentstring=#%s
 " setlocal define=^\s*\\(def\\\\|class\\)
 
+" invoke as: nvim -c 'let g:pymode_rope=0' to turn off at outset
 let g:pymode_rope = 1
 let g:pymode_rope_complete_on_dot = 0
 let g:pymode_rope_autoimport = 1
