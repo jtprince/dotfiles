@@ -16,8 +16,8 @@ from gi.repository import Gtk  # noqa: E402
 
 username = sys.argv[1]
 
-user_agent = ("APP for checking my reddit inbox")
-reddit = praw.Reddit(user_agent = user_agent)
+user_agent = ("User-Agent: linux.reddit-inbox-tray:v0.0.1 (by /u/bwv549)")
+reddit = praw.Reddit(user_agent=user_agent)
 
 with open(f"/home/jtprince/Dropbox/env/reddit/{username}.password") as infile:
     password = infile.read()
@@ -33,7 +33,9 @@ for msg in reddit.get_unread(limit=1):
 exit(1)
 
 
-class Indicator():
+class MessageIndicator:
+    UPDATE_SECONDS = 30
+
     def __init__(self):
         self.app = 'test123'
         iconpath = '/usr/share/icons/Adwaita/16x16/status/'
@@ -52,7 +54,7 @@ class Indicator():
         self.indicator.set_icon_full(icon_name, "no messages")
         # self.indicator.set_label("1 Monkey", self.app)
         # the thread:
-        self.update = Thread(target=self.show_seconds)
+        self.update = Thread(target=self.check_messages)
         # daemonize the thread to make the indicator stopable
         self.update.setDaemon(True)
         self.update.start()
@@ -74,22 +76,21 @@ class Indicator():
         menu.show_all()
         return menu
 
-    def show_seconds(self):
-        t = 2
+    def check_messages(self):
         while True:
-            time.sleep(1)
+            time.sleep(self.UPDATE_SECONDS)
             # apply the interface update using  GLib.idle_add()
             GLib.idle_add(
                 self.indicator.set_icon_full,
-                "changes-prevent", "message",
+                "changes-prevent",
+                "message",
                 priority=GLib.PRIORITY_DEFAULT
-                )
-            t += 1
+            )
 
     def stop(self, source):
         Gtk.main_quit()
 
 
-Indicator()
+MessageIndicator()
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 Gtk.main()
