@@ -87,8 +87,8 @@ bindsym $mod+o exec --no-startup-id /home/jtprince/advance-paste.rb
 # bindsym XF86KbdBrightnessUp exec --no-startup-id kbdlight up
 
 # (asus)
-bindsym XF86KbdBrightnessDown exec --no-startup-id asus-kbd-backlight down
-bindsym XF86KbdBrightnessUp exec --no-startup-id asus-kbd-backlight up
+bindsym XF86KbdBrightnessDown exec --no-startup-id kbd-backlight down
+bindsym XF86KbdBrightnessUp exec --no-startup-id kbd-backlight up
 
 # TODO: fix this:
 # bindsym XF86ToggleTouchpad exec --no-startup-id
