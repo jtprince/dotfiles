@@ -3,7 +3,7 @@
 require 'shellwords'
 # --smart gets me proper curly quotes and apostrophes!
 # but they will not look right unless --standalone is also used
-default_options = "-f markdown+smart --standalone -V geometry:margin=1.7in --variable urlcolor=Blue --pdf-engine=xelatex"
+default_options = "-f markdown+smart --standalone -V geometry:margin=1.25in --variable urlcolor=Blue --pdf-engine=xelatex"
 # number sections:
 #default_options = "--smart -N --standalone -V geometry:margin=1.7in --variable urlcolor=Blue"
 
