@@ -1,0 +1,3 @@
+#!/bin/bash
+
+readlink -f "$1" | clip
