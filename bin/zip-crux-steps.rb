@@ -100,7 +100,11 @@ def ensure_paths(provided_paths)
     if in_specific_action_dir?
       [get_path_and_move_above_it]
     else
-      Dir["_*"].select {|fn| File.directory?(fn) }
+      action_dirs = Dir["_*"].select {|fn| File.directory?(fn) }
+      if action_dirs.size == 0
+        raise "No action dirs found!  Are you close to your action dirs beginning with '_'?"
+      end
+      action_dirs
     end
   else
     provided_paths
