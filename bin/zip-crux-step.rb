@@ -1,11 +1,22 @@
 #!/usr/bin/env -S ruby -W0
+# we turn off warnings because we are chdir'ing inside a chdir block and ruby
+# is not happy about that, even though it allows it.
+# see usage block way down below for usage
 
-def is_src_dir?(dir)
-  File.basename(dir) == 'src'
+def basename_dir
+  File.basename(Dir.pwd)
 end
 
-def is_action_wrapper_dir?(dir)
-  File.basename(dir).start_with?("_")
+def move_up_dir
+  Dir.chdir("../")
+end
+
+def pwd_is_src_dir?
+  basename_dir == 'src'
+end
+
+def pwd_is_action_wrapper_dir?
+  basename_dir.start_with?("_")
 end
 
 # assumes you are in src dir
@@ -13,34 +24,59 @@ def get_directory_above_src()
   Dir.pwd.split('/')[-2]
 end
 
-# Assumes in the action wrapper dir
-# Always positions location in the action wrapper directory at finish
-def make_zip_file
-  action_dir = File.basename(Dir.pwd)
-  begin
-    Dir.chdir("src")
-  rescue Exception => exc
-    puts "==> Error in #{action_dir}: Missing the 'src' directory!"
-    return nil
+def in_specific_action_dir?
+  pwd_is_action_wrapper_dir? || pwd_is_src_dir?
+end
+
+def get_path_and_move_above_it
+  move_up_dir if pwd_is_src_dir?
+  path = basename_dir
+  move_up_dir
+  path
+end
+
+def display_created_zip_files(zip_files)
+  if zip_files.size > 0
+    border = -> { puts "=" * 70 }
+    border.()
+    puts "CREATED!"
+    border.()
+    puts zip_files.join("\n")
   end
+end
 
+# Whatever conditions for a valid src dir
+POTENTIAL_SRC_PROBLEMS = [
+  {
+    condition: -> { !pwd_is_src_dir? },
+    message: "Couldn't find the src directory! (cd into it or give arg!)",
+  },
+  {
+    condition: -> { Dir["_*.json"].size > 1 },
+    message: "Multiple feed definition files!",
+  },
+  {
+    condition: -> { Dir["_*.json"].size == 0 },
+    message: "Missing feed definition file!",
+  },
+  {
+    condition: -> { Dir["*.json"].size >= 2 },
+    message: "Will not run with 2 or more .json files in src dir!",
+  },
+  {
+    condition: -> { Dir["*.*"].size > 2 },
+    message: "More than two files in your src dir!",
+  }
+]
+
+# Assumes in the action wrapper dir
+def make_zip_file
+  action_dir = basename_dir
   begin
-    raise "Couldn't find the src directory! (cd into it or give arg!)" unless is_src_dir?(Dir.pwd)
+    Dir.chdir("src") rescue "Missing the 'src' directory!"
 
-    if Dir["_*.json"].size > 1
-      raise "Multiple feed definition files!"
-    end
-
-    if Dir["_*.json"].size == 0
-      raise "Missing feed definition file!"
-    end
-
-    if Dir["*.json"].size >= 2
-      raise "Will not run with 2 or more .json files in src dir!"
-    end
-
-    if Dir["*.*"].size > 2
-      raise "More than two files in your src dir!"
+    POTENTIAL_SRC_PROBLEMS.each do |potential_problem|
+      raise potential_problem[:message] if potential_problem[:condition].()
     end
 
     zip_filename =  "#{get_directory_above_src}.zip"
@@ -53,35 +89,48 @@ def make_zip_file
     new_filename = parts.reverse.reject {|part| part == 'src' }.reverse.join("/")
     new_filename
   rescue Exception => exc
+    # Control the output of any error messages here
     puts "==> Error in #{action_dir} #{exc}"
     nil
-  ensure
-    Dir.chdir("../")
   end
 end
 
+def ensure_paths(provided_paths)
+  if provided_paths.size == 0
+    if in_specific_action_dir?
+      [get_path_and_move_above_it]
+    else
+      Dir["_*"].select {|fn| File.directory?(fn) }
+    end
+  else
+    provided_paths
+  end
+end
+
+if ["-h", "--help"].include?(ARGV[0])
+  progname = File.basename(__FILE__)
+  puts "usage: #{progname} [path] [...]"
+  puts
+  puts "zips up src dirs meeting conditions"
+  puts "    and displays any errors and files generated"
+  puts
+  puts "valid usage:"
+  puts
+  puts "# inside top level action directory, an action directory, or a src dir"
+  puts "# will do the right thing (zip up the dir or dirs in scope)"
+  puts "    #{progname}"
+  puts
+  puts "# can also provide paths to action dirs (e.g.)"
+  puts "    #{progname} _my_action_dir _another_action_dir"
+  exit
+end
 
 paths = ARGV.to_a.dup
 
-zip_files = []
-if paths.size == 0
-  if is_action_wrapper_dir?(Dir.pwd) || is_src_dir?(Dir.pwd)
-    if is_src_dir?(Dir.pwd)
-      Dir.chdir("../")
-    end
-    zip_files << make_zip_file
-  else
-    # populate paths with all action directories
-    paths = Dir["_*"].select {|fn| File.directory?(fn) }
-  end
-end
+paths_ensured = ensure_paths(paths)
 
-paths.each do |path|
-  Dir.chdir(path) do
-    zip_files << make_zip_file
-  end
-end
+zip_files = paths_ensured.map do |path|
+  Dir.chdir(path) { make_zip_file }
+end.compact
 
-zip_files.compact.each do |zip_file|
-  puts "CREATED: #{zip_file}"
-end
+display_created_zip_files(zip_files)
