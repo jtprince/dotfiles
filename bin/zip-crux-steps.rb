@@ -59,14 +59,6 @@ POTENTIAL_SRC_PROBLEMS = [
     condition: -> { Dir["_*.json"].size == 0 },
     message: "Missing feed definition file!",
   },
-  {
-    condition: -> { Dir["*.json"].size >= 2 },
-    message: "Will not run with 2 or more .json files in src dir!",
-  },
-  {
-    condition: -> { Dir["*.*"].size > 2 },
-    message: "More than two files in your src dir!",
-  }
 ]
 
 # Assumes in the action wrapper dir
@@ -80,7 +72,9 @@ def make_zip_file
     end
 
     zip_filename =  "#{get_directory_above_src}.zip"
-    `zip #{zip_filename} *.*`
+
+    # only zips up files under git control
+    `zip #{zip_filename} \`git ls-files . | tr '\n' ' '\``
 
     full_zipfilename = File.join(Dir.pwd, zip_filename)
     `mv #{full_zipfilename} ../`
