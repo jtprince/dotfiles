@@ -6,7 +6,7 @@
 # - Accepts input from either stdin (pipe), or params.
 # ------------------------------------------------
 
-local _scs_col="\e[0;32m"; local _wrn_col='\e[1;31m'; local _trn_col='\e[0;33m'
+_scs_col="\e[0;32m"; _wrn_col='\e[1;31m'; _trn_col='\e[0;33m'
 # Check that xclip is installed.
 if ! type xclip > /dev/null 2>&1; then
     echo -e "$_wrn_col""You must have the 'xclip' program installed.\e[0m"

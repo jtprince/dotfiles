@@ -6,7 +6,7 @@ email_address_fragment, hostname = ARGV.dup
 email_address_fragment ||= 'prince'
 hostname ||= "http://localhost"
 
-json = `http GET "#{hostname}/api/organizations/dev/tokens/"`
+json = `http GET "#{hostname}/timp/organizations/dev/tokens/"`
 
 data = JSON.parse(json)
 

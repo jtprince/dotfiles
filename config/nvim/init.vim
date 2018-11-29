@@ -36,6 +36,7 @@ Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-markdown'
 Plug 'gisraptor/vim-lilypond-integrator'
 Plug 'vim-scripts/AnsiEsc.vim'
+Plug 'christoomey/vim-titlecase'
 
 Plug 'kien/ctrlp.vim'
 

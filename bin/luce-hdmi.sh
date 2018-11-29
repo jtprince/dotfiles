@@ -7,3 +7,4 @@ xrandr \
     --output VIRTUAL1 --off
 
 randomise-bkg
+xmodmap ~/.config/xmodmap
