@@ -59,6 +59,11 @@ POTENTIAL_SRC_PROBLEMS = [
     condition: -> { Dir["_*.json"].size == 0 },
     message: "Missing feed definition file!",
   },
+  {
+    condition: -> { Dir["_*.json"].first.sub('.json', '') != File.absolute_path(Dir["_*.json"].first).split("/")[-3]},
+    message: "Feed definition file must match the enclosing folder name!",
+  },
+
 ]
 
 # Assumes in the action wrapper dir
