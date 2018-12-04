@@ -202,6 +202,13 @@ autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 noexpandtab
 autocmd Filetype tex setlocal foldmethod=syntax
 
+" to get folds going on most filetypes, merely do
+" set foldmethod=syntax
+" then zc (close) zo (open) etc
+
+" pretty format json:
+"%!python -m json.tool
+
 " superceded by pymode for now
 " reads in ftplugin/python.vim
 " autocmd BufRead,BufNewFile *.py setfiletype python
