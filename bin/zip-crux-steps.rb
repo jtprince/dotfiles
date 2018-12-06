@@ -3,6 +3,8 @@
 # is not happy about that, even though it allows it.
 # see usage block way down below for usage
 
+require 'optparse'
+
 def basename_dir
   File.basename(Dir.pwd)
 end
@@ -45,6 +47,10 @@ def display_created_zip_files(zip_files)
   end
 end
 
+def valid_json_file?(file)
+  !!JSON.parse(IO.read(file)) rescue false
+end
+
 # Whatever conditions for a valid src dir
 POTENTIAL_SRC_PROBLEMS = [
   {
@@ -63,11 +69,20 @@ POTENTIAL_SRC_PROBLEMS = [
     condition: -> { Dir["_*.json"].first.sub('.json', '') != File.absolute_path(Dir["_*.json"].first).split("/")[-3]},
     message: "Feed definition file must match the enclosing folder name!",
   },
+  {
+    condition: -> { Dir["_*.json"].first.sub('.json', '') != File.absolute_path(Dir["_*.json"].first).split("/")[-3]},
+    message: "Feed definition file must match the enclosing folder name!",
+  },
+  {
+    condition: -> { valid_json_file?(Dir["_*.json"].first) },
+    message: "File #{Dir["_*.json"].first} is not valid json!",
+  },
+
 
 ]
 
 # Assumes in the action wrapper dir
-def make_zip_file
+def make_zip_file(options={})
   action_dir = basename_dir
   begin
     Dir.chdir("src") rescue "Missing the 'src' directory!"
@@ -82,10 +97,12 @@ def make_zip_file
     `zip #{zip_filename} \`git ls-files . | tr '\n' ' '\``
 
     full_zipfilename = File.join(Dir.pwd, zip_filename)
-    `mv #{full_zipfilename} ../`
+
+    placement = options[:dirs_up].times.map { '../' }.join
+    `mv #{full_zipfilename} #{placement}`
 
     parts = full_zipfilename.split('/')
-    new_filename = parts.reverse.reject {|part| part == 'src' }.reverse.join("/")
+    new_filename = (parts[0..-(options[:dirs_up] + 2)] + [zip_filename]).join("/")
     new_filename
   rescue Exception => exc
     # Control the output of any error messages here
@@ -110,30 +127,40 @@ def ensure_paths(provided_paths)
   end
 end
 
-if ["-h", "--help"].include?(ARGV[0])
+options = {
+  dirs_up: 1,
+}
+parser = OptionParser.new do |op|
   progname = File.basename(__FILE__)
-  puts "usage: #{progname} [path] [...]"
-  puts
-  puts "zips up src dirs meeting conditions"
-  puts "    and displays any errors and files generated"
-  puts
-  puts "valid usage:"
-  puts
-  puts "# inside top level action directory, an action directory, or a src dir"
-  puts "# will do the right thing (zip up the dir or dirs in scope)"
-  puts "    #{progname}"
-  puts
-  puts "# can also provide paths to action dirs (e.g.)"
-  puts "    #{progname} _my_action_dir _another_action_dir"
-  exit
+  op.banner = "usage: #{progname} [path] [...]"
+  op.separator <<~END
+    zips up src dirs meeting conditions
+        and displays any errors and files generated
+  
+    valid usage:
+      # inside top level action directory, an action directory, or a src dir
+      # will do the right thing (zip up the dir or dirs in scope)
+          #{progname}
+          
+      # can also provide paths to action dirs (e.g.)
+          #{progname} _my_action_dir _another_action_dir
+  END
+  op.separator ""
+  op.separator "options:"
+      
+  op.on("--root", "place any zip files two levels up", "from src instead of one leve") {
+    options[:dirs_up] = 2
+  }
 end
+
+parser.parse!
 
 paths = ARGV.to_a.dup
 
 paths_ensured = ensure_paths(paths)
 
 zip_files = paths_ensured.map do |path|
-  Dir.chdir(path) { make_zip_file }
+  Dir.chdir(path) { make_zip_file(options) }
 end.compact
 
 display_created_zip_files(zip_files)

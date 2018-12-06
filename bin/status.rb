@@ -450,7 +450,7 @@ datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime
 #components = [quote, bat, cpu, mem, weather, days, datetime].select {|cell| cell[:monitor].valid? }
 #components = [quote, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
 #components = [spotify, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
-components = [bat, spotify, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+components = [quote, bat, spotify, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
 
 thin_space = ' '
 div = I3Bar::UI::Divider.new("#{thin_space}◀▶#{thin_space}", "#000000")
