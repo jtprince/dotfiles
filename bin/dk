@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-require 'shellwords'
 
 require 'optparse'
 require 'shellwords'
@@ -7,15 +6,18 @@ require 'shellwords'
 opts = {
   container: true,
   db: false,
+  tty: false,
 }
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [options] cmd"
+  ## NOTE: YOU MUST ADD ARGS TO valid_args!!!!
   #op.on("-c", "--container", "use an already running container") {|v| opts[:container] = v }
   op.on("-r", "--run", "docker-compose run <whatever>") {|v| opts[:container] = false }
+  op.on("-t", "--tty", "use tty") {|v| opts[:tty] = true }
   op.on("--db", "drop into the running db; flips container to true") {|v| opts[:db] = opts[:container] = v }
   op.on("-v", "--verbose", "talk about it") {|v| $VERBOSE = 3 }
 end
-valid_args = %w(-c --container --db)
+valid_args = %w(-c --container --db -r -t --tty -v)
 
 docker_args_start_index = (ARGV.index {|arg| valid_args.include?(arg) } || -1) + 1
 
@@ -60,7 +62,8 @@ if opts[:container]
 
   container_id = `docker ps -a --no-trunc --filter name=#{container_name} --format "{{.ID}}"`.chomp
 
-  run %Q{docker exec -it #{container_id} bash -c "#{cmd_args.join(' ')}"}
+  tty = "-t" if opts[:tty]
+  run %Q{docker exec -i #{tty} #{container_id} bash -c "#{cmd_args.join(' ')}"}
 else
   run "docker-compose run web #{cmd_args.map {|arg| Shellwords.escape(arg) }.join(' ')}"
 end

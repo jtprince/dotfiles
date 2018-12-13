@@ -1,6 +1,9 @@
 colorscheme jtplightgui
-" nvim-qt
+" nvim-qt style
 " Guifont DejaVu Sans Mono:h11
+
+" specific to neovim-gtk
+call rpcnotify(1, 'Gui', 'Font', 'DejaVu Sans Mono 10')
 
 " yanks the mouse selection to X11 clipboard after releasing the button
 " the s moves one character left
@@ -8,7 +11,9 @@ colorscheme jtplightgui
 noremap <leader>y "*y
 noremap <leader>Y "+y
 
-if exists('g:GtkGuiLoaded')
-    let g:GuiInternalClipboard = 1
-    call rpcnotify(1, 'Gui', 'Font', 'DejaVu Sans Mono 10')
-endif
+" doesn't work
+" noremap <leader><C-y> "*c
+noremap <leader><C-Y> "+c
+
+" noremap <leader><p> "*p
+" noremap <leader><P> "+p
