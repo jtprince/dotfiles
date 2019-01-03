@@ -214,6 +214,10 @@ autocmd Filetype tex setlocal foldmethod=syntax
 " autocmd BufRead,BufNewFile *.py setfiletype python
 " autocmd BufWritePost *.py call Flake8()
 
+" SIMPLE TRANSFORMATIONS =================================================
+" pretty print the json
+noremap <leader>j <Esc>:%!python -m json.tool<Enter>
+
 " LEFT-HANDED NAVIGATION =====================================================
 "  (right hand gets tired)
 " s (go left) g (go right) d (go down) f (go up)

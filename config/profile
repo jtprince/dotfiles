@@ -112,3 +112,14 @@ if [ -d ~/.pyenv ]; then
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
 fi
+
+#####################################################
+# Application Specific
+#####################################################
+
+# fim (commandline image viewer) needs a PCF version 1 font
+# https://forum.manjaro.org/t/framebuffer-issues/26073/3
+# sudo pacman -S terminus-font
+export FBFONT=/usr/share/kbd/consolefonts/ter-216n.psf.gz
+
+
