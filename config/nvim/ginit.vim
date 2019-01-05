@@ -17,3 +17,9 @@ noremap <leader><C-Y> "+c
 
 " noremap <leader><p> "*p
 " noremap <leader><P> "+p
+
+noremap <leader>+ <Esc>:call rpcnotify(1, 'Gui', 'Font', 'DejaVu Sans Mono 13')<Enter>
+noremap <leader>- <Esc>:call rpcnotify(1, 'Gui', 'Font', 'DejaVu Sans Mono 10')<Enter>
+
+noremap <C-ScrollWheelUp> <Esc>:call rpcnotify(1, 'Gui', 'Font', 'DejaVu Sans Mono 13')<Enter>
+noremap <C-ScrollWheelDown> <Esc>:call rpcnotify(1, 'Gui', 'Font', 'DejaVu Sans Mono 10')<Enter>
