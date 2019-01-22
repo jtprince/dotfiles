@@ -55,6 +55,10 @@ let g:pymode_rope = 1
 let g:pymode_rope_complete_on_dot = 0
 let g:pymode_rope_autoimport = 1
 let g:pymode_options_max_line_length=120
+" pymode is really a collection of packages, see info on each:
+"     https://github.com/python-mode/python-mode/wiki
+" The command: <Ctrl-c> f
+"     will find all occurences of the python name under the cursor
 
 " Ctrl-P config
 let g:ctrlp_custom_ignore = {

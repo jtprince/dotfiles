@@ -105,6 +105,7 @@ alias chromiumtest="chromium --user-data-dir=~/.config/chromium-test"
 alias chromiumdoba="chromium --user-data-dir=~/.config/chromium-doba"
 alias chromiumcrux="chromium --user-data-dir=~/.config/chromium-crux"
 alias chromiumfaenrandir="chromium --user-data-dir=~/.config/chromium-faenrandir"
+alias chromiummelissa="chromium --user-data-dir=~/.config/chromium-melissa"
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
 # not using right now
