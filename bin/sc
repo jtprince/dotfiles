@@ -5,6 +5,20 @@ require 'ostruct'
 require 'shellwords'
 require 'fileutils'
 
+LIKE_CHEESE = [
+  "say 茄子[eggplant]",
+  "say pickles",
+  "Sig ‘appelsin",
+  "käsekuchen",
+  "sei,
+  no",
+  "kimchi",
+  "säg ‘omelett",
+  "say سیب[apple]",
+  "pepsi",
+  "beanjack"
+]
+
 def printv(*args)
   print *args if $VERBOSE
 end
@@ -21,9 +35,9 @@ viewers = {
 }
 
 get_window_id = {
-  window: lambda { `xwininfo`[/Window id\:\s+(\w+)\s+/, 1] },
-  active: lambda { `xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)"`.split(/\s+/).last },
-  root: lambda { 'root' }
+  window: -> { `xwininfo`[/Window id\:\s+(\w+)\s+/, 1] },
+  active: -> { `xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)"`.split(/\s+/).last },
+  root: -> { 'root' }
 }
 
 viewers_bold_string = viewers.map do |letter,app|
@@ -73,13 +87,12 @@ end
 filename_esc = Shellwords.escape(filename)
 
 if opt.delay
-  likecheese = ["say 茄子[eggplant]", "say pickles", "Sig ‘appelsin", "käsekuchen", "sei, no", "kimchi", "säg ‘omelett", "say سیب[apple]", "pepsi", "beanjack"]
   printv "Action in "
   opt.delay.downto(1) do |cnt|
     printv "#{cnt}.. "
     sleep(1)
   end
-  putsv likecheese.sample + "!"
+  putsv LIKE_CHEESE.sample + "!"
 end
 
 # create the command

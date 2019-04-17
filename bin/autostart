@@ -58,10 +58,11 @@ if [ "$1" != "late" ]; then
         dropbox start
     fi
 
+    # now using pclcmd (see pcloud in Dropbox/env/../ for oath token)
     # pcloud
-    if cmd_exists psyncgui ; then
-        ( sleep 10 && psyncgui )&
-    fi
+    # if cmd_exists psyncgui ; then
+    #    ( sleep 10 && psyncgui )&
+    # fi
 
     # sound tray
     pasystray &
