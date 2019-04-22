@@ -16,7 +16,7 @@ if [ "$1" != "late" ]; then
     fi
 
     # dunst
-    dunst -config ~/.config/dunstrc &
+    dunst -config ~/.config/dunst/dunstrc &
 
     # pulseaudio
     start-pulseaudio-x11
