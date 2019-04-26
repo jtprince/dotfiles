@@ -1,19 +1,17 @@
 #!/usr/bin/env ruby
 
-delay = 0.5
+delay = 0.3
 
 # An invocation using a separate gmail profile:
 # chromium --new-window --user-data-dir=~/.config/chromium-crux
 
 BROWSER = "chromium --new-window"
-GMAIL = "https://gmail.com"
-CALENDAR = "https://calendar.google.com"
-OUTLOOK_CALENDAR = "https://outlook.office.com/calendar/view/month"
+TEAMS = "https://teams.microsoft.com"
+SLACK = "https://3plcentral-tech.slack.com"
 
 [
-  [BROWSER, GMAIL],
-  [BROWSER, OUTLOOK_CALENDAR],
-  [BROWSER, CALENDAR],
+  [BROWSER, TEAMS],
+  [BROWSER, SLACK],
 ].each do |cmd|
   cmd_joined = cmd.is_a?(Array) ? cmd.join(' ') : cmd
   cmd_forked = "#{cmd_joined} &"

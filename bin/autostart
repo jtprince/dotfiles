@@ -15,8 +15,9 @@ if [ "$1" != "late" ]; then
         xrdb -merge ~/.config/Xresources-local
     fi
 
-    # dunst
-    dunst -config ~/.config/dunst/dunstrc &
+    # notifications
+    # dunst -config ~/.config/dunst/dunstrc &
+    systemctl --user start xfce4-notifyd
 
     # pulseaudio
     start-pulseaudio-x11
