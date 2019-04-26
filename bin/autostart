@@ -15,6 +15,9 @@ if [ "$1" != "late" ]; then
         xrdb -merge ~/.config/Xresources-local
     fi
 
+    # compositing manager
+    compton --config ~/.config/compton/compton.conf --daemon
+
     # notifications
     # dunst -config ~/.config/dunst/dunstrc &
     systemctl --user start xfce4-notifyd
