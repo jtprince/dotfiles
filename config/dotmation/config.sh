@@ -12,6 +12,7 @@ ln -s ~/dotfiles/config/i3 ~/.config/
 ln -s ~/dotfiles/config/latex ~/.config/
 ln -s ~/dotfiles/config/conky ~/.config/
 ln -s ~/dotfiles/config/blockify ~/.config/
+ln -s ~/dotfiles/config/compton ~/.config/
  
 # create the actual git config file:
 cat ~/dotfiles/config/git/config-public ~/Dropbox/env/dotfiles-private/git/config > ~/.config/git/config
