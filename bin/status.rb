@@ -19,7 +19,7 @@ module SysMonitor
 
   class DateTime
     include SysMonitor
-    def initialize(format="%Y-%m-%d | %a %b %d | %l:%M%P")
+    def initialize(format="%Y-%m-%d | %a %b %d | %k:%M%P")
       @format = format
     end
     def data

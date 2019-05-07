@@ -113,6 +113,11 @@ if [ -d ~/.pyenv ]; then
     eval "$(pyenv virtualenv-init -)"
 fi
 
+if [ -d ~/.poetry ]; then
+    export PATH="$HOME/.poetry/bin:$PATH"
+fi
+
+
 #####################################################
 # Application Specific
 #####################################################
@@ -121,5 +126,6 @@ fi
 # https://forum.manjaro.org/t/framebuffer-issues/26073/3
 # sudo pacman -S terminus-font
 export FBFONT=/usr/share/kbd/consolefonts/ter-216n.psf.gz
+
 
 
