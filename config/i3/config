@@ -68,12 +68,17 @@ client.urgent               #F00000     #F00000     #000000
 #########################
 # KEYBOARD KEYS
 #########################
+set $majorlightadjust major
+set $mediumlightadjust medium
+set $minorlightadjust minor
+set $finelightadjust fine
+
 bindsym XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $majorlightadjust
 bindsym XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $majorlightadjust
 bindsym $mod+XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $mediumlightadjust
 bindsym $mod+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $mediumlightadjust
-bindsym $mod+Shift+XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $lowlightadjust
-bindsym $mod+Shift+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $lowlightadjust
+bindsym $mod+Shift+XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $minorlightadjust
+bindsym $mod+Shift+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $minorlightadjust
 bindsym $mod+Ctrl+Shift+XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $finelightadjust
 bindsym $mod+Ctrl+Shift+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $finelightadjust
 

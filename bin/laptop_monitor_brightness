@@ -20,6 +20,8 @@ if ARGV.size == 0
   puts "    #{video_cards.join(", ")}"
   puts "auto respects BACKLIGHT env variable, otherwise acpi_video0 or intel_backlight"
   puts "always *prints* current brightness to stdout"
+  puts
+  puts "increments: major, medium, minor, fine"
   exit
 end
 
@@ -52,17 +54,29 @@ max_val = `cat #{backlight_base }/max_brightness`.to_i
 
 increments =
 {
-    major: 6.6,
-    medium: 25.0,
-    minor: 50.0,
-    fine: 100.0,
+    major: 12.0,
+    medium: 50.0,
 }.map {|key, factor| [key, make_increment(max_val, factor)] }.to_h
+
+# need finer gradation if tons of precision available
+increments[:minor] =
+  if max_val > 1000
+    make_increment(max_val, 1000)
+  else
+    make_increment(max_val, 100)
+  end
+
+# Finest adjustment possible
+increments[:fine] = 1
 
 
 brightness_pipe = backlight_base  + "/brightness"
 current_brightness = `cat #{brightness_pipe}`.to_i
+output = []
+
 if operation
-  new_brightness = current_brightness.send(operation, increments[increment_type])
+  increment = increments[increment_type]
+  new_brightness = current_brightness.send(operation, increment)
   if operation == :+
     max_val = `cat #{backlight_base }/max_brightness`.to_i
     new_brightness = max_val if new_brightness > max_val
@@ -70,9 +84,14 @@ if operation
     new_brightness = 0 if new_brightness < 0
   end
   cmd = "echo #{new_brightness} > #{brightness_pipe}"
-  #puts cmd
+  # puts cmd
   `#{cmd}`
+  output << operation << increment
 end
 
 current_brightness = `cat #{brightness_pipe}`.to_i
-puts "#{current_brightness.to_s} / #{max_val}"
+output << "(#{current_brightness.to_s} / #{max_val})"
+
+output_str = "brightness: " + output.join(' ')
+`notify-send "#{output_str}"`
+puts output_str
