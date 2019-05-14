@@ -42,6 +42,8 @@ Plug 'kien/ctrlp.vim'
 
 " python mode is the only reliable way to get at rope functionality
 Plug 'python-mode/python-mode', { 'branch': 'develop' }
+let g:python3_host_prog = '/usr/bin/python3'
+
 let g:pymode_python = 'python3'
 " turn off default pymode options and just set what we want
 let g:pymode_options = 0
