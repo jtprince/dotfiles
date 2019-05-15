@@ -26,7 +26,7 @@ bindkey -e
 
 # plugins in ~/.oh-my-zsh/plugins/*
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-#plugins=(git ruby rake)
+# plugins=(poetry git ruby rake python poetry)
 
 #DISABLE_AUTO_UPDATE="true"
 #source $ZSH/oh-my-zsh.sh
