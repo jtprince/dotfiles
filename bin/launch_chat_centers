@@ -6,11 +6,11 @@ delay = 0.3
 # chromium --new-window --user-data-dir=~/.config/chromium-crux
 
 BROWSER = "chromium --new-window"
-TEAMS = "https://teams.microsoft.com"
 SLACK = "https://3plcentral-tech.slack.com"
+TEAMS = "teams-for-linux"
 
 [
-  [BROWSER, TEAMS],
+  [TEAMS],
   [BROWSER, SLACK],
 ].each do |cmd|
   cmd_joined = cmd.is_a?(Array) ? cmd.join(' ') : cmd

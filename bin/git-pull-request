@@ -10,11 +10,14 @@ def get_origin()
   git_address.split(':',2).last.chomp(".git")
 end
 
-origin = get_origin
+def get_domain()
+  remote_origin = `git config --get remote.origin.url`
+  remote_origin[/git@([^\:]+):/, 1]
+end
 
 puts "*proposed* pull request for branch #{branch} into #{pull_into}"
 
-url = "https://github.com/#{origin}/compare/#{pull_into}...#{branch}?expand=1"
+url = "https://#{get_domain}/#{get_origin}/compare/#{pull_into}...#{branch}?expand=1"
 cmd = ["xdg-open", url]
 
 puts url
