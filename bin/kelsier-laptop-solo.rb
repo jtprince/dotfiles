@@ -16,7 +16,7 @@ device_lines = `xrandr`.split("\n").select {|line| line =~ /^\w.*connected/ }
 devices = device_lines.map {|line| line.split(/\s/).first }
 edp1_device = devices.first
 
-dp_devices = devices.select {|device| device =~ /^DP\d/ }
+dp_devices = devices.select {|device| device =~ /^DP-?\d/ }
 
 cmd = [
   'xrandr',

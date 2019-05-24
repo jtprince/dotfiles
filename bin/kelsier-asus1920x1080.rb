@@ -6,7 +6,7 @@ device_lines = `xrandr`.split("\n").select {|line| line =~ /^\w.*connected/ }
 # with kelsier, the devices show up as eDP-1 or sometimes as eDP1
 devices = device_lines.map {|line| line.split(/\s/).first }
 
-dp_devices = devices.select {|device| device =~ /^DP\d/ }
+dp_devices = devices.select {|device| device =~ /^DP-?\d/ }
 dp3 = dp_devices.pop
 
 

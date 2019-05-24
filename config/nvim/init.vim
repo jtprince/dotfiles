@@ -70,7 +70,7 @@ let g:ctrlp_custom_ignore = {
 let g:ctrlp_follow_symlinks = 1
 
 Plug 'ambv/black'
-let g:black_linelength=100
+let g:black_linelength=90
 
 call plug#end()
 
