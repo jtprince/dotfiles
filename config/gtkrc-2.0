@@ -77,17 +77,18 @@ gtk-enable-event-sounds = 1
 # icons
 #gtk-icon-theme-name = "gnome"
 # aur - tango-icon-theme
-gtk-icon-theme-name = "Tango"
+# gtk-icon-theme-name = "Tango"
+gtk-icon-theme-name = "Adwaita"
 
 # fonts
 # see http://bbs.archlinux.org/viewtopic.php?pid=693878#p693878
 #     http://library.gnome.org/devel/gtk/2.17/GtkSettings.html
 # should match settings in ~/.Xdefaults and/or ~/.Xresources [which I keep identical by soft link]
 gtk-xft-dpi       = 96
+# soft link a gtkrc-2.0-local file if you want a different dpi for high-res screen
 gtk-xft-antialias = 1
 gtk-xft-hinting   = 1
-#gtk-xft-hintstyle = hintfull
-gtk-xft-hintstyle = hintslight
+gtk-xft-hintstyle = hintfull
 gtk-xft-rgba      = rgb
 #gtk-xft-lcdfilter = lcddefault
 
@@ -98,4 +99,5 @@ gtk-toolbar-icon-size = GTK_ICON_SIZE_SMALL_TOOLBAR
 # icons in the menus  (not sure I really need this)
 gtk-icon-sizes = "panel-menu=12,12"
 
-include '/home/jtprince/.config/gtkrc-2.0-local'
+# For 4K Hi Res:
+# include '/home/jtprince/.config/gtkrc-2.0-local'

@@ -3,7 +3,11 @@
 !! Cursor
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Xcursor.theme: Vanilla-DMZ
-!Xcursor.size: 8
+! typically 16, 32, 48, or 64
+! Vanilla-DMZ only goes up to 48
+! 4K Hi Res:
+! Xcursor.size: 48
+Xcursor.size: 16
 !Xcursor.theme: DMZ-White
 ! Xcursor.theme: Adwaita
 ! Xcursor.theme: core
@@ -22,7 +26,7 @@ Xcursor.theme: Vanilla-DMZ
 ! which was the old-school way to do this.
 ! Windows 7: smaller: 96, medium: 120, larger: 150
 # Xft.dpi: 180
-Xft.dpi: 96
+# Xft.dpi: 96
 Xft.autohint: 0
 Xft.lcdfilter:  lcddefault
 Xft.antialias: true
