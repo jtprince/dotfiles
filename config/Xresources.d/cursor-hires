@@ -1,0 +1,17 @@
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! Cursor
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Xcursor.theme: Vanilla-DMZ
+! typically 16, 32, 48, or 64
+! Vanilla-DMZ only goes up to 48
+! 4K Hi Res:
+Xcursor.size: 48
+! Xcursor.size: 16
+!Xcursor.theme: DMZ-White
+! Xcursor.theme: Adwaita
+! Xcursor.theme: core
+! Xcursor.theme: handhelds
+! Xcursor.theme: redglass
+! Xcursor.theme: whiteglass
+! Xcursor.theme: DMZ-Black
