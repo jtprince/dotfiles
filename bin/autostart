@@ -10,10 +10,12 @@ if [ "$1" != "late" ]; then
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
 
     # Xresources
-    xrdb -merge ~/.Xresources
-    if [ -e ~/.config/Xresources-local ]; then
-        xrdb -merge ~/.config/Xresources-local
-    fi
+    xrdb -I"$HOME/.config/Xresources.d" -merge ~/.Xresources
+    xrdb -merge ~/.config/Xresources-hires
+
+    # if [ "$HI_RES_XSETTINGS" = true ]; then
+   #     xrdb -merge ~/.config/Xresources-hires
+    #fi
 
     # compositing manager
     compton --config ~/.config/compton/compton.conf --daemon

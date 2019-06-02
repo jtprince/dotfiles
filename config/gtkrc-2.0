@@ -1,103 +1,124 @@
 
-#include "/usr/share/themes/Clearlooks/gtk-2.0/gtkrc"
-#
-#style "user-font" {
-#	#font_name = "Sans 8"
-#	font_name = "Deja Vu Sans 8"
+
+
+#include "/home/jtprince/.gtkrc-2.0.mine"
+#gtk-theme-name="Adwaita"
+#gtk-icon-theme-name="gnome"
+#gtk-font-name="Sans 10"
+#gtk-cursor-theme-name="Vanilla-DMZ"
+#gtk-cursor-theme-size=0
+#gtk-toolbar-style=GTK_TOOLBAR_BOTH
+#gtk-toolbar-icon-size=GTK_ICON_SIZE_SMALL_TOOLBAR
+#gtk-button-images=1
+#gtk-menu-images=1
+#gtk-enable-event-sounds=1
+#gtk-enable-input-feedback-sounds=1
+#gtk-xft-antialias=1
+#gtk-xft-hinting=1
+#gtk-xft-hintstyle="hintfull"
+#gtk-xft-rgba="rgb"
+
+
+##include "/usr/share/themes/Clearlooks/gtk-2.0/gtkrc"
+##
+##style "user-font" {
+##	#font_name = "Sans 8"
+##	font_name = "Deja Vu Sans 8"
+##}
+##
+##widget_class "*" style "user-font"
+##
+###gtk-font-name="Sans 8"
+##gtk-font-name="Deja Vu Sans 8"
+##
+##include "/home/jtprince/.gtkrc.mine"
+
+## should match to ~/.config/gtk-3.0
+
+##sudo add-apt-repository ppa:noobslab/themes
+##sudo apt-get update
+##sudo apt-get install zukiwi
+##include "/usr/share/themes/zukiwi/gtk-2.0/gtkrc"
+
+## base theme
+## sudo apt-get install gnome-themes-standard
+#include "/usr/share/themes/Adwaita/gtk-2.0/gtkrc"
+
+## also thinking about these:
+## Ambiance or Radiance
+## sudo apt-get install light-themes
+## include "/usr/share/themes/Radiance/gtk-2.0/gtkrc"
+
+## also trying Human:
+## sudo apt-get install human-theme
+## include "/usr/share/themes/Human/gtk-2.0/gtkrc"
+
+## color overrides
+## gtk_color_scheme = "selected_bg_color:#3465A4"
+##style "colors" {
+##  bg[SELECTED]   = @selected_bg_color
+##  base[ACTIVE]   = @selected_bg_color
+##  base[SELECTED] = @selected_bg_color
+##}
+##class "*" style "colors"
+
+## fonts
+#style "Sans" {
+    #font_name = "Sans 10"
 #}
-#
-#widget_class "*" style "user-font"
-#
-##gtk-font-name="Sans 8"
-#gtk-font-name="Deja Vu Sans 8"
-#
-#include "/home/jtprince/.gtkrc.mine"
 
-# should match to ~/.config/gtk-3.0
+#widget_class "*" style "Sans"
 
-#sudo add-apt-repository ppa:noobslab/themes
-#sudo apt-get update
-#sudo apt-get install zukiwi
-#include "/usr/share/themes/zukiwi/gtk-2.0/gtkrc"
+#gtk-font-name = "Sans 10"
 
-# base theme
-# sudo apt-get install gnome-themes-standard
-include "/usr/share/themes/Adwaita/gtk-2.0/gtkrc"
+### added from tpope gtkrc-2.0:
 
-# also thinking about these:
-# Ambiance or Radiance
-# sudo apt-get install light-themes
-# include "/usr/share/themes/Radiance/gtk-2.0/gtkrc"
-
-# also trying Human:
-# sudo apt-get install human-theme
-# include "/usr/share/themes/Human/gtk-2.0/gtkrc"
-
-# color overrides
-# gtk_color_scheme = "selected_bg_color:#3465A4"
-#style "colors" {
-#  bg[SELECTED]   = @selected_bg_color
-#  base[ACTIVE]   = @selected_bg_color
-#  base[SELECTED] = @selected_bg_color
-#}
-#class "*" style "colors"
-
-# fonts
-style "Sans" {
-    font_name = "Sans 10"
-}
-
-widget_class "*" style "Sans"
-
-gtk-font-name = "Sans 10"
-
-## added from tpope gtkrc-2.0:
-
-style "default" {
-    font_name = "DejaVu Sans 9"
-    #base[NORMAL] = "#ffffff"
-}
-
-#style "serif" = "default" {
-    #font_name = "DejaVu Serif 9"
+#style "default" {
+    #font_name = "DejaVu Sans 9"
+    ##base[NORMAL] = "#ffffff"
 #}
 
-style "mono" = "default" {
-    font_name = "DejaVu Sans Mono 9"
-}
+##style "serif" = "default" {
+    ##font_name = "DejaVu Serif 9"
+##}
 
-#widget_class "*Notebook*" style "serif"
-#widget_class "*Text*" style "mono"
+#style "mono" = "default" {
+    #font_name = "DejaVu Sans Mono 9"
+#}
 
-# END added
+##widget_class "*Notebook*" style "serif"
+##widget_class "*Text*" style "mono"
 
-# sounds
-gtk-enable-event-sounds = 1
+## END added
 
-# icons
-#gtk-icon-theme-name = "gnome"
-# aur - tango-icon-theme
-# gtk-icon-theme-name = "Tango"
-gtk-icon-theme-name = "Adwaita"
+## sounds
+#gtk-enable-event-sounds = 1
 
-# fonts
-# see http://bbs.archlinux.org/viewtopic.php?pid=693878#p693878
-#     http://library.gnome.org/devel/gtk/2.17/GtkSettings.html
-# should match settings in ~/.Xdefaults and/or ~/.Xresources [which I keep identical by soft link]
-gtk-xft-dpi       = 96
-# soft link a gtkrc-2.0-local file if you want a different dpi for high-res screen
-gtk-xft-antialias = 1
-gtk-xft-hinting   = 1
-gtk-xft-hintstyle = hintfull
-gtk-xft-rgba      = rgb
-#gtk-xft-lcdfilter = lcddefault
 
-# toolbars
-# GTK_TOOLBAR_ICONS GTK_TOOLBAR_TEXT TK_TOOLBAR_BOTH GTK_TOOLBAR_BOTH_HORIZ
-gtk-toolbar-style = GTK_TOOLBAR_ICONS
-gtk-toolbar-icon-size = GTK_ICON_SIZE_SMALL_TOOLBAR
-# icons in the menus  (not sure I really need this)
-gtk-icon-sizes = "panel-menu=12,12"
+## icons
+##gtk-icon-theme-name = "gnome"
+## aur - tango-icon-theme
+## gtk-icon-theme-name = "Tango"
+#gtk-icon-theme-name = "Adwaita"
 
-# For 4K Hi Res:
-# include '/home/jtprince/.config/gtkrc-2.0-local'
+## fonts
+## see http://bbs.archlinux.org/viewtopic.php?pid=693878#p693878
+##     http://library.gnome.org/devel/gtk/2.17/GtkSettings.html
+## should match settings in ~/.Xdefaults and/or ~/.Xresources [which I keep identical by soft link]
+#gtk-xft-dpi       = 96
+## soft link a gtkrc-2.0-local file if you want a different dpi for high-res screen
+#gtk-xft-antialias = 1
+#gtk-xft-hinting   = 1
+#gtk-xft-hintstyle = hintfull
+#gtk-xft-rgba      = rgb
+##gtk-xft-lcdfilter = lcddefault
+
+## toolbars
+## GTK_TOOLBAR_ICONS GTK_TOOLBAR_TEXT TK_TOOLBAR_BOTH GTK_TOOLBAR_BOTH_HORIZ
+#gtk-toolbar-style = GTK_TOOLBAR_ICONS
+#gtk-toolbar-icon-size = GTK_ICON_SIZE_SMALL_TOOLBAR
+## icons in the menus  (not sure I really need this)
+#gtk-icon-sizes = "panel-menu=12,12"
+
+## For 4K Hi Res:
+#include '/home/jtprince/.config/gtkrc-2.0-local'
