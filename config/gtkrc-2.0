@@ -84,7 +84,8 @@ gtk-icon-theme-name = "Adwaita"
 # see http://bbs.archlinux.org/viewtopic.php?pid=693878#p693878
 #     http://library.gnome.org/devel/gtk/2.17/GtkSettings.html
 # should match settings in ~/.Xdefaults and/or ~/.Xresources [which I keep identical by soft link]
-gtk-xft-dpi       = 96
+# gtk-xft-dpi       = 96
+gtk-xft-dpi       = 180
 # soft link a gtkrc-2.0-local file if you want a different dpi for high-res screen
 gtk-xft-antialias = 1
 gtk-xft-hinting   = 1
