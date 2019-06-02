@@ -129,5 +129,18 @@ fi
 # sudo pacman -S terminus-font
 export FBFONT=/usr/share/kbd/consolefonts/ter-216n.psf.gz
 
+# I would love to be able to do this later in the startup sequence,
+# BUT I'm not able to without getting penetrance across everything, specifically i3 settings
+# So, until then, I am setting these really early
 
 
+# use_highres_settings is a text file with "true" or "false" in it
+USE_HIRES_SETTINGS=$(cat $HOME/.config/use_highres_settings)
+
+rm -f ~/.Xresources
+
+if [ "$USE_HIRES_SETTINGS" = true ] ; then
+    ln -s ~/dotfiles/config/Xresources-hires ~/.Xresources
+else
+    ln -s ~/dotfiles/config/Xresources ~/.Xresources
+fi

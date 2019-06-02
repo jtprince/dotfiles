@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+
+HIRES_SETTINGS_FILE = "#{ENV['HOME']}/.config/use_highres_settings"
+
+parser = OptionParser.new do |op|
+    op.banner = "#{File.basename(__FILE__)} <on|off|status>"
+    op.separator "writes true/false to #{HIRES_SETTINGS_FILE}"
+end
+parser.parse!
+
+if ARGV.size == 0
+  puts(parser) && exit
+end
+
+value = ARGV.shift
+
+if value == 'status'
+  puts IO.read(HIRES_SETTINGS_FILE)
+else
+  to_write = (value == 'on')
+  File.write(HIRES_SETTINGS_FILE, to_write)
+end

@@ -11,9 +11,6 @@ if [ "$1" != "late" ]; then
 
     # Xresources
     xrdb -merge ~/.Xresources
-    if [ -e ~/.config/Xresources-local ]; then
-        xrdb -merge ~/.config/Xresources-local
-    fi
 
     # compositing manager
     compton --config ~/.config/compton/compton.conf --daemon
