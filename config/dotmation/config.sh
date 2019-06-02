@@ -37,7 +37,8 @@ ln -s ~/dotfiles/config/mimeapps.list ~/.local/share/applications/
 
 ln -s ~/dotfiles/config/profile ~/.profile
 ln -s ~/dotfiles/config/xprofile ~/.xprofile
-ln -s ~/dotfiles/config/Xresources ~/.Xresources
+# .Xresource linking is handled in .profile file!
+# but we do want to put the Xresources.d file into standard location
 ln -s ~/dotfiles/config/Xresources.d ~/.config/
 ln -s ~/dotfiles/config/gtkrc-2.0 ~/.gtkrc-2.0
 ln -s ~/dotfiles/config/pryrc ~/.pryrc

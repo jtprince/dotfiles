@@ -12,14 +12,15 @@ end
 parser.parse!
 
 if ARGV.size == 0
-  puts(parser) && exit
+  puts(parser)
+  exit
 end
 
 value = ARGV.shift
 
-if value == 'status'
-  puts IO.read(HIRES_SETTINGS_FILE)
-else
+if value != 'status'
   to_write = (value == 'on')
   File.write(HIRES_SETTINGS_FILE, to_write)
 end
+
+puts IO.read(HIRES_SETTINGS_FILE)
