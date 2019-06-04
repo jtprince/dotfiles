@@ -25,13 +25,16 @@ parser = OptionParser.new do |opts|
       chmod +x and put in ~/.local/bin, which should be on your path.  Also
       make a cache dir for goofys.  For example:
       ```
+      mkdir -p ~/.local/bin
+      cd ~/.local.bin
       wget https://github.com/kahing/catfs/releases/download/v0.8.0/catfs
-      mv catfs ~/.local/bin
+      chmod +x catfs
       # check that <$HOME>.local/bin is in your $PATH (if not, add it)
       echo $PATH | grep '.local/bin'
       mkdir -p ~/.cache/goofys
       ```
     END
+    exit
   end
 end
 parser.parse!
@@ -50,5 +53,5 @@ end
 
 dirs.each do |dir|
   puts "Mounting #{dir}"
-  `goofys --cheap --cache "--free:5%:/home/jtprince/.cache/goofys" #{dir} #{dir}`
+  `goofys --cheap --cache "--free:5%:#{ENV['HOME']}/.cache/goofys" #{dir} #{dir}`
 end
