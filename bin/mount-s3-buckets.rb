@@ -20,7 +20,7 @@ parser = OptionParser.new do |opts|
     options[:unmount] = true
   end
   opts.on("--setup-instructions") do
-    puts "
+    puts <<-END
       prereq - pull down catfs from https://github.com/kahing/catfs/releases/
       chmod +x and put in ~/.local/bin, which should be on your path.  Also
       make a cache dir for goofys.  For example:
@@ -31,7 +31,7 @@ parser = OptionParser.new do |opts|
       echo $PATH | grep '.local/bin'
       mkdir -p ~/.cache/goofys
       ```
-    "
+    END
   end
 end
 parser.parse!
