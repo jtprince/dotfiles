@@ -1,22 +1,27 @@
 #!/usr/bin/env ruby
 
-delay = 0.5
-
 # An invocation using a separate gmail profile:
 # chromium --new-window --user-data-dir=~/.config/chromium-crux
 
+delay = 0.5
+
+STANDALONE = nil
 BROWSER = "chromium --new-window"
 GMAIL = "https://gmail.com"
 CALENDAR = "https://calendar.google.com"
 OUTLOOK_CALENDAR = "https://outlook.office.com/calendar/view/month"
+THUNDERBIRD = "thunderbird"
 
 [
   [BROWSER, GMAIL],
+  [STANDALONE, THUNDERBIRD],
   [BROWSER, OUTLOOK_CALENDAR],
   [BROWSER, CALENDAR],
 ].each do |cmd|
-  cmd_joined = cmd.is_a?(Array) ? cmd.join(' ') : cmd
+  cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd
   cmd_forked = "#{cmd_joined} &"
   system cmd_forked
   sleep delay
+  # THUNDERBIRD NEEDS a little extra time
+  sleep(delay * 2) if cmd_joined.include?(THUNDERBIRD)
 end

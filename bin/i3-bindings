@@ -72,6 +72,14 @@ Keycombo = Struct.new(:key, :ctrl, :shift, :mod) do
     (mod, parts) = parts.partition {|part| part.downcase[0,3] == 'mod' }
     self.new(parts.pop, ctrl.size > 0, shift.size > 0, mod.size > 0)
   end
+
+  def key_properly_cased
+    if self.shift && self.key&.size == 1 && self.key =~ /[A-Z]/
+      self.key.upcase
+    else
+      self.key
+    end
+  end
 end
 
 Keybinding = Struct.new(:keycombo, :command, :mode) do
@@ -138,7 +146,15 @@ if $0 == __FILE__
     i3config = File.open(config_fn) do |io|
       I3Config.from_file(io)
     end
-    puts i3config.keybindings
+    i3config.keybindings.sort_by {|binding| binding.keycombo.key || '' }. each do |binding|
+      puts [
+        binding.keycombo.key_properly_cased,
+        binding.keycombo.ctrl ? 'ctrl' : nil,
+        binding.keycombo.shift ? 'shift' : nil,
+        binding.keycombo.mod ? 'mod' : nil,
+      ].compact.join("-") + " --> #{binding.command.command}"
+    end
+    # puts i3config.keybindings
   end
 
 end

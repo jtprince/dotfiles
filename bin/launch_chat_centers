@@ -5,15 +5,18 @@ delay = 0.3
 # An invocation using a separate gmail profile:
 # chromium --new-window --user-data-dir=~/.config/chromium-crux
 
+STANDALONE = nil
 BROWSER = "chromium --new-window"
 SLACK = "https://3plcentral-tech.slack.com"
 TEAMS = "teams-for-linux"
+SMS_MESSAGES = "https://messages.google.com/web/"
 
 [
-  [TEAMS],
+  [STANDALONE, TEAMS],
   [BROWSER, SLACK],
+  [BROWSER, SMS_MESSAGES],
 ].each do |cmd|
-  cmd_joined = cmd.is_a?(Array) ? cmd.join(' ') : cmd
+  cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd
   cmd_forked = "#{cmd_joined} &"
   system cmd_forked
   sleep delay

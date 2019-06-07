@@ -297,6 +297,7 @@ bindsym $mod+Ctrl+Shift+P exec --no-startup-id before-i3-exit && systemctl power
 bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboot
 # suspend (RAM)
 bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
+bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
 # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
 bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
 

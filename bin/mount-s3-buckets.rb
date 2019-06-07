@@ -33,6 +33,12 @@ parser = OptionParser.new do |opts|
       echo $PATH | grep '.local/bin'
       mkdir -p ~/.cache/goofys
       ```
+
+      Also, note that interactive shell prompts can slow down interaction with
+      the underlying s3 filesystem.  Consider starting a bash prompt with a
+      clean environment before navigating:
+
+          env -i bash --noprofile --norc
     END
     exit
   end
