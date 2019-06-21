@@ -13,6 +13,7 @@ ln -s ~/dotfiles/config/latex ~/.config/
 ln -s ~/dotfiles/config/conky ~/.config/
 ln -s ~/dotfiles/config/blockify ~/.config/
 ln -s ~/dotfiles/config/compton ~/.config/
+ln -s ~/dotfiles/config/isort.cfg ~/.config/
 
 mkdir ~/npm
 ln -s ~/dotfiles/config/npmrc ~/.config

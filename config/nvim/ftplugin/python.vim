@@ -4,10 +4,7 @@
 " :Isort will sort all your imports according to PEP8 and GSG
 command! -range=% Isort :<line1>,<line2>! isort -
 
-" :Isortdoba will sort all your imports according to PEP8 and GSG
-command! -range=% ISortdoba :<line1>,<line2>! isort-doba -
-
-map <leader>o <Esc>mw:ISortdoba<Enter>`w
+map <leader>o <Esc>mw:Isort<Enter>`w
 
 " uses john's mapping for movement
 " turn a single line comment into a multi-line comment.
