@@ -38,6 +38,9 @@ Plug 'gisraptor/vim-lilypond-integrator'
 Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'christoomey/vim-titlecase'
 
+" crs coerce to snake_case; crc coerce to camelCase
+Plug 'tpope/vim-abolish'
+
 Plug 'kien/ctrlp.vim'
 
 " python mode is the only reliable way to get at rope functionality
