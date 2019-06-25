@@ -12,6 +12,7 @@ ln -s ~/dotfiles/config/i3 ~/.config/
 ln -s ~/dotfiles/config/latex ~/.config/
 ln -s ~/dotfiles/config/conky ~/.config/
 ln -s ~/dotfiles/config/blockify ~/.config/
+ln -s ~/dotfiles/config/ranger ~/.config/
 ln -s ~/dotfiles/config/compton ~/.config/
 ln -s ~/dotfiles/config/isort.cfg ~/.config/
 
