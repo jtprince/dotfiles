@@ -2,7 +2,7 @@
 " Only load this indent file when no other was loaded.
 
 " :Isort will sort all your imports according to PEP8 and GSG
-command! -range=% Isort :<line1>,<line2>! isort -
+command! -range=% Isort :<line1>,<line2>! isort -sl -
 
 map <leader>o <Esc>mw:Isort<Enter>`w
 
