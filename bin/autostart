@@ -56,7 +56,8 @@ if [ "$1" != "late" ]; then
 
     # blockify
     if cmd_exists blockify ; then
-        blockify &
+        # turn off for a bit cause it's causing some skipping
+        # blockify &
     fi
 
     # dropbox
