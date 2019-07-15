@@ -33,13 +33,13 @@ import yaml
 # xesam:trackNumber: 0
 # xesam:url: https://open.spotify.com/ad/000000012d833fa30000002031ad374e
 
-ADVERTISEMENT = 'Advertisement'
+ADVERTISEMENT = ('Advertisement', 'Spotify')
 
 
 def in_advertisement():
     info = subprocess.run("spotify-info", capture_output=True)
     song_data = yaml.safe_load(info.stdout)
-    return song_data['xesam:title'] == ADVERTISEMENT
+    return song_data['xesam:title'] in ADVERTISEMENT
 
 
 def get_spotify_sink():
