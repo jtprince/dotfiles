@@ -23,6 +23,9 @@ let g:gutentags_ctags_tagfile='.tags'
 " :help tags
 
 Plug 'scrooloose/nerdcommenter'
+" Align all comments to the left margin
+let g:NERDDefaultAlign = 'left'
+
 Plug 'ntpeters/vim-better-whitespace'
 " :StripWhitespace (also :ToggleWhitespace)
 
