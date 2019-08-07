@@ -7,13 +7,15 @@ delay = 0.3
 
 STANDALONE = nil
 BROWSER = "chromium --new-window"
-SLACK = "https://3plcentral-tech.slack.com"
-TEAMS = "teams-for-linux"
+SLACK_URL = "https://3plcentral-tech.slack.com"
+SLACK_APP = "slack"
+TEAMS_URL = "teams-for-linux"
 SMS_MESSAGES = "https://messages.google.com/web/"
 
 [
-  [STANDALONE, TEAMS],
-  [BROWSER, SLACK],
+  [SLACK_APP],
+  [STANDALONE, TEAMS_URL],
+  [BROWSER, SLACK_URL],
   [BROWSER, SMS_MESSAGES],
 ].each do |cmd|
   cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd
