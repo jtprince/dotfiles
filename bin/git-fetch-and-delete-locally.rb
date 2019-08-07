@@ -6,7 +6,7 @@ options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename(__FILE__)}"
 
-  opts.on("-f", "--force", "force deletion of branches not fully merged") do
+  opts.on("-f", "--force", "force deletion of branches not fully merged") do |v|
     options[:force] = v
   end
 end.parse!
