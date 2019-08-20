@@ -15,6 +15,7 @@ ln -s ~/dotfiles/config/blockify ~/.config/
 ln -s ~/dotfiles/config/ranger ~/.config/
 ln -s ~/dotfiles/config/compton ~/.config/
 ln -s ~/dotfiles/config/isort.cfg ~/.config/
+ln -s ~/dotfiles/config/cheats ~/.config/
 
 mkdir ~/npm
 ln -s ~/dotfiles/config/npmrc ~/.config

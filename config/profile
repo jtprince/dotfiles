@@ -119,7 +119,6 @@ if [ -d ~/.poetry ]; then
     export PATH="$HOME/.poetry/bin:$PATH"
 fi
 
-
 #####################################################
 # Application Specific
 #####################################################
@@ -144,3 +143,5 @@ if [ "$USE_HIRES_SETTINGS" = true ] ; then
 else
     ln -s ~/dotfiles/config/Xresources ~/.Xresources
 fi
+
+export CHEAT_USER_DIR="$HOME/.config/cheats"

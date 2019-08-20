@@ -1,0 +1,3 @@
+\l \list          list all db's
+\c \connect <db>  connect to db
+\dt               list the tables
