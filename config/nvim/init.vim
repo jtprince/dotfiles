@@ -36,6 +36,8 @@ Plug 'nvie/vim-flake8'
 " <F7> runs flake8
 
 Plug 'vim-ruby/vim-ruby'
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+
 Plug 'tpope/vim-markdown'
 Plug 'gisraptor/vim-lilypond-integrator'
 Plug 'vim-scripts/AnsiEsc.vim'

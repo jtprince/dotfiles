@@ -223,16 +223,16 @@ bindsym $mod+Ctrl+Shift+z move container to workspace back_and_forth
 #########################
 set $browser1 chromium
 set $newwindow1 --new-window
-set $browser2 chromium --user-data-dir=~/.config/chromium-crux
+set $browser2 chromium --user-data-dir=~/.config/chromium-prod
 set $newwindow2 --new-window
-set $browsertest chromium --user-data-dir=~/.config/chromium-test
+# set $browsertest chromium --user-data-dir=~/.config/chromium-test
 
 bindsym $mod+x exec x-terminal-emulator
 
 bindsym XF86HomePage exec $browser1
 bindsym $mod+i exec $browser1
 bindsym $mod+Shift+I exec $browser2
-bindsym $mod+Ctrl+Shift+T exec $browsertest
+# bindsym $mod+Ctrl+Shift+T exec $browsertest
 
 bindsym XF86Mail exec $browser1 $newwindow1 http://gmail.com
 bindsym $mod+e exec $browser1 $newwindow1 http://gmail.com

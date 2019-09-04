@@ -2,12 +2,17 @@
 
 require 'optparse'
 
-options = {}
+options = {
+  branch: 'master'
+}
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename(__FILE__)}"
 
   opts.on("-f", "--force", "force deletion of branches not fully merged") do |v|
     options[:force] = v
+  end
+  opts.on("-b", "--branch <branch>", "branch to use (default: #{options[:branch]})") do |v|
+    options[:branch] = v
   end
 end.parse!
 
@@ -28,7 +33,7 @@ def is_remote?(branch)
 end
 
 puts `git fetch -p`
-puts `git checkout master`
+puts `git checkout #{options[:branch]}`
 puts `git pull`
 
 branches = clean_lines `git branch -a`
