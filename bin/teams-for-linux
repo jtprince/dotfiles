@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm -rf ~/.config/teams-for-linux/Partitions/teams-4-linux/{Application\ Cache,Service\ Worker}/
+/usr/bin/teams-for-linux
