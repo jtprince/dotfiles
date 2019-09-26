@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-# curl -sSL <gist> | python
+# curl -sSL https://raw.githubusercontent.com/jtprince/dotfiles/master/bin/arch/arch-setup-install.py | python
+# curl -sSL http://tiny.cc/arch-install | python
 
 import argparse
 import subprocess
