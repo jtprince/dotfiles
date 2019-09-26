@@ -9,17 +9,20 @@ parser = argparse.ArgumentParser()
 parser.add_argument("hostname", help="the hostname to use")
 parser.add_argument("--timezone", default="America/Denver", help="an olson db timezone")
 parser.add_argument("--lang", default="en_US.UTF-8", help="an olson db timezone")
+parser.add_argument("--dry", action='store_true', help="don't run, just print out the command")
 args = parser.parse_args()
 
 
 def run(cmd):
-    subprocess.run(cmd, shell=True, check=True)
+    if args.dry:
+        print(cmd)
+    else:
+        subprocess.run(cmd, shell=True, check=True)
 
 
-hosts = """127.0.0.1\tlocalhost
+hosts = f"""127.0.0.1\tlocalhost
 ::1\tlocalhost
-127.0.1.1\t{args.hostname}.localdomain\t{args.hostname}
-"""
+127.0.1.1\t{args.hostname}.localdomain\t{args.hostname}"""
 
 
 cmds = [
@@ -31,3 +34,6 @@ cmds = [
     f'echo -n "{hosts}" > /etc/hosts',
     f'passwd',
 ]
+
+for cmd in cmds:
+    run(cmd)
