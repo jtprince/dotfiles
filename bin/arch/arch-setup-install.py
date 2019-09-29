@@ -29,7 +29,7 @@ hosts = f"""127.0.0.1\tlocalhost
 cmds = [
     f"ln -sf /usr/share/zoneinfo/{args.timezone} /etc/localtime",
     f"hwclock --systohc",
-    f"sed -i '/^#{args.lang}/^#//g' /etc/locale.gen",
+    f"sed -i '/^#{args.lang}/s/^#//g' /etc/locale.gen",
     f'echo "LANG={args.lang}" > /etc/locale.conf',
     f'echo -n "{args.hostname}" > /etc/hostname',
     f'echo -n "{hosts}" > /etc/hosts',
