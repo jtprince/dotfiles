@@ -73,7 +73,7 @@ export IPYTHONDIR=$XDG_CONFIG_HOME/ipython
 export DE=generic
 export BROWSER=/usr/bin/chromium
 
-# cheatsheets (yaourt -S python-cheat python-pygments)
+# cheatsheets (yay -S python-cheat python-pygments)
 export DEFAULT_CHEAT_DIR=$XDG_CONFIG_HOME/cheats
 export CHEATCOLORS=true
 

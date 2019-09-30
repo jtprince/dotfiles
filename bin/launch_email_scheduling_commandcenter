@@ -9,12 +9,14 @@ STANDALONE = nil
 BROWSER = "chromium --new-window"
 GMAIL = "https://gmail.com"
 CALENDAR = "https://calendar.google.com"
+OUTLOOK_EMAIL = "https://outlook.office.com"
 OUTLOOK_CALENDAR = "https://outlook.office.com/calendar/view/month"
-THUNDERBIRD = "thunderbird"
+# THUNDERBIRD = "thunderbird"
 
 [
   [BROWSER, GMAIL],
-  [STANDALONE, THUNDERBIRD],
+  # [STANDALONE, THUNDERBIRD],
+  [BROWSER, OUTLOOK_EMAIL],
   [BROWSER, OUTLOOK_CALENDAR],
   [BROWSER, CALENDAR],
 ].each do |cmd|
@@ -23,5 +25,5 @@ THUNDERBIRD = "thunderbird"
   system cmd_forked
   sleep delay
   # THUNDERBIRD NEEDS a little extra time
-  sleep(delay * 2) if cmd_joined.include?(THUNDERBIRD)
+  # sleep(delay * 2) if cmd_joined.include?(THUNDERBIRD)
 end

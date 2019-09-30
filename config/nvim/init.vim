@@ -21,6 +21,7 @@ let g:gutentags_ctags_tagfile='.tags'
 " CTRL+t climb back up the tree
 " :tag function_name
 " :help tags
+Plug 'ycm-core/YouCompleteMe'
 
 Plug 'scrooloose/nerdcommenter'
 " Align all comments to the left margin
@@ -62,9 +63,10 @@ let g:pymode_options = 0
 
 " invoke as: nvim -c 'let g:pymode_rope=0' to turn off at outset
 let g:pymode_rope = 1
-let g:pymode_rope_complete_on_dot = 0
 let g:pymode_rope_autoimport = 1
 let g:pymode_options_max_line_length=120
+let g:pymode_rope_complete_on_dot = 0
+let g:pymode_rope_completion = 0
 " pymode is really a collection of packages, see info on each:
 "     https://github.com/python-mode/python-mode/wiki
 " The command: <Ctrl-c> f
