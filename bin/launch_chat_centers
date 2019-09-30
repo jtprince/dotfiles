@@ -15,7 +15,7 @@ SMS_MESSAGES = "https://messages.google.com/web/"
 [
   [SLACK_APP],
   [STANDALONE, TEAMS_URL],
-  [BROWSER, SLACK_URL],
+  # [BROWSER, SLACK_URL],
   [BROWSER, SMS_MESSAGES],
 ].each do |cmd|
   cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd
