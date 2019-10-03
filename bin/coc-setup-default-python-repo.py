@@ -32,3 +32,5 @@ settings_file = config_root / Path(SETTINGS_FILE)
 config = CONF_FMT_STRING.format(python_path)
 
 settings_file.write_text(config)
+print(f"Writing to {settings_file} with python interpreter: ")
+print(python_path)
