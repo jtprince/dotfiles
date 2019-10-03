@@ -21,7 +21,9 @@ let g:gutentags_ctags_tagfile='.tags'
 " CTRL+t climb back up the tree
 " :tag function_name
 " :help tags
-Plug 'ycm-core/YouCompleteMe'
+" Plug 'ycm-core/YouCompleteMe'
+
+Plug 'powerline/powerline'
 
 Plug 'scrooloose/nerdcommenter'
 " Align all comments to the left margin
@@ -30,8 +32,8 @@ let g:NERDDefaultAlign = 'left'
 Plug 'ntpeters/vim-better-whitespace'
 " :StripWhitespace (also :ToggleWhitespace)
 
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-let g:deoplete#enable_at_startup = 1
+"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+"let g:deoplete#enable_at_startup = 1
 
 Plug 'nvie/vim-flake8'
 " <F7> runs flake8
@@ -49,28 +51,30 @@ Plug 'tpope/vim-abolish'
 
 Plug 'kien/ctrlp.vim'
 
-" python mode is the only reliable way to get at rope functionality
-Plug 'python-mode/python-mode', { 'branch': 'develop' }
-let g:python3_host_prog = '/usr/bin/python3'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-let g:pymode_python = 'python3'
-" turn off default pymode options and just set what we want
-let g:pymode_options = 0
-" setlocal complete+=t
-" setlocal formatoptions-=t
-" setlocal commentstring=#%s
-" setlocal define=^\s*\\(def\\\\|class\\)
+"" python mode is the only reliable way to get at rope functionality
+"Plug 'python-mode/python-mode', { 'branch': 'develop' }
+"let g:python3_host_prog = '/usr/bin/python3'
 
-" invoke as: nvim -c 'let g:pymode_rope=0' to turn off at outset
-let g:pymode_rope = 1
-let g:pymode_rope_autoimport = 1
-let g:pymode_options_max_line_length=120
-let g:pymode_rope_complete_on_dot = 0
-let g:pymode_rope_completion = 0
-" pymode is really a collection of packages, see info on each:
-"     https://github.com/python-mode/python-mode/wiki
-" The command: <Ctrl-c> f
-"     will find all occurences of the python name under the cursor
+"let g:pymode_python = 'python3'
+"" turn off default pymode options and just set what we want
+"let g:pymode_options = 0
+"" setlocal complete+=t
+"" setlocal formatoptions-=t
+"" setlocal commentstring=#%s
+"" setlocal define=^\s*\\(def\\\\|class\\)
+
+"" invoke as: nvim -c 'let g:pymode_rope=0' to turn off at outset
+"let g:pymode_rope = 1
+"let g:pymode_rope_autoimport = 1
+"let g:pymode_options_max_line_length=120
+"let g:pymode_rope_complete_on_dot = 0
+"let g:pymode_rope_completion = 0
+"" pymode is really a collection of packages, see info on each:
+""     https://github.com/python-mode/python-mode/wiki
+"" The command: <Ctrl-c> f
+""     will find all occurences of the python name under the cursor
 
 " Ctrl-P config
 let g:ctrlp_custom_ignore = {
@@ -83,6 +87,9 @@ Plug 'ambv/black'
 let g:black_linelength=90
 
 call plug#end()
+
+" always show statusline
+:set laststatus=2
 
 " Rope autocomplete
 " pip install --user rope ropevim

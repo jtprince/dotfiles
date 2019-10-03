@@ -29,6 +29,8 @@ if args.list or not args.name:
         print("  ", name)
 
 
+
+
 for name in args.name:
     completed = run(["docker", "images", "-q", name], capture_output=True, encoding="utf-8")
     image_id = completed.stdout.split("\n")[0].strip()
