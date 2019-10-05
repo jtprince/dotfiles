@@ -148,5 +148,3 @@ else
 fi
 
 export CHEAT_USER_DIR="$HOME/.config/cheats"
-
-export PATH="$HOME/.poetry/bin:$PATH"
