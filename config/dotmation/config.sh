@@ -53,15 +53,12 @@ ln -sf ~/dotfiles/config/gemrc ~/.gemrc
 ln -sf ~/dotfiles/config/Xresources ~/.Xdefaults
 ln -sf ~/dotfiles/config/zsh/zshenv ~/.zshenv
 
-
-
 #  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
 
-  # if desired:
-  # cfg 'Xresources-local'
+# if desired:
+# cfg 'Xresources-local'
 
-  # if desired:
-  # cfg 'gtkrc-2.0-local'
-# end
+# if desired:
+# cfg 'gtkrc-2.0-local'
 
 ln -sf ~/dotfiles/bin ~/
