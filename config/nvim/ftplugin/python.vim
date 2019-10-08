@@ -22,3 +22,7 @@ map <leader>a <Esc>$a  # pylint: disable=<Esc>"*p<Esc>?=<Enter>wkwx<Esc>:noh<Ent
 map <leader>i <Esc>mw:PymodeRopeAutoImport<Enter>1<Enter><Esc>:Isort<Enter>`wf
 
 map <leader>= <Esc>:Black<Enter>
+
+" insert breakpoint above the current line and position cursor at start of
+" breakpoint
+map <leader>b Obreakpoint()<Esc>0w

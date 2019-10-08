@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument("dir", help="the directory with the environment")
+parser.add_argument("-y", "--yaml", action="store_true", help="output as yaml, otherwise as bash notation")
+parser.add_argument("-n", "--no-quotes", action="store_true", help='do not wrap values in \'"\'')
+parser.add_argument("-e", "--export", action="store_true", help="prefix with 'export'")
+
+args = parser.parse_args()
+
+if args.yaml and args.export:
+    parser.error("Can't use '--export' with '--yaml'")
+    exit(1)
+
+os.chdir(args.dir)
+envdir = os.getcwd()
+
+onlyfiles = [path for path in os.listdir(envdir) if Path(envdir, path).is_file()]
+
+env_vars = {path: Path(path).read_text().strip() for path in onlyfiles}
+
+separator = ": " if args.yaml else "="
+quote_char = "" if args.no_quotes else '"'
+export_prefix = "export " if args.export else ""
+
+for key, val in env_vars.items():
+    parts = [
+        export_prefix,
+        key,
+        separator,
+        quote_char,
+        val,
+        quote_char,
+    ]
+    print(''.join(parts))
