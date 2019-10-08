@@ -28,7 +28,9 @@ def cd(newdir):
 
 def get_parser():
     parser = argparse.ArgumentParser(description="read out the envdir settings")
-    parser.add_argument("dir", help="the directory with the environment.")
+    parser.add_argument(
+        "dir", help="the directory with the environment. If top level prints all envs."
+    )
     parser.add_argument("-y", "--yaml", action="store_true", help="output as yaml")
     parser.add_argument("-n", "-q", "--no-quotes", action="store_true", help="no wrap values in '\"'")
     parser.add_argument("-e", "--export", action="store_true", help="prefix with 'export'")
