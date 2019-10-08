@@ -2,36 +2,8 @@
 
 import argparse
 import os
+from contextlib import contextmanager
 from pathlib import Path
-
-parser = argparse.ArgumentParser()
-parser.add_argument("dir", help="the directory with the environment.")
-parser.add_argument("-y", "--yaml", action="store_true", help="output as yaml")
-parser.add_argument("-n", "-q", "--no-quotes", action="store_true", help="no wrap values in '\"'")
-parser.add_argument("-e", "--export", action="store_true", help="prefix with 'export'")
-parser.add_argument("-s", "--single-line", action="store_true", help="single line")
-
-args = parser.parse_args()
-
-
-def incompatible(is_incompatible, msg):
-    if is_incompatible:
-        parser.error(msg)
-        exit(1)
-
-
-incompatible(args.yaml and args.export, "Can't use '--export' with '--yaml'")
-incompatible(
-    args.single_line and (args.yaml or args.export),
-    "Can't use '--single-line' with '--yaml' or '--export'",
-)
-
-os.chdir(args.dir)
-envdir = os.getcwd()
-
-onlyfiles = [path for path in os.listdir(envdir) if Path(envdir, path).is_file()]
-
-env_vars = {path: Path(path).read_text().strip() for path in onlyfiles}
 
 OPTIONS = [
     # arg_key, new_key, if_arg, not_arg
@@ -39,13 +11,49 @@ OPTIONS = [
     ('no_quotes', 'quote_char', "", '"'),
     ('export', 'export_prefix', "export ", ""),
     ('single_line', 'join_char', " ", "\n"),
-    ('single_line', 'end_with', '', '\n'),
+    ('single_line', 'end_with', '\n', '\n'),
 ]
 
-options = {new_key: (if_arg if getattr(args, arg_key, False) else not_arg) for arg_key, new_key, if_arg, not_arg in OPTIONS}
 
-def build_key_val(key, val):
+@contextmanager
+def cd(newdir):
+    prevdir = os.getcwd()
+    os.path.expanduser(newdir)
+    os.chdir(os.path.expanduser(newdir))
+    try:
+        yield
+    finally:
+        os.chdir(prevdir)
+
+
+def get_parser():
+    parser = argparse.ArgumentParser(description="read out the envdir settings")
+    parser.add_argument("dir", help="the directory with the environment.")
+    parser.add_argument("-y", "--yaml", action="store_true", help="output as yaml")
+    parser.add_argument("-n", "-q", "--no-quotes", action="store_true", help="no wrap values in '\"'")
+    parser.add_argument("-e", "--export", action="store_true", help="prefix with 'export'")
+    parser.add_argument("-s", "--single-line", action="store_true", help="single line")
+    return parser
+
+
+def prep_options(args):
+    options = {
+        new_key: (if_arg if getattr(args, arg_key, False) else not_arg)
+        for arg_key, new_key, if_arg, not_arg in OPTIONS
+    }
+    options['indent'] = ''
+    return options
+
+
+def incompatible(parser, is_incompatible, msg):
+    if is_incompatible:
+        parser.error(msg)
+        exit(1)
+
+
+def build_key_val(key, val, options):
     parts = [
+        options['indent'],
         options['export_prefix'],
         key,
         options['separator'],
@@ -56,6 +64,57 @@ def build_key_val(key, val):
     return "".join(parts)
 
 
-keyval_pairs = [build_key_val(key, val) for key, val in env_vars.items()]
+def files_in_directory(directory):
+    return [path for path in os.listdir(directory) if Path(directory, path).is_file()]
 
-print(options['join_char'].join(keyval_pairs), end=options['end_with'])
+
+def directories_in_dir(directory):
+    return [str(Path(directory, path)) for path in os.listdir(directory) if Path(directory, path).is_dir()]
+
+
+def chdir(path):
+    os.chdir(path)
+    return os.getcwd()
+
+
+def print_file_values(files, options):
+    env_vars = {path: Path(path).read_text().strip() for path in files}
+    keyval_pairs = [build_key_val(key, val, options) for key, val in env_vars.items()]
+    print(options['join_char'].join(keyval_pairs), end=options['end_with'])
+
+
+parser = get_parser()
+args = parser.parse_args()
+incompatible(parser, args.yaml and args.export, "Can't use '--export' with '--yaml'")
+incompatible(
+    parser,
+    args.single_line and (args.yaml or args.export),
+    "Can't use '--single-line' with '--yaml' or '--export'",
+)
+
+options = prep_options(args)
+
+def print_files(directory, options):
+    files = files_in_directory(directory)
+    with cd(directory):
+        print_file_values(files, options)
+
+
+dirs_to_traverse = [args.dir] if files_in_directory(args.dir) else directories_in_dir(args.dir)
+
+many_dirs = len(dirs_to_traverse) > 1
+
+for directory in dirs_to_traverse:
+    if many_dirs:
+        if args.yaml:
+            print(f"{Path(directory).name}{options['separator']}")
+        else:
+            print(directory)
+        options['indent'] = '    ' if not args.single_line else ''
+        if args.single_line:
+            print('    ', end='')
+    with cd(directory):
+        print_files(os.getcwd(), options)
+
+    if many_dirs and not args.yaml:
+        print()
