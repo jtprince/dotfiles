@@ -5,16 +5,26 @@ import os
 from pathlib import Path
 
 parser = argparse.ArgumentParser()
-parser.add_argument("dir", help="the directory with the environment")
-parser.add_argument("-y", "--yaml", action="store_true", help="output as yaml, otherwise as bash notation")
-parser.add_argument("-n", "--no-quotes", action="store_true", help='do not wrap values in \'"\'')
+parser.add_argument("dir", help="the directory with the environment.")
+parser.add_argument("-y", "--yaml", action="store_true", help="output as yaml")
+parser.add_argument("-n", "-q", "--no-quotes", action="store_true", help="no wrap values in '\"'")
 parser.add_argument("-e", "--export", action="store_true", help="prefix with 'export'")
+parser.add_argument("-s", "--single-line", action="store_true", help="single line")
 
 args = parser.parse_args()
 
-if args.yaml and args.export:
-    parser.error("Can't use '--export' with '--yaml'")
-    exit(1)
+
+def incompatible(is_incompatible, msg):
+    if is_incompatible:
+        parser.error(msg)
+        exit(1)
+
+
+incompatible(args.yaml and args.export, "Can't use '--export' with '--yaml'")
+incompatible(
+    args.single_line and (args.yaml or args.export),
+    "Can't use '--single-line' with '--yaml' or '--export'",
+)
 
 os.chdir(args.dir)
 envdir = os.getcwd()
@@ -23,17 +33,29 @@ onlyfiles = [path for path in os.listdir(envdir) if Path(envdir, path).is_file()
 
 env_vars = {path: Path(path).read_text().strip() for path in onlyfiles}
 
-separator = ": " if args.yaml else "="
-quote_char = "" if args.no_quotes else '"'
-export_prefix = "export " if args.export else ""
+OPTIONS = [
+    # arg_key, new_key, if_arg, not_arg
+    ('yaml', 'separator', ": ", "="),
+    ('no_quotes', 'quote_char', "", '"'),
+    ('export', 'export_prefix', "export ", ""),
+    ('single_line', 'join_char', " ", "\n"),
+    ('single_line', 'end_with', '', '\n'),
+]
 
-for key, val in env_vars.items():
+options = {new_key: (if_arg if getattr(args, arg_key, False) else not_arg) for arg_key, new_key, if_arg, not_arg in OPTIONS}
+
+def build_key_val(key, val):
     parts = [
-        export_prefix,
+        options['export_prefix'],
         key,
-        separator,
-        quote_char,
+        options['separator'],
+        options['quote_char'],
         val,
-        quote_char,
+        options['quote_char'],
     ]
-    print(''.join(parts))
+    return "".join(parts)
+
+
+keyval_pairs = [build_key_val(key, val) for key, val in env_vars.items()]
+
+print(options['join_char'].join(keyval_pairs), end=options['end_with'])
