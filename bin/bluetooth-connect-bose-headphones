@@ -9,3 +9,15 @@ echo -e "connect 08:DF:1F:44:3E:C6\n" | bluetoothctl
 #sleep 7
 # 2 should be bose
 #pacmd set-default-sink 2
+
+# The ID for the device should always be the same
+firsttime << HERE
+bluetoothctl
+power on
+scan on
+# (hit up on device power button to pair)
+# You'll see "[NEW] Device 08:DF:1F:44:3E:C6 Bose OE SoundLink"
+scan off
+pair 08:DF:1F:44:3E:C6
+connect 08:DF:1F:44:3E:C6
+HERE

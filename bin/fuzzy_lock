@@ -13,7 +13,7 @@ notify-send -u low --expire-time=2 'LOCKING SCREEN!'
 
 # Lock screen displaying this image.
 # (hint: it has to be a png because cairo can't load a jpg)
-# convert /usr/local/share/backgrounds/Braunwald_switzerland.jpg /usr/local/share/backgrounds/Braunwald_switzerland.png
+# sudo convert /usr/local/share/backgrounds/Braunwald_switzerland.jpg /usr/local/share/backgrounds/Braunwald_switzerland.png
 i3lock -i /usr/local/share/backgrounds/Braunwald_switzerland.png -f -p win
 
 # Turn the screen off after a delay.
