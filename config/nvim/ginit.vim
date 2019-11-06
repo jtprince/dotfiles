@@ -4,7 +4,7 @@ colorscheme jtplightgui
 " statusline
 " =======================================================================
 
-set statusline^=%{coc#status()}
+" set statusline^=%{coc#status()}
 
 " =======================================================================
 " X11 copy/paste buffers

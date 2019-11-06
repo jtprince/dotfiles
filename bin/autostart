@@ -55,8 +55,8 @@ if [ "$1" != "late" ]; then
     fi
 
     # dropbox
-    if cmd_exists dropbox ; then
-        dropbox start
+    if cmd_exists dropbox-cli ; then
+        dropbox-cli start
     fi
 
     # block spotify ads
