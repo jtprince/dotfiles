@@ -69,6 +69,9 @@ fi
 
 export IPYTHONDIR=$XDG_CONFIG_HOME/ipython
 
+# always use ipdb, since way better than pdb
+export PYTHONBREAKPOINT=ipdb.set_trace
+
 # you-complete-me requires python compiled with this flag
 export PYTHON_CONFIGURE_OPTS="--enable-shared"
 
