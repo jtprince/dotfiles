@@ -13,7 +13,7 @@ if [ "$1" != "late" ]; then
     xrdb -merge ~/.Xresources
 
     # compositing manager
-    compton --config ~/.config/compton/compton.conf --daemon
+    picom --config ~/.config/compton/compton.conf -b
 
     # notifications
     # dunst -config ~/.config/dunst/dunstrc &
