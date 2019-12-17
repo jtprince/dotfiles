@@ -85,7 +85,7 @@ alias rgrep="grep -rs"
 alias rgreptext="grep -rs --binary-files=without-match"
 alias gg="git grep"
 # -L follow links
-alias findit="find -L . -iname"
+# alias findit="find -L . -iname"
 
 # git
 alias gitcim="gitci"
@@ -107,6 +107,7 @@ alias chromiumtest="chromium --user-data-dir=~/.config/chromium-test"
 alias chromiumdoba="chromium --user-data-dir=~/.config/chromium-doba"
 alias chromiumcrux="chromium --user-data-dir=~/.config/chromium-crux"
 alias chromiumfaenrandir="chromium --user-data-dir=~/.config/chromium-faenrandir"
+alias chromium3plcentralbi="chromium --user-data-dir=~/.config/chromium-3plcentralbi"
 alias chromiummelissa="chromium --user-data-dir=~/.config/chromium-melissa"
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
