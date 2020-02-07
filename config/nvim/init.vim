@@ -237,7 +237,7 @@ autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 " superceded by pymode for now
 " reads in ftplugin/python.vim
 " autocmd BufRead,BufNewFile *.py setfiletype python
-" autocmd BufWritePost *.py call Flake8()
+autocmd BufWritePost *.py call Flake8()
 
 " SIMPLE TRANSFORMATIONS =================================================
 " pretty print the json
