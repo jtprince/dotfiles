@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+# I wrote this quickly and just to get something working.  Could be refined a lot.
+
+import subprocess
+import json
+import argparse
+
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers(title='subcommands', description='valid subcommands', dest='command', help='additional help')
+parser.add_argument("-l", "--list", action='store_true', help="list available or mounted USB partitions")
+mount_subparser = subparsers.add_parser('mount')
+mount_subparser.add_argument("partition", help="partition (e.g., 'sda1' or '/dev/sda1')")
+unmount_subparser = subparsers.add_parser('unmount')
+unmount_subparser.add_argument("partition", help="partition (e.g., 'sda1' or '/dev/sda1')")
+args = parser.parse_args()
+
+
+def get_mounted_children(data):
+    """ Returns a list of dicts, where each dict represents a mounted partition in lsblk json language. """
+    mounted_children = []
+
+    children = data.get('children', [])
+    for child in children:
+        if child['mountpoint'] is not None:
+            mounted_children.append(child)
+        if child.get('children'):
+            mounted_subchildren = get_mounted_children(child)
+            mounted_children.extend(mounted_subchildren)
+
+    return mounted_children
+
+
+def get_unmounted_drives():
+    output = subprocess.run("lsblk --json", shell=True, capture_output=True, text=True)
+    data = json.loads(output.stdout)
+    return [block_device for block_device in data['blockdevices'] if not get_mounted_children(block_device)]
+
+
+if args.list:
+    drives = get_unmounted_drives()
+    print("Unmounted:")
+    for drive in drives:
+        print(f"    {drive['name']} ({drive['size']})")
+        for child in drive['children']:
+            print(f"        {child['name']} ({child['size']})")
+
+    print("Mounted:")
+    print("    Need to complete!!!!")
+
+
+DEV_PREFIX = "/dev/"
+
+def ensure_dev_prefix(partition):
+    return partition if partition.startswith(DEV_PREFIX) else DEV_PREFIX + partition
+
+
+def parse_mountpoint(udiskctl_response):
+    # 'Mounted /dev/sda1 at /run/media/jtprince/BIOSUPDATE.\n'
+    return udiskctl_response.split(" at ")[1].rstrip().rstrip('.').strip("'`")
+
+if not args.command and not args.list:
+    parser.print_help()
+
+if args.command == 'mount':
+    partition = ensure_dev_prefix(args.partition)
+    output = subprocess.run(["udisksctl", "mount", "-b", partition], capture_output=True, text=True)
+    if output.stderr and "already mounted at" in output.stderr:
+        text = output.stderr
+        print("Already mounted at:")
+    else:
+        text = output.stdout
+    print(parse_mountpoint(text))
+
+if args.command == 'unmount':
+    partition = ensure_dev_prefix(args.partition)
+    output = subprocess.run(["udisksctl", "unmount", "-b", partition], capture_output=True, text=True)
+    print(output.stdout)
+    print(output.stderr)
