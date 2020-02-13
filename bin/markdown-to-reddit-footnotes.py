@@ -28,9 +28,10 @@ CITATION_ORDER = {}
 def replace(match):
     # not sure why we get back a tuple of one?
     citation = match.groups(1)[0]
-    print(repr(citation))
     CITATION_ORDER[citation] = None
-    number_str = str(list(CITATION_ORDER.keys()).index(citation))
+    number_str = str(
+        list(CITATION_ORDER.keys()).index(citation) + 1
+    )
     return REDDIT_FORMAT_CITATION.format(number_str)
 
 file_base = Path(args.file).resolve().stem
