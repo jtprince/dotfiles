@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# needs work
+docker ps -a -q --filter 'status=exited' | xargs docker stop
+docker ps -a -q --filter "status=exited" | xargs docker rm

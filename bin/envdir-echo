@@ -10,6 +10,7 @@ OPTIONS = [
     ('yaml', 'separator', ": ", "="),
     ('no_quotes', 'quote_char', "", '"'),
     ('export', 'export_prefix', "export ", ""),
+    ('docker_export', 'export_prefix', "-e ", ""),
     ('single_line', 'join_char', " ", "\n"),
     ('single_line', 'end_with', '\n', '\n'),
 ]
@@ -33,7 +34,8 @@ def get_parser():
     )
     parser.add_argument("-y", "--yaml", action="store_true", help="output as yaml")
     parser.add_argument("-n", "-q", "--no-quotes", action="store_true", help="no wrap values in '\"'")
-    parser.add_argument("-e", "--export", action="store_true", help="prefix with 'export'")
+    parser.add_argument("--export", action="store_true", help="prefix with 'export'")
+    parser.add_argument("-d", "--docker-export", action="store_true", help="prefix with `-e ` for docker cmds")
     parser.add_argument("-s", "--single-line", action="store_true", help="single line")
     return parser
 
