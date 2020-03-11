@@ -59,6 +59,10 @@ if [ "$1" != "late" ]; then
         dropbox-cli start
     fi
 
+    if cmd_exists megasync ; then
+        megasync
+    fi
+
     # block spotify ads
     if cmd_exists spotify-block-ads.py ; then
         # turn off for a bit cause it's causing some skipping

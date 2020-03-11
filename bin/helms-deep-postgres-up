@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd ~/dev/helms-deep
+
+if [ "$1" == "stop" ]; then
+    docker-compose -f docker/postgres-docker-compose.yml stop
+else
+    docker-compose -f docker/postgres-docker-compose.yml up --detach
+fi
+
