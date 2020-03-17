@@ -17,6 +17,7 @@ ln -sf ~/dotfiles/config/ranger ~/.config/
 ln -sf ~/dotfiles/config/compton ~/.config/
 ln -sf ~/dotfiles/config/isort.cfg ~/.config/
 ln -sf ~/dotfiles/config/cheats ~/.config/
+ln -sf ~/dotfiles/config/flake8 ~/.config/
 
 mkdir -p ~/npm
 ln -sf ~/dotfiles/config/npmrc ~/.config

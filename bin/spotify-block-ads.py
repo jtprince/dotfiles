@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# pip install --user yaml python-daemon
+# pip install --user yaml
 
 import re
 import subprocess
@@ -8,32 +8,6 @@ import time
 from itertools import groupby
 
 import yaml
-
-# ---
-# mpris:trackid: spotify:track:6a9SPVrXyrlVh5Fh08f8Bz
-# mpris:length: 361706000
-# mpris:artUrl: https://open.spotify.com/image/546f440ab718f50441342ef7a3223d7e1149b907
-# xesam:album: Dirt
-# xesam:albumArtist: Alice In Chains
-# xesam:artist: Alice In Chains
-# xesam:autoRating: 0.51
-# xesam:discNumber: 1
-# xesam:title: Rain When I Die
-# xesam:trackNumber: 3
-# xesam:url: https://open.spotify.com/track/6a9SPVrXyrlVh5Fh08f8Bz
-
-# ---
-# mpris:trackid: spotify:ad:000000012d833fa30000002031ad374e
-# mpris:length: 20062000
-# mpris:artUrl: ''
-# xesam:album: ''
-# xesam:albumArtist: ''
-# xesam:artist: ''
-# xesam:autoRating: 0.0
-# xesam:discNumber: 0
-# xesam:title: Advertisement
-# xesam:trackNumber: 0
-# xesam:url: https://open.spotify.com/ad/000000012d833fa30000002031ad374e
 
 ADVERTISEMENT = ('Advertisement', 'Spotify')
 
@@ -46,6 +20,7 @@ _SPOTIFY_REGEXS = [
     r'application\.process.binary = "spotify"'
 ]
 SPOTIFY_REGEXS = [re.compile(regex, re.MULTILINE) for regex in _SPOTIFY_REGEXS]
+
 
 def in_advertisement():
     info = subprocess.run("spotify-info", capture_output=True)
@@ -93,15 +68,42 @@ def run():
         time.sleep(1)
 
 
-# pactl list sink-inputs
-#   see: media.name
-#   see: Sink: 4
-# pactl set-sink-mute 4 toggle
-
 if __name__ == '__main__':
     run()
 
 
+# ---
+# `spotify-info`
+# ---
+# mpris:trackid: spotify:track:6a9SPVrXyrlVh5Fh08f8Bz
+# mpris:length: 361706000
+# mpris:artUrl: https://open.spotify.com/image/546f440ab718f50441342ef7a3223d7e1149b907
+# xesam:album: Dirt
+# xesam:albumArtist: Alice In Chains
+# xesam:artist: Alice In Chains
+# xesam:autoRating: 0.51
+# xesam:discNumber: 1
+# xesam:title: Rain When I Die
+# xesam:trackNumber: 3
+# xesam:url: https://open.spotify.com/track/6a9SPVrXyrlVh5Fh08f8Bz
+
+# ---
+# mpris:trackid: spotify:ad:000000012d833fa30000002031ad374e
+# mpris:length: 20062000
+# mpris:artUrl: ''
+# xesam:album: ''
+# xesam:albumArtist: ''
+# xesam:artist: ''
+# xesam:autoRating: 0.0
+# xesam:discNumber: 0
+# xesam:title: Advertisement
+# xesam:trackNumber: 0
+# xesam:url: https://open.spotify.com/ad/000000012d833fa30000002031ad374e
+
+
+# ---
+# `pactl list sink-inputs`
+# ---
 # Sink Input #81
 #         Driver: protocol-native.c
 #         Owner Module: 12
@@ -109,7 +111,7 @@ if __name__ == '__main__':
 #         Sink: 1
 #         Sample Specification: s16le 2ch 44100Hz
 #         Channel Map: front-left,front-right
-#         Format: pcm, format.sample_format = "\"s16le\""  format.rate = "44100"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
+#         Format: pcm, format.sample_format = "\"s16le\""  format.rate = "44100"  ...
 #         Corked: no
 #         Mute: no
 #         Volume: front-left: 65535 / 100% / -0.00 dB,   front-right: 65535 / 100% / -0.00 dB
@@ -141,7 +143,7 @@ if __name__ == '__main__':
 #         Sink: 1
 #         Sample Specification: float32le 2ch 44100Hz
 #         Channel Map: front-left,front-right
-#         Format: pcm, format.sample_format = "\"float32le\""  format.rate = "44100"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
+#         Format: pcm, format.sample_format = "\"float32le\""  format.rate = "44100"  ...
 #         Corked: no
 #         Mute: no
 #         Volume: front-left: 65172 /  99% / -0.15 dB,   front-right: 65172 /  99% / -0.15 dB
@@ -163,4 +165,4 @@ if __name__ == '__main__':
 #                 window.x11.display = ":0"
 #                 application.process.machine_id = "6b79ee180b6b41caadbfafef34d81be2"
 #                 application.process.session_id = "1"
-		# module-stream-restore.id = "sink-input-by-application-name:Chromium"
+#                 module-stream-restore.id = "sink-input-by-application-name:Chromium"
