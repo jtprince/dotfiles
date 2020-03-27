@@ -1,0 +1,105 @@
+#!/usr/bin/env python
+
+import re
+import sys
+from argparse import ArgumentParser
+from collections import defaultdict
+from dataclasses import dataclass
+from pathlib import Path
+from subprocess import check_output
+from typing import List
+from typing import Optional
+
+
+def group_by(func, values):
+    """ Groups values by func.
+
+    Returns
+      (dict): Keys produced by func pointing to lists of the values grouped.
+    """
+    groups = defaultdict(list)
+    for value in values:
+        groups[func(value)].append(value)
+    return dict(groups)
+
+
+@dataclass
+class Flake8Error:
+    """ A flake8 error. """
+    id: str
+    line_number: int
+    column_number: int
+    description: str
+    count: Optional[int]
+
+
+@dataclass
+class FileReport:
+    """ A path with a list of Flake8Error errors.
+
+    I'm grouping by file because errors need to be handled as a group with
+    care (one change could influence the line number of other errors!)
+    """
+    path: Path
+    flake8_errors: List[Flake8Error]
+
+    # Example
+    # ./helms_deep/db_models/enums.py:228:1: E302 expected 2 blank lines, found 1
+    FLAKE8_RE = re.compile(r'([^:]+):(\d+):(\d+): ([A-Z]+\d+) (.*)')
+    COUNT_RE = re.compile(r' \((\d+)\)')
+
+    def _line_to_flake8_error(self, line):
+        print(self.FLAKE8_RE.match(line).groups())
+
+    @classmethod
+    def _parts_of_line(cls, line):
+        """ Returns (path, line_number, column_number, id, description, count). """
+        path, line_number, column_number, id, description = cls.FLAKE8_RE.match(line).groups()
+        match = cls.COUNT_RE.search(description)
+        count = match.group(1) if match else None
+        return path, int(line_number), int(column_number), id, description, None if count is None else int(count)
+
+    @classmethod
+    def many_from_results(cls, results):
+        """ Takes flake8 results and returns a list of FileReport objects. """
+        raw_results = results.strip().split("\n")
+        list_of_parts = [cls._parts_of_line(raw_result) for raw_result in raw_results]
+        parts_by_path = group_by(lambda parts: parts[0], list_of_parts)
+        print("This is where I'm at")
+        print(parts_by_path)
+
+    @classmethod
+    def from_grouped_lines(cls, path, lines):
+        flake8_errors = [self._line_to_flake8_error(line) for line in lines]
+        return cls(path=path, flake8_errors=flake8_errors)
+
+
+# logic:
+# if no '--' then pass args to flake8
+# if '--' then pass all args after '--' to flake8
+## flake8-fix-simple .
+
+DIVIDER = "--"
+
+args = sys.argv[1:]
+
+for_fixer = []
+for_flake8 = []
+
+before_divide = True
+if DIVIDER in args:
+    current = for_fixer
+    for arg in sys.argv[1:]:
+        if arg == DIVIDER:
+            current = for_flake8
+            before_divide = False
+        else:
+            current.append(arg)
+else:
+    for_flake8 = args
+
+cmd = ["flake8", "--exit-zero", *for_flake8]
+print(cmd)
+results = check_output(cmd, text=True)
+many = FileReport.many_from_results(results)
+print(many)
