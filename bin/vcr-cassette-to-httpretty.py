@@ -15,6 +15,7 @@ template = """
     httpretty.register_uri(
         httpretty.{method},
         '{uri}',
+        status={status},
         body='{body}',
     )
 """
@@ -40,6 +41,6 @@ for filename in args.filenames:
             method = request['method']
             status_code = response['status']['code']
             body = response['body']['string']
-            httpretty_output = template.format(method=method, uri=uri, body=body)
+            httpretty_output = template.format(method=method, uri=uri, body=body, status=status_code)
 
             print(httpretty_output)
