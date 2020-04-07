@@ -36,6 +36,7 @@
     branch = auto
 [push]
     default = current
+    followTags = true
 [branch "master"]
     remote = origin
     merge = refs/heads/master
