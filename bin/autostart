@@ -16,10 +16,10 @@ if [ "$1" != "late" ]; then
     picom --config ~/.config/compton/compton.conf -b
 
     # notifications
-    # dunst -config ~/.config/dunst/dunstrc &
+    dunst -config ~/.config/dunst/dunstrc &
     # configure with xfce4-notifyd-config
     # show notifications on: primary display; opacity 70%; disappear after 4 seconds
-    systemctl --user start xfce4-notifyd
+    # systemctl --user start xfce4-notifyd
 
     # pulseaudio
     start-pulseaudio-x11

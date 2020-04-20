@@ -27,6 +27,8 @@
 
     separator_color = auto
 
+    icon_path = /usr/share/icons/Adwaita/16x16/status/:/usr/share/icons/Adwaita/16x16/devices/
+
 
 [shortcuts]
 # This is <SUPER>+ctrl+space
