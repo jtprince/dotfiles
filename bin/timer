@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+
+import argparse
+import distutils.spawn
+import subprocess
+import sys
+import time
+from time import sleep
+
+START_TIME = time.time()
+
+DEFAULT_MINUTES = 15
+DEFAULT_WAIT_SECONDS = 0.5
+WATCHFACE = "********************* {} *********************"
+# install sox for play command
+BEEP = "play -q -n synth 0.025 sin 650"
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("minutes", nargs="?", type=float, default=DEFAULT_MINUTES, help="minutes to time")
+parser.add_argument("--no-beep", action='store_true', help='do not speaker beep at the end')
+args = parser.parse_args()
+wanted_seconds = args.minutes * 60
+
+if not args.no_beep:
+    beep_program_installed = distutils.spawn.find_executable(BEEP.split()[0])
+    if not beep_program_installed:
+        print(f"[Could not run {BEEP}]")
+
+
+def replace_cmd_line(output):
+    """Replace the last command line output with the given output."""
+    sys.stdout.write(output)
+    sys.stdout.flush()
+    sys.stdout.write('\r')
+    sys.stdout.flush()
+
+
+def elapsed_time():
+    return time.time() - START_TIME
+
+
+def print_time(mins, secs):
+    display_seconds = f"{secs:.1f}".zfill(4)
+    display = f"{round(mins):02d}:{display_seconds}"
+    replace_cmd_line(WATCHFACE.format(display))
+
+
+def run_timer_app(wanted_seconds, args):
+    mins = None
+    secs  = None
+
+    try:
+        _elapsed_time = elapsed_time()
+        while _elapsed_time < wanted_seconds:
+            leftover = wanted_seconds - _elapsed_time
+            mins, secs = divmod(leftover, 60)
+            print_time(mins, secs)
+            sleep(DEFAULT_WAIT_SECONDS)
+            _elapsed_time = elapsed_time()
+
+        print_time(0, 0)
+
+        print("\ndone")
+        # emit a small speaker beep by default
+        if (not args.no_beep) and beep_program_installed:
+            subprocess.run(BEEP, shell=True)
+    except KeyboardInterrupt:
+        print("\n")
+        print_time(mins, secs)
+
+
+run_timer_app(wanted_seconds, args)

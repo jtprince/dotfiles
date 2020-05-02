@@ -20,9 +20,12 @@ parser = argparse.ArgumentParser(description="guess the urls given a rest endpoi
 parser.add_argument("name", help="name of the rest-api endpoint")
 parser.add_argument("--region", default=default_region, help=f"region (default: {default_region})")
 parser.add_argument("--protocol", default=DEFAULT_PROTOCOL, help=f"protocol (default: {DEFAULT_PROTOCOL})")
+parser.add_argument("--profile", help=f"profile to use")
 args = parser.parse_args()
+print(args)
 
-client = boto3.client('apigateway')
+session = boto3.Session(**({'profile_name': args.profile} if args.profile else {}))
+client = session.client('apigateway')
 
 response = client.get_rest_apis()
 
