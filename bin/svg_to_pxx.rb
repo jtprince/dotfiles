@@ -39,18 +39,13 @@ end
 
 def build_conversion_cmd(file, outfile, opt)
   outflag =
-    if outfile =~ /\.pdf$/
-      "-A"
-    elsif outfile =~ /\.png$/
-      "-e"
-    end
   args = [
     "inkscape",
-    "-f", file.esc,
+    file.esc,
     opt[:text_to_path] ? "-t" : nil,
     outfile =~ /\.svg$/ ? nil : "-d #{opt[:export_dpi]}",
     opt[:bkg] ? "-b #{opt[:bkg]}" : nil,
-    outflag, outfile.esc,
+    "--export-filename", outfile.esc,
   ]
   return args.compact.join(" ")
 end

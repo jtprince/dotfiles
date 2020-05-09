@@ -36,10 +36,10 @@ if [ "$1" != "late" ]; then
     # thunar
     thunar --daemon &
 
-    # lock screen
-    if [ `hostname` != "sazedlinux" ]; then
-        xautolock-start
-    fi
+    # lock screen after a time of inactivity
+    # if [ `hostname` != "sazedlinux" ]; then
+    #     xautolock-start
+    # fi
 
     # battery icon
     if cmd_exists cbatticon ; then
