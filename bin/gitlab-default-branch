@@ -16,7 +16,7 @@ project_id = PROJECT_IDS[args.name]
 
 cmd = str(
     f'http GET "https://gitlab.com/api/v4/projects/{project_id}/" '
-    '"PRIVATE-TOKEN: $(cat $HOME/Dropbox/env/cloud-and-apis/gitlab/access-token)" '
+    '"PRIVATE-TOKEN: $(cat $HOME/MEGA/env/cloud-and-apis/gitlab/access-token)" '
     '| jq -r .default_branch'
 )
 

@@ -9,7 +9,7 @@ parser.add_argument("startdir", nargs='?', default=".", help="where to begin the
 parser.add_argument("term", help="the basic stub you want to find (open ends by default)")
 parser.add_argument("--regex", action='store_true', help="consider the term a regular expression")
 parser.add_argument("--glob", action='store_true', help="interpret as a glob (e.g., if using your own '*')")
-parser.add_argument("--case-sensitive", help="case sensitive search")
+parser.add_argument("--case-sensitive", action='store_true', help="case sensitive search")
 args = parser.parse_args()
 
 

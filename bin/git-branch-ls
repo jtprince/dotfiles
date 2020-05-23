@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "REMOTE BRANCHES"
+echo "==============="
+git branch --sort=-committerdate
+for branch in `git branch -r --sort=-committerdate | grep -v HEAD`
+do
+    echo $branch -n $branch -e `git show --format="%ar by %an" $branch | head -n 1`
+done | sort -r

@@ -6,7 +6,7 @@ import pandas
 from oauth2client.service_account import ServiceAccountCredentials
 
 downtime_spreadsheet_url = "https://docs.google.com/spreadsheets/d/1GPv3pFcNW-spDsUahr0CIHCNKepJNhJs-FQh3rlGOl4/edit?ts=57110eff#gid=592135638"
-cred_file = "/home/jtprince/Dropbox/env/doba/passwords_and_credentials/Get-downtime-report-acbf2c53a66c.json"
+cred_file = "/home/jtprince/MEGA/env/doba/passwords_and_credentials/Get-downtime-report-acbf2c53a66c.json"
 
 json_key = json.load(open(cred_file))
 scope = ['https://spreadsheets.google.com/feeds']

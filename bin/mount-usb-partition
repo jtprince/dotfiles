@@ -57,6 +57,8 @@ def ensure_dev_prefix(partition):
 
 def parse_mountpoint(udiskctl_response):
     # 'Mounted /dev/sda1 at /run/media/jtprince/BIOSUPDATE.\n'
+    if not udiskctl_response:
+        print("udiskctl returned bad response.  Is this ntfs?  `yay -S ntfs-3g`")
     return udiskctl_response.split(" at ")[1].rstrip().rstrip('.').strip("'`")
 
 if not args.command and not args.list:

@@ -3,7 +3,7 @@
 # goto https://freedns.afraid.org/dynamic/
 # change of password will change hash
 current_hash = 'QkV0bzJGVHBtajBQTnlTY1daanU6MTA4NjU4MjU='
-CACHE_FILE = ENV['HOME'] + "/Dropbox/env/network/home" + "/CURRENT_IP_CACHED"
+CACHE_FILE = ENV['HOME'] + "/MEGA/env/network/home" + "/CURRENT_IP_CACHED"
 
 if ARGV.size == 0
   puts "usage: #{File.basename($0)} status|update"
