@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+Dir["project_muse_*.pdf"].sort.each do |file|
+    cmd = "pdftk #{file} cat 2-end output minus-cover-#{file}"
+    `#{cmd}`
+end
+
+files = Dir["minus-cover-*.pdf"].sort.map.to_a
+
+`pdftk #{files.join(" ")} cat output CONCATENATED.pdf`

@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+# TODO: automatically create a default source and target based on repo defaults
+
+import argparse
+from gitlab import Gitlab
+from pathlib import Path
+
+
+def project_id_from_name(name):
+    projects = gitlab.projects.list(membership=True, simple=True, search=name)
+    exact_matches = [project for project in projects if project.name == name]
+    if not exact_matches:
+        print(f"<<== CANNOT FIND PROJECT: {repr(name)} ==>>")
+        print()
+        projects = gitlab.projects.list(membership=True, simple=True)
+        print("Available project names and ids")
+        for project in projects:
+            print(f"    {project.name} => {project.id}")
+        exit(1)
+    return exact_matches[0].id
+
+
+parser = argparse.ArgumentParser(description="generate merge requests")
+parser.add_argument("project", help="project id or name")
+parser.add_argument("--source", required=True, help="the name of the source branch to merge from")
+parser.add_argument("--target", required=True, help="the name of the target branch to merge into")
+parser.add_argument("--title", help="the title of the merge request")
+parser.add_argument("--merge", action="store_true", help="automatically approve and merge the mr")
+parser.add_argument("--token", required=True, help="the token string or path to file holding it")
+
+args = parser.parse_args()
+
+token = Path(args.token).read_text().strip() if Path(args.token).exists() else args.token
+gitlab = Gitlab('https://gitlab.com', private_token=token)
+
+project_id = int(args.project) if args.project.isdigit() else project_id_from_name(args.project)
+project = gitlab.projects.get(project_id)
+
+merge_request = project.mergerequests.create(
+    dict(
+        source_branch=args.source,
+        target_branch=args.target,
+        title=args.title or f"{args.source} to {args.target}",
+        # labels': ['label1', 'label2']
+    )
+)
+print(f"Created merge request: {repr(merge_request.title)}")
+print(merge_request.web_url)
+
+if args.merge:
+    print("Merging...", end='')
+    merge_request.merge()
+    print("done!")

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+TOKEN="$HOME/MEGA/env/cloud-and-apis/gitlab/access-token"
+SOURCE="dev"
+TARGET="prod"
+
+gitlab-merge-request helms-deep --source "$SOURCE" --target "$TARGET" --merge --token "$TOKEN"
