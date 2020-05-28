@@ -3,5 +3,6 @@
 TOKEN="$HOME/MEGA/env/cloud-and-apis/gitlab/access-token"
 SOURCE="dev"
 TARGET="prod"
+PROJECT="helms-deep"
 
-gitlab-merge-request helms-deep --source "$SOURCE" --target "$TARGET" --merge --token "$TOKEN"
+gitlab-merge-request "$PROJECT" --source "$SOURCE" --target "$TARGET" --merge --token "$TOKEN"
