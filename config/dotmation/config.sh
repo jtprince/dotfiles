@@ -18,6 +18,7 @@ ln -sf ~/dotfiles/config/compton ~/.config/
 ln -sf ~/dotfiles/config/isort.cfg ~/.config/
 ln -sf ~/dotfiles/config/cheat ~/.config/
 ln -sf ~/dotfiles/config/flake8 ~/.config/
+ln -sf ~/dotfiles/config/ackrc ~/.config/
 
 mkdir -p ~/npm
 ln -sf ~/dotfiles/config/npmrc ~/.config

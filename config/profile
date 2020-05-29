@@ -151,3 +151,6 @@ else
 fi
 
 export CHEAT_USER_DIR="$HOME/.config/cheats"
+
+export ACKRC="$HOME/.config/ackrc"
+
