@@ -3,8 +3,13 @@
 # TODO: automatically create a default source and target based on repo defaults
 
 import argparse
-from gitlab import Gitlab
 from pathlib import Path
+from time import sleep
+
+from gitlab import Gitlab
+
+DEFAULT_WAIT_SECONDS = 5
+MAX_TRIES = 30
 
 
 def project_id_from_name(name):
@@ -37,18 +42,36 @@ gitlab = Gitlab('https://gitlab.com', private_token=token)
 project_id = int(args.project) if args.project.isdigit() else project_id_from_name(args.project)
 project = gitlab.projects.get(project_id)
 
-merge_request = project.mergerequests.create(
-    dict(
-        source_branch=args.source,
-        target_branch=args.target,
-        title=args.title or f"{args.source} to {args.target}",
-        # labels': ['label1', 'label2']
+title = (args.title or f"{args.source} to {args.target}")
+
+existing_merge_requests = project.mergerequests.list(state='opened')
+already_opened = [merge_request for merge_request in existing_merge_requests if merge_request.title == title]
+
+if len(already_opened) == 1:
+    merge_request = already_opened[0]
+elif len(already_opened) > 1:
+    raise RuntimeError(f"More than one open merge request with title: {title}")
+else:
+    merge_request = project.mergerequests.create(
+        dict(
+            source_branch=args.source,
+            target_branch=args.target,
+            title=title,
+            # labels': ['label1', 'label2']
+        )
     )
-)
-print(f"Created merge request: {repr(merge_request.title)}")
+    print(f"Created merge request: {repr(merge_request.title)}")
+
 print(merge_request.web_url)
 
 if args.merge:
-    print("Merging...", end='')
-    merge_request.merge()
+    for try_num, _ in enumerate(range(MAX_TRIES), 1):
+        try:
+            print(f"Attempt {try_num} to merge...")
+            merge_request.merge()
+            break
+        except gitlab.exceptions.GitlabMRClosedError as exc:
+            print(f"Cannot yet merge because: {str(exc)}")
+            sleep(DEFAULT_WAIT_SECONDS)
+
     print("done!")
