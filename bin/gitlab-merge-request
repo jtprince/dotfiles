@@ -7,6 +7,7 @@ from pathlib import Path
 from time import sleep
 
 from gitlab import Gitlab
+from gitlab.exceptions import GitlabMRClosedError
 
 DEFAULT_WAIT_SECONDS = 5
 MAX_TRIES = 30
@@ -70,7 +71,7 @@ if args.merge:
             print(f"Attempt {try_num} to merge...")
             merge_request.merge()
             break
-        except gitlab.exceptions.GitlabMRClosedError as exc:
+        except GitlabMRClosedError as exc:
             print(f"Cannot yet merge because: {str(exc)}")
             sleep(DEFAULT_WAIT_SECONDS)
 
