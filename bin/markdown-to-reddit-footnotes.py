@@ -5,14 +5,17 @@ import argparse
 from pathlib import Path
 from collections import Counter
 
+
 class DuplicateReferences(Exception):
     pass
+
 
 class MissingReference(Exception):
     pass
 
+
 CITATION_RE = re.compile(r'\[\^([\w\-_]+)\]')
-FOOTNOTE_RE = re.compile(r'\[\^([\w\-_]+)\]: ')
+FOOTNOTE_RE = re.compile(r'^\[\^([\w\-_]+)\]: ', re.MULTILINE)
 
 REDDIT_FORMAT_CITATION = "[{}]"
 
@@ -25,6 +28,8 @@ args = parser.parse_args()
 
 # Use dict keys as ordered set
 CITATION_ORDER = {}
+
+
 def replace(match):
     # not sure why we get back a tuple of one?
     citation = match.groups(1)[0]
@@ -34,8 +39,10 @@ def replace(match):
     )
     return REDDIT_FORMAT_CITATION.format(number_str)
 
+
 file_base = Path(args.file).resolve().stem
 newfile = file_base + args.new_ext
+
 
 with open(args.file) as infile:
     text = infile.read()
