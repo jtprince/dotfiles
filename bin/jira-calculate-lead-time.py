@@ -15,35 +15,24 @@ class Transition:
     from_: str
     to: str
 
-    @classmethod
-    def from_string(cls, value):
-        return cls(*value.split(":"))
-
     def matches_item(self, item):
-        return (item.get('fromString') == self.from_) and (item.get('toString') == self.to)
+        matches_from = (item.get('fromString') == self.from_) if self.from_ else True
+        matches_to = (item.get('toString') == self.to) if self.to else True
+        return matches_from and matches_to
 
 
-BEGIN_TRANSITION = Transition('Ready', 'In Progress')
-END_TRANSITION = Transition('Staged', 'Released')
+BEGIN_TRANSITION = Transition(None, 'In Progress')
+
+# prefer end transitions in the order given
+END_TRANSITIONS = [Transition(None, 'Released'), Transition(None, 'Done'), Transition(None, 'Staged')]
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("issues", nargs="+", help="the issues.  Make sure to include prefix (like 'WMS-123')")
-parser.add_argument("--api-key", default=os.environ.get("JIRA_API_KEY"), help="defaults to env var JIRA_API_TOKEN")
+parser.add_argument(
+    "--api-key", default=os.environ.get("JIRA_API_KEY"), help="defaults to env var JIRA_API_TOKEN"
+)
 parser.add_argument("--login", help="your login, typically an email address")
-parser.add_argument(
-    "--begin",
-    default=BEGIN_TRANSITION,
-    type=Transition.from_string,
-    help=f"the transition in form \"<from>:<to>\" (default {BEGIN_TRANSITION})"
-)
-parser.add_argument(
-    "--end",
-    default=END_TRANSITION,
-    type=Transition.from_string,
-    help=f"the transition in form \"<from>:<to>\" (default {END_TRANSITION})"
-)
-parser.add_argument("--to", help="the transition to")
 args = parser.parse_args()
 
 BASE_URL = "https://3plcentral.atlassian.net/rest/api/2/issue/"
@@ -71,15 +60,25 @@ for issue in args.issues:
     histories = changelog.get('histories', {})
 
     # not completely efficient, but efficiency probably doesn't matter for this use case
-    begin_histories = get_histories(histories, args.begin)
-    first_begin = min(begin_histories, key=lambda history: history['created'])
+    begin_histories = get_histories(histories, BEGIN_TRANSITION)
 
-    end_histories = get_histories(histories, args.end)
-    last_end = min(end_histories, key=lambda history: history['created'])
+    for end_transition in END_TRANSITIONS:
+        end_histories = get_histories(histories, end_transition)
+        if end_histories:
+            break
 
-    begin = iso8601.parse_date(first_begin['created'])
-    end = iso8601.parse_date(last_end['created'])
+    if not (begin_histories and end_histories):
+        delta_in_days = None
+    else:
+        first_begin = min(begin_histories, key=lambda history: history['created'])
 
-    delta = end - begin
+        last_end = max(end_histories, key=lambda history: history['created'])
 
-    print(delta.total_seconds() / (3600 * 24))
+        begin = iso8601.parse_date(first_begin['created'])
+        end = iso8601.parse_date(last_end['created'])
+
+        delta = end - begin
+
+        delta_in_days = delta.total_seconds() / (3600 * 24)
+
+    print("\t".join([issue, str(delta_in_days)]))
