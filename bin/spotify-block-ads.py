@@ -25,20 +25,26 @@ SPOTIFY_REGEXS = [re.compile(regex, re.MULTILINE) for regex in _SPOTIFY_REGEXS]
 def in_advertisement():
     info = subprocess.run("spotify-info", capture_output=True)
     song_data = yaml.safe_load(info.stdout)
-    return song_data['xesam:title'] in ADVERTISEMENT
+    return song_data.get('xesam:title', '') in ADVERTISEMENT
 
 
-def get_spotify_sink_input():
-    """ Returns sink input # of the first spotify instance found. """
+def _is_spotify_sink(sink_input):
+    return all([regex.search(sink_input) for regex in SPOTIFY_REGEXS])
+
+
+def get_spotify_sink_inputs():
+    """ Returns sink input #'s all spotify instances found. """
     client_data = subprocess.run("pactl list sink-inputs".split(), capture_output=True, text=True).stdout
     lines = client_data.split("\n")
     sink_inputs = [
         "\n".join(group) for not_matched, group in groupby(lines, lambda line: not line)
         if not not_matched
     ]
-    for sink_input in sink_inputs:
-        if all([regex.search(sink_input) for regex in SPOTIFY_REGEXS]):
-            return SINK_INPUT_RE.match(sink_input).group(1)
+    return [
+        SINK_INPUT_RE.match(sink_input).group(1)
+        for sink_input in sink_inputs
+        if _is_spotify_sink(sink_input)
+    ]
 
 
 def mute_sink(sink):
@@ -57,12 +63,12 @@ def run():
             if not in_advertisement_state:
                 # print("BEGINNING MUTE")
                 in_advertisement_state = True
-                sink_input = get_spotify_sink_input()
-                mute_sink(sink_input)
+                for sink_input in get_spotify_sink_inputs():
+                    mute_sink(sink_input)
         elif in_advertisement_state:
             # print("UNMUTING")
-            sink_input = get_spotify_sink_input()
-            unmute_sink(sink_input)
+            for sink_input in get_spotify_sink_inputs():
+                unmute_sink(sink_input)
             in_advertisement_state = False
 
         time.sleep(1)
