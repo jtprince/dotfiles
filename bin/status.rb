@@ -8,7 +8,17 @@ require 'json'
 require 'time'
 require 'yaml'
 
-DROPBOX = ENV['HOME'] + "/Dropbox"
+CLOUD_ROOT = ENV['HOME'] + "/MEGA"
+
+def get_quotes
+  quotes_file = CLOUD_ROOT + "/quotes/short.txt"
+  if File.exist?(quotes_file)
+    IO.readlines(quotes_file).map(&:chomp).reject {|line| line[0] == '#' }
+  else
+    ['<quotes file not available>']
+  end
+end
+
 
 module SysMonitor
   SLEEP = 2
@@ -64,7 +74,7 @@ module SysMonitor
 
     def initialize
       super
-      line = IO.read(DROPBOX + "/env/counter.txt")
+      line = IO.read(CLOUD_ROOT + "/env/counter.txt")
       parts = line.split(", ").map(&:to_i)
       @start = Time.new(*parts, "-07:00")
     end
@@ -90,7 +100,7 @@ module SysMonitor
   class Quote
     include SysMonitor
     include LongTimer
-    QUOTES = IO.readlines(DROPBOX + "/quotes/short.txt").map(&:chomp).reject {|line| line[0] == '#' }
+    QUOTES = get_quotes()
 
     def get_data
       QUOTES.sample
