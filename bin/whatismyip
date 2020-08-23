@@ -7,7 +7,7 @@ end
 
 if ARGV[0] && ARGV[0][0] == 'l'
   # LAN IP
-  if `uname -r` =~ /ARCH/
+  if `uname -r` =~ /ARCH/i
     reply = `ip addr`.split("\n")
     addr_lines = reply.select do |line|
       line =~ /inet /
