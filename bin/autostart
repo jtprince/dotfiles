@@ -24,8 +24,8 @@ if [ "$1" != "late" ]; then
     # pulseaudio
     start-pulseaudio-x11
 
-    # spotify
-    i3-msg 'workspace 8:w8; exec /usr/bin/spotify'
+    # music
+    i3-msg 'workspace 8:w8; exec youtubemusic-nativefier'
 
     # xmodmap
     if [ ! -e "/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd" ]; then
@@ -61,12 +61,6 @@ if [ "$1" != "late" ]; then
 
     if cmd_exists megasync ; then
         megasync
-    fi
-
-    # block spotify ads
-    if cmd_exists spotify-block-ads.py ; then
-        # turn off for a bit cause it's causing some skipping
-        spotify-block-ads.py &
     fi
 
     # now using pclcmd (see pcloud in MEGA/env/../ for oath token)
