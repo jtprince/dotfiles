@@ -103,11 +103,8 @@ alias xmod="xmodmap ~/.config/xmodmap"
 
 # applications
 alias exercism="exercism --config ~/.config/exercism.json"
-alias chromiumtest="chromium --user-data-dir=~/.config/chromium-test"
-alias chromiumdoba="chromium --user-data-dir=~/.config/chromium-doba"
-alias chromiumcrux="chromium --user-data-dir=~/.config/chromium-crux"
+alias chromiumowlet="chromium --user-data-dir=~/.config/chromium-owlet"
 alias chromiumfaenrandir="chromium --user-data-dir=~/.config/chromium-faenrandir"
-alias chromium3plcentralbi="chromium --user-data-dir=~/.config/chromium-3plcentralbi"
 alias chromiummelissa="chromium --user-data-dir=~/.config/chromium-melissa"
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
