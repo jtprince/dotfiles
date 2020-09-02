@@ -22,7 +22,7 @@ ln -sf ~/dotfiles/config/ackrc ~/.config/
 
 mkdir -p ~/npm
 ln -sf ~/dotfiles/config/npmrc ~/.config
- 
+
 # create the actual git config file:
 cat ~/dotfiles/config/git/config-public ~/MEGA/env/dotfiles-private/git/config > ~/.config/git/config
 
@@ -41,8 +41,10 @@ mkdir -p ~/.local/share/applications/
 rm -f ~/.local/share/applications/mimeapps.list
 ln -sf ~/dotfiles/config/mimeapps.list ~/.local/share/applications/
 
+ln -sf ~/dotfiles/config/docker ~/.docker
 ln -sf ~/dotfiles/config/profile ~/.profile
 ln -sf ~/dotfiles/config/xprofile ~/.xprofile
+
 # .Xresource linking is handled in .profile file!
 # but we do want to put the Xresources.d file into standard location
 ln -sf ~/dotfiles/config/Xresources.d ~/.config/
