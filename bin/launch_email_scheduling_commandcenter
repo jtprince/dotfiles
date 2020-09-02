@@ -8,16 +8,13 @@ delay = 0.5
 STANDALONE = nil
 BROWSER = "chromium --new-window"
 GMAIL = "https://gmail.com"
+OWLET_BROWSER = "chromium --user-data-dir=~/.config/chromium-owlet --new-window"
 CALENDAR = "https://calendar.google.com"
-OUTLOOK_EMAIL = "https://outlook.office.com"
-OUTLOOK_CALENDAR = "https://outlook.office.com/calendar/view/month"
-# THUNDERBIRD = "thunderbird"
 
 [
   [BROWSER, GMAIL],
-  # [STANDALONE, THUNDERBIRD],
-  [BROWSER, OUTLOOK_EMAIL],
-  [BROWSER, OUTLOOK_CALENDAR],
+  [OWLET_BROWSER, GMAIL],
+  [OWLET_BROWSER, CALENDAR],
   [BROWSER, CALENDAR],
 ].each do |cmd|
   cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd

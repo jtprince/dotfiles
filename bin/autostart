@@ -22,6 +22,7 @@ if [ "$1" != "late" ]; then
     # systemctl --user start xfce4-notifyd
 
     # pulseaudio
+    # pulseaudio -D
     start-pulseaudio-x11
 
     # music

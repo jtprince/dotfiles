@@ -4,6 +4,7 @@
 # Monitors
 ######################################################################
 
+require 'open3'
 require 'json'
 require 'time'
 require 'yaml'
@@ -273,6 +274,52 @@ module SysMonitor
       end
     end
   end
+
+  class PlayerCtlSongInfo < SongInfo
+    include SysMonitor
+    include Sleeper
+    XESAM_RE = /(xesam:\w+)\s+(.*)/
+
+    def initialize(*args)
+      @musical_sequence = %w(♩ ♪ ♬ ♫)
+      super(*args)
+    end
+
+    def get_data
+      stdout, stderr, status = Open3.capture3("playerctl metadata")
+      if stderr.include?("No player could handle this command")
+        return "NA"
+      else
+        raw = stdout.chomp.split("\n")
+      end
+      data = raw.map {|line| XESAM_RE.match(line.chomp).captures}.to_h
+      if data.size > 0 && data['xesam:title'].size > 0
+        (artist, album, title) = ['artist', 'album', 'title'].map do |key|
+          shorten(data['xesam:' + key])
+        end
+
+        player_status = `playerctl status`.chomp.downcase.to_sym
+        display_status =
+          case player_status
+          when :playing
+            @musical_sequence.rotate!.join + " "
+          when :paused
+            "▮▮ "
+          else
+            ''
+          end
+        if album.empty?
+          "#{display_status}#{artist} - #{title}"
+        else
+          "#{display_status}#{artist} (#{album}) #{title}"
+        end
+      else
+        "NA"
+      end
+
+    end
+  end
+
 end
 
 ######################################################################
@@ -448,7 +495,7 @@ end
 # see https://www.dropbox.com/s/9iysh2i0gadi4ic/icons.pdf
 
 #mpd = I3Bar::UI::SimpleText.new('mpd', '#FFA500', SysMonitor::MPD.new)
-spotify = I3Bar::UI::SimpleText.new('spotifyinfo', '#FFA500', SysMonitor::Spotify.new)
+spotify = I3Bar::UI::SimpleText.new('spotifyinfo', '#FFA500', SysMonitor::PlayerCtlSongInfo.new)
 quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
 bat = I3Bar::UI::BatteryWarning.new('batteryinfo', '#0000FF', '#FF0000', SysMonitor::Battery.new)
 cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
