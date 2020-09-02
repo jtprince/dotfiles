@@ -224,10 +224,10 @@ module SysMonitor
     MAX_FIELD_LENGTH = 30
 
     def shorten(string, max_length=MAX_FIELD_LENGTH)
+      string = "" if string.nil?
       string_short = string[0..max_length]
       string_short << "..." if string_short != string
-      return string_short
-      return ""
+      string_short
     end
   end
 
