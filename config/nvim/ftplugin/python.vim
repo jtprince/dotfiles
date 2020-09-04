@@ -2,7 +2,7 @@
 " Only load this indent file when no other was loaded.
 
 " :Isort will sort all your imports according to PEP8 and GSG
-command! -range=% Isort :<line1>,<line2>! isort -sl -
+command! -range=% Isort :<line1>,<line2>! isort --sp $OWLET_PYPROJECT_FILE -
 
 map <leader>o <Esc>mw:Isort<Enter>`w
 
@@ -21,8 +21,8 @@ map <leader>a <Esc>$a  # pylint: disable=<Esc>"*p<Esc>?=<Enter>wkwx<Esc>:noh<Ent
 " The movement down one line (with left hand navigation) assumes that an import line was added
 map <leader>i <Esc>mw:PymodeRopeAutoImport<Enter>1<Enter><Esc>:Isort<Enter>`wf
 
-map <leader>= <Esc>:Black<Enter>
+map <leader>b <Esc>:Black<Enter>
 
 " insert breakpoint above the current line and position cursor at start of
 " breakpoint
-map <leader>b Obreakpoint()<Esc>0w
+map <leader>B Obreakpoint()<Esc>0w

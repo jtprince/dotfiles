@@ -25,9 +25,6 @@ if [ "$1" != "late" ]; then
     # pulseaudio -D
     start-pulseaudio-x11
 
-    # music
-    i3-msg 'workspace 8:w8; exec youtubemusic-nativefier'
-
     # xmodmap
     if [ ! -e "/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd" ]; then
         # if the UHK keyboard is not plugged in, then remap some keys!
@@ -61,8 +58,11 @@ if [ "$1" != "late" ]; then
     fi
 
     if cmd_exists megasync ; then
-        megasync
+        megasync &
     fi
+
+    # music
+    i3-msg 'workspace 8:w8; exec sleep 3 && youtubemusic-nativefier'
 
     # now using pclcmd (see pcloud in MEGA/env/../ for oath token)
     # pcloud

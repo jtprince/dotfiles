@@ -52,6 +52,9 @@ Plug 'tpope/vim-abolish'
 
 Plug 'kien/ctrlp.vim'
 
+" json with comments
+Plug 'kevinoid/vim-jsonc'
+
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
 
@@ -85,8 +88,17 @@ let g:ctrlp_custom_ignore = {
 \ }
 let g:ctrlp_follow_symlinks = 1
 
-Plug 'ambv/black'
-let g:black_linelength=90
+Plug 'psf/black', { 'branch': 'stable' }
+" let g:black_linelength=80
+
+" Provides autoimport, but requires python2 :/
+" Plug 'dbsr/vimpy'
+" let g:vimpy_prompt_resolve = 1
+" let g:vimpy_remove_unused = 1
+" :VimpyCheckLine
+"
+" consider rope for auto import
+
 
 call plug#end()
 
@@ -242,6 +254,7 @@ autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 " reads in ftplugin/python.vim
 " autocmd BufRead,BufNewFile *.py setfiletype python
 autocmd BufWritePost *.py call Flake8()
+autocmd BufWritePre *.py execute ':Black'
 
 " SIMPLE TRANSFORMATIONS =================================================
 " pretty print the json
