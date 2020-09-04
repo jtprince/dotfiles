@@ -49,6 +49,10 @@ alias ....='cd ../../..'
 alias ...='cd ../..'
 alias ..='cd ..'
 
+## OWLET
+alias test="python -m pytest --cov=./ --cov-branch --cov-report html --cov-config=$OWLET_COVERAGERC_FILE ./tests/"
+alias lint="isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl . && black --config $OWLET_PYPROJECT_FILE ."
+
 # ruby
 alias be="bundle exec"
 

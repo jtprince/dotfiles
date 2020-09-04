@@ -5,8 +5,6 @@ passwds_logins
 bin/youtube-dl
 pdfx/Languages/PDFXVW_SI.xml
 pdfx/Languages/PDFXVW_TR.xml
-.vim/colors
-.vim/.netrwhist
 Gemfile.lock
 *.pyc
 __pycache__
@@ -14,3 +12,4 @@ __pycache__
 .idea
 .tags
 .ropeproject
+.vim

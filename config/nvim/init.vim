@@ -53,6 +53,7 @@ Plug 'tpope/vim-abolish'
 Plug 'kien/ctrlp.vim'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
 
 "" python mode is the only reliable way to get at rope functionality
 "Plug 'python-mode/python-mode', { 'branch': 'develop' }

@@ -83,6 +83,10 @@ export BROWSER=/usr/bin/chromium
 export DEFAULT_CHEAT_DIR=$XDG_CONFIG_HOME/cheats
 export CHEATCOLORS=true
 
+## OWLET
+export OWLET_PYPROJECT_FILE=~/dev/ci-kit/bin/python/configuration/pyproject.toml
+export OWLET_COVERAGERC_FILE=~/dev/ci-kit/bin/python/configuration/.coveragerc
+
 #####################################################
 # LOCAL
 #####################################################
@@ -101,11 +105,8 @@ export SALTSERVER="ec2-user@salt.doba.com"
 
 # would like to do something like this, but this doesn't work!:
 # if [ command -v virtualenvwrapper.sh >/dev/null 2>&1 ]; then
-if [ -d ~/virtualenvs ]; then
-    # see ~/Dropbox/env/virtualenv/how_to.txt
-    export WORKON_HOME=$HOME/virtualenvs
-    export PROJECT_HOME=$HOME/dev
-fi
+export WORKON_HOME=$HOME/virtualenvs
+export PROJECT_HOME=$HOME/dev
 
 if [ -d ~/.rbenv ]; then
     export PATH="$HOME/.rbenv/bin:$PATH"
