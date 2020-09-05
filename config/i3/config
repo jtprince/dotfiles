@@ -341,10 +341,10 @@ bindsym $mod+Shift+$U move up
 #######################
 
 # split container in horizontal orientation
-bindsym $mod+h split horizontal
+bindsym $mod+w split horizontal
 
 # split container in vertical orientation
-bindsym $mod+v split vertical
+bindsym $mod+b split vertical
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen
@@ -354,8 +354,21 @@ bindsym $mod+Ctrl+Shift+F fullscreen global
 bindsym $mod+s layout stacking
 bindsym $mod+t layout tabbed
 bindsym $mod+d layout default
-bindsym $mod+b layout splitv
-bindsym $mod+w layout splith
+
+# --------
+# |      |
+# --------
+# |      |
+# --------
+# layout windows horizontally (IOW, split vertically)
+bindsym $mod+h layout splitv
+
+# -----
+# | | |
+# | | |
+# -----
+# layout windows vertically (IOW, split horizontally)
+bindsym $mod+v layout splith
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
