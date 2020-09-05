@@ -292,7 +292,7 @@ module SysMonitor
       else
         raw = stdout.chomp.split("\n")
       end
-      data = raw.map {|line| XESAM_RE.match(line.chomp).captures}.to_h
+      data = raw.map {|line| XESAM_RE.match(line.chomp)&.captures}.compact.to_h
       if data.size > 0 && data['xesam:title'].size > 0
         (artist, album, title) = ['artist', 'album', 'title'].map do |key|
           shorten(data['xesam:' + key])
