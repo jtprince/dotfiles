@@ -1,0 +1,16 @@
+#!/usr/bin/expect -f
+
+# EXPECTS env variables:
+#    GITHUB_USERNAME
+#    GITHUB_ACCESS_TOKEN
+
+set timeout -1
+spawn poetry install
+match_max 100000
+expect "*\r
+Username for 'https://github.com': "
+send -- "$env(GITHUB_USERNAME)\r"
+expect "*\r
+Password for 'https://*@github.com': "
+send -- "$env(GITHUB_ACCESS_TOKEN)\r"
+expect eof

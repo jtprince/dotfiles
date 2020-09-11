@@ -29,6 +29,8 @@ Plug 'powerline/powerline'
 Plug 'scrooloose/nerdcommenter'
 " Align all comments to the left margin
 let g:NERDDefaultAlign = 'left'
+let g:NERDCommentEmptyLines = 1
+let g:NERDTrimTrailingWhitespace = 1
 
 Plug 'ntpeters/vim-better-whitespace'
 " :StripWhitespace (also :ToggleWhitespace)
@@ -88,8 +90,12 @@ let g:ctrlp_custom_ignore = {
 \ }
 let g:ctrlp_follow_symlinks = 1
 
-Plug 'psf/black', { 'branch': 'stable' }
-" let g:black_linelength=80
+" even following branch: stable it's broken like this: https://github.com/psf/black/issues/1304
+" Plug 'psf/black', { 'branch': 'stable' }
+" so peg to specific version for now :/
+Plug 'psf/black', { 'commit': 'ce14fa8b497bae2b50ec48b3bd7022573a59cdb1' }
+
+let g:black_linelength=80
 
 " Provides autoimport, but requires python2 :/
 " Plug 'dbsr/vimpy'

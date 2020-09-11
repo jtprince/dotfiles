@@ -50,7 +50,7 @@ alias ...='cd ../..'
 alias ..='cd ..'
 
 ## OWLET
-alias test="python -m pytest --cov=./ --cov-branch --cov-report html --cov-config=$OWLET_COVERAGERC_FILE ./tests/"
+alias test="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests/"
 # alias lint="isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl . && black --config $OWLET_PYPROJECT_FILE ."
 # -rc recursive; --apply apply changes without asking; -sp settings path
 alias lint="isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl . && black --config $OWLET_PYPROJECT_FILE ."
@@ -82,6 +82,7 @@ alias nvimscratch="nvim -c 'let g:pymode_rope=0'"
 alias gvimscratch="nvim-gtk -- -c 'let g:pymode_rope=0'"
 alias mdkir="mkdir"
 alias eixt="exit"
+alias ack="ack --ignore-file=is:.tags"
 
 # latex
 alias latexmk="latexmk -pdf -xelatex"
