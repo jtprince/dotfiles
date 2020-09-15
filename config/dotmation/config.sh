@@ -20,6 +20,9 @@ ln -sf ~/dotfiles/config/cheat ~/.config/
 ln -sf ~/dotfiles/config/flake8 ~/.config/
 ln -sf ~/dotfiles/config/ackrc ~/.config/
 
+# all my gpg keys, currently just owlet key
+ln -sf ~/MEGA/env/gpg/dot-gnupg .gnupg
+
 mkdir -p ~/npm
 ln -sf ~/dotfiles/config/npmrc ~/.config
 

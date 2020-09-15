@@ -1,0 +1,19 @@
+
+# to mock a chained attribute, add simply add the name of the attribute
+# to mock a *call*, use `return_value` (in all its variety) or side_effect.
+
+    obj.color.shade()
+
+    # assume mymock is obj
+    mymock.color.shade.return_value = "light"
+
+    obj.query.where(cls.dsn == dsn).order_by(param).gino.first()
+
+    # assume mymock is obj
+    mymock.query.where.return_value.order_by.return_value.gino.first.return_value = "hello"
+
+# to mock a class initializer, just treat it as a call on the class
+
+    mock = mocker.patch("path.to.my.MyClass")
+    mock.return_value = SomeMockedClass()
+

@@ -3,8 +3,11 @@
 
 " :Isort will sort all your imports according to PEP8 and GSG
 command! -range=% Isort :<line1>,<line2>! isort --sp $OWLET_PYPROJECT_FILE -
+command! -range=% IsortOld :<line1>,<line2>!  isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl
 
 map <leader>o <Esc>mw:Isort<Enter>`w
+
+map <leader>O <Esc>mw:IsortOld<Enter>`w
 
 " uses john's mapping for movement
 " turn a single line comment into a multi-line comment.
