@@ -3,6 +3,36 @@
 import re
 import subprocess
 from pathlib import Path
+import argparse
+
+REQUIRED_PACKAGES = ["neovim", "black", "isort", "pylint"]
+coc_setup_cmd = "coc-setup-default-python-repo.py"
+pip_install_cmd = ["pip", "install"]
+poetry_install_cmd = ["poetry", "install"]
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-c", "--coc", action="store_true", help="install coc settings file"
+)
+parser.add_argument(
+    "-n",
+    "--neovim",
+    action="store_true",
+    help="install neovim and related pip packages",
+)
+parser.add_argument(
+    "-p", "--poetry", action="store_true", help="run poetry install"
+)
+parser.add_argument(
+    "-t",
+    "--testing",
+    action="store_true",
+    help="pip install pytest and pytest-cov",
+)
+
+args = parser.parse_args()
+
 
 pyproject = "pyproject.toml"
 
@@ -86,3 +116,18 @@ else:
     local_python_virtalenv = get_local_python_virtualenv()
     if local_python_virtalenv:
         print(f"Using local python virtualenv: {local_python_virtalenv}")
+
+if args.coc:
+    response = subprocess.run(coc_setup_cmd, capture_output=True, text=True)
+    print(response.stdout)
+
+if args.neovim:
+    install_all = pip_install_cmd + REQUIRED_PACKAGES
+    response = subprocess.run(install_all, capture_output=True, text=True)
+    print(response.stdout)
+
+if args.poetry:
+    response = subprocess.run(
+        poetry_install_cmd, capture_output=True, text=True
+    )
+    print(response.stdout)
