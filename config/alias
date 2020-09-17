@@ -50,10 +50,20 @@ alias ...='cd ../..'
 alias ..='cd ..'
 
 ## OWLET
-alias test="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests/"
 # alias lint="isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl . && black --config $OWLET_PYPROJECT_FILE ."
 # -rc recursive; --apply apply changes without asking; -sp settings path
-alias lint="isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl . && black --config $OWLET_PYPROJECT_FILE ."
+# new isort options are '--'
+
+alias owlet_black="black --config $OWLET_PYPROJECT_FILE"
+
+alias owlet_test_all="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
+alias owlet_test_unit="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
+
+alias owlet_isort="isort --sp $OWLET_PYPROJECT_FILE"
+alias owlet_isort_old="isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl"
+
+alias owlet_lint_all="isort --sp $OWLET_PYPROJECT_FILE . && black --config $OWLET_PYPROJECT_FILE ."
+alias owlet_lint_all_old="isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl . && black --config $OWLET_PYPROJECT_FILE ."
 
 # ruby
 alias be="bundle exec"
