@@ -11,6 +11,8 @@ pip_install_cmd = ["pip", "install"]
 poetry_install_cmd = ["poetry", "install"]
 
 
+INSTALLATION_OPTIONS = ["neovim", "poetry", "testing"]
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "-c", "--coc", action="store_true", help="install coc settings file"
@@ -30,8 +32,15 @@ parser.add_argument(
     action="store_true",
     help="pip install pytest and pytest-cov",
 )
+parser.add_argument(
+    "-a", "--all", action="store_true", help="install all the things"
+)
 
 args = parser.parse_args()
+params = vars(args)
+if params.pop("all"):
+    for key in INSTALLATION_OPTIONS:
+        params[key] = True
 
 
 pyproject = "pyproject.toml"
@@ -117,16 +126,16 @@ else:
     if local_python_virtalenv:
         print(f"Using local python virtualenv: {local_python_virtalenv}")
 
-if args.coc:
+if params["coc"]:
     response = subprocess.run(coc_setup_cmd, capture_output=True, text=True)
     print(response.stdout)
 
-if args.neovim:
+if params["neovim"]:
     install_all = pip_install_cmd + REQUIRED_PACKAGES
     response = subprocess.run(install_all, capture_output=True, text=True)
     print(response.stdout)
 
-if args.poetry:
+if params["poetry"]:
     response = subprocess.run(
         poetry_install_cmd, capture_output=True, text=True
     )
