@@ -40,6 +40,15 @@ get_window_id = {
   root: -> { 'root' }
 }
 
+window_to_filename = {
+  window: 'window',
+  active: 'window',
+  root: 'screenshot',
+  box: 'box',
+}
+
+DEFAULT_DIR = ENV['HOME'] + '/screenshots'
+
 viewers_bold_string = viewers.map do |letter,app|
   app.sub(letter, "\033[1m\033[31m" + letter + "\033[0m")
 end.join('|')
@@ -48,13 +57,14 @@ opt = OpenStruct.new( window: :root )
 parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} [OPTS] filename[.png]"
   op.separator "output: filename.png [by default captures entire screen]"
-  op.separator "filename may be omitted if you open/print"
+  op.separator "if no filename, then writes ~/screenshots/window|screenshot|box-<timestamp>.png"
   op.separator ""
   op.on("-d", "--delay <sec>", Integer, "delay that many seconds (Int)") {|v| opt.delay = v }
   op.on("-a", "--active", "capture the active window") { opt.window = :active }
   op.on("-b", "--box", "draw a box to capture") { opt.window = :box }
   op.on("-w", "--window", "select a window to capture") { opt.window = :window }
   op.on("-o", "--open <s>", viewers_bold_string) {|v| opt.open = viewers[v] || v }
+  op.on("--ocr", "ocr with pytesseract and xclip") {|v| opt.ocr = v }
   op.on("-p", "--print", "print file directly with lp") {|v| opt.print = v }
   op.on("--dir <s>", "save to this directory") {|v| opt.dir = v }
   op.on("--timestamp", "add a date/time stamp to filename") {|v| opt.timestamp = v }
@@ -62,20 +72,15 @@ parser = OptionParser.new do |op|
 end
 parser.parse!
 
-def write_tmpfile?(argv, opt)
-  argv.size == 0 && (opt.print || opt.open)
-end
-
-filename_needed = !write_tmpfile?(ARGV, opt)
-
-if ARGV.size == 0 && filename_needed
-  puts parser
-  exit
-end
-
 ### TODO: implement ability to optionally enter filename on open or print (use tmpfile)
 
-filename = ARGV.shift
+filename = ARGV.shift 
+unless filename
+  filename = window_to_filename[opt.window]
+  opt.timestamp = true
+  opt.dir = DEFAULT_DIR
+end
+
 filename += ".png" unless filename[/\.png/i]
 
 TIME_STAMP_FORMAT = "%Y-%m-%d--%H-%M-%S"
@@ -113,11 +118,17 @@ Dir.chdir(dir) do
     system "lp #{filename_esc}"
   end
 
+  if opt.ocr
+    require 'open3'
+    stdout, stderr, status = Open3.capture3("pytesseract #{filename_esc}")
+    # sitll needs work, but this is the basic idea!!
+    system "echo -n #{Shellwords.escape(stdout)} | clip"
+  end
+
   if opt.open
     sleep(0.1)
-    open_cmd = "#{opt.open} #{filename_esc} &"
+    open_cmd = "#{opt.open} #{filename_esc}"
     putsv open_cmd
     system open_cmd
   end
 end
-
