@@ -1,0 +1,3 @@
+#!/bin/sh
+
+isort --apply -rc -sp "$HOME/dev/ci-kit/bin/python/configuration/pyproject.toml" -sl

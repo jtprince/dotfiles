@@ -57,6 +57,10 @@ Plug 'kien/ctrlp.vim'
 " json with comments
 Plug 'kevinoid/vim-jsonc'
 
+Plug 'mzlogin/vim-markdown-toc'
+let g:vmt_auto_update_on_save = 1
+let g:vmt_dont_insert_fence = 0
+
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
 
