@@ -1,6 +1,9 @@
 " Indentation code from Eric Mc Sween <em@tomcom.de> and David Bustos <bustos@caltech.edu>
 " Only load this indent file when no other was loaded.
 
+iab improt import
+iab imrpot import
+
 " :Isort will sort all your imports according to PEP8 and GSG
 command! -range=% Isort :<line1>,<line2>! isort --sp $OWLET_PYPROJECT_FILE -
 command! -range=% IsortOld :<line1>,<line2>!  isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl -

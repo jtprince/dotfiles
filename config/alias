@@ -57,7 +57,7 @@ alias ..='cd ..'
 alias owlet_black="black --config $OWLET_PYPROJECT_FILE"
 
 alias owlet_test_all="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
-alias owlet_test_unit="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
+alias owlet_test_unit="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests/unit"
 
 alias owlet_isort="isort --sp $OWLET_PYPROJECT_FILE"
 alias owlet_isort_old="isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl"

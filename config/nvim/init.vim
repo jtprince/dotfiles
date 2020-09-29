@@ -64,6 +64,9 @@ let g:vmt_dont_insert_fence = 0
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
 
+" coc needs to be rooted for things like pylint to work properly!
+autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
+
 "" python mode is the only reliable way to get at rope functionality
 "Plug 'python-mode/python-mode', { 'branch': 'develop' }
 "let g:python3_host_prog = '/usr/bin/python3'
