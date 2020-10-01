@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+
+import argparse
+import subprocess
+from pathlib import Path
+
+
+base_cmd = ["helm", "secrets", "enc"]
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "paths",
+    nargs="+",
+    type=Path,
+    help="a .yaml or yaml.dec (figures out pairing and avoids dups)",
+)
+parser.add_argument(
+    "-c",
+    "--cleanup",
+    action="store_true",
+    help="remove decrypted files",
+)
+args = parser.parse_args()
+
+DECRYPTED_SUFFIX = ".dec"
+FULL_DECRYPTED_SUFFIX = ".yaml.dec"
+
+# `helm secrets enc secrets.<env>.yaml` operates on a yaml file that *has* an
+# accompanying .yaml.dec file
+unique_yaml_paths = {
+    path.with_suffix("") if path.suffix == DECRYPTED_SUFFIX else path
+    for path in args.paths
+}
+
+for path in unique_yaml_paths:
+    decrypted_path = path.with_suffix(FULL_DECRYPTED_SUFFIX)
+    if not decrypted_path.exists():
+        print(
+            f"{path} does not have an associated {FULL_DECRYPTED_SUFFIX} file... SKIPPING"
+        )
+        continue
+
+    cmd = base_cmd + [path]
+    reply = subprocess.run(cmd, check=True, capture_output=True, text=True)
+    print(reply.stdout)
+
+    if args.cleanup:
+        decrypted_path.unlink()
