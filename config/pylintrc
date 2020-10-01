@@ -139,7 +139,9 @@ disable=print-statement,
         deprecated-sys-function,
         exception-escape,
         comprehension-escape,
-        missing-module-docstring
+        missing-module-docstring,
+        wrong-import-position,
+        wrong-import-order,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -234,7 +236,7 @@ single-line-class-stmt=no
 
 # Allow the body of an if to be on the same line as the test if there is no
 # else.
-single-line-if-stmt=no
+single-line-if-stmt=yes
 
 
 [SIMILARITIES]
@@ -249,7 +251,7 @@ ignore-docstrings=yes
 ignore-imports=no
 
 # Minimum lines number of a similarity.
-min-similarity-lines=4
+min-similarity-lines=5
 
 
 [TYPECHECK]
@@ -289,7 +291,7 @@ ignored-classes=optparse.Values,thread._local,_thread._local
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis). It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=
+ignored-modules=google
 
 # Show a hint with possible names when a member name was not found. The aspect
 # of finding the hint is based on edit distance.
@@ -340,7 +342,8 @@ bad-names=foo,
           baz,
           toto,
           tutu,
-          tata
+          tata,
+          i
 
 # Bad variable names regexes, separated by a comma. If names match any regex,
 # they will always be refused
@@ -531,7 +534,8 @@ preferred-modules=
 defining-attr-methods=__init__,
                       __new__,
                       setUp,
-                      __post_init__
+                      __post_init__,
+                      setup_method
 
 # List of member names, which should be excluded from the protected access
 # warning.

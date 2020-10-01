@@ -6,12 +6,25 @@ from pathlib import Path
 import argparse
 
 REQUIRED_PACKAGES = ["neovim", "black", "isort", "pylint"]
-coc_setup_cmd = "coc-setup-default-python-repo.py"
-pip_install_cmd = ["pip", "install"]
-poetry_install_cmd = ["poetry", "install"]
+COC_SETUP_CMD = "coc-setup-default-python-repo.py"
+PIP_INSTALL_CMD = ["pip", "install"]
+POETRY_INSTALL_CMD = ["poetry", "install"]
 
 
 INSTALLATION_OPTIONS = ["neovim", "poetry", "testing"]
+
+
+def run(cmd):
+    """Run the given command and return captured output.
+
+    subprocess.run with text=True and capture_output=Truereturns
+
+    Returns:
+        response.stdout
+    """
+    reply = subprocess.run(cmd, text=True, capture_output=True, check=True)
+    return reply.stdout
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -43,19 +56,19 @@ if params.pop("all"):
         params[key] = True
 
 
-pyproject = "pyproject.toml"
+PYPROJECT = "pyproject.toml"
 
 python_version_re = re.compile(r"^python\s*=\s*[\"']\^?([\d\.]+)[\"']")
 repo_name_re = re.compile(r"^name\s*=\s*[\"']([\w\-]+)[\"']")
 
 version_match = next(
     filter(
-        lambda val: val, map(python_version_re.match, Path(pyproject).open())
+        lambda val: val, map(python_version_re.match, Path(PYPROJECT).open())
     )
 )
 
 project_name_match = next(
-    filter(lambda val: val, map(repo_name_re.match, Path(pyproject).open()))
+    filter(lambda val: val, map(repo_name_re.match, Path(PYPROJECT).open()))
 )
 
 
@@ -65,17 +78,15 @@ required_minimum_version = version_match.group(1)
 
 def get_available_pyenv_python_versions():
     """ Returns all available pyenv python versions, in ascending order. """
-    response = subprocess.run(
-        ["pyenv", "versions"], text=True, capture_output=True
-    )
-    available = []
-    for line in response.stdout.split("\n"):
+    reply = run(["pyenv", "versions"])
+    available_ = []
+    for line in reply.split("\n"):
         chars = line.strip()
         if "/" not in chars:
             if chars.replace(".", "").isdigit():
-                available.append(chars)
+                available_.append(chars)
 
-    return available
+    return available_
 
 
 available = get_available_pyenv_python_versions()
@@ -111,32 +122,24 @@ else:
     # TODO: check existing virtualenvs to see if it already exists
 
     # make the virtualenv
-    response = subprocess.run(
-        ["pyenv", "virtualenv", best_version, suggested_virtualenv],
-        capture_output=True,
-        text=True,
-    )
-    print(response.stdout)
+    response = run(["pyenv", "virtualenv", best_version, suggested_virtualenv])
+    print(response)
 
     # associate with the repo
-    response = subprocess.run(
-        ["pyenv", "local", suggested_virtualenv], capture_output=True, text=True
-    )
+    response = run(["pyenv", "local", suggested_virtualenv])
     local_python_virtalenv = get_local_python_virtualenv()
     if local_python_virtalenv:
         print(f"Using local python virtualenv: {local_python_virtalenv}")
 
 if params["coc"]:
-    response = subprocess.run(coc_setup_cmd, capture_output=True, text=True)
-    print(response.stdout)
+    response = run(COC_SETUP_CMD)
+    print(response)
 
 if params["neovim"]:
-    install_all = pip_install_cmd + REQUIRED_PACKAGES
-    response = subprocess.run(install_all, capture_output=True, text=True)
-    print(response.stdout)
+    install_all = PIP_INSTALL_CMD + REQUIRED_PACKAGES
+    response = run(install_all)
+    print(response)
 
 if params["poetry"]:
-    response = subprocess.run(
-        poetry_install_cmd, capture_output=True, text=True
-    )
-    print(response.stdout)
+    response = run(POETRY_INSTALL_CMD)
+    print(response)

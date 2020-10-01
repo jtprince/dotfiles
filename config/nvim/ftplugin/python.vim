@@ -1,6 +1,10 @@
 " Indentation code from Eric Mc Sween <em@tomcom.de> and David Bustos <bustos@caltech.edu>
 " Only load this indent file when no other was loaded.
 
+function! SetupMethod()
+    r~/.config/nvim/ftplugin/python-fragments/setup_method.py
+endfunction
+
 iab improt import
 iab imrpot import
 
@@ -32,3 +36,5 @@ map <leader>b <Esc>:Black<Enter>
 " insert breakpoint above the current line and position cursor at start of
 " breakpoint
 map <leader>B Obreakpoint()<Esc>0w
+
+map <leader>s :call SetupMethod()<Esc>fo
