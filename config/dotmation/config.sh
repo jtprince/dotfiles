@@ -1,3 +1,4 @@
+#!/bin/bash
 
 ln -sf ~/dotfiles/config/dotmation ~/.config/
 ln -sf ~/dotfiles/config/alias ~/.config/
