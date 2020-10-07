@@ -283,8 +283,15 @@ bindsym XF86Display exec --no-startup-id xrandr --auto && randomise-bkg && xmodm
 # kill focused window
 bindsym $mod+Shift+C kill
 
-# start dmenu (a program launcher)
+# open a file in gvim with fzf
+# WIP: for some reason this will not work (but will when launched from # terminal)!
+# for_window [instance="menu-launcher"] floating enable
+# bindsym $mod+Shift+O exec --no-startup-id urxvt -title "launch in gvim" -name "menu-launcher" -e bash -c 'cmd=$(fzfo); setsid -f $cmd'
 bindsym $mod+Shift+P exec dmenu_run
+
+# rofi:
+# yay -S dmenu-recent-aliases-git
+# bindsym $mod+Shift+P exec rofi -show run
 
 # reload the configuration file
 bindsym $mod+Shift+R reload

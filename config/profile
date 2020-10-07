@@ -122,7 +122,8 @@ if [ -d ~/.pyenv ]; then
 fi
 
 if [ -d ~/go ]; then
-    export GOBIN="$HOME/go/bin"
+    export GOPATH="$HOME/go"
+    export GOBIN="$GOPATH/bin"
     export PATH="$GOBIN:$PATH"
 fi
 
@@ -130,6 +131,8 @@ if [ -d ~/.poetry ]; then
     export PATH="$HOME/.poetry/bin:$PATH"
 fi
 
+# https://github.com/cheat/cheat use FZF (fuzzy finder) `yay -S fzf`
+export CHEAT_USE_FZF=true
 
 
 #####################################################

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl . && black --config $OWLET_PYPROJECT_FILE .
+pylint app tests --fail-under=10.0
+

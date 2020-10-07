@@ -52,7 +52,29 @@ Plug 'christoomey/vim-titlecase'
 " crs coerce to snake_case; crc coerce to camelCase
 Plug 'tpope/vim-abolish'
 
-Plug 'kien/ctrlp.vim'
+" Note using ctrlp, instead trying out FZF
+" Plug 'kien/ctrlp.vim'
+" I USE FZF, installed by yay -S fzf, which loads the file already
+" open fzf in popup window:
+let g:fzf_layout = { 'window': { 'width': 0.95, 'height': 0.8 } }
+
+" Also use a set of customization commands for fzf
+Plug 'junegunn/fzf.vim'
+
+" search fzf in proximity to current buffer
+" yay -S proximity-sort ripgrep
+" https://balatero.com/writings/vim/fzf-ripgrep-proximity-sort/
+"
+function! g:FzfFilesSource()
+  let l:base = fnamemodify(expand('%'), ':h:.:S')
+  let l:proximity_sort_path = '/usr/bin/proximity-sort'
+
+  if base == '.'
+    return 'rg --files'
+  else
+    return printf('rg --files | %s %s', l:proximity_sort_path, expand('%'))
+  endif
+endfunction
 
 " json with comments
 Plug 'kevinoid/vim-jsonc'
@@ -90,12 +112,18 @@ autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 "" The command: <Ctrl-c> f
 ""     will find all occurences of the python name under the cursor
 
+" FZF (ctrl-p alternative) bindings
+noremap <C-f> :FZF<CR>
+
+noremap <C-n> :bnext<CR>
+noremap <C-p> :bprevious<CR>
+
 " Ctrl-P config
-let g:ctrlp_custom_ignore = {
-    \ 'dir':  '\.git$\|\.hg$\|\.svn$\|\.yardoc\|public\/images\|public\/system\|tmp$\|node_modules$',
-    \ 'file': '\.pyc\.exe$\|\.so$\|\.dat$'
-\ }
-let g:ctrlp_follow_symlinks = 1
+" let g:ctrlp_custom_ignore = {
+"     \ 'dir':  '\.git$\|\.hg$\|\.svn$\|\.yardoc\|public\/images\|public\/system\|tmp$\|node_modules$',
+"     \ 'file': '\.pyc\.exe$\|\.so$\|\.dat$'
+" \ }
+" let g:ctrlp_follow_symlinks = 1
 
 " even following branch: stable it's broken like this: https://github.com/psf/black/issues/1304
 " Plug 'psf/black', { 'branch': 'stable' }
@@ -124,7 +152,7 @@ call plug#end()
 
 " META LEVEL =================================================================
 
-" hail the all powerful leader key!
+" !leader key!
 let g:mapleader = ','
 
 " use semicolon for all colon commands
@@ -151,7 +179,7 @@ set formatoptions=l             " autoformating (l=long lines not broken on inse
 set printoptions=paper:letter   " use letter instead of A4 by default
 set guicursor=a:blinkon0        " disable cursor blink
 set autoread                    " reload files changed outside vim
-set hidden                      " buffers can exist in bkg w/o window
+" set hidden                      " buffers can exist in bkg w/o window
 set history=1000                " size of command history
 set fileformats=unix,dos,mac    " eol formats to try first
 

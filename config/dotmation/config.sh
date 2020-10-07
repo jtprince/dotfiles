@@ -25,6 +25,9 @@ ln -sf ~/dotfiles/config/pylintrc ~/.config/
 # all my gpg keys, currently just owlet key
 ln -sf ~/MEGA/env/gpg/dot-gnupg .gnupg
 
+# slack-term
+ln -sf ~/MEGA/env/cloud-and-apis/slack-term ~/.config/slack-term
+
 mkdir -p ~/npm
 ln -sf ~/dotfiles/config/npmrc ~/.config
 

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    response=$(fzf)
+else
+    response=$(fzf --query "$*")
+fi
+
+if [ -n "$response" ]; then
+    gvim "$response"
+fi
