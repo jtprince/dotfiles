@@ -7,7 +7,7 @@ from pathlib import Path
 CONF_FMT_STRING = """
 {{
     "python.linting.pylintEnabled": true,
-    "python.linting.flake8Enabled": false,
+    "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
     "python.jediEnabled": false,
     "python.pythonPath": "{python_path}",
