@@ -132,6 +132,9 @@ Plug 'psf/black', { 'commit': 'ce14fa8b497bae2b50ec48b3bd7022573a59cdb1' }
 
 let g:black_linelength=80
 
+Plug 'wookayin/vim-autoimport'
+
+
 " Provides autoimport, but requires python2 :/
 " Plug 'dbsr/vimpy'
 " let g:vimpy_prompt_resolve = 1
@@ -291,11 +294,12 @@ autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 " pretty format json:
 "%!python -m json.tool
 
-" superceded by pymode for now
-" reads in ftplugin/python.vim
-" autocmd BufRead,BufNewFile *.py setfiletype python
+function PrePythonCleanup()
+    execute 'Black'
+    execute 'CocCommand python.sortImports'
+endfunction
 autocmd BufWritePost *.py call Flake8()
-autocmd BufWritePre *.py execute ':Black'
+autocmd BufWritePre *.py call PrePythonCleanup()
 
 " SIMPLE TRANSFORMATIONS =================================================
 " pretty print the json

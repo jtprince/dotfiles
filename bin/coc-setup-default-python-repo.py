@@ -1,19 +1,37 @@
 #!/usr/bin/env python
 
+import json
+import os
 import subprocess
 from pathlib import Path
 
 
-CONF_FMT_STRING = """
-{{
-    "python.linting.pylintEnabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true,
-    "python.jediEnabled": false,
-    "python.pythonPath": "{python_path}",
-    "python.autoComplete.extraPaths": ["{python_extra_path}"]
-}}
-""".lstrip()
+_owlet_pyproject_file = Path(os.environ["OWLET_PYPROJECT_FILE"]).resolve()
+
+ISORT_ARGS = dict(
+    owlet_old=f"--apply -rc -sp {_owlet_pyproject_file} -sl".split(),
+    owlet_new=f"--sp {_owlet_pyproject_file}".split(),
+    personal=[],
+)
+OWLET_CURRENT = "owlet_old"
+
+
+def is_owlet_repo():
+    return Path("charts").exists()
+
+
+def get_isort_args():
+    key = OWLET_CURRENT if is_owlet_repo() else "personal"
+    return ISORT_ARGS[key]
+
+
+DEFAULTS = {
+    "python.linting.pylintEnabled": True,
+    "python.linting.flake8Enabled": True,
+    "python.linting.enabled": True,
+    "python.jediEnabled": False,
+}
+
 
 PROJECT_ROOT_CONFIG = ".vim"
 SETTINGS_FILE = "coc-settings.json"
@@ -39,14 +57,20 @@ venv_base = Path(python_path).parents[1]
 extra_path = (
     venv_base / "lib" / f"python{python_minor_version}" / "site-packages"
 )
-config = CONF_FMT_STRING.format(
-    python_path=python_path, python_extra_path=extra_path
-)
 
 for path in [extra_path, python_path]:
     if not path.exists():
         raise RuntimeError(f"The path {path} does not exist!")
 
-settings_file.write_text(config)
+python_path = {"python.pythonPath": str(python_path)}
+autocomplete_extra_paths = {"python.autoComplete.extraPaths": [str(extra_path)]}
+isort_args = {"python.sortImports.args": get_isort_args()}
+
+
+config = dict(DEFAULTS, **python_path, **autocomplete_extra_paths, **isort_args)
+config_str = json.dumps(config, indent=4)
+
+
+settings_file.write_text(config_str)
 print(f"Writing to {settings_file} the config:")
-print(config)
+print(config_str)

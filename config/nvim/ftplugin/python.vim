@@ -7,14 +7,10 @@ endfunction
 
 iab improt import
 iab imrpot import
+iab imrpt import
+iab imprt import
 
-" :Isort will sort all your imports according to PEP8 and GSG
-command! -range=% Isort :<line1>,<line2>! isort --sp $OWLET_PYPROJECT_FILE -
-command! -range=% IsortOld :<line1>,<line2>!  isort --apply -rc -sp $OWLET_PYPROJECT_FILE -sl -
-
-map <leader>o <Esc>mw:Isort<Enter>`w
-
-map <leader>O <Esc>mw:IsortOld<Enter>`w
+map <leader>o <Esc>:CocCommand python.sortImports<CR>
 
 " uses john's mapping for movement
 " turn a single line comment into a multi-line comment.
@@ -38,3 +34,10 @@ map <leader>b <Esc>:Black<Enter>
 map <leader>B Obreakpoint()<Esc>0w
 
 map <leader>s :call SetupMethod()<Esc>fo
+
+" auto imports
+" https://github.com/wookayin/vim-autoimport
+"
+nmap <silent> <M-CR>   :ImportSymbol<CR>
+imap <silent> <M-CR>   <Esc>:ImportSymbol<CR>a
+

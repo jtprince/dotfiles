@@ -72,7 +72,7 @@ export WORDCHARS='*?_[]~=&;!#$%^(){}'
 
 
 ###############################################################################
-# Zsh or more comples Aliases (simple aliases go in .profile)
+# Zsh or more complex Aliases (simple aliases go in .profile)
 ###############################################################################
 
 source ~/.config/alias
@@ -159,7 +159,7 @@ fi
 ###############################################################################
 
 # no 'cd dir' just 'dir'
-setopt AUTO_CD
+# setopt AUTO_CD
 
 # Now we can pipe to multiple outputs!
 setopt MULTIOS
@@ -176,7 +176,7 @@ setopt PUSHD_TO_HOME
 # this will ignore multiple directories for the stack.  Useful?  I dunno.
 setopt PUSHD_IGNORE_DUPS
 
-# 10 second wait if you do something that will delete everything.  I wish I'd had this before...
+# 10 second wait if you do something that will delete everything.
 setopt RM_STAR_WAIT
 
 if [[ $TERM == xterm-termite ]]; then
@@ -202,3 +202,13 @@ if cmd_exists envoy ; then
     envoy -t ssh-agent
     source <(envoy -p)
 fi
+
+###############################################################################
+# autocomplete
+###############################################################################
+
+# kubectl
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+
+# helm
+[[ $commands[helm] ]] && source <(helm completion zsh)
