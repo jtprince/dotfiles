@@ -132,9 +132,6 @@ Plug 'psf/black', { 'commit': 'ce14fa8b497bae2b50ec48b3bd7022573a59cdb1' }
 
 let g:black_linelength=80
 
-Plug 'wookayin/vim-autoimport'
-
-
 " Provides autoimport, but requires python2 :/
 " Plug 'dbsr/vimpy'
 " let g:vimpy_prompt_resolve = 1
@@ -296,6 +293,7 @@ autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 
 function PrePythonCleanup()
     execute 'Black'
+    " execute '%s/\s\+$//e'
     execute 'CocCommand python.sortImports'
 endfunction
 autocmd BufWritePost *.py call Flake8()

@@ -84,6 +84,7 @@ alias givm="gvim"
 alias gvmi="gvim"
 alias gimv="gvim"
 alias gim="gvim"
+alias gvi="gvim"
 
 alias gti="git"
 alias svim="sudo -E nvim"
@@ -117,6 +118,8 @@ alias mplayer="mplayer -ao pulse -af scaletempo"
 #alias youtube-dl="youtube-dl --prefer-ffmpeg"
 
 alias xmod="xmodmap ~/.config/xmodmap"
+
+alias nedit="gvim ~/.config/nvim/init.vim"
 
 # applications
 alias exercism="exercism --config ~/.config/exercism.json"
