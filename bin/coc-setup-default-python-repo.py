@@ -6,23 +6,40 @@ import subprocess
 from pathlib import Path
 
 
-_owlet_pyproject_file = Path(os.environ["OWLET_PYPROJECT_FILE"]).resolve()
+_OWLET_PYPROJECT_FILE = Path(os.environ["OWLET_PYPROJECT_FILE"]).resolve()
 
 ISORT_ARGS = dict(
-    owlet_old=f"--apply -rc -sp {_owlet_pyproject_file} -sl".split(),
-    owlet_new=f"--sp {_owlet_pyproject_file}".split(),
+    owlet=f"--apply -rc -sp {_OWLET_PYPROJECT_FILE} -sl".split(),
+    owlet_new=f"--sp {_OWLET_PYPROJECT_FILE}".split(),
     personal=[],
 )
-OWLET_CURRENT = "owlet_old"
+PYLINT_ARGS = dict(
+    owlet=f"--rcfile {_OWLET_PYPROJECT_FILE}".split(), personal=[],
+)
+OWLET_CURRENT = "owlet"
 
 
 def is_owlet_repo():
+    """The current location represents an Owlet repo."""
     return Path("charts").exists()
 
 
 def get_isort_args():
+    """Get the isort args that should be used.
+
+    These are modulated based on whether it's an Owlet repo or personal.
+    """
     key = OWLET_CURRENT if is_owlet_repo() else "personal"
     return ISORT_ARGS[key]
+
+
+def get_pylint_args():
+    """Get the pylint args that should be used.
+
+    These are modulated based on whether it's an Owlet repo or personal.
+    """
+    key = OWLET_CURRENT if is_owlet_repo() else "personal"
+    return PYLINT_ARGS[key]
 
 
 DEFAULTS = {
@@ -39,38 +56,79 @@ SETTINGS_FILE = "coc-settings.json"
 if not Path(".git").exists():
     raise RuntimeError("Must be in a project root.")
 
-python_path = Path(subprocess.getoutput("pyenv which python"))
-python_version = subprocess.getoutput("python --version").split()[-1]
 
-# e.g., 3.8.5 -> 3.8
-python_minor_version = ".".join(python_version.split(".")[0:2])
-
-if not python_path:
-    raise RuntimeError("Could not determine python path!")
-
-config_root = Path(PROJECT_ROOT_CONFIG)
-config_root.mkdir(exist_ok=True)
-settings_file = config_root / Path(SETTINGS_FILE)
-
-venv_base = Path(python_path).parents[1]
-
-extra_path = (
-    venv_base / "lib" / f"python{python_minor_version}" / "site-packages"
-)
-
-for path in [extra_path, python_path]:
+def _ensure_exists(path):
+    """Return the path after ensuring it exists."""
     if not path.exists():
         raise RuntimeError(f"The path {path} does not exist!")
-
-python_path = {"python.pythonPath": str(python_path)}
-autocomplete_extra_paths = {"python.autoComplete.extraPaths": [str(extra_path)]}
-isort_args = {"python.sortImports.args": get_isort_args()}
+    return path
 
 
-config = dict(DEFAULTS, **python_path, **autocomplete_extra_paths, **isort_args)
-config_str = json.dumps(config, indent=4)
+def get_python_path():
+    """Return the path of `pyenv which python`."""
+    python_path = Path(subprocess.getoutput("pyenv which python"))
+    if not python_path:
+        raise RuntimeError("Could not determine python path!")
+    return _ensure_exists(python_path)
 
 
-settings_file.write_text(config_str)
-print(f"Writing to {settings_file} the config:")
-print(config_str)
+def get_python_major_minor_version():
+    """Gets the major.minor version of python (e.g., 3.8)."""
+    python_version = subprocess.getoutput("python --version").split()[-1]
+
+    # e.g., 3.8.5 -> 3.8
+    return ".".join(python_version.split(".")[0:2])
+
+
+def _get_virtualenv_path(python_path, python_major_minor_version):
+    venv_base = Path(python_path).parents[1]
+
+    extra_path = (
+        venv_base
+        / "lib"
+        / f"python{python_major_minor_version}"
+        / "site-packages"
+    )
+    return _ensure_exists(extra_path)
+
+
+def _get_viable_settings_path(settings_dir):
+    """Returns a settings path with created settings_dir."""
+    config_root = Path(settings_dir)
+    config_root.mkdir(exist_ok=True)
+    return config_root / Path(SETTINGS_FILE)
+
+
+def _write_settings(path, data):
+    config_str = json.dumps(data, indent=4)
+
+    path.write_text(config_str)
+    print(f"Wrote to {path}:")
+    print(config_str)
+
+
+def create_and_write_cocfile():
+    """Generates and writes out the cocfile."""
+    python_path = get_python_path()
+    python_major_minor_version = get_python_major_minor_version()
+
+    settings_file = _get_viable_settings_path(PROJECT_ROOT_CONFIG)
+
+    virtualenv_path = _get_virtualenv_path(
+        python_path, python_major_minor_version
+    )
+
+    extra_settings = {
+        "python.pythonPath": str(python_path),
+        "python.autoComplete.extraPaths": [str(virtualenv_path)],
+        "python.sortImports.args": get_isort_args(),
+        "python.linting.pylintArgs": get_pylint_args(),
+    }
+
+    config = dict(DEFAULTS, **extra_settings)
+    _write_settings(settings_file, config)
+
+
+if __name__ == "__main__":
+
+    create_and_write_cocfile()
