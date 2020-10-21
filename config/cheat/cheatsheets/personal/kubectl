@@ -1,0 +1,22 @@
+
+# ssh into a box
+kubectl exec --stdin --tty device-registration-v1-redis-master-0 -- /bin/bash
+
+# create a pod
+    ---
+    somepodspec.yaml
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: basicpod
+    spec:
+      containers:
+      - name: webcont
+        image: nginx
+    ---
+
+kubectl create -f somepodspec.yaml
+
+# see what pods exist
+kubectl get pods

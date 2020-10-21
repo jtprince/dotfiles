@@ -280,7 +280,7 @@ autocmd BufRead *.log set formatoptions+=l lbr
 autocmd FileType make setlocal noexpandtab   " turn off et for makefiles
 autocmd Filetype html setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
-autocmd Filetype javascript setlocal ts=4 sw=4 sts=0 noexpandtab
+autocmd Filetype javascript setlocal ts=4 sw=4 sts=4 expandtab
 autocmd Filetype tex setlocal foldmethod=syntax
 autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 
