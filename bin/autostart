@@ -62,7 +62,7 @@ if [ "$1" != "late" ]; then
     fi
 
     # music
-    i3-msg 'workspace 8:w8; exec sleep 3 && youtubemusic-nativefier'
+    i3-msg 'workspace 8:w8; exec sleep 3 && music-player'
 
     # now using pclcmd (see pcloud in MEGA/env/../ for oath token)
     # pcloud
