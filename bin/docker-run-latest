@@ -1,0 +1,6 @@
+#!/bin/bash
+
+docker_id=`docker images -q | head -n 1`
+
+docker run -it $docker_id /bin/bash
+
