@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker rm $(docker container ls -a -f status=exited -q)
+docker image prune -a --force

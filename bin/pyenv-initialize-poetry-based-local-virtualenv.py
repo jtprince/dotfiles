@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
+import argparse
 import re
 import subprocess
 from pathlib import Path
-import argparse
 
 REQUIRED_PACKAGES = ["neovim", "black", "isort", "pylint"]
 COC_SETUP_CMD = "coc-setup-default-python-repo.py"
@@ -78,9 +78,10 @@ required_minimum_version = version_match.group(1)
 
 def get_available_pyenv_python_versions():
     """ Returns all available pyenv python versions, in ascending order. """
-    reply = run(["pyenv", "versions"])
+    reply = run(["pyenv", "versions", "--bare"])
     available_ = []
     for line in reply.split("\n"):
+
         chars = line.strip()
         if "/" not in chars:
             if chars.replace(".", "").isdigit():
@@ -91,6 +92,8 @@ def get_available_pyenv_python_versions():
 
 available = get_available_pyenv_python_versions()
 
+print(available)
+print(required_minimum_version)
 best_version = next(
     version
     for version in reversed(available)
