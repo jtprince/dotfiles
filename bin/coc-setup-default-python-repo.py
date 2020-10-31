@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
+import argparse
 import json
 import os
 import subprocess
 from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--skip-root-check", action="store_true")
+args = parser.parse_args()
 
 
 _OWLET_PYPROJECT_FILE = Path(os.environ["OWLET_PYPROJECT_FILE"]).resolve()
@@ -14,7 +19,8 @@ ISORT_ARGS = dict(
     personal=[],
 )
 PYLINT_ARGS = dict(
-    owlet=f"--rcfile {_OWLET_PYPROJECT_FILE}".split(), personal=[],
+    owlet=f"--rcfile {_OWLET_PYPROJECT_FILE}".split(),
+    personal=[],
 )
 OWLET_CURRENT = "owlet"
 
@@ -53,7 +59,7 @@ DEFAULTS = {
 PROJECT_ROOT_CONFIG = ".vim"
 SETTINGS_FILE = "coc-settings.json"
 
-if not Path(".git").exists():
+if (not args.skip_root_check) and not Path(".git").exists():
     raise RuntimeError("Must be in a project root.")
 
 

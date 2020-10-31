@@ -212,3 +212,6 @@ fi
 
 # helm
 [[ $commands[helm] ]] && source <(helm completion zsh)
+
+# codefresh
+[[ $commands[codefresh] ]] && source <(codefresh completion zsh)
