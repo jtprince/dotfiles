@@ -214,4 +214,5 @@ fi
 [[ $commands[helm] ]] && source <(helm completion zsh)
 
 # codefresh
-[[ $commands[codefresh] ]] && source <(codefresh completion zsh)
+# this is really slow, so until we figure out why, skip it
+# [[ $commands[codefresh] ]] && source <(codefresh completion zsh)

@@ -7,14 +7,17 @@
     co = checkout
     cl = clone
     br = branch
-    df = diff
-    dfw = diff --color-words
-    lg = log -p
-    dfs = diff --staged
-    both = diff HEAD
-    hist = !git --no-pager log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-    unstaged = diff
+
+    diffcw = diff --color-words
+
+    logv = log -p
+
     staged = diff --cached
+    unstaged = diff
+    both = diff HEAD
+
+    # hist = !git --no-pager log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    hist = log --graph --all --source --abbrev-commit  --decorate --pretty=oneline
     oneline = log --pretty=oneline
 
     # checkout a new branch, create the remote branch and set upstream as remote (courtesy jweir)
@@ -49,6 +52,11 @@
     tool = gvimdiff
 [mergetool]
     keepBackup = false
+[pager]
+  # Use `diffr` (yay -S diffr)
+  log = diffr | less
+  show = diffr | less
+  diff = diffr | less
 [core]
     pager = less -F -X
 [pull]
