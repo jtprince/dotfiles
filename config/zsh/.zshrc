@@ -41,6 +41,9 @@ done
 
 source ~/.config/zsh/jtprince.zsh-theme
 
+# completion
+# Put code completion fragments in ./completion directory
+fpath=($ZDOTDIR/completion $fpath)
 # Use modern completion system
 autoload -Uz compinit
 compinit
@@ -206,6 +209,7 @@ fi
 ###############################################################################
 # autocomplete
 ###############################################################################
+
 
 # kubectl
 [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
