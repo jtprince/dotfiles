@@ -1,0 +1,8 @@
+# what projects can I use?
+gcloud projects list
+
+# change to another project
+gcloud config set project <PROJECT-ID>
+
+# see details of current project
+gcloud config list
