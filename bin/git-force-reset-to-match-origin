@@ -4,8 +4,8 @@
 
 yourbranch=`git rev-parse --abbrev-ref HEAD`
 
-echo $yourbranch
+echo "Will force reset to match origin: $yourbranch"
 
-git checkout $yourbranch
+git checkout "$yourbranch"
 git fetch
-git reset --hard origin/$yourbranch"
+git reset --hard "origin/$yourbranch"
