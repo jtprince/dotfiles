@@ -13,7 +13,9 @@ if [ "$1" != "late" ]; then
     xrdb -merge ~/.Xresources
 
     # compositing manager
-    picom --config ~/.config/compton/compton.conf -b
+    if cmd_exists picom ; then
+        picom --config ~/.config/compton/compton.conf -b
+    fi
 
     # notifications
     dunst -config ~/.config/dunst/dunstrc &
@@ -32,7 +34,7 @@ if [ "$1" != "late" ]; then
     fi
 
     # thunar
-    thunar --daemon &
+    # thunar --daemon &
 
     # lock screen after a time of inactivity
     # if [ `hostname` != "sazedlinux" ]; then

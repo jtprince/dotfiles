@@ -31,8 +31,6 @@ ln -sf ~/MEGA/env/cloud-and-apis/slack-term ~/.config/slack-term
 mkdir -p ~/npm
 ln -sf ~/dotfiles/config/npmrc ~/.config
 
-# create the actual git config file:
-cat ~/dotfiles/config/git/config-public ~/MEGA/env/dotfiles-private/git/config > ~/.config/git/config
 
 ln -sf ~/dotfiles/config/pulseaudio-ctl ~/.config/
 ln -sf ~/dotfiles/config/nvim ~/.config/
