@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo -e "power on\n" | bluetoothctl
+sleep 4
+echo -e "connect 98:52:3D:78:9C:36\n" | bluetoothctl
+sleep 4
+pactl set-default-sink bluez_sink.98_52_3D_78_9C_36.a2dp_sink
