@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import subprocess
+import textwrap
 from pathlib import Path
 
 parser = argparse.ArgumentParser()
@@ -60,7 +61,15 @@ PROJECT_ROOT_CONFIG = ".vim"
 SETTINGS_FILE = "coc-settings.json"
 
 if (not args.skip_root_check) and not Path(".git").exists():
-    raise RuntimeError("Must be in a project root.")
+    info = f"""
+
+    Must be in a project root!
+
+    HINT: if you want to initialize and there's no .git, then:
+
+        {Path(__file__).name} --skip-root-check
+    """
+    raise RuntimeError(textwrap.dedent(info))
 
 
 def _ensure_exists(path):
@@ -136,5 +145,4 @@ def create_and_write_cocfile():
 
 
 if __name__ == "__main__":
-
     create_and_write_cocfile()
