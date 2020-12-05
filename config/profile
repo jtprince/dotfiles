@@ -16,7 +16,7 @@ export XDG_CACHE_HOME="$HOME/.cache"
 # xfce4-terminal currently has bug in Ubuntu preventing
 # it from propogating the TERM variable properly.
 # gnome-terminal will support 256 colors with this:
-#export TERM="xterm-256color"
+export TERM="xterm-256color"
 
 # https://wiki.archlinux.org/index.php/GNOME_Keyring
 export SSH_AUTH_SOCK

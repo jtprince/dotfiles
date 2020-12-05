@@ -21,7 +21,7 @@ ISORT_ARGS = dict(
 )
 PYLINT_ARGS = dict(
     owlet=f"--rcfile {_OWLET_PYPROJECT_FILE}".split(),
-    personal=[],
+    personal=["--rcfile", str(Path.home() / ".config/pylintrc")],
 )
 OWLET_CURRENT = "owlet"
 

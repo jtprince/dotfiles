@@ -59,11 +59,21 @@ set $globalfontsize 8
 
 font pango:Droid Sans Mono $globalfontsize
 
-# colors                    border      background  text
-client.focused              #C35817     #006600     #FFFFFF
-client.focused_inactive     #77994B     #465C86     #FFFFFF
-client.unfocused            #465C86     #333333     #CFCFCF
-client.urgent               #F00000     #F00000     #000000
+## colors                    border      background  text
+#client.focused              #C35817     #006600     #FFFFFF
+#client.focused_inactive     #77994B     #465C86     #FFFFFF
+#client.unfocused            #465C86     #333333     #CFCFCF
+#client.urgent               #F00000     #F00000     #000000
+
+# class                 border  bground text    indicator child_border
+client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
+client.focused_inactive #44475A #44475A #F8F8F2 #44475A   #44475A
+client.unfocused        #282A36 #282A36 #BFBFBF #282A36   #282A36
+client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
+client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
+
+client.background       #F8F8F2
+
 
 #########################
 # KEYBOARD KEYS
@@ -255,7 +265,8 @@ bindsym $mod+n exec file-manager
 bindsym $mod+Shift+T exec todo
 
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
-bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
+# bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
+bindsym $mod+g exec alacritty -e nvim
 
 bindsym XF86Calculator exec x-terminal-emulator -x python3
 
@@ -489,13 +500,23 @@ bar {
   tray_output primary
 
   colors {
-    background #465C86
-    statusline #CFCFCF
-    separator #465C86
-    focused_workspace #FFA500 #003300
-    active_workspace #FFFFFF #006600
-    inactive_workspace #CFCFCF #333333
-    urgent_workspace #000000 #F00000
+    #background #465C86
+    #statusline #CFCFCF
+    #separator #465C86
+    #focused_workspace #FFA500 #003300
+    #active_workspace #FFFFFF #006600
+    #inactive_workspace #CFCFCF #333333
+    #urgent_workspace #000000 #F00000
+
+    background #282A36
+    statusline #F8F8F2
+    separator  #44475A
+
+    focused_workspace  #44475A #44475A #F8F8F2
+    active_workspace   #282A36 #44475A #F8F8F2
+    inactive_workspace #282A36 #282A36 #BFBFBF
+    urgent_workspace   #FF5555 #FF5555 #F8F8F2
+    binding_mode       #FF5555 #FF5555 #F8F8F2
   }
 }
 

@@ -14,6 +14,7 @@ if [ "$1" != "late" ]; then
 
     # compositing manager
     if cmd_exists picom ; then
+        echo "hello"
         # picom --config ~/.config/picom/picom.conf -b
     fi
 

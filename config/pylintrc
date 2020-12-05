@@ -143,7 +143,7 @@ disable=print-statement,
         wrong-import-position,
         wrong-import-order,
         bad-whitespace,
-        bad-continuation
+        bad-continuation,
         invalid-name
 
 # Enable the message, report, category or checker with the given id(s). You can
