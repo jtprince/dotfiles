@@ -54,7 +54,7 @@ if not args.version:
         # TODO: if --best could use best possible version compatible with
         # pyproject.toml.  For now, just use whatever
         # pyproject-get-best-pyenv-python-version returns
-        version = subprocess.check_output(PYPROJECT_PYENV_CMD).strip()
+        version = subprocess.check_output(PYPROJECT_PYENV_CMD, text=True).strip()
     else:
         if args.best:
             version = get_best_pyenv_python_version()
@@ -66,7 +66,7 @@ if not args.version:
 if args.name:
     VENV_NAME = args.name
 else:
-    VENV_NAME = "-".join([str(pathlib.Path.cwd().name), version], text=True)
+    VENV_NAME = "-".join([str(pathlib.Path.cwd().name), version])
 
 cmd = ["pyenv", "virtualenv", version, VENV_NAME]
 print(cmd)
