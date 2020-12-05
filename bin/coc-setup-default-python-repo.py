@@ -133,8 +133,14 @@ def create_and_write_cocfile():
         python_path, python_major_minor_version
     )
 
+    # Until coc python loses that stupid 3.9 version warning, let's use a
+    # warning-less python
+    python_no_warnings = subprocess.getoutput(
+        f"python-create-no-warning-python.py {str(python_path)}"
+    ).strip()
+
     extra_settings = {
-        "python.pythonPath": str(python_path),
+        "python.pythonPath": python_no_warnings,
         "python.autoComplete.extraPaths": [str(virtualenv_path)],
         "python.sortImports.args": get_isort_args(),
         "python.linting.pylintArgs": get_pylint_args(),

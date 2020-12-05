@@ -1,4 +1,6 @@
 #!/bin/bash
 
 # no header and fork it
-nvim-gtk -- "$@" &
+# nvim-gtk -- "$@" &
+
+alacritty -e nvim "$@" &
