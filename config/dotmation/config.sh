@@ -15,7 +15,8 @@ ln -sf ~/dotfiles/config/latex ~/.config/
 ln -sf ~/dotfiles/config/conky ~/.config/
 ln -sf ~/dotfiles/config/blockify ~/.config/
 ln -sf ~/dotfiles/config/ranger ~/.config/
-ln -sf ~/dotfiles/config/compton ~/.config/
+ln -sf ~/dotfiles/config/picom ~/.config/
+ln -sf ~/dotfiles/config/alacritty ~/.config/
 ln -sf ~/dotfiles/config/isort.cfg ~/.config/
 ln -sf ~/dotfiles/config/cheat ~/.config/
 ln -sf ~/dotfiles/config/flake8 ~/.config/
