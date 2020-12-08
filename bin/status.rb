@@ -279,6 +279,7 @@ module SysMonitor
     include SysMonitor
     include Sleeper
     XESAM_RE = /(xesam:\w+)\s+(.*)/
+    TOPIC_GARBAGE = " - Topic"
 
     def initialize(*args)
       @musical_sequence = %w(♩ ♪ ♬ ♫)
@@ -297,6 +298,7 @@ module SysMonitor
         (artist, album, title) = ['artist', 'album', 'title'].map do |key|
           shorten(data['xesam:' + key])
         end
+        artist.sub!(/#{TOPIC_GARBAGE}$/, '')
 
         player_status = `playerctl status`.chomp.downcase.to_sym
         display_status =

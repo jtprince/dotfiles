@@ -5,5 +5,5 @@
 # will take on, so waiting a second before launching nvim means nvim will be
 # properly sized.
 
-sleep 0.1
+sleep 0.01
 nvim "$@"
