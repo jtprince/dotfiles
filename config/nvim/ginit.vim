@@ -7,22 +7,6 @@ colorscheme jtplightgui
 " set statusline^=%{coc#status()}
 
 " =======================================================================
-" X11 copy/paste buffers
-" =======================================================================
-
-" yanks the mouse selection to X11 clipboard after releasing the button
-" the s moves one character left
-" vmap <LeftRelease> "*y
-noremap <leader>y "*y
-noremap <leader>Y "+y
-
-" doesn't work
-" noremap <leader><C-y> "*c
-noremap <leader><C-Y> "+c
-" noremap <leader><p> "*p
-" noremap <leader><P> "+p
-
-" =======================================================================
 " FONT and RESIZING
 " =======================================================================
 
