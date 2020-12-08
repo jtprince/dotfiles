@@ -65,14 +65,51 @@ font pango:Droid Sans Mono $globalfontsize
 #client.unfocused            #465C86     #333333     #CFCFCF
 #client.urgent               #F00000     #F00000     #000000
 
-# class                 border  bground text    indicator child_border
-client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
-client.focused_inactive #44475A #44475A #F8F8F2 #44475A   #44475A
-client.unfocused        #282A36 #282A36 #BFBFBF #282A36   #282A36
-client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
-client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
+# different greens that should be compat
+# set $subgreen #50fa7b
+# set $subgreen #047b22
+# set $subgreen #03631b
+# set $subgreen #024a14
+# set $subgreen #60a460
+set $subgreen #60a471
 
-client.background       #F8F8F2
+set $white #F8F8F2
+set $blue  #6272A4
+set $dblue #44475A
+set $ddblue #282A36
+set $lgray #BFBFBF
+set $red #FF5555
+
+# class                 border     bground    text     indicator  child_border
+client.focused          $subgreen  $subgreen  $white   $subgreen  $subgreen
+client.focused_inactive $blue      $blue      $white   $blue      $blue
+client.unfocused        $ddblue    $ddblue    $lgray   $ddblue    $ddblue
+client.urgent           $dblue     $red       $white   $red       $red
+client.placeholder      $ddblue    $ddblue    $white   $ddblue    $ddblue
+
+client.background       $white
+
+# My first custom dracula
+## class                 border     bground    text     indicator  child_border
+#client.focused          $subgreen  $subgreen  $white   $subgreen  $subgreen
+#client.focused_inactive $blue     $blue     $white   $blue     $blue
+#client.unfocused        $ddblue    $ddblue    $lgray   $ddblue    $ddblue
+#client.urgent           $dblue     $red       $white   $red       $red
+#client.placeholder      $ddblue    $ddblue    $white   $ddblue    $ddblue
+#
+#client.background       $white
+#
+
+
+## Dracula
+## class                 border  bground text    indicator child_border
+#client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
+#client.focused_inactive #44475A #44475A #F8F8F2 #44475A   #44475A
+#client.unfocused        #282A36 #282A36 #BFBFBF #282A36   #282A36
+#client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
+#client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
+#
+#client.background       #F8F8F2
 
 
 #########################
@@ -500,6 +537,7 @@ bar {
   tray_output primary
 
   colors {
+    ## my original scheme
     #background #465C86
     #statusline #CFCFCF
     #separator #465C86
@@ -508,15 +546,16 @@ bar {
     #inactive_workspace #CFCFCF #333333
     #urgent_workspace #000000 #F00000
 
-    background #282A36
-    statusline #F8F8F2
-    separator  #44475A
+    background $ddblue
+    statusline $white
+    separator  $ddblue
 
-    focused_workspace  #44475A #44475A #F8F8F2
-    active_workspace   #282A36 #44475A #F8F8F2
-    inactive_workspace #282A36 #282A36 #BFBFBF
-    urgent_workspace   #FF5555 #FF5555 #F8F8F2
-    binding_mode       #FF5555 #FF5555 #F8F8F2
+    # class            border     bground    text
+    focused_workspace  $subgreen  $subgreen  $white
+    active_workspace   $ddblue    $dblue     $white
+    inactive_workspace $ddblue    $ddblue    $lgray
+    urgent_workspace   $red       $red       $white
+    binding_mode       $red       $red       $white
   }
 }
 
