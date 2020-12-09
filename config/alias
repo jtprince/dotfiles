@@ -88,7 +88,7 @@ alias gvi="gvim"
 
 alias gti="git"
 alias svim="sudo -E nvim"
-alias sgvim="sudo -E nvim"
+alias sgvim="sudo gvim"
 alias nvimscratch="nvim -c 'let g:pymode_rope=0'"
 alias gvimscratch="nvim-gtk -- -c 'let g:pymode_rope=0'"
 alias mdkir="mkdir"

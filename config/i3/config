@@ -25,22 +25,18 @@ exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 set $mod Mod4
 # MAC - keyboard (if not using plugged in keyboard)
 #set $mod Mod1
-## left
-set $l Tab
-## right
-set $r l
-## down
-set $d j
-## up
-set $u k
+set $left Tab
+set $right l
+set $down j
+set $up k
 ## left (with shift held down)
-set $L Tab
+set $LeftShift Tab
 ## right (with shift held down)
-set $R L
+set $RightShift L
 ## down (with shift held down)
-set $D J
+set $DownShift J
 ## up (with shift held down)
-set $U K
+set $UpShift K
 
 #########################
 # APPEARANCE
@@ -278,7 +274,7 @@ set $browser2 chromium --user-data-dir=~/.config/chromium-owlet
 set $newwindow2 --new-window
 # set $browsertest chromium --user-data-dir=~/.config/chromium-test
 
-bindsym $mod+x exec x-terminal-emulator
+bindsym $mod+x exec terminal-emulator
 
 bindsym XF86HomePage exec $browser1
 bindsym $mod+i exec $browser1
@@ -303,7 +299,7 @@ bindsym $mod+Shift+T exec todo
 
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
 # bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
-bindsym $mod+g exec alacritty -e nvim
+bindsym $mod+g exec alacritty -e sleep-and-start-nvim
 
 bindsym XF86Calculator exec x-terminal-emulator -x python3
 
@@ -369,10 +365,10 @@ bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
 #######################
 
 # change focus
-bindsym $mod+$l focus left
-bindsym $mod+$r focus right
-bindsym $mod+$d focus down
-bindsym $mod+$u focus up
+bindsym $mod+$left focus left
+bindsym $mod+$right focus right
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
 
 # focus the parent container
 bindsym $mod+a focus parent
@@ -386,10 +382,10 @@ popup_during_fullscreen leave_fullscreen
 # MOVEMENT
 #######################
 # move focused
-bindsym $mod+Shift+$L move left
-bindsym $mod+Shift+$R move right
-bindsym $mod+Shift+$D move down
-bindsym $mod+Shift+$U move up
+bindsym $mod+Shift+$LeftShift move left
+bindsym $mod+Shift+$RightShift move right
+bindsym $mod+Shift+$DownShift move down
+bindsym $mod+Shift+$UpShift move up
 
 #######################
 # WINDOW CONTROL
@@ -491,17 +487,17 @@ for_window [window_role="pop-up"] floating enabled
 # resize window (you can also use the mouse for that - (Alt-right-click))
 # I only *grow* windows, for simplicity's sake
 
-#bindsym $l resize shrink left 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+$L resize grow   left 10 px or 10 ppt
+#bindsym $left resize shrink left 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+$LeftShift resize grow   left 10 px or 10 ppt
 
 #bindsym l resize shrink right 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+$R resize grow   right 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+$RightShift resize grow   right 10 px or 10 ppt
 
 #bindsym j resize shrink down 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+$D resize grow   down 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+$DownShift resize grow   down 10 px or 10 ppt
 
 #bindsym k resize shrink up 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+$U resize grow   up 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
 
 #######################
 # MISC - editing
