@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # /usr/bin/urxvt
-/usr/bin/alacritty
+/usr/bin/alacritty "$@"
