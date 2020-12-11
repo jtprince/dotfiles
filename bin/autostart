@@ -4,6 +4,7 @@ function cmd_exists {
     command -v "$1" >/dev/null 2>&1
 }
 
+ultimate_hacking_keyboard_device="/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd"
 session_type=${XDG_SESSION_TYPE:-x11}
 
 if [ "$1" != "late" ]; then
@@ -16,8 +17,7 @@ if [ "$1" != "late" ]; then
 
     # compositing manager
     if cmd_exists picom ; then
-        echo "hello"
-        # picom --config ~/.config/picom/picom.conf -b
+        picom-toggle start
     fi
 
     # notifications
@@ -26,12 +26,7 @@ if [ "$1" != "late" ]; then
     # show notifications on: primary display; opacity 70%; disappear after 4 seconds
     # systemctl --user start xfce4-notifyd
 
-    # pulseaudio
-    # pulseaudio -D
-    start-pulseaudio-x11
-
     # xmodmap
-    # if [ ! -e "/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd" ]; then
         # if the UHK keyboard is not plugged in, then remap some keys!
     #    xmodmap ~/.config/xmodmap
     # fi
@@ -42,16 +37,15 @@ if [ "$1" != "late" ]; then
         if cmd_exists autoxrandr ; then
             autoxrandr --change
         fi
-        setxkbmap -option caps:escape -option altwin:swap_lalt_lwin
+        if [ ! -e "$ultimate_hacking_keyboard_device" ]; then
+            notify-send -u low 'Disabling esc and swapping lalt and lwin.'
+            setxkbmap -option caps:escape -option altwin:swap_lalt_lwin
+        fi
     fi
 
-    # thunar
-    # thunar --daemon &
-
-    # lock screen after a time of inactivity
-    # if [ `hostname` != "sazedlinux" ]; then
-    #     xautolock-start
-    # fi
+    # pulseaudio
+    # pulseaudio -D
+    start-pulseaudio-x11
 
     # battery icon
     if cmd_exists cbatticon ; then

@@ -316,8 +316,8 @@ bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e --ocr
 bindcode 75 exec --no-startup-id xdotool click 2
 
 # ☆ <Favorites> toggles monitor setting
-bindsym XF86Favorites exec --no-startup-id monitor_toggle auto && randomise-bkg && xmodmap ~/.config/xmodmap
-bindsym XF86Display exec --no-startup-id xrandr --auto && randomise-bkg && xmodmap ~/.config/xmodmap
+bindsym XF86Favorites exec --no-startup-id xrandr --auto && randomise-bkg
+bindsym XF86Display exec --no-startup-id autorandr --change
 
 ###########################
 # LIFE, DEATH, and SLEEPING
@@ -529,7 +529,8 @@ bar {
   # xrandr --output 'VGA1' --primary
   # discover the names of your connections
   # xrandr --current
-  tray_output primary
+  #  by disabling, we get the tray on all monitors, which is better for sanity
+  # tray_output primary
 
   colors {
     ## my original scheme
