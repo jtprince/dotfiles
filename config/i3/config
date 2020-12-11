@@ -108,9 +108,9 @@ client.background       $white
 #client.background       #F8F8F2
 
 
-#########################
-# KEYBOARD KEYS
-#########################
+###########################
+# KEYBOARD and MONITOR KEYS
+###########################
 set $majorlightadjust major
 set $mediumlightadjust medium
 set $minorlightadjust minor
@@ -134,7 +134,6 @@ bindsym $mod+o exec --no-startup-id /home/jtprince/advance-paste.rb
 # bindsym XF86KbdBrightnessDown exec --no-startup-id kbdlight down
 # bindsym XF86KbdBrightnessUp exec --no-startup-id kbdlight up
 
-# (asus)
 bindsym XF86KbdBrightnessDown exec --no-startup-id kbd-backlight down
 bindsym XF86KbdBrightnessUp exec --no-startup-id kbd-backlight up
 
