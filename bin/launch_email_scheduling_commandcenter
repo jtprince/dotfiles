@@ -8,8 +8,11 @@ delay = 0.5
 STANDALONE = nil
 BROWSER = "chromium --new-window"
 GMAIL = "https://gmail.com"
-OWLET_BROWSER = "chromium --user-data-dir=~/.config/chromium-owlet --new-window"
+OWLET_BROWSER = "chromium --user-data-dir=#{ENV['HOME']}/.config/chromium-owlet --new-window"
 CALENDAR = "https://calendar.google.com"
+
+# make sure that directory exists!
+`mkdir -p #{OWLET_BROWSER}`
 
 [
   [BROWSER, GMAIL],

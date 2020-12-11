@@ -311,8 +311,8 @@ bindcode 75 exec --no-startup-id xdotool click 2
 
 # ☆ <Favorites> toggles monitor setting
 
-bindsym XF86Display exec --no-startup-id autorandr --change && randomise-bkg
-bindsym XF86Favorites exec --no-startup-id autorandr --change && randomise-bkg
+bindsym XF86Display exec --no-startup-id autorandr --change && keyboard-setup && randomise-bkg
+bindsym XF86Favorites exec --no-startup-id autorandr --change && keyboard-setup && randomise-bkg
 
 # TODO: fix this:
 # bindsym XF86ToggleTouchpad exec --no-startup-id

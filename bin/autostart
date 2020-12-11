@@ -38,8 +38,8 @@ if [ "$1" != "late" ]; then
             autoxrandr --change
         fi
         if [ ! -e "$ultimate_hacking_keyboard_device" ]; then
-            notify-send -u low 'Disabling esc and swapping lalt and lwin.'
-            setxkbmap -option caps:escape -option altwin:swap_lalt_lwin
+            notify-send -u low 'Configuring keyboard.'
+            keyboard-setup
         fi
     fi
 
