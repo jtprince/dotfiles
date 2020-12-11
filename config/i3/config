@@ -137,12 +137,6 @@ bindsym $mod+o exec --no-startup-id /home/jtprince/advance-paste.rb
 bindsym XF86KbdBrightnessDown exec --no-startup-id kbd-backlight down
 bindsym XF86KbdBrightnessUp exec --no-startup-id kbd-backlight up
 
-# TODO: fix this:
-# bindsym XF86ToggleTouchpad exec --no-startup-id
-
-# favorites #1 key
-bindsym XF86Launch5 exec --no-startup-id laptop-keyboard keyboard toggle
-
 #########################
 # SOUND
 #########################
@@ -316,8 +310,17 @@ bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e --ocr
 bindcode 75 exec --no-startup-id xdotool click 2
 
 # ☆ <Favorites> toggles monitor setting
-bindsym XF86Favorites exec --no-startup-id xrandr --auto && randomise-bkg
-bindsym XF86Display exec --no-startup-id autorandr --change
+
+bindsym XF86Display exec --no-startup-id autorandr --change && randomise-bkg
+bindsym XF86Favorites exec --no-startup-id autorandr --change && randomise-bkg
+
+# TODO: fix this:
+# bindsym XF86ToggleTouchpad exec --no-startup-id
+
+# favorites #1 key
+bindsym XF86Launch5 exec --no-startup-id xrandr --auto && randomise-bkg
+# favorites #2 key
+bindsym XF86Launch6 exec --no-startup-id laptop-keyboard keyboard toggle
 
 ###########################
 # LIFE, DEATH, and SLEEPING
