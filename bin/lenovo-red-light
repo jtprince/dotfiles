@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import struct
+
+# Rough translation of this:
+# echo -n -e "\x0a" | sudo dd of="/sys/kernel/debug/ec/ec0/io" \
+#    bs=1 seek=12 count=1 conv=notrunc 2> /dev/null
+
+parser = argparse.ArgumentParser()
+parser.add_argument("action", choices=["on", "off"])
+args = parser.parse_args()
+
+BYTE_IDX = 12
+byte_substitution = dict(
+    on=struct.pack("B", 0x8A),
+    off=struct.pack("B", 0x0A),
+)
+
+LIGHT_PATH = Path("/sys/kernel/debug/ec/ec0/io")
+
+old_bytes = LIGHT_PATH.read_bytes()
+
+# There's no byte substitution, so slice it
+sub_byte = byte_substitution[args.action]
+new_bytes = b"".join(
+    [
+        old_bytes[0 : BYTE_IDX],
+        sub_byte,
+        old_bytes[BYTE_IDX + 1 :],
+    ]
+)
+
+LIGHT_PATH.write_bytes(new_bytes)
+
+# for idx in range(256):
+#     new_byte = new_bytes[idx]
+#     old_byte = old_bytes[idx]
+#     print(idx, old_byte, "-->", format(old_byte, "#04x"))
+#     print(idx, new_byte, "-->", format(new_byte, "#04x"))
