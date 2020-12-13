@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# use at your own risk
+
 import argparse
 from pathlib import Path
 import struct
