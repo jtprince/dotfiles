@@ -28,7 +28,7 @@ old_bytes = LIGHT_PATH.read_bytes()
 sub_byte = byte_substitution[args.action]
 new_bytes = b"".join(
     [
-        old_bytes[0 : BYTE_IDX],
+        old_bytes[0:BYTE_IDX],
         sub_byte,
         old_bytes[BYTE_IDX + 1 :],
     ]
