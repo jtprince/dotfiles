@@ -2,6 +2,7 @@
 
 # use at your own risk
 
+import time
 import argparse
 from pathlib import Path
 import struct
@@ -10,29 +11,35 @@ import struct
 # echo -n -e "\x0a" | sudo dd of="/sys/kernel/debug/ec/ec0/io" \
 #    bs=1 seek=12 count=1 conv=notrunc 2> /dev/null
 
+LIGHT_PATH = Path("/sys/kernel/debug/ec/ec0/io")
+
+byte_substitution = dict(
+    on=0x8A,
+    off=0x0A,
+)
+
+BYTE_IDX = 12
+
+
+def substitute_byte(old_bytes, value: int, index=BYTE_IDX):
+    """Returns a new byte string where the byte at index is subtituted."""
+    sub_byte = struct.pack("B", value)
+    return b"".join(
+        [
+            old_bytes[0:index],
+            sub_byte,
+            old_bytes[index + 1 :],
+        ]
+    )
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("action", choices=["on", "off"])
 args = parser.parse_args()
-
-BYTE_IDX = 12
-byte_substitution = dict(
-    on=struct.pack("B", 0x8A),
-    off=struct.pack("B", 0x0A),
-)
-
-LIGHT_PATH = Path("/sys/kernel/debug/ec/ec0/io")
-
 old_bytes = LIGHT_PATH.read_bytes()
 
-# There's no byte substitution, so slice it
-sub_byte = byte_substitution[args.action]
-new_bytes = b"".join(
-    [
-        old_bytes[0:BYTE_IDX],
-        sub_byte,
-        old_bytes[BYTE_IDX + 1 :],
-    ]
-)
+value_to_sub = byte_substitution[args.action]
+new_bytes = substitute_byte(old_bytes, value_to_sub, index=BYTE_IDX)
 
 LIGHT_PATH.write_bytes(new_bytes)
 

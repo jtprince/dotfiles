@@ -33,11 +33,15 @@ alias utar='dtrx -n'
 alias bunzip='bunzip2'
 alias bzip='bzip2'
 
+# npm's jira requires to be in home dir, so I use a small shim, jira-cli to
+# put things into home.  But the shim isn't easy to write, so shortcut.
+alias jra='jira-cli'
+
 # wine
-alias wine32="export WINEARCH=win32; export WINEPREFIX=~/.wine32; wine"
-alias winecfg32="export WINEARCH=win32; export WINEPREFIX=~/.wine32; winecfg"
-alias wine64="export WINEARCH=win64; export WINEPREFIX=~/.wine64; wine"
-alias winecfg64="export WINEARCH=win64; export WINEPREFIX=~/.wine64; winecfg"
+alias wine32="export WINEARCH=win32; export WINEPREFIX=$HOME/.wine32; wine"
+alias winecfg32="export WINEARCH=win32; export WINEPREFIX=$HOME/.wine32; winecfg"
+alias wine64="export WINEARCH=win64; export WINEPREFIX=$HOME/.wine64; wine"
+alias winecfg64="export WINEARCH=win64; export WINEPREFIX=$HOME/.wine64; winecfg"
 
 # navigation
 alias .........='cd ../../../../../../../..'
@@ -117,26 +121,22 @@ alias vlisten="vlc --intf rc -Vdummy"
 alias mplayer="mplayer -ao pulse -af scaletempo"
 #alias youtube-dl="youtube-dl --prefer-ffmpeg"
 
-alias xmod="xmodmap ~/.config/xmodmap"
-
-alias nedit="gvim ~/.config/nvim/init.vim"
-
 # applications
-alias exercism="exercism --config ~/.config/exercism.json"
-alias chromiumowlet="chromium --user-data-dir=~/.config/chromium-owlet"
-alias chromiumfaenrandir="chromium --user-data-dir=~/.config/chromium-faenrandir"
-alias chromiummelissa="chromium --user-data-dir=~/.config/chromium-melissa"
+alias exercism="exercism --config $HOME/.config/exercism.json"
+alias chromiumowlet="chromium --user-data-dir=$HOME/.config/chromium-owlet"
+alias chromiumfaenrandir="chromium --user-data-dir=$HOME/.config/chromium-faenrandir"
+alias chromiummelissa="chromium --user-data-dir=$HOME/.config/chromium-melissa"
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
 # not using right now
-alias tmux="tmux -f ~/.config/tmux/config"
+alias tmux="tmux -f $HOME/.config/tmux/config"
 
 # clear the screen (so no scrollback)
 alias clearscreen="echo -ne '\033c'"
 
 alias open="xdg-open"
 
-alias conky="conky --config ~/.config/conky/conky.conf"
+alias conky="conky --config $HOME/.config/conky/conky.conf"
 
 alias mp3encodinginfo="ffprobe -show_format 2>/dev/null"
 

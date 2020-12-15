@@ -11,6 +11,12 @@ size: 13.0
 mouse_bindings:
   - { mouse: Middle, action: PasteSelection }
 
+scrolling:
+  history: 99999
+
+window:
+  decorations: full
+  dynamic_title: true
 
 hide_cursor_when_typing: false
 
