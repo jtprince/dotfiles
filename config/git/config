@@ -52,11 +52,11 @@
     tool = gvimdiff
 [mergetool]
     keepBackup = false
-[pager]
-  # Use `diffr` (yay -S diffr)
-  log = diffr | less
-  show = diffr | less
-  diff = diffr | less
+# [pager]
+#   # Use `diffr` (yay -S diffr)
+#   log = diffr | less
+#   show = diffr | less
+#   diff = diffr | less
 [core]
     pager = less -F -X
 [pull]

@@ -31,6 +31,7 @@ bindkey -e
 #DISABLE_AUTO_UPDATE="true"
 #source $ZSH/oh-my-zsh.sh
 
+
 ###############################################################################
 # Prompt
 ###############################################################################
@@ -38,6 +39,12 @@ bindkey -e
 for config_file (~/.config/zsh/lib/*.zsh); do
   source $config_file
 done
+
+DISABLE_AUTO_TITLE="false"
+
+function set_terminal_title() {
+  echo -en "\e]2;$@\a"
+}
 
 source ~/.config/zsh/jtprince.zsh-theme
 
