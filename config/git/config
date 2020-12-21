@@ -61,3 +61,5 @@
     pager = less -F -X
 [pull]
     ff = only
+[diff "sopsdiffer"]
+	textconv = sops -d

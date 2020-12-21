@@ -44,13 +44,52 @@ Plug 'nvie/vim-flake8'
 Plug 'vim-ruby/vim-ruby'
 Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 
-Plug 'tpope/vim-markdown'
 Plug 'gisraptor/vim-lilypond-integrator'
 Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'christoomey/vim-titlecase'
 
 " crs coerce to snake_case; crc coerce to camelCase
 Plug 'tpope/vim-abolish'
+
+" Distraction gree editing (:Goyo to toggle)
+Plug 'junegunn/goyo.vim'
+let g:goyo_width = '90%'
+let g:goyo_height = '90%'
+
+" markdown
+" May also consider gabrielelana's https://github.com/gabrielelana/vim-markdown
+" In the past, have used 'tpope/vim-markdown'
+"
+" And have used vim-markdown-toc:
+"" Plug 'mzlogin/vim-markdown-toc'
+" let g:vmt_auto_update_on_save = 1
+" let g:vmt_dont_insert_fence = 0
+
+" For now, using plasticboy's markdown plugin
+
+" Tabular is used to format markdown tables
+Plug 'godlygeek/tabular'
+" JSON front matter highlight plugin
+Plug 'elzr/vim-json'
+" https://github.com/plasticboy/vim-markdown
+Plug 'plasticboy/vim-markdown'
+let g:vim_markdown_folding_disabled = 0
+let g:vim_markdown_conceal = 1
+" control conceallevel with
+"     :set conceallevel=0  # no conceal
+"     :set conceallevel=1  # some conceal
+"     :set conceallevel=2  # lots of conceal
+
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_toml_frontmatter = 1  " for TOML format
+let g:vim_markdown_json_frontmatter = 1  " for JSON format
+" let's you jump to #anchor or file#anchor in file
+let g:vim_markdown_follow_anchor = 1
+let g:vim_markdown_strikethrough = 1
+
+" let g:vim_markdown_conceal = 1
+"
+
 
 " Note using ctrlp, instead trying out FZF
 " Plug 'kien/ctrlp.vim'
@@ -78,10 +117,6 @@ endfunction
 
 " json with comments
 Plug 'kevinoid/vim-jsonc'
-
-Plug 'mzlogin/vim-markdown-toc'
-let g:vmt_auto_update_on_save = 1
-let g:vmt_dont_insert_fence = 0
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"

@@ -11,6 +11,7 @@ base_cmd = ["helm", "secrets", "dec"]
 parser = argparse.ArgumentParser()
 parser.add_argument("paths", nargs="+", type=Path, help="decrypt any secrets.*.yaml file")
 parser.add_argument("-f", "--force", action='store_true', help="overwrite existing decrypted files")
+parser.add_argument("--dry", action='store_true', help="show the command and exit")
 args = parser.parse_args()
 
 DECRYPTED_SUFFIX = ".dec"
@@ -19,11 +20,14 @@ for path in args.paths:
     if path.suffix == DECRYPTED_SUFFIX:
         print(f"{path} already has a {DECRYPTED_SUFFIX} extension ... SKIPPING")
     else:
-        cmd = base_cmd + [path]
+        cmd = base_cmd + [str(path)]
         if args.force:
             decrypted_path = Path(str(path) + DECRYPTED_SUFFIX)
             if decrypted_path.exists():
                 decrypted_path.unlink()
 
-        reply = subprocess.run(cmd, check=True, capture_output=True, text=True)
-        print(reply.stdout)
+        if args.dry:
+            print(" ".join(cmd))
+        else:
+            reply = subprocess.run(cmd, check=True, capture_output=True, text=True)
+            print(reply.stdout)
