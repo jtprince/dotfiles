@@ -112,9 +112,6 @@ alias gg="git grep"
 # git
 alias gitcim="gitci"
 
-# chat
-alias hangouts="chromium https://hangouts.google.com/ --new-window"
-
 # media
 alias vlisten="vlc --intf rc -Vdummy"
 #alias mp="mpd ; ncmpcpp ; mpd --kill"
@@ -123,7 +120,7 @@ alias mplayer="mplayer -ao pulse -af scaletempo"
 
 # applications
 alias exercism="exercism --config $HOME/.config/exercism.json"
-alias chromiumowlet="chromium --user-data-dir=$HOME/.config/chromium-owlet"
+alias chromiumpersonal="chromium --user-data-dir=$HOME/.config/chromium-personal"
 alias chromiumfaenrandir="chromium --user-data-dir=$HOME/.config/chromium-faenrandir"
 alias chromiummelissa="chromium --user-data-dir=$HOME/.config/chromium-melissa"
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"

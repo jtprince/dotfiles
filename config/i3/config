@@ -262,7 +262,7 @@ bindsym $mod+Ctrl+Shift+z move container to workspace back_and_forth
 set $browser1 chromium
 set $newwindow1 --new-window
 # todo: figure out how to use $HOME var here
-set $browser2 chromium --user-data-dir=/home/jtprince/.config/chromium-owlet
+set $browser2 chromium --user-data-dir=/home/jtprince/.config/chromium-personal
 set $newwindow2 --new-window
 # set $browsertest chromium --user-data-dir=/home/jtprince/.config/chromium-test
 
