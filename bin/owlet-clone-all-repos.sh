@@ -3,7 +3,11 @@
 # The canonical list of all repos platform is responsible for is here:
 # https://docs.google.com/spreadsheets/d/18dErdftIyNdk73Yk2LmAlLfoAGenm0RsAWgEqdTj8aw/edit?usp=sharing
 
+# we also add in platform-team-documentation and platform-on-call
+
 repos="
+platform-team-documentation
+platform-on-call
 accounts
 aoni-response-subscriber
 app-device-registration
