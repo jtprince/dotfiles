@@ -74,7 +74,7 @@ Plug 'elzr/vim-json'
 " https://github.com/plasticboy/vim-markdown
 Plug 'plasticboy/vim-markdown'
 let g:vim_markdown_folding_disabled = 0
-let g:vim_markdown_conceal = 1
+let g:vim_markdown_conceal = 0
 " control conceallevel with
 "     :set conceallevel=0  # no conceal
 "     :set conceallevel=1  # some conceal
