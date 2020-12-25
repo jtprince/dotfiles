@@ -4,6 +4,9 @@ function cmd_exists {
     command -v "$1" >/dev/null 2>&1
 }
 
+ultimate_hacking_keyboard_device="/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd"
+session_type=${XDG_SESSION_TYPE:-x11}
+
 if [ "$1" != "late" ]; then
 
     # gnome keyring
@@ -13,7 +16,9 @@ if [ "$1" != "late" ]; then
     xrdb -merge ~/.Xresources
 
     # compositing manager
-    # picom --config ~/.config/compton/compton.conf -b
+    if cmd_exists picom ; then
+        picom-toggle start
+    fi
 
     # notifications
     dunst -config ~/.config/dunst/dunstrc &
@@ -21,23 +26,26 @@ if [ "$1" != "late" ]; then
     # show notifications on: primary display; opacity 70%; disappear after 4 seconds
     # systemctl --user start xfce4-notifyd
 
+    # xmodmap
+        # if the UHK keyboard is not plugged in, then remap some keys!
+    #    xmodmap ~/.config/xmodmap
+    # fi
+
+    # Set capslock as an Esc key and swap left Alt with left Win
+    # (this is done in the sway config file if using wayland)
+    if [ "$session_type" == "x11" ]; then
+        if cmd_exists autoxrandr ; then
+            autoxrandr --change
+        fi
+        if [ ! -e "$ultimate_hacking_keyboard_device" ]; then
+            notify-send -u low 'Configuring keyboard.'
+            keyboard-setup
+        fi
+    fi
+
     # pulseaudio
     # pulseaudio -D
     start-pulseaudio-x11
-
-    # xmodmap
-    if [ ! -e "/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd" ]; then
-        # if the UHK keyboard is not plugged in, then remap some keys!
-        xmodmap ~/.config/xmodmap
-    fi
-
-    # thunar
-    thunar --daemon &
-
-    # lock screen after a time of inactivity
-    # if [ `hostname` != "sazedlinux" ]; then
-    #     xautolock-start
-    # fi
 
     # battery icon
     if cmd_exists cbatticon ; then
@@ -62,7 +70,7 @@ if [ "$1" != "late" ]; then
     fi
 
     # music
-    i3-msg 'workspace 8:w8; exec sleep 3 && music-player'
+    # i3-msg 'workspace 8:w8; exec sleep 3 && music-player'
 
     # now using pclcmd (see pcloud in MEGA/env/../ for oath token)
     # pcloud

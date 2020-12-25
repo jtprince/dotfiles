@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import subprocess
+import textwrap
 from pathlib import Path
 
 parser = argparse.ArgumentParser()
@@ -20,7 +21,7 @@ ISORT_ARGS = dict(
 )
 PYLINT_ARGS = dict(
     owlet=f"--rcfile {_OWLET_PYPROJECT_FILE}".split(),
-    personal=[],
+    personal=["--rcfile", str(Path.home() / ".config/pylintrc")],
 )
 OWLET_CURRENT = "owlet"
 
@@ -60,7 +61,15 @@ PROJECT_ROOT_CONFIG = ".vim"
 SETTINGS_FILE = "coc-settings.json"
 
 if (not args.skip_root_check) and not Path(".git").exists():
-    raise RuntimeError("Must be in a project root.")
+    info = f"""
+
+    Must be in a project root!
+
+    HINT: if you want to initialize and there's no .git, then:
+
+        {Path(__file__).name} --skip-root-check
+    """
+    raise RuntimeError(textwrap.dedent(info))
 
 
 def _ensure_exists(path):
@@ -124,8 +133,14 @@ def create_and_write_cocfile():
         python_path, python_major_minor_version
     )
 
+    # Until coc python loses that stupid 3.9 version warning, let's use a
+    # warning-less python
+    python_no_warnings = subprocess.getoutput(
+        f"python-create-no-warning-python.py {str(python_path)}"
+    ).strip()
+
     extra_settings = {
-        "python.pythonPath": str(python_path),
+        "python.pythonPath": python_no_warnings,
         "python.autoComplete.extraPaths": [str(virtualenv_path)],
         "python.sortImports.args": get_isort_args(),
         "python.linting.pylintArgs": get_pylint_args(),
@@ -136,5 +151,4 @@ def create_and_write_cocfile():
 
 
 if __name__ == "__main__":
-
     create_and_write_cocfile()

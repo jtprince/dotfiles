@@ -22,6 +22,4 @@ cmd = ["xdg-open", url]
 
 puts url
 
-unless `hostname` == 'jtprince'
-  system *cmd
-end
+system *cmd

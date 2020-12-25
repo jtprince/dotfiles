@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import pathlib
+import sys
+
+current_python_version = sys.version.split(" ")[0]
+VERSION_FILE = ".python-version"
+PYPROJECT = pathlib.Path("pyproject.toml")
+PYENV_GET_VERSIONS_CMD = "pyenv-get-versions"
+PYPROJECT_PYENV_CMD = "pyproject-get-best-pyenv-python-version"
+
+parser = argparse.ArgumentParser(
+    description="Creates and sets the virtualenv. If pyproject.toml, uses that."
+)
+parser.add_argument(
+    "--best",
+    action="store_true",
+    help=str(
+        "if no pyproject.toml, use best available pyenv version "
+        "instead of current python version"
+    ),
+)
+parser.add_argument(
+    "--version",
+    help=str(
+        "the python version to use. Defaults to best pyproject version or "
+        f"current python {current_python_version}",
+    ),
+)
+parser.add_argument(
+    "--name", help="name of the virtualenv to use (default {cwd}-{version})"
+)
+parser.add_argument(
+    "--no-python-version",
+    action="store_true",
+    help=str(
+        "do not automatically create and populate " f"the {VERSION_FILE} file"
+    ),
+)
+args = parser.parse_args()
+
+
+def get_best_pyenv_python_version():
+    return subprocess.check_output(
+        [PYENV_GET_VERSIONS_CMD, "--best"],
+        text=True,
+    ).strip()
+
+
+if not args.version:
+    if PYPROJECT.exists():
+        # TODO: if --best could use best possible version compatible with
+        # pyproject.toml.  For now, just use whatever
+        # pyproject-get-best-pyenv-python-version returns
+        version = subprocess.check_output(PYPROJECT_PYENV_CMD, text=True).strip()
+    else:
+        if args.best:
+            version = get_best_pyenv_python_version()
+        else:
+            # current version
+            version = sys.version.split()[0]
+
+
+if args.name:
+    VENV_NAME = args.name
+else:
+    VENV_NAME = "-".join([str(pathlib.Path.cwd().name), version])
+
+cmd = ["pyenv", "virtualenv", version, VENV_NAME]
+print(cmd)
+subprocess.run(cmd, check=False)
+
+if not args.no_python_version:
+    pathlib.Path(VERSION_FILE).write_text(VENV_NAME)

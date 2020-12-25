@@ -40,7 +40,7 @@ video_card =
     if ENV.key?('BACKLIGHT')
       ENV['BACKLIGHT']
     else
-      ['acpi_video0', 'intel_backlight'].find do |preferred_card|
+      ['amdgpu_bl0', 'acpi_video0', 'intel_backlight'].find do |preferred_card|
         video_cards.include?(preferred_card)
       end
     end

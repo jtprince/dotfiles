@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# this is helpful if you want to start nvim in a window that just launched.
+# It can take a split second for the window manager to determine the size it
+# will take on, so waiting a second before launching nvim means nvim will be
+# properly sized.
+
+sleep 0.02
+nvim "$@"

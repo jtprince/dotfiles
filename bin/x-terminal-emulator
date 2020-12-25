@@ -1,9 +1,0 @@
-#!/bin/sh
-if grep -q Ubuntu /etc/issue; then
-    /usr/bin/xfce4-terminal
-elif grep -q Mint /etc/issue; then
-    /usr/bin/xfce4-terminal --hide-menubar --hide-toolbar
-else
-    #/usr/bin/xfce4-terminal --hide-menubar --hide-toolbar
-    /usr/bin/urxvt
-fi

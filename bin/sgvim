@@ -1,0 +1,6 @@
+#!/bin/sh
+
+export userhome="$HOME"
+echo $userhome
+# This should always mirror the essence of ~/bin/gvim
+alacritty -e sudo -E "$userhome/bin/sleep-and-start-nvim" "$@" &

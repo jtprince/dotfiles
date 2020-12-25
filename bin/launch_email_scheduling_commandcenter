@@ -6,16 +6,19 @@
 delay = 0.5
 
 STANDALONE = nil
-BROWSER = "chromium --new-window"
+PERSONAL_BROWSER = "chromium --user-data-dir=#{ENV['HOME']}/.config/chromium-owlet --new-window"
 GMAIL = "https://gmail.com"
-OWLET_BROWSER = "chromium --user-data-dir=~/.config/chromium-owlet --new-window"
+OWLET_BROWSER = "chromium --new-window"
 CALENDAR = "https://calendar.google.com"
 
+# make sure that directory exists!
+`mkdir -p #{OWLET_BROWSER}`
+
 [
-  [BROWSER, GMAIL],
+  [PERSONAL_BROWSER, GMAIL],
   [OWLET_BROWSER, GMAIL],
   [OWLET_BROWSER, CALENDAR],
-  [BROWSER, CALENDAR],
+  [PERSONAL_BROWSER, CALENDAR],
 ].each do |cmd|
   cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd
   cmd_forked = "#{cmd_joined} &"

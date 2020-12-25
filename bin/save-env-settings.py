@@ -8,10 +8,7 @@ from pathlib import Path
 
 home = Path.home()
 
-SAVE_TO = {
-    "env_config": home / "MEGA/env/work/3plcentral/",
-    None: home / "MEGA/env/passwds_logins/",
-}
+SAVE_TO = home / "MEGA/env/passwds_logins/"
 
 
 @contextmanager
@@ -26,19 +23,12 @@ def cd(newdir):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("dirname", help="the path to the directory to be saved")
-parser.add_argument("--save-to", help=f"save to path (default: {SAVE_TO[None]})")
+parser.add_argument("--save-to", help=f"save to path (default: {str(SAVE_TO)})")
 args = parser.parse_args()
 
 path = Path(args.dirname)
 print(path)
 dirname = path.name
-
-save_to = args.save_to or SAVE_TO[None]
-for key_dirname, dir_ in SAVE_TO.items():
-    if dirname == key_dirname:
-        save_to = dir_
-        break
-
 
 zipname = dirname
 if zipname.startswith("."):
@@ -57,6 +47,6 @@ with cd(parent):
     if not response.returncode == 0:
         raise RuntimeError("Something went wrong with zip creation!  Aborting!")
 
-    rename_to = os.path.join(save_to, secure_name)
+    rename_to = os.path.join(SAVE_TO, secure_name)
     print("Moving to:", rename_to)
     Path(secure_name).rename(rename_to)

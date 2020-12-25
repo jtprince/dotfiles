@@ -1,11 +1,5 @@
-# userguide: http://i3wm.org/docs/userguide.html
+# See `man 5 sway` for reference.
 
-# use i3-get-window-critera to get window class, etc.
-# use i3-unused-bindings to see which key combos are available
-#
-# xmodmap -pke # to see most keybindings
-# use xev to interactively get most keynames
-# use evtest to determine hard-to-get keynames (?? can these be used??)
 
 ######################################
 # STARTUP PROGRAMS & SETTINGS (Early)
@@ -20,22 +14,19 @@ exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 # VARIABLES
 #########################
 
-## set to Win (then swap Alt and Win with evdev or xmodmap etc.)
+## set to Win (but swap Alt and Win with xkb_options
 # alt=Mod1 win=Mod4
 set $mod Mod4
-# MAC - keyboard (if not using plugged in keyboard)
-#set $mod Mod1
+
+# Not certain if I need the shift letters defined since Shift is explicit
+
 set $left Tab
-set $right l
-set $down j
-set $up k
-## left (with shift held down)
 set $LeftShift Tab
-## right (with shift held down)
+set $right l
 set $RightShift L
-## down (with shift held down)
+set $down j
 set $DownShift J
-## up (with shift held down)
+set $up k
 set $UpShift K
 
 #########################
@@ -85,45 +76,52 @@ client.placeholder      $ddblue    $ddblue    $white   $ddblue    $ddblue
 
 client.background       $white
 
-# My first custom dracula
-## class                 border     bground    text     indicator  child_border
-#client.focused          $subgreen  $subgreen  $white   $subgreen  $subgreen
-#client.focused_inactive $blue     $blue     $white   $blue     $blue
-#client.unfocused        $ddblue    $ddblue    $lgray   $ddblue    $ddblue
-#client.urgent           $dblue     $red       $white   $red       $red
-#client.placeholder      $ddblue    $ddblue    $white   $ddblue    $ddblue
+output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+# TODO: figure out how to randomize on demand and use env vars
+# output * bg /home/jtprince/arch-linux-universe-wallpapers_30371_1920x1200.jpg fill
+
+# get the names of outputs by running:
 #
-#client.background       $white
+#     swaymsg -t get_outputs
 #
-
-
-## Dracula
-## class                 border  bground text    indicator child_border
-#client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
-#client.focused_inactive #44475A #44475A #F8F8F2 #44475A   #44475A
-#client.unfocused        #282A36 #282A36 #BFBFBF #282A36   #282A36
-#client.urgent           #44475A #FF5555 #F8F8F2 #FF5555   #FF5555
-#client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
+#     wdisplays  # like arandr
 #
-#client.background       #F8F8F2
+# output HDMI-A-1 resolution 1920x1080 position 1920,0
+# output HDMI-A-1 resolution 1920x1080 position 0,0
+# output HDMI-A-1 disable
+# 
+# For example:
+# swaymsg output eDP-1 disable
+
+# Example configuration:
+#
+#   input "2:14:SynPS/2_Synaptics_TouchPad" {
+#       dwt enabled
+#       tap enabled
+#       natural_scroll enabled
+#       middle_emulation enabled
+#   }
+#
+# You can get the names of your inputs by running: swaymsg -t get_inputs
+# Read `man 5 sway-input` for more information about this section.
 
 
-###########################
-# KEYBOARD and MONITOR KEYS
-###########################
+#########################
+# KEYBOARD KEYS
+#########################
 set $majorlightadjust major
 set $mediumlightadjust medium
 set $minorlightadjust minor
 set $finelightadjust fine
 
-bindsym XF86MonBrightnessDown exec --no-startup-id laptop-monitor-brightness auto '-' $majorlightadjust
-bindsym XF86MonBrightnessUp exec --no-startup-id laptop-monitor-brightness auto '+' $majorlightadjust
-bindsym $mod+XF86MonBrightnessDown exec --no-startup-id laptop-monitor-brightness auto '-' $mediumlightadjust
-bindsym $mod+XF86MonBrightnessUp exec --no-startup-id laptop-monitor-brightness auto '+' $mediumlightadjust
-bindsym $mod+Shift+XF86MonBrightnessDown exec --no-startup-id laptop-monitor-brightness auto '-' $minorlightadjust
-bindsym $mod+Shift+XF86MonBrightnessUp exec --no-startup-id laptop-monitor-brightness auto '+' $minorlightadjust
-bindsym $mod+Ctrl+Shift+XF86MonBrightnessDown exec --no-startup-id laptop-monitor-brightness auto '-' $finelightadjust
-bindsym $mod+Ctrl+Shift+XF86MonBrightnessUp exec --no-startup-id laptop-monitor-brightness auto '+' $finelightadjust
+bindsym XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $majorlightadjust
+bindsym XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $majorlightadjust
+bindsym $mod+XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $mediumlightadjust
+bindsym $mod+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $mediumlightadjust
+bindsym $mod+Shift+XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $minorlightadjust
+bindsym $mod+Shift+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $minorlightadjust
+bindsym $mod+Ctrl+Shift+XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness auto '-' $finelightadjust
+bindsym $mod+Ctrl+Shift+XF86MonBrightnessUp exec --no-startup-id laptop_monitor_brightness auto '+' $finelightadjust
 
 bindsym $mod+o exec --no-startup-id /home/jtprince/advance-paste.rb
 
@@ -134,8 +132,15 @@ bindsym $mod+o exec --no-startup-id /home/jtprince/advance-paste.rb
 # bindsym XF86KbdBrightnessDown exec --no-startup-id kbdlight down
 # bindsym XF86KbdBrightnessUp exec --no-startup-id kbdlight up
 
+# (asus)
 bindsym XF86KbdBrightnessDown exec --no-startup-id kbd-backlight down
 bindsym XF86KbdBrightnessUp exec --no-startup-id kbd-backlight up
+
+# TODO: fix this:
+# bindsym XF86ToggleTouchpad exec --no-startup-id
+
+# favorites #1 key
+bindsym XF86Launch5 exec --no-startup-id laptop-keyboard keyboard toggle
 
 #########################
 # SOUND
@@ -158,10 +163,12 @@ bindsym $mod+Shift+parenleft $voldown 5
 bindsym $mod+Ctrl+Shift+parenright $volup 20
 bindsym $mod+Ctrl+Shift+parenleft $voldown 20
 bindsym $mod+minus $mute
+bindsym $mod+Ctrl+Shift minus $mutefor 60
+bindsym $mod+Shift minus $mutefor 25
 
-bindsym XF86AudioRaiseVolume $volup 4
-bindsym XF86AudioLowerVolume $voldown 4
-bindsym XF86AudioMute $mute
+bindsym --locked XF86AudioRaiseVolume $volup 4
+bindsym --locked XF86AudioLowerVolume $voldown 4
+bindsym --locked XF86AudioMute $mute
 
 bindsym $mod+backslash exec pavucontrol --tab 5
 
@@ -173,16 +180,16 @@ set $nextsong exec --no-startup-id playerctl next
 set $previoussong exec --no-startup-id playerctl previous
 
 # commands for music player
-bindsym XF86AudioPlay $playpause
-bindsym XF86AudioNext $nextsong
-bindsym XF86AudioPrev $previoussong
+bindsym --locked XF86AudioPlay $playpause
+bindsym --locked XF86AudioNext $nextsong
+bindsym --locked XF86AudioPrev $previoussong
 # key 1 on my microsoft keyboard
 # shuffle the playlist
 #bindsym XF86Launch5 exec mpc shuffle
 #
-bindsym $mod+p $playpause
-bindsym $mod+bracketright $nextsong
-bindsym $mod+bracketleft $previoussong
+bindsym --locked $mod+p $playpause
+bindsym --locked $mod+bracketright $nextsong
+bindsym --locked $mod+bracketleft $previoussong
 
 #########################
 # DEFAULTS
@@ -195,10 +202,10 @@ workspace_layout stacking
 focus_follows_mouse no
 
 ## border style for new windows <normal|1pixel|none>
-new_window normal
+default_border pixel 1
 
 ## border style for for floating windows <normal|1pixel|none>
-new_float 1pixel
+default_floating_border pixel 1
 
 # hit same workspace focus key *again* and returns to previously focused
 workspace_auto_back_and_forth yes
@@ -256,110 +263,6 @@ bindsym $mod+Shift+z move container to workspace back_and_forth; workspace back_
 # move selected to previously focused workspace
 bindsym $mod+Ctrl+Shift+z move container to workspace back_and_forth
 
-#########################
-# Preferred applications
-#########################
-set $browser1 chromium
-set $newwindow1 --new-window
-# todo: figure out how to use $HOME var here
-set $browser2 chromium --user-data-dir=/home/jtprince/.config/chromium-personal
-set $newwindow2 --new-window
-# set $browsertest chromium --user-data-dir=/home/jtprince/.config/chromium-test
-
-bindsym $mod+x exec terminal-emulator
-
-bindsym XF86HomePage exec $browser1
-bindsym $mod+i exec $browser1
-bindsym $mod+Shift+I exec $browser2
-# bindsym $mod+Ctrl+Shift+T exec $browsertest
-
-bindsym XF86Mail exec $browser1 $newwindow1 http://gmail.com
-bindsym $mod+e exec $browser1 $newwindow1 http://gmail.com
-bindsym $mod+Shift+E exec $browser2 $newwindow2 http://gmail.com
-
-bindsym $mod+c exec $browser1 $newwindow1 http://calendar.google.com
-bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow2 http://calendar.google.com
-
-bindsym $mod+y exec $browser1 $newwindow1 https://mail.google.com/tasks/ig
-bindsym $mod+Shift+Y exec $browser2 $newwindow2 https://mail.google.com/tasks/ig
-
-bindsym $mod+Ctrl+Shift+I exec open-clipboard-url
-
-bindsym $mod+n exec file-manager
-
-bindsym $mod+Shift+T exec todo
-
-bindsym XF86Documents exec libreoffice --minimized --nologo --writer
-# bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
-bindsym $mod+g exec alacritty -e sleep-and-start-nvim
-
-bindsym XF86Calculator exec x-terminal-emulator -x python3
-
-bindsym XF86Phone exec $browser1 $newwindow1 http://voice.google.com
-
-bindsym Print exec sc --dir /home/jtprince/screenshots --timestamp screenshot -o e
-#bindsym $mod+Print exec sc -w --dir /home/jtprince/screenshots --timestamp window
-bindsym $mod+Print exec sc -b --dir /home/jtprince/screenshots --timestamp box -o e --ocr
-
-###########################
-# Keyboard shortcuts
-###########################
-
-# F9 as middle click (paste primary)
-bindcode 75 exec --no-startup-id xdotool click 2
-
-# ☆ <Favorites> toggles monitor setting
-
-bindsym XF86Display exec --no-startup-id autorandr --change && keyboard-setup && randomise-bkg
-bindsym XF86Favorites exec --no-startup-id autorandr --change && keyboard-setup && randomise-bkg
-
-# TODO: fix this:
-# bindsym XF86ToggleTouchpad exec --no-startup-id
-
-# favorites #1 key
-bindsym XF86Launch5 exec --no-startup-id xrandr --auto && randomise-bkg
-# favorites #2 key
-bindsym XF86Launch6 exec --no-startup-id laptop-keyboard keyboard toggle
-
-###########################
-# LIFE, DEATH, and SLEEPING
-###########################
-
-# kill focused window
-bindsym $mod+Shift+C kill
-
-# open a file in gvim with fzf
-# WIP: for some reason this will not work (but will when launched from # terminal)!
-# for_window [instance="menu-launcher"] floating enable
-# bindsym $mod+Shift+O exec --no-startup-id urxvt -title "launch in gvim" -name "menu-launcher" -e bash -c 'cmd=$(fzfo); setsid -f $cmd'
-bindsym $mod+Shift+P exec dmenu_run
-
-# rofi:
-# yay -S dmenu-recent-aliases-git
-# bindsym $mod+Shift+P exec rofi -show run
-
-# reload the configuration file
-bindsym $mod+Shift+R reload
-
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3 -- I tend to reload instead)
-bindsym $mod+Shift+U restart
-
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+Q exit
-
-# power/on-off management:
-# note, you may need to: sudo chmod u+s /sbin/poweroff
-bindsym $mod+Ctrl+Shift+P exec --no-startup-id before-i3-exit && systemctl poweroff
-bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboot
-# suspend (RAM)
-bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
-bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
-# turn off display (called as a shortcut it immediately wakes up w/o sleep added)
-bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
-
-bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
-
-#bindsym XF86Sleep exec echo -n mem > /sys/power/state
 
 #######################
 # FOCUS
@@ -455,24 +358,25 @@ bindsym $mod+8 workspace $ws8
 # bindsym $mod+0 workspace 10
 
 # move focused container to workspace and follow
-bindsym $mod+Shift+exclam move container to workspace $ws1; workspace $ws1
-bindsym $mod+Shift+at move container to workspace $ws2; workspace $ws2
-bindsym $mod+Shift+numbersign move container to workspace $ws3; workspace $ws3
-bindsym $mod+Shift+dollar move container to workspace $ws4; workspace $ws4
-bindsym $mod+Shift+percent move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+asciicircum move container to workspace $ws6; workspace $ws6
-bindsym $mod+Shift+ampersand move container to workspace $ws7; workspace $ws7
-bindsym $mod+Shift+asterisk move container to workspace $ws8; workspace $ws8
+# THIS IS NOT WORKING CORRECTLY in SWAY! not sure why
+bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4; workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5; workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6; workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
 
 # move focused container to workspace
-bindsym $mod+Ctrl+Shift+exclam move workspace $ws1
-bindsym $mod+Ctrl+Shift+at move workspace $ws2
-bindsym $mod+Ctrl+Shift+numbersign move workspace $ws3
-bindsym $mod+Ctrl+Shift+dollar move workspace $ws4
-bindsym $mod+Ctrl+Shift+percent move workspace $ws5
-bindsym $mod+Ctrl+Shift+asciicircum move workspace $ws6
-bindsym $mod+Ctrl+Shift+ampersand move workspace $ws7
-bindsym $mod+Ctrl+Shift+asterisk move workspace $ws8
+bindsym $mod+Ctrl+Shift+1 move workspace $ws1
+bindsym $mod+Ctrl+Shift+2 move workspace $ws2
+bindsym $mod+Ctrl+Shift+3 move workspace $ws3
+bindsym $mod+Ctrl+Shift+4 move workspace $ws4
+bindsym $mod+Ctrl+Shift+5 move workspace $ws5
+bindsym $mod+Ctrl+Shift+6 move workspace $ws6
+bindsym $mod+Ctrl+Shift+7 move workspace $ws7
+bindsym $mod+Ctrl+Shift+8 move workspace $ws8
 
 #######################
 # App/Window Prefs
@@ -500,26 +404,169 @@ bindsym $mod+Ctrl+Shift+$DownShift resize grow   down 10 px or 10 ppt
 #bindsym k resize shrink up 10 px or 10 ppt
 bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
 
-#######################
-# MISC - editing
-#######################
-## keep the dangerous ones off until needed
-bindsym $mod+Shift+F exec pylint-patch fix
-bindsym $mod+Shift+G exec pylint-patch auto
-# bindsym $mod+Shift+D exec pylint-patch delete
-# bindsym $mod+Shift+O exec pylint-patch top
+#########################
+# Preferred applications
+#########################
+set $browser1 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
+set $newwindow1 --new-window
+set $browser2 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal
+set $newwindow2 --new-window
+# set $browsertest chromium --user-data-dir=~/.config/chromium-test
 
-bindsym $mod+Shift+M exec fix
+bindsym $mod+x exec terminal-emulator
 
-#######################
-# BAR
-#######################
+bindsym XF86HomePage exec $browser1
+bindsym $mod+i exec $browser1
+bindsym $mod+Shift+I exec $browser2
 
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
+bindsym XF86Mail exec $browser1 $newwindow1 http://gmail.com
+bindsym $mod+e exec $browser1 $newwindow1 http://gmail.com
+bindsym $mod+Shift+E exec $browser2 $newwindow2 http://gmail.com
 
-## MISSING YOUR ICONS??!!! You probably need to configure your primary output!
-# xrandr --output <output> --primary
+bindsym $mod+c exec $browser1 $newwindow1 http://calendar.google.com
+bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow2 http://calendar.google.com
+
+bindsym $mod+y exec $browser1 $newwindow1 https://mail.google.com/tasks/ig
+bindsym $mod+Shift+Y exec $browser2 $newwindow2 https://mail.google.com/tasks/ig
+
+bindsym $mod+Ctrl+Shift+I exec open-clipboard-url
+
+bindsym $mod+n exec file-manager
+
+bindsym $mod+Shift+T exec todo
+
+bindsym XF86Documents exec libreoffice --minimized --nologo --writer
+# bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
+bindsym $mod+g exec alacritty -e sleep-and-start-nvim
+
+bindsym XF86Calculator exec terminal-emulator -e ipython
+
+bindsym XF86Phone exec $browser1 $newwindow1 http://voice.google.com
+
+bindsym Print exec sc --dir ~/screenshots --timestamp screenshot -o e
+#bindsym $mod+Print exec sc -w --dir ~/screenshots --timestamp window
+bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e --ocr
+
+###########################
+# Keyboard shortcuts
+###########################
+
+# F9 as middle click (paste primary)
+bindcode 75 exec --no-startup-id xdotool click 2
+
+# ☆ <Favorites> toggles monitor setting
+bindsym XF86Favorites exec --no-startup-id monitor_toggle auto && randomise-bkg && xmodmap ~/.config/xmodmap
+bindsym XF86Display exec --no-startup-id xrandr --auto && randomise-bkg && xmodmap ~/.config/xmodmap
+
+###########################
+# LIFE, DEATH, and SLEEPING
+###########################
+
+# kill focused window
+bindsym $mod+Shift+C kill
+
+# open a file in gvim with fzf
+# WIP: for some reason this will not work (but will when launched from # terminal)!
+# for_window [instance="menu-launcher"] floating enable
+# bindsym $mod+Shift+O exec --no-startup-id urxvt -title "launch in gvim" -name "menu-launcher" -e bash -c 'cmd=$(fzfo); setsid -f $cmd'
+bindsym $mod+Shift+P exec dmenu_run
+
+# rofi:
+# yay -S dmenu-recent-aliases-git
+# bindsym $mod+Shift+P exec rofi -show run
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3 -- I tend to reload instead)
+bindsym $mod+Shift+R restart
+
+# power/on-off management:
+# note, you may need to: sudo chmod u+s /sbin/poweroff
+bindsym $mod+Ctrl+Shift+P exec --no-startup-id before-i3-exit && systemctl poweroff
+bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboot
+# suspend (RAM)
+bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
+bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
+# turn off display (called as a shortcut it immediately wakes up w/o sleep added)
+
+# ISSUES with turning off display in a way that will wakeup on mouse/keyboard
+# bindsym $mod+Ctrl+Shift+D exec sleep 1 && swaymsg output * dpms off
+
+bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
+
+#bindsym XF86Sleep exec echo -n mem > /sys/power/state
+
+
+# Drag floating windows by holding down $mod and left mouse button.
+# Resize them with right mouse button + $mod.
+# Despite the name, also works for non-floating windows.
+# Change normal to inverse to use left mouse button for resizing and right
+# mouse button for dragging.
+floating_modifier $mod normal
+
+# Reload the configuration file
+bindsym $mod+Shift+U reload
+
+# Exit sway (logs you out of your Wayland session)
+# TODO: exit without prompt
+bindsym $mod+Shift+Q exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+
+
+
+# Scratchpad:
+#
+
+# Sway has a "scratchpad", which is a bag of holding for windows.
+# You can send windows there and get them back later.
+
+# Move the currently focused window to the scratchpad
+# bindsym $mod+Shift+minus move scratchpad
+
+# Show the next scratchpad window or hide the focused scratchpad window.
+# If there are multiple scratchpad windows, this command cycles through them.
+# bindsym $mod+minus scratchpad show
+#
+# Resizing containers:
+#
+
+#mode "resize" {
+#    # left will shrink the containers width
+#    # right will grow the containers width
+#    # up will shrink the containers height
+#    # down will grow the containers height
+#    bindsym $left resize shrink width 10px
+#    bindsym $down resize grow height 10px
+#    bindsym $up resize shrink height 10px
+#    bindsym $right resize grow width 10px
+#
+#    # Ditto, with arrow keys
+#    bindsym Left resize shrink width 10px
+#    bindsym Down resize grow height 10px
+#    bindsym Up resize shrink height 10px
+#    bindsym Right resize grow width 10px
+#
+#    # Return to default mode
+#    bindsym Return mode "default"
+#    bindsym Escape mode "default"
+#}
+#bindsym $mod+r mode "resize"
+#
+#
+# Status Bar:
+#
+# Read `man 5 sway-bar` for more information about this section.
+#bar {
+#    position top
+#
+#    # When the status_command prints a new line to stdout, swaybar updates.
+#    # The default just shows the current date and time.
+#    status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
+#
+#    colors {
+#        statusline #ffffff
+#        background #323232
+#        inactive_workspace #32323200 #32323200 #5c5c5c
+#    }
+#}
+
 
 bar {
   mode dock
@@ -531,7 +578,8 @@ bar {
   # xrandr --output 'VGA1' --primary
   # discover the names of your connections
   # xrandr --current
-  #  by disabling, we get the tray on all monitors, which is better for sanity
+
+  # Seems like we want tray on any monitor, so comment out
   # tray_output primary
 
   colors {
@@ -557,17 +605,12 @@ bar {
   }
 }
 
+
+include /etc/sway/config.d/*
+
 #######################
-# I3 SCRIPTING
+# Keybindings
 #######################
-
-## (turn this on if you are ready to start scripting things with i3:)
-
-# create a socket for other processes to hook into
-#ipc-socket ~/.i3/ipc.sock
-
-######################################
-# STARTUP PROGRAMS & SETTINGS (Late)
-######################################
-
-exec --no-startup-id autostart late
+input * {
+    xkb_options "caps:escape,altwin:swap_lalt_lwin"
+}

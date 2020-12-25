@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+
+parser = argparse.ArgumentParser(
+    description="prints available python versions, one per line"
+)
+parser.add_argument(
+    "--best",
+    action="store_true",
+    help="print the best pyenv version",
+)
+args = parser.parse_args()
+
+
+def run(cmd):
+    """Run the given command and return captured output.
+
+    subprocess.run with text=True and capture_output=Truereturns
+
+    Returns:
+        response.stdout
+    """
+    reply = subprocess.run(cmd, text=True, capture_output=True, check=True)
+    return reply.stdout
+
+
+def get_available_pyenv_python_versions():
+    """ Returns all available pyenv python versions, in ascending order. """
+    reply = run(["pyenv", "versions", "--bare"])
+    available_ = []
+    for line in reply.split("\n"):
+
+        chars = line.strip()
+        if "/" not in chars:
+            if chars.replace(".", "").isdigit():
+                available_.append(chars)
+
+    return available_
+
+
+available = get_available_pyenv_python_versions()
+
+if args.best:
+    print(available[-1])
+else:
+    for version in available:
+        print(version)

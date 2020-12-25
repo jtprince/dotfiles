@@ -9,13 +9,20 @@ ln -sf ~/dotfiles/config/zsh ~/.config/
 ln -sf ~/dotfiles/config/fontconfig ~/.config/
 ln -sf ~/dotfiles/config/texlive ~/.config/
 ln -sf ~/dotfiles/config/dunst ~/.config/
+
+# pulse saves things inside pulse, so just link daemon.conf
+mkdir -p ~/.config/pulse
+ln -sf ~/dotfiles/config/pulse/daemon.conf ~/.config/pulse
+
 rm -rf ~/.config/i3
 ln -sf ~/dotfiles/config/i3 ~/.config/
+
 ln -sf ~/dotfiles/config/latex ~/.config/
 ln -sf ~/dotfiles/config/conky ~/.config/
 ln -sf ~/dotfiles/config/blockify ~/.config/
 ln -sf ~/dotfiles/config/ranger ~/.config/
-ln -sf ~/dotfiles/config/compton ~/.config/
+ln -sf ~/dotfiles/config/picom ~/.config/
+ln -sf ~/dotfiles/config/alacritty ~/.config/
 ln -sf ~/dotfiles/config/isort.cfg ~/.config/
 ln -sf ~/dotfiles/config/cheat ~/.config/
 ln -sf ~/dotfiles/config/flake8 ~/.config/
@@ -23,7 +30,7 @@ ln -sf ~/dotfiles/config/ackrc ~/.config/
 ln -sf ~/dotfiles/config/pylintrc ~/.config/
 
 # all my gpg keys, currently just owlet key
-ln -sf ~/MEGA/env/gpg/dot-gnupg .gnupg
+ln -sf ~/MEGA/env/gpg/dot-gnupg ~/.gnupg
 
 # slack-term
 ln -sf ~/MEGA/env/cloud-and-apis/slack-term ~/.config/slack-term
@@ -31,8 +38,6 @@ ln -sf ~/MEGA/env/cloud-and-apis/slack-term ~/.config/slack-term
 mkdir -p ~/npm
 ln -sf ~/dotfiles/config/npmrc ~/.config
 
-# create the actual git config file:
-cat ~/dotfiles/config/git/config-public ~/MEGA/env/dotfiles-private/git/config > ~/.config/git/config
 
 ln -sf ~/dotfiles/config/pulseaudio-ctl ~/.config/
 ln -sf ~/dotfiles/config/nvim ~/.config/
@@ -49,7 +54,10 @@ mkdir -p ~/.local/share/applications/
 rm -f ~/.local/share/applications/mimeapps.list
 ln -sf ~/dotfiles/config/mimeapps.list ~/.local/share/applications/
 
+# not sure why, but this gives recursive dirs sometimes, adding rm -f
+rm -f ~/.docker
 ln -sf ~/dotfiles/config/docker ~/.docker
+
 ln -sf ~/dotfiles/config/profile ~/.profile
 ln -sf ~/dotfiles/config/xprofile ~/.xprofile
 

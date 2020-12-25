@@ -5,7 +5,7 @@ import re
 import subprocess
 from pathlib import Path
 
-REQUIRED_PACKAGES = ["neovim", "black", "isort", "pylint"]
+REQUIRED_NEOVIM_PACKAGES = ["neovim", "black", "isort", "pylint", "flake8"]
 COC_SETUP_CMD = "coc-setup-default-python-repo.py"
 PIP_INSTALL_CMD = ["pip", "install"]
 POETRY_INSTALL_CMD = ["poetry", "install"]
@@ -58,7 +58,7 @@ if params.pop("all"):
 
 PYPROJECT = "pyproject.toml"
 
-python_version_re = re.compile(r"^python\s*=\s*[\"']\^?([\d\.]+)[\"']")
+python_version_re = re.compile(r"^python\s*=\s*[\"'][~\^]?([\d\.]+)[\"']")
 repo_name_re = re.compile(r"^name\s*=\s*[\"']([\w\-]+)[\"']")
 
 version_match = next(
@@ -139,10 +139,11 @@ if params["coc"]:
     print(response)
 
 if params["neovim"]:
-    install_all = PIP_INSTALL_CMD + REQUIRED_PACKAGES
+    install_all = PIP_INSTALL_CMD + REQUIRED_NEOVIM_PACKAGES
     response = run(install_all)
     print(response)
 
 if params["poetry"]:
+    run(PIP_INSTALL_CMD + ["poetry"])
     response = run(POETRY_INSTALL_CMD)
     print(response)

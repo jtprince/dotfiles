@@ -1,0 +1,78 @@
+#!/usr/bin/env python
+
+from pathlib import Path
+import sys
+import argparse
+import subprocess
+import re
+
+PYPROJECT = "pyproject.toml"
+PYENV_VERSIONS_CMD = "pyenv-get-versions"
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--min-version",
+    action="store_true",
+    help="print min required pyproject version and exit",
+)
+args = parser.parse_args()
+
+
+def run(cmd):
+    """Run the given command and return captured output.
+
+    subprocess.run with text=True and capture_output=Truereturns
+
+    Returns:
+        response.stdout
+    """
+    reply = subprocess.run(cmd, text=True, capture_output=True, check=True)
+    return reply.stdout
+
+
+def get_project_name_and_min_python_version():
+    """Returns the project name and min python version."""
+    python_version_re = re.compile(r"^python\s*=\s*[\"'][~\^]?([\d\.]+)[\"']")
+    repo_name_re = re.compile(r"^name\s*=\s*[\"']([\w\-]+)[\"']")
+
+    version_match = next(
+        filter(
+            lambda val: val,
+            map(python_version_re.match, Path(PYPROJECT).open())
+        )
+    )
+
+    project_name_match = next(
+        filter(lambda val: val, map(repo_name_re.match, Path(PYPROJECT).open()))
+    )
+    project_name = project_name_match.group(1)
+    required_minimum_version = version_match.group(1)
+
+    return project_name, required_minimum_version
+
+
+def get_available_pyenv_python_versions():
+    """ Returns all available pyenv python versions, in ascending order. """
+    response = subprocess.check_output(PYENV_VERSIONS_CMD, text=True)
+    return [line.strip() for line in response.split("\n") if line.strip()]
+
+
+def main():
+    """Main functionality."""
+    available = get_available_pyenv_python_versions()
+    _, required_min_version = get_project_name_and_min_python_version()
+
+    if args.min_version:
+        print(required_min_version)
+        sys.exit(0)
+
+    best_version = next(
+        version
+        for version in reversed(available)
+        if version.startswith(required_min_version)
+    )
+    print(best_version)
+
+
+if __name__ == "__main__":
+    main()

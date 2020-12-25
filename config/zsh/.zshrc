@@ -31,6 +31,7 @@ bindkey -e
 #DISABLE_AUTO_UPDATE="true"
 #source $ZSH/oh-my-zsh.sh
 
+
 ###############################################################################
 # Prompt
 ###############################################################################
@@ -39,8 +40,17 @@ for config_file (~/.config/zsh/lib/*.zsh); do
   source $config_file
 done
 
+DISABLE_AUTO_TITLE="false"
+
+function set_terminal_title() {
+  echo -en "\e]2;$@\a"
+}
+
 source ~/.config/zsh/jtprince.zsh-theme
 
+# completion
+# Put code completion fragments in ./completion directory
+fpath=($ZDOTDIR/completion $fpath)
 # Use modern completion system
 autoload -Uz compinit
 compinit
@@ -207,6 +217,7 @@ fi
 # autocomplete
 ###############################################################################
 
+
 # kubectl
 [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 
@@ -214,4 +225,5 @@ fi
 [[ $commands[helm] ]] && source <(helm completion zsh)
 
 # codefresh
-[[ $commands[codefresh] ]] && source <(codefresh completion zsh)
+# this is really slow, so until we figure out why, skip it
+# [[ $commands[codefresh] ]] && source <(codefresh completion zsh)
