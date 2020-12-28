@@ -407,10 +407,9 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
 #########################
 # Preferred applications
 #########################
-set $browser1 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
-set $newwindow1 --new-window
-set $browser2 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal
-set $newwindow2 --new-window
+set $browser1 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal
+set $browser2 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
+set $newwindow --new-window
 # set $browsertest chromium --user-data-dir=~/.config/chromium-test
 
 bindsym $mod+x exec terminal-emulator
@@ -419,14 +418,14 @@ bindsym XF86HomePage exec $browser1
 bindsym $mod+i exec $browser1
 bindsym $mod+Shift+I exec $browser2
 
-bindsym XF86Mail exec $browser1 $newwindow1 http://gmail.com
-bindsym $mod+e exec $browser1 $newwindow1 http://gmail.com
+bindsym XF86Mail exec $browser1 $newwindow http://gmail.com
+bindsym $mod+e exec $browser1 $newwindow http://gmail.com
 bindsym $mod+Shift+E exec $browser2 $newwindow2 http://gmail.com
 
-bindsym $mod+c exec $browser1 $newwindow1 http://calendar.google.com
+bindsym $mod+c exec $browser1 $newwindow http://calendar.google.com
 bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow2 http://calendar.google.com
 
-bindsym $mod+y exec $browser1 $newwindow1 https://mail.google.com/tasks/ig
+bindsym $mod+y exec $browser1 $newwindow https://mail.google.com/tasks/ig
 bindsym $mod+Shift+Y exec $browser2 $newwindow2 https://mail.google.com/tasks/ig
 
 bindsym $mod+Ctrl+Shift+I exec open-clipboard-url
@@ -441,7 +440,7 @@ bindsym $mod+g exec alacritty -e sleep-and-start-nvim
 
 bindsym XF86Calculator exec terminal-emulator -e ipython
 
-bindsym XF86Phone exec $browser1 $newwindow1 http://voice.google.com
+bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
 bindsym Print exec sc --dir ~/screenshots --timestamp screenshot -o e
 #bindsym $mod+Print exec sc -w --dir ~/screenshots --timestamp window
