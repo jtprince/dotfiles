@@ -84,8 +84,8 @@ export DEFAULT_CHEAT_DIR=$XDG_CONFIG_HOME/cheats
 export CHEATCOLORS=true
 
 ## OWLET
-export OWLET_PYPROJECT_FILE=~/dev/owlet/ci-kit/bin/python/configuration/pyproject.toml
-export OWLET_COVERAGERC_FILE=~/dev/owlet/ci-kit/bin/python/configuration/.coveragerc
+export OWLET_PYPROJECT_FILE="$HOME/owlet/ci-kit/bin/python/configuration/pyproject.toml"
+export OWLET_COVERAGERC_FILE="$HOME/owlet/ci-kit/bin/python/configuration/.coveragerc"
 
 #####################################################
 # LOCAL

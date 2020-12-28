@@ -17,3 +17,13 @@
     mock = mocker.patch("path.to.my.MyClass")
     mock.return_value = SomeMockedClass()
 
+# Checking calls
+
+    # get a list of all calls
+    mock.call_args_list
+
+    # last call (or None)
+    mock.call_args
+
+    mock.assert_called_once_with(<args or kwargs>)
+    mock.assert_called_with(<args or kwargs>)
