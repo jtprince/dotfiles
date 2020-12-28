@@ -37,7 +37,7 @@ for regex in regexs:
             colnum = captures[2]
         break
 
-cmd = ["nvim-gtk", "--"]
+cmd = ["gvim"]
 
 file_to_call = filename.split(':')[0]
 file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwidow")
