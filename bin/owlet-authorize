@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+
+import requests
+import argparse
+from pathlib import Path
+
+#############################
+# CONFIG
+#############################
+EMAIL = "jprince@owletcare.com"
+BASE_DIR = Path.home() / "MEGA/env/work/owlet/authorize"
+
+# files under BASE_DIR/<env>
+APIKEY = "apikey"
+PASSWORD = "password"
+
+default_env = "dev"
+#############################
+
+URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword"
+
+parser = argparse.ArgumentParser(description="prints the token with no newline")
+parser.add_argument("env", nargs="?", default=default_env, help="environment")
+parser.add_argument("--list", action='store_true', help="print possible envs and exit")
+args = parser.parse_args()
+
+
+if args.list:
+    dirs = [path for path in BASE_DIR.glob("*") if path.is_dir()]
+    print(f"Possible envs: (under {str(BASE_DIR)})")
+    for path in dirs:
+        print("    " + path.name)
+    exit(0)
+
+
+env_path = BASE_DIR / args.env
+
+api_key = (env_path / APIKEY).read_text().strip()
+password = (env_path / PASSWORD).read_text().strip()
+
+data = dict(
+    email=EMAIL,
+    password=password,
+    returnSecureToken=True,
+)
+params = dict(key=api_key)
+
+response = requests.post(URL, json=data, params=params)
+
+print(response.json()['idToken'], end="")
