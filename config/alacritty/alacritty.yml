@@ -49,6 +49,11 @@ schemes:
       cyan:    '#9aedfe'
       white:   '#e6e6e6'
 
+    cursor:
+      text:   '#2c2c2c'
+      # orange!
+      cursor: '#FF7F00'
+
   afterglow: &afterglow
 
     primary:
