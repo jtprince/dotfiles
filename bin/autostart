@@ -33,14 +33,12 @@ if [ "$1" != "late" ]; then
 
     # Set capslock as an Esc key and swap left Alt with left Win
     # (this is done in the sway config file if using wayland)
-    if [ "$session_type" == "x11" ]; then
+    if [[ "$session_type" != "wayland" ]]; then
         if cmd_exists autoxrandr ; then
             autoxrandr --change
         fi
-        if [ ! -e "$ultimate_hacking_keyboard_device" ]; then
-            notify-send -u low 'Configuring keyboard.'
-            keyboard-setup
-        fi
+        notify-send -u low 'Configuring keyboard.'
+        keyboard-setup
     fi
 
     # pulseaudio
