@@ -9,7 +9,7 @@ from pathlib import Path
 # CONFIG
 #############################
 EMAIL = "jprince@owletcare.com"
-BASE_DIR = Path.home() / "MEGA/env/work/owlet/authorize"
+BASE_DIR = Path.home() / "MEGA/env/work/owlet/secrets/firebase"
 
 # files under BASE_DIR/<env>
 APIKEY = "apikey"
