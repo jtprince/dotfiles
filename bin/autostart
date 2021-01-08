@@ -31,31 +31,33 @@ if [ "$1" != "late" ]; then
     #    xmodmap ~/.config/xmodmap
     # fi
 
-    # Set capslock as an Esc key and swap left Alt with left Win
-    # (this is done in the sway config file if using wayland)
-    if [[ "$session_type" != "wayland" ]]; then
+    ################################################
+    # X11 specific config
+    ################################################
+    if [[ "$session_type" == "wayland" ]]; then
+        # only the indicator works, but it's not interactive
+        # instead, use nmtui or nmcli (`cheat nmcli`)
+        nm-applet --indicator &
+    else
         if cmd_exists autoxrandr ; then
             autoxrandr --change
         fi
         notify-send -u low 'Configuring keyboard.'
         keyboard-setup
+
+        # clipboard
+        xclip -silent &
+
+        # nm-applet
+        nm-applet &
     fi
 
-    # pulseaudio
-    # pulseaudio -D
+    # this also works for wayland
     start-pulseaudio-x11
 
     # battery icon
     if cmd_exists cbatticon ; then
         cbatticon &
-    fi
-
-    # clipboard
-    xclip -silent &
-
-    # network manager applet
-    if cmd_exists nm-applet ; then
-        nm-applet &
     fi
 
     # dropbox

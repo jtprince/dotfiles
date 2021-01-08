@@ -201,22 +201,7 @@ module SysMonitor
         else '0'
         end
       percent = percent_str[0...-1].to_f
-      #[direction, percent, time_str&.split(" ")&.first || 'NA']
-      # for now, we just return spaces equivalent to battery danger
-      amt =
-        if percent <= 5 then 150
-        elsif percent <= 10 then 100
-        elsif percent <= 20 then 50
-        elsif percent <= 30 then 25
-        elsif percent <= 40 then 5
-        else
-          0
-        end
-      if direction == '-'
-        ' ' * amt
-      else
-        ''
-      end
+      [direction, percent, time_str]
     end
   end
 
@@ -453,11 +438,25 @@ class I3Bar < Array
       end
 
       def display!(data)
-        self[:full_text] =  data
+        direction, percent, time_str = data
+        amt =
+          if percent <= 5 then 150
+          elsif percent <= 10 then 100
+          elsif percent <= 20 then 50
+          elsif percent <= 30 then 25
+          elsif percent <= 40 then 5
+          else
+            0
+          end
+        space =
+          if direction == '-'
+            ' ' * amt
+          else
+            ''
+          end
+        self[:full_text] = space
       end
     end
-
-
 
     class VBars < UI
       DEFAULTS = {
@@ -483,6 +482,13 @@ class I3Bar < Array
         self
       end
     end
+
+    class BatteryAmount < VBars
+      def display!(data)
+        direction, percent, time_str = data
+        super([percent])
+      end
+    end
   end
 
 end
@@ -496,20 +502,23 @@ end
 # insert character in vim with: <C-v>uXXXX
 # see https://www.dropbox.com/s/9iysh2i0gadi4ic/icons.pdf
 
+
+
 #mpd = I3Bar::UI::SimpleText.new('mpd', '#FFA500', SysMonitor::MPD.new)
 spotify = I3Bar::UI::SimpleText.new('spotifyinfo', '#FFA500', SysMonitor::PlayerCtlSongInfo.new)
 quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
-bat = I3Bar::UI::BatteryWarning.new('batteryinfo', '#0000FF', '#FF0000', SysMonitor::Battery.new)
+battery_warning = I3Bar::UI::BatteryWarning.new('batteryinfo', '#0000FF', '#FF0000', SysMonitor::Battery.new)
 cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
 mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
 #weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
 #days = I3Bar::UI::SimpleText.new('days', '#0404B4', SysMonitor::Days.new)
 datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime.new)
+battery_amount = I3Bar::UI::BatteryAmount.new('🔋', '#9AEDFE', SysMonitor::Battery.new)
 
-#components = [quote, bat, cpu, mem, weather, days, datetime].select {|cell| cell[:monitor].valid? }
-#components = [quote, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
-#components = [spotify, bat, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
-components = [quote, bat, spotify, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+#components = [quote, battery_warning, cpu, mem, weather, days, datetime].select {|cell| cell[:monitor].valid? }
+#components = [quote, battery_warning, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+#components = [spotify, battery_warning, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+components = [quote, battery_warning, spotify, cpu, mem, battery_amount, datetime].select {|cell| cell[:monitor].valid? }
 
 thin_space = ' '
 div = I3Bar::UI::Divider.new("#{thin_space}◀▶#{thin_space}", "#000000")
