@@ -50,6 +50,9 @@ if [ "$1" != "late" ]; then
 
         # nm-applet
         nm-applet &
+
+        # sound tray
+        pasystray &
     fi
 
     # this also works for wayland
@@ -78,9 +81,6 @@ if [ "$1" != "late" ]; then
     # if cmd_exists psyncgui ; then
     #    ( sleep 10 && psyncgui )&
     # fi
-
-    # sound tray
-    pasystray &
 
     notify-send -u low 'initialized!'
 
