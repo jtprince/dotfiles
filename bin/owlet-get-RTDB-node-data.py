@@ -31,7 +31,7 @@ def print_node(root_node, id):
     print(f"{id}:")
     data = root_node.child(id).get()
     for key, val in data.items():
-        print(f"{indent}{key}: {val}")
+        print(f"{indent}{key}: {repr(val)}")
 
 
 if args.id:

@@ -156,18 +156,17 @@ set $voldown exec --no-startup-id /usr/bin/pulseaudio-ctl down
 set $mute exec --no-startup-id /usr/bin/pulseaudio-ctl mute
 set $mutefor exec --no-startup-id mute-for
 
-bindsym $mod+parenright $volup 2
-bindsym $mod+parenleft $voldown 2
-bindsym $mod+Shift+parenright $volup 5
-bindsym $mod+Shift+parenleft $voldown 5
-bindsym $mod+Ctrl+Shift+parenright $volup 20
-bindsym $mod+Ctrl+Shift+parenleft $voldown 20
+bindsym $mod+0 $volup 2
+bindsym $mod+9 $voldown 2
+bindsym $mod+Shift+0 $volup 5
+bindsym $mod+Shift+9 $voldown 5
+bindsym $mod+Ctrl+Shift+0 $volup 20
+bindsym $mod+Ctrl+Shift+9 $voldown 20
 bindsym $mod+minus $mute
-bindsym $mod+Ctrl+Shift minus $mutefor 60
 bindsym $mod+Shift minus $mutefor 25
 
-bindsym --locked XF86AudioRaiseVolume $volup 4
-bindsym --locked XF86AudioLowerVolume $voldown 4
+bindsym --locked XF86AudioRaiseVolume $volup 2
+bindsym --locked XF86AudioLowerVolume $voldown 2
 bindsym --locked XF86AudioMute $mute
 
 bindsym $mod+backslash exec pavucontrol --tab 5
