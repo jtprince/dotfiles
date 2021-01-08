@@ -56,9 +56,10 @@ if [ "$1" != "late" ]; then
     start-pulseaudio-x11
 
     # battery icon
-    if cmd_exists cbatticon ; then
-        cbatticon &
-    fi
+    # doesn't work in wayland so embedded in status.rb
+    # if cmd_exists cbatticon ; then
+    #     cbatticon &
+    # fi
 
     # dropbox
     if cmd_exists dropbox-cli ; then
