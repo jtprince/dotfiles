@@ -20,7 +20,9 @@ if [ "$session_type" == "wayland" ]; then
     # turnoff any music player by default.
     # Can override and keep music on with --music-on
     if [ "$1" != "--music-on" ]; then
-        playerctl stop
+        if playerctl stop ; then
+            echo "Stopped music player"
+        fi
     fi
 
     swaylock -i "$imagefile" --show-keyboard-layout --daemonize

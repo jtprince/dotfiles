@@ -5,6 +5,8 @@ require 'shellwords'
 
 $VERBOSE = ARGV.delete("-v") ? 3 : nil
 
+session_type = ENV['XDG_SESSION_TYPE'] || 'x11'
+
 def dual_monitors()
   xrandr_output = `xrandr`
   work_setup = !!(xrandr_output["HDMI1 connected"] && xrandr_output["HDMI2 connected"])
@@ -15,26 +17,40 @@ end
 $DUAL_MONITORS = dual_monitors
 
 
-BKG_DIR = ENV['HOME'] + '/Dropbox/backgrounds'
+BKG_DIR =
+  if session_type == 'wayland'
+    ENV['HOME'] + '/sway_backgrounds'
+  else
+    ENV['HOME'] + '/Dropbox/backgrounds'
+  end
+
 BKG_DIR << '/dual' if $DUAL_MONITORS
 
 
-EXTS = %w(png jpg)
+EXTS =
+  if session_type == 'wayland'
+    %w(png jpg)
+  else
+    %w(png)
 
 files_w_ext = Dir[*EXTS.map {|ext| BKG_DIR + "/*.#{ext}" }]
 
 bkg_prog =
-  if `which feh`.size > 0
-    # feh is in official repos, so using it
-    prog = 'feh --bg-fill'
-    prog << ' --no-xinerama' if $DUAL_MONITORS
-    prog
-  elsif `which hsetroot`.size > 0
-    # putting feh as default since hsetroot seems a little flaky at moment
-    # (put into AUR from community)
-    'hsetroot -fill'
+  if session_type == 'x11'
+    if `which feh`.size > 0
+      # feh is in official repos, so using it
+      prog = 'feh --bg-fill'
+      prog << ' --no-xinerama' if $DUAL_MONITORS
+      prog
+    elsif `which hsetroot`.size > 0
+      # putting feh as default since hsetroot seems a little flaky at moment
+      # (put into AUR from community)
+      'hsetroot -fill'
+    else
+      abort "need feh or hsetroot to work!"
+    end
   else
-    abort "need feh or hsetroot to work!"
+    `swaymsg output * bg /home/jprince/sway_backgrounds`
   end
 
 cmd = "#{bkg_prog} '#{Shellwords.escape(files_w_ext.sample)}'"
