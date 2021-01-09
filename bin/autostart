@@ -37,6 +37,7 @@ if [ "$1" != "late" ]; then
     if [[ "$session_type" == "wayland" ]]; then
         # only the indicator works, but it's not interactive
         # instead, use nmtui or nmcli (`cheat nmcli`)
+        kanshi &
         nm-applet --indicator &
     else
         if cmd_exists autoxrandr ; then
