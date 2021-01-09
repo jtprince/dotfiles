@@ -1,5 +1,13 @@
 #!/bin/bash
 
-fuzzy_lock
-sleep 1
-systemctl suspend
+session_type=${XDG_SESSION_TYPE:-x11}
+imagefile="/usr/local/share/backgrounds/Braunwald_switzerland.png"
+
+if [ "$session_type" == "wayland" ]; then
+    swaylock -f -i "$imagefile" && systemctl suspend
+else
+    fuzzy_lock
+    sleep 1
+    systemctl suspend
+fi
+

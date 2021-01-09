@@ -1,5 +1,11 @@
 #!/bin/bash
 
-fuzzy_lock
-sleep 1
-systemctl hibernate
+session_type=${XDG_SESSION_TYPE:-x11}
+
+if [ "$session_type" == "wayland" ]; then
+    swaylock -f && systemctl hibernate
+else
+    fuzzy_lock
+    sleep 1
+    systemctl hibernate
+fi
