@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+
+LAPTOP = "Chimei Innolux Corporation 0x1409 0x00000000"
+DESK = "Unknown HP VH240a 6CM83029MD"
+TREADMILL = "Ancor Communications Inc VN279 L3LMQS057980"
+
+MONITORS = dict(
+    laptop=LAPTOP,
+    desk=DESK,
+    treadmill=TREADMILL,
+)
+
+config = dict(
+    enable="enable pos 0 0",
+    disable="disable",
+)
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "monitor",
+    nargs="?",
+    default="laptop",
+    choices=["laptop", "desk", "treadmill"],
+)
+parser.add_argument("--dry", action="store_true", help="dry run")
+args = parser.parse_args()
+
+
+def create_swaymsg_output_command(id, config_str):
+    return ["swaymsg", f'output "{id}" {config_str}']
+
+
+def create_single_monitor_commands(value):
+    to_disable = [
+        name
+        for monitor_keyword, name in MONITORS.items()
+        if value != monitor_keyword
+    ]
+    disable_cmds = [
+        create_swaymsg_output_command(name, config["disable"])
+        for name in to_disable
+    ]
+    enable_cmd = create_swaymsg_output_command(
+        MONITORS[value], config["enable"]
+    )
+    all_cmds = disable_cmds + [enable_cmd]
+    return all_cmds
+
+
+all_cmds = create_single_monitor_commands(args.monitor)
+
+for cmd in all_cmds:
+    if args.dry:
+        print(cmd)
+    else:
+        subprocess.run(cmd)

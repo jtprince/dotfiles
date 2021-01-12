@@ -10,10 +10,6 @@ exec --no-startup-id autostart
 # in /etc/profile.d/jre.sh
 exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 
-# always keep kanshi running
-# [doesn't seem to work :/ ]
-# exec_always pkill kanshi; exec kanshi
-
 #########################
 # VARIABLES
 #########################
@@ -87,7 +83,7 @@ client.placeholder      $ddblue    $ddblue    $white   $ddblue    $ddblue
 
 client.background       $white
 
-output * bg /home/jtprince/sway_backgrounds/beforethestorm_1920x1200.png fill
+output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
 # TODO: figure out how to randomize on demand and use env vars
 # output * bg /home/jtprince/arch-linux-universe-wallpapers_30371_1920x1200.jpg fill
 
@@ -464,8 +460,9 @@ bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e --ocr
 bindcode 75 exec --no-startup-id xdotool click 2
 
 # ☆ <Favorites> toggles monitor setting
-bindsym XF86Favorites exec --no-startup-id monitor_toggle auto && randomise-bkg && xmodmap ~/.config/xmodmap
-bindsym XF86Display exec --no-startup-id xrandr --auto && randomise-bkg && xmodmap ~/.config/xmodmap
+bindsym XF86Favorites exec --no-startup-id jasnah-monitor-config desk
+bindsym Shift+XF86Favorites exec --no-startup-id jasnah-monitor-config treadmill
+bindsym XF86Display exec --no-startup-id jasnah-monitor-config
 
 ###########################
 # LIFE, DEATH, and SLEEPING

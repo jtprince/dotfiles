@@ -19,7 +19,7 @@ $DUAL_MONITORS = dual_monitors
 
 BKG_DIR =
   if session_type == 'wayland'
-    ENV['HOME'] + '/sway_backgrounds'
+    ENV['HOME'] + '/backgrounds'
   else
     ENV['HOME'] + '/Dropbox/backgrounds'
   end
@@ -50,7 +50,8 @@ bkg_prog =
       abort "need feh or hsetroot to work!"
     end
   else
-    `swaymsg output * bg /home/jprince/sway_backgrounds`
+    echo "issues :("
+    # `swaymsg 'output * bg /home/jtprince/backgrounds'`
   end
 
 cmd = "#{bkg_prog} '#{Shellwords.escape(files_w_ext.sample)}'"

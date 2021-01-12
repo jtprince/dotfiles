@@ -1,0 +1,15 @@
+#!/bin/bash
+
+
+DIR="$HOME/backgrounds"
+
+cd "$DIR"
+file=`ls *.png | shuf -n 1`
+echo $file
+
+# WIP :/
+# two ways to do this and both won't work reliably:
+
+# swaybg --image "$DIR/$file" --mode fill --output '*'
+
+# swaymsg output bg ...
