@@ -63,3 +63,5 @@
     ff = only
 [diff "sopsdiffer"]
 	textconv = sops -d
+[credential]
+	helper = cache --timeout=2629800
