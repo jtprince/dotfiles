@@ -65,3 +65,5 @@
 	textconv = sops -d
 [credential]
 	helper = cache --timeout=2629800
+[submodule]
+	recurse = true
