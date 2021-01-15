@@ -67,3 +67,5 @@
 	helper = cache --timeout=2629800
 [submodule]
 	recurse = true
+[status]
+	submodulesummary = 1
