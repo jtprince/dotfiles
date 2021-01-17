@@ -151,7 +151,7 @@ export FBFONT=/usr/share/kbd/consolefonts/ter-216n.psf.gz
 
 
 # use_highres_settings is a text file with "true" or "false" in it
-USE_HIRES_SETTINGS=$(cat $HOME/.config/use_highres_settings)
+# USE_HIRES_SETTINGS=$(cat $HOME/.config/use_highres_settings)
 
 rm -f ~/.Xresources
 
