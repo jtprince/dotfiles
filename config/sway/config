@@ -413,8 +413,12 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
 #########################
 # Preferred applications
 #########################
-set $browser1 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal
-set $browser2 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
+# set $browser1 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal
+# set $browser2 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
+
+set $browser1 firefox -P personal
+set $browser2 firefox -P owlet
+
 set $newwindow --new-window
 # set $browsertest chromium --user-data-dir=~/.config/chromium-test
 
@@ -513,7 +517,8 @@ bindsym $mod+Shift+U reload
 
 # Exit sway (logs you out of your Wayland session)
 # TODO: exit without prompt
-bindsym $mod+Shift+Q exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+# bindsym $mod+Shift+Q exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+bindsym $mod+Shift+Q exec swaymsg exit
 
 
 
