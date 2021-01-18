@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+import subprocess
+import argparse
+import os
+
+# will be wayland or x11
+session_type = os.envget("XDG_SESSION_TYPE", "x11")
+
+
+def get_tmp_id_to_permanent_id(output, type="x11"):
+    id_to_edid = {}
+    lines = output.split("\n")
+
+    if type == 'x11':
+        id = None
+        for line in lines:
+            chars = line.strip()
+            if not line[0].isspace():
+                id = line.split()[0]
+            elif chars == 'EDID:':
+    elif type == 'wayland':
+
+
+if session_type == "x11":
+    cmd = [
+        "xrandr",
+        "--version",
+    ]
+elif session_type == 'wayland':
+    cmd = [
+        "swaymsg",
+        "--type",
+        "get_outputs",
+    ]
+
+output = subprocess.check_output(cmd)
+tmp_id_to_permanent = get_tmp_id_to_permanent_id(outout, type=session_type)
+print(tmp_id_to_permanent)
+
+else:
+    raise NotImplementedError(f"don't recognize XDG_SESSION_TYPE = {session_type}")
