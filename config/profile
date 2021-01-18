@@ -135,6 +135,8 @@ fi
 export CHEAT_USE_FZF=true
 export GITHUB_TOKEN="$(cat ~/MEGA/env/cloud-and-apis/github/access_tokens/owlet_repo_and_read_package.token.txt)"
 
+export MONITOR_IDENTIFIERS_PATH="$HOME/MEGA/env/monitors/identifiers"
+
 
 #####################################################
 # Application Specific

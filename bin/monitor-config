@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import json
+import os
+from pathlib import Path
+
+IDENTIFIER_KEYS = ["make", "model", "serial"]
+
+
+identifiers_path = Path(os.environ["MONITOR_IDENTIFIERS_PATH"])
+
+if not identifiers_path.exists():
+    raise RuntimeError("envar `MONITOR_IDENTIFIERS_PATH` must point to identifiers file")
+
+
+ACTIVATE = dict(
+    enable="enable pos 0 0",
+    disable="disable",
+)
+
+def parse_identifier_line(line):
+    my_id, make_model_serial_together = line.rstrip().split(":", 1)
+    make_model_serial = tuple(make_model_serial_together.strip().split("/"))
+    return my_id, make_model_serial
+
+
+def get_my_ids_to_make_model_serial(content):
+    raw_lines = content.split("\n")
+    lines = [line for line in raw_lines if line.strip() and not line.startswith("#")]
+    return dict(parse_identifier_line(line) for line in lines)
+
+
+def create_swaymsg_output_command(id, config_str):
+    return ["swaymsg", f'output "{id}" {config_str}']
+
+
+def create_single_monitor_commands(value):
+    to_disable = [
+        name
+        for monitor_keyword, name in MONITORS.items()
+        if value != monitor_keyword
+    ]
+    disable_cmds = [
+        create_swaymsg_output_command(name, ACTIVATE["disable"])
+        for name in to_disable
+    ]
+    enable_cmd = create_swaymsg_output_command(
+        MONITORS[value], ACTIVATE["enable"]
+    )
+    all_cmds = disable_cmds + [enable_cmd]
+    return all_cmds
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-l",
+    "--list",
+    action='store_true',
+    help="list available, connected identifiers and exit"
+)
+
+parser.add_argument(
+    "monitor",
+    nargs="*",
+    help="one or more identifiers from monitor identifers file"
+)
+args = parser.parse_args()
+my_ids_to_make_model_serial = get_my_ids_to_make_model_serial(identifiers_path.read_text())
+make_model_serial_to_my_ids = {val: key for key, val in my_ids_to_make_model_serial.items()}
+
+def sway_output_matches(output, make_model_serial):
+   return (list(make_model_serial) == [output[key] for key in IDENTIFIER_KEYS])
+
+
+if args.list:
+    cmd = ["swaymsg", "--raw", "--type", "get_outputs"]
+    response = subprocess.check_output(cmd, text=True)
+    for output in json.loads(response):
+        make_model_serial_triplet = tuple(output[key] for key in IDENTIFIER_KEYS)
+        print(make_model_serial_triplet)
+        print(make_model_serial_to_my_ids)
+        if make_model_serial_triplet in make_model_serial_to_my_ids:
+            print(make_model_serial_to_my_ids[make_model_serial_triplet])
+    exit(0)

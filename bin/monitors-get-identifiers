@@ -1,42 +1,59 @@
 #!/usr/bin/env python
 
+import json
 import subprocess
 import argparse
 import os
 
 # will be wayland or x11
-session_type = os.envget("XDG_SESSION_TYPE", "x11")
+session_type = os.environ.get("XDG_SESSION_TYPE", "x11")
+
+SWAY_OUTPUT_ID_COMPONENTS = ["make", "model", "serial"]
+DELIMITER = "/"
 
 
-def get_tmp_id_to_permanent_id(output, type="x11"):
-    id_to_edid = {}
+def get_tmp_id_to_permanent_id_xrandr(output):
+    tmp_id_to_permanent_id = {}
     lines = output.split("\n")
 
-    if type == 'x11':
-        id = None
+    if session_type == 'x11':
+        tmp_id = None
         for line in lines:
             chars = line.strip()
             if not line[0].isspace():
-                id = line.split()[0]
+                tmp_id = line.split()[0]
             elif chars == 'EDID:':
-    elif type == 'wayland':
+                ...
 
+def get_tmp_id_to_permanent_id_swaymsg(data):
+    return dict([_get_tmp_id_and_permanent_id(output) for output in data])
+
+
+def _get_tmp_id_and_permanent_id(output_data):
+    id_parts = [output_data[key] for key in SWAY_OUTPUT_ID_COMPONENTS]
+    permanent_id = DELIMITER.join(id_parts)
+    return output_data['name'], permanent_id
 
 if session_type == "x11":
     cmd = [
         "xrandr",
         "--version",
     ]
+    output = subprocess.check_output(cmd, text=True)
+    tmp_id_to_permanent = get_tmp_id_to_permanent_id_xrandr(output, session_type)
+
 elif session_type == 'wayland':
     cmd = [
         "swaymsg",
+        "--raw",
         "--type",
         "get_outputs",
     ]
-
-output = subprocess.check_output(cmd)
-tmp_id_to_permanent = get_tmp_id_to_permanent_id(outout, type=session_type)
-print(tmp_id_to_permanent)
-
+    output = subprocess.check_output(cmd, text=True)
+    data = json.loads(output)
+    tmp_id_to_permanent = get_tmp_id_to_permanent_id_swaymsg(data)
 else:
     raise NotImplementedError(f"don't recognize XDG_SESSION_TYPE = {session_type}")
+
+for tmp_id, permanent_id in tmp_id_to_permanent.items():
+    print(f"{tmp_id}: {permanent_id}")
