@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 
+import sys
 import requests
 import argparse
 from pathlib import Path
@@ -20,10 +21,16 @@ default_env = "dev"
 
 URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword"
 
+CACHE_DIR = Path.home() / ".cache/owlet"
+CACHE_DIR.mkdir(exist_ok=True)
+
 parser = argparse.ArgumentParser(description="prints the token with no newline")
 parser.add_argument("env", nargs="?", default=default_env, help="environment")
 parser.add_argument("--list", action='store_true', help="print possible envs and exit")
+parser.add_argument("-c", "--cache", action='store_true', help="writes to ")
 args = parser.parse_args()
+
+
 
 
 if args.list:
@@ -48,4 +55,11 @@ params = dict(key=api_key)
 
 response = requests.post(URL, json=data, params=params)
 
-print(response.json()['idToken'], end="")
+token = response.json()['idToken']
+
+if args.cache:
+    CACHE_FILE = CACHE_DIR / f"token-{args.env}"
+    CACHE_FILE.write_text(token)
+    print(f"wrote to: {str(CACHE_FILE)}", file=sys.stderr)
+else:
+    print(token, end="")

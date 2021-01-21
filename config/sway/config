@@ -9,6 +9,7 @@
 exec --no-startup-id autostart
 # in /etc/profile.d/jre.sh
 exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
+exec --no-startup-id exec mako
 
 #########################
 # VARIABLES
@@ -49,7 +50,7 @@ font pango:Droid Sans Mono $globalfontsize
 # horizontal vertical padding
 titlebar_padding 5 2
 # gaps inner 4
-# gaps outer 2 
+# gaps outer 2
 # smart_gaps on
 # smart_borders on
 
@@ -96,7 +97,7 @@ output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
 # output HDMI-A-1 resolution 1920x1080 position 1920,0
 # output HDMI-A-1 resolution 1920x1080 position 0,0
 # output HDMI-A-1 disable
-# 
+#
 # For example:
 # swaymsg output eDP-1 disable
 
@@ -184,18 +185,23 @@ bindsym $mod+backslash exec pavucontrol --tab 5
 set $playpause exec --no-startup-id playerctl play-pause
 set $nextsong exec --no-startup-id playerctl next
 set $previoussong exec --no-startup-id playerctl previous
+set $seekforward exec --no-startup-id playerctl position 10+
+set $seekbackward exec --no-startup-id playerctl position 10-
 
 # commands for music player
 bindsym --locked XF86AudioPlay $playpause
-bindsym --locked XF86AudioNext $nextsong
-bindsym --locked XF86AudioPrev $previoussong
-# key 1 on my microsoft keyboard
-# shuffle the playlist
-#bindsym XF86Launch5 exec mpc shuffle
-#
 bindsym --locked $mod+p $playpause
-bindsym --locked $mod+bracketright $nextsong
-bindsym --locked $mod+bracketleft $previoussong
+
+bindsym --locked XF86AudioNext $nextsong
+bindsym --locked $mod+Shift+bracketright $nextsong
+# only implemented on some players
+bindsym --locked $mod+bracketright $seekforward
+
+bindsym --locked XF86AudioPrev $previoussong
+bindsym --locked $mod+Shift+bracketleft $previoussong
+# only implemented on some players
+bindsym --locked $mod+bracketleft $seekbackward
+
 
 #########################
 # DEFAULTS
@@ -416,11 +422,11 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
 # set $browser1 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal
 # set $browser2 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
 
+# set $browsertest chromium --user-data-dir=~/.config/chromium-test
+
 set $browser1 firefox -P personal
 set $browser2 firefox -P owlet
-
 set $newwindow --new-window
-# set $browsertest chromium --user-data-dir=~/.config/chromium-test
 
 bindsym $mod+x exec terminal-emulator
 
@@ -428,17 +434,18 @@ bindsym XF86HomePage exec $browser1
 bindsym $mod+i exec $browser1
 bindsym $mod+Shift+I exec $browser2
 
-bindsym XF86Mail exec $browser1 $newwindow http://gmail.com
-bindsym $mod+e exec $browser1 $newwindow http://gmail.com
-bindsym $mod+Shift+E exec $browser2 $newwindow2 http://gmail.com
+bindsym XF86Mail exec $browser1 $newwindow https://mail.google.com
+bindsym $mod+e exec $browser1 $newwindow http://mail.google.com
+bindsym $mod+Shift+E exec $browser2 $newwindow http://mail.google.com
 
 bindsym $mod+c exec $browser1 $newwindow http://calendar.google.com
-bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow2 http://calendar.google.com
+bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow http://calendar.google.com
 
-bindsym $mod+y exec $browser1 $newwindow https://mail.google.com/tasks/ig
-bindsym $mod+Shift+Y exec $browser2 $newwindow2 https://mail.google.com/tasks/ig
+# bindsym $mod+y exec $browser1 $newwindow https://mail.google.com/tasks/ig
+# bindsym $mod+Shift+Y exec $browser2 $newwindow https://mail.google.com/tasks/ig
 
-bindsym $mod+Ctrl+Shift+I exec open-clipboard-url
+# this works with xclip, so needs to be reworked:
+# bindsym $mod+Ctrl+Shift+I exec open-clipboard-url
 
 bindsym $mod+n exec file-manager
 

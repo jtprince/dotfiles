@@ -6,9 +6,9 @@
 delay = 0.5
 
 STANDALONE = nil
-PERSONAL_BROWSER = "chromium --user-data-dir=#{ENV['HOME']}/.config/chromium-owlet --new-window"
+PERSONAL_BROWSER = "firefox -P personal --new-window"
 GMAIL = "https://gmail.com"
-OWLET_BROWSER = "chromium --new-window"
+OWLET_BROWSER = "firefox -P owlet --new-window"
 CALENDAR = "https://calendar.google.com"
 
 # make sure that directory exists!

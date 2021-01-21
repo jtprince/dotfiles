@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ln -sf ~/dotfiles/config/sway ~/.config/
+ln -sf ~/dotfiles/config/mako ~/.config/
 ln -sf ~/dotfiles/config/dotmation ~/.config/
 ln -sf ~/dotfiles/config/alias ~/.config/
 ln -sf ~/dotfiles/config/xmodmap ~/.config/

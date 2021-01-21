@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import shutil
+from pathlib import Path
+
+DEFAULT_API_VERSION = "v0"
+
+
+parser = argparse.ArgumentParser(
+    description="assumes common-schems/openapi/<version>/<service_name>.yaml"
+)
+parser.add_argument(
+    "service_name",
+    help="the name of the service (top level file with no .yaml)",
+)
+parser.add_argument(
+    "--api-version", default=DEFAULT_API_VERSION, help="api version"
+)
+parser.add_argument("--dry", action="store_true", help="just show the commands")
+parser.add_argument(
+    "--no-cleanup", action="store_true", help="don't delete extra files"
+)
+args = parser.parse_args()
+
+
+def run(cmd, args):
+    print("About to run: ")
+    print(" ".join(cmd))
+    if not args.dry:
+        subprocess.run(cmd)
+
+
+bundled_schema_path = f"{args.service_name}.yaml"
+
+cmd = [
+    "swagger-cli",
+    "bundle",
+    "--dereference",
+    "--type",
+    "yaml",
+    f"common-schemas/openapi/{args.api_version}/{args.service_name}.yaml",
+    "-o",
+    bundled_schema_path,
+]
+run(cmd, args)
+
+cmd = [
+    "openapi-generator-cli",
+    "generate",
+    "-i",
+    bundled_schema_path,
+    "-g",
+    "python-flask",
+    "-o",
+    ".",
+    "-c",
+    "openapi-generator-templates/python-flask-config.yaml",
+]
+run(cmd, args)
+
+if not args.no_cleanup:
+    for filename in [bundled_schema_path, "app/test"]:
+        path = Path(filename)
+        print(f"about to delete: {str(path)}")
+        if not args.dry:
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink(missing_ok=True)
