@@ -142,6 +142,11 @@ export MONITOR_IDENTIFIERS_PATH="$HOME/MEGA/env/monitors/identifiers"
 # Application Specific
 #####################################################
 
+# yay -S git-delta
+# https://github.com/dandavison/delta
+# If this sucks, then try diff-so-fancy
+GIT_PAGER=delta
+
 # fim (commandline image viewer) needs a PCF version 1 font
 # https://forum.manjaro.org/t/framebuffer-issues/26073/3
 # sudo pacman -S terminus-font
@@ -151,17 +156,9 @@ export FBFONT=/usr/share/kbd/consolefonts/ter-216n.psf.gz
 # BUT I'm not able to without getting penetrance across everything, specifically i3 settings
 # So, until then, I am setting these really early
 
-
-# use_highres_settings is a text file with "true" or "false" in it
-# USE_HIRES_SETTINGS=$(cat $HOME/.config/use_highres_settings)
-
 rm -f ~/.Xresources
 
-if [ "$USE_HIRES_SETTINGS" = true ] ; then
-    ln -s ~/dotfiles/config/Xresources-hires ~/.Xresources
-else
-    ln -s ~/dotfiles/config/Xresources ~/.Xresources
-fi
+ln -s ~/dotfiles/config/Xresources ~/.Xresources
 
 export CHEAT_USER_DIR="$HOME/.config/cheats"
 
