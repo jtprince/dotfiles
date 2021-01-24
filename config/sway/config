@@ -424,8 +424,9 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
 
 # set $browsertest chromium --user-data-dir=~/.config/chromium-test
 
-set $browser1 firefox -P personal
-set $browser2 firefox -P owlet
+set $chrome_wayland_opts --enable-features=UseOzonePlatform --ozone-platform=wayland
+set $browser1 chromium --user-data-dir=/home/jtprince/.config/chromium-personal $chrome_wayland_opts
+set $browser2 chromium $chrome_wayland_opts
 set $newwindow --new-window
 
 bindsym $mod+x exec terminal-emulator

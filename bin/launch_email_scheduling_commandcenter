@@ -1,29 +1,33 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
 
-# An invocation using a separate gmail profile:
-# chromium --new-window --user-data-dir=~/.config/chromium-crux
+from pathlib import Path
+import subprocess
+from time import sleep
 
-delay = 0.5
 
-STANDALONE = nil
-PERSONAL_BROWSER = "firefox -P personal --new-window"
+DELAY = 0.5
+
+home = Path.home()
+BROWSER = "chromium"
+DATA_DIR_KEY = "--user-data-dir"
+
+NEW_WINDOW = "--new-window"
+PERSONAL_DATA_DIR = home / ".config" / "chromium-personal"
+
+PERSONAL_BROWSER = [BROWSER, f"{DATA_DIR_KEY}={str(PERSONAL_DATA_DIR)}", NEW_WINDOW]
+OWLET_BROWSER = [BROWSER, NEW_WINDOW]
+
 GMAIL = "https://gmail.com"
-OWLET_BROWSER = "firefox -P owlet --new-window"
 CALENDAR = "https://calendar.google.com"
 
-# make sure that directory exists!
-`mkdir -p #{OWLET_BROWSER}`
+cmds = [
+    PERSONAL_BROWSER + [GMAIL],
+    OWLET_BROWSER + [GMAIL],
+    OWLET_BROWSER + [CALENDAR],
+    PERSONAL_BROWSER + [CALENDAR],
+]
 
-[
-  [PERSONAL_BROWSER, GMAIL],
-  [OWLET_BROWSER, GMAIL],
-  [OWLET_BROWSER, CALENDAR],
-  [PERSONAL_BROWSER, CALENDAR],
-].each do |cmd|
-  cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd
-  cmd_forked = "#{cmd_joined} &"
-  system cmd_forked
-  sleep delay
-  # THUNDERBIRD NEEDS a little extra time
-  # sleep(delay * 2) if cmd_joined.include?(THUNDERBIRD)
-end
+for cmd in cmds:
+    print(cmd)
+    subprocess.Popen(cmd)
+    sleep(DELAY)
