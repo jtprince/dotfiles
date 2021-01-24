@@ -52,9 +52,16 @@ ln -sf ~/dotfiles/config/Xdefaults-nvimgui ~/.config/
 ln -sf ~/dotfiles/config/mimeapps.list ~/.config/
 
 # remove any existing mimeapps.list and link in my own
+rm -f ~/.config/mimeapps.list
+ln -sf ~/dotfiles/config/mimeapps.list ~/.config/
+
 mkdir -p ~/.local/share/applications/
 rm -f ~/.local/share/applications/mimeapps.list
 ln -sf ~/dotfiles/config/mimeapps.list ~/.local/share/applications/
+
+# ensure use chromium with wayland flags and that always opens a new window
+# set to be the generic chromium.desktop
+ln -sf ~/dotfiles/config/applications/chromium-wayland-newwindow.desktop ~/.local/share/applications/chromium.desktop
 
 # not sure why, but this gives recursive dirs sometimes, adding rm -f
 rm -f ~/.docker
