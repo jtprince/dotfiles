@@ -37,7 +37,6 @@ bundled_schema_path = f"{args.service_name}.yaml"
 cmd = [
     "swagger-cli",
     "bundle",
-    "--dereference",
     "--type",
     "yaml",
     f"common-schemas/openapi/{args.api_version}/{args.service_name}.yaml",
