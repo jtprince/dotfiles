@@ -7,7 +7,10 @@ import sys
 if sys.argv[1:]:
     line = " ".join(sys.argv[1:])
 else:
-    line = subprocess.check_output("xclip -o".split()).decode('8859').strip()
+    line = subprocess.check_output(["xclip", "-p", "-o"]).decode('8859').strip()
+
+
+print("LINE!", line)
 
 if not line:
     raise ValueError("no reasonable file info to work from")
