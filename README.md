@@ -17,9 +17,12 @@ export PATH=$HOME/bin:$HOME/.local/bin:$PATH
 
 ## config
 
-Assuming your bin folder is setup and is in your path, then run this
-idempotent command:
+Assuming your bin folder is setup and is in your path:
 
 ```
-config-update
+dotfiles-configure --dry
+dotfiles-configure
 ```
+
+The command is idempotent with regards to the results, so you can rerun as
+soon as you update it with no negative consequences.
