@@ -4,7 +4,6 @@ function cmd_exists {
     command -v "$1" >/dev/null 2>&1
 }
 
-ultimate_hacking_keyboard_device="/dev/input/by-id/usb-Ultimate_Gadget_Laboratories_Ultimate_Hacking_Keyboard-if01-event-kbd"
 session_type=${XDG_SESSION_TYPE:-x11}
 
 if [ "$1" != "late" ]; then
@@ -12,37 +11,33 @@ if [ "$1" != "late" ]; then
     # gnome keyring
     eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
 
-    # Xresources
-    xrdb -merge ~/.Xresources
+    pulseaudio --start
 
-    # compositing manager
-    if cmd_exists picom ; then
-        picom-toggle start
-    fi
-
-    # notifications
-    dunst -config ~/.config/dunst/dunstrc &
-    # configure with xfce4-notifyd-config
-    # show notifications on: primary display; opacity 70%; disappear after 4 seconds
-    # systemctl --user start xfce4-notifyd
-
-    # xmodmap
-        # if the UHK keyboard is not plugged in, then remap some keys!
-    #    xmodmap ~/.config/xmodmap
-    # fi
-
-    ################################################
-    # X11 specific config
-    ################################################
     if [[ "$session_type" == "wayland" ]]; then
-        # only the indicator works, but it's not interactive
-        # instead, use nmtui or nmcli (`cheat nmcli`)
-        kanshi &
+        ################################################
+        # Sway/wayland specific
+        ################################################
+
+        # full applet does not currently work
+        # use nmtui{,-connect,-edit,-hostname} instead
         nm-applet --indicator &
+
     else
+
+        ################################################
+        # X11 specific config
+        ################################################
+        # Xresources
+        xrdb -merge ~/.Xresources
+
+        if cmd_exists picom ; then
+            picom-toggle start
+        fi
+
         if cmd_exists autoxrandr ; then
             autoxrandr --change
         fi
+
         notify-send -u low 'Configuring keyboard.'
         keyboard-setup
 
@@ -56,15 +51,6 @@ if [ "$1" != "late" ]; then
         pasystray &
     fi
 
-    # this also works for wayland
-    start-pulseaudio-x11
-
-    # battery icon
-    # doesn't work in wayland so embedded in status.rb
-    # if cmd_exists cbatticon ; then
-    #     cbatticon &
-    # fi
-
     # dropbox
     if cmd_exists dropbox-cli ; then
         dropbox-cli start
@@ -74,19 +60,10 @@ if [ "$1" != "late" ]; then
         megasync &
     fi
 
-    # music
+    # example of launching specific app on a workspace
     # i3-msg 'workspace 8:w8; exec sleep 3 && music-player'
 
-    # now using pclcmd (see pcloud in MEGA/env/../ for oath token)
-    # pcloud
-    # if cmd_exists psyncgui ; then
-    #    ( sleep 10 && psyncgui )&
-    # fi
-
     notify-send -u low 'initialized!'
-
 else
-
     randomise-bkg
-
 fi

@@ -137,6 +137,18 @@ export GITHUB_TOKEN="$(cat ~/MEGA/env/cloud-and-apis/github/access_tokens/owlet_
 
 export MONITOR_IDENTIFIERS_PATH="$HOME/MEGA/env/monitors/identifiers"
 
+#####################################################
+# Pulse Audio
+#####################################################
+
+PULSE_CONFIG_DIR="$XDG_CONFIG_HOME/pulse"
+PULSE_STATE_DIR="$XDG_CACHE_HOME/pulse"
+
+mkdir -p $PULSE_STATE_DIR && chmod 700 $PULSE_STATE_DIR
+export PULSE_STATE_PATH=$PULSE_STATE_DIR
+export PULSE_RUNTIME_PATH=$PULSE_STATE_DIR
+
+export PULSE_CONFIG_PATH=$PULSE_CONFIG_PATH
 
 #####################################################
 # Application Specific
