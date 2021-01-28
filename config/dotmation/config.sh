@@ -11,6 +11,7 @@ ln -sf ~/dotfiles/config/zsh ~/.config/
 ln -sf ~/dotfiles/config/fontconfig ~/.config/
 ln -sf ~/dotfiles/config/texlive ~/.config/
 ln -sf ~/dotfiles/config/dunst ~/.config/
+ln -sf ~/dotfiles/config/xava ~/.config/
 
 # pulse saves things inside pulse, so just link daemon.conf
 mkdir -p ~/.config/pulse
