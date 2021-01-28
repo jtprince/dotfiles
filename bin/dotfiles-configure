@@ -11,6 +11,8 @@ HOME_CONFIG = HOME / '.config'
 CLOUD_ENV = HOME / "MEGA" / "env"
 DOT_LOCAL = HOME / ".local"
 
+# TODO: rip out config data into separate yaml file
+
 # relative to ~/
 ENSURE_DIRS = [
     "npm",
