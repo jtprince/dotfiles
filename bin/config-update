@@ -1,0 +1,136 @@
+#!/usr/bin/env python
+
+from subprocess import run
+import argparse
+from pathlib import Path
+import shutil
+
+HOME = Path.home()
+REPO_CONFIG = (Path(__file__).resolve().parent.parent / "config").resolve()
+HOME_CONFIG = HOME / '.config'
+CLOUD_ENV = HOME / "MEGA" / "env"
+DOT_LOCAL = HOME / ".local"
+
+# relative to ~/
+ENSURE_DIRS = [
+    "npm",
+    ".local/share/applications",
+]
+
+# These are softlinked in ~/.config
+SOFTLINK_INTO_CONFIG = [
+    "sway",
+    "mako",
+    "alias",
+    "xmodmap",
+    "git",
+    "gtk-3.0",
+    "zsh",
+    "fontconfig",
+    "texlive",
+    "dunst",
+    "xava",
+    "latex",
+    "conky",
+    "blockify",
+    "ranger",
+    "picom",
+    "alacritty",
+    "isort.cfg",
+    "cheat",
+    "flake8",
+    "ackrc",
+    "pylintrc",
+    "pulse",
+    "i3",
+    "npmrc",
+    "pulseaudio-ctl",
+    "nvim",
+    "mimeapps.list",
+    "Xresources.d",
+]
+
+# Softlink into home dotfile as "$HOME/.{name}"
+SOFTLINK_INTO_HOME = [
+    "gtkrc-2.0",
+    "pryrc",
+    "irbrc",
+    "gemrc",
+    "docker",
+    "profile",
+    "xprofile",
+]
+
+# full path on the left to full path on the right
+OTHER_SYM_LINKS = {
+    CLOUD_ENV / "gpg/dot-gnupg": Path.home() / ".gnupg",
+    CLOUD_ENV / "cloud-and-apis/slack-term":  HOME_CONFIG / "slack-term",
+
+    REPO_CONFIG / "mimeapps.list":  DOT_LOCAL / "share/applications/mimeapps.list",
+
+    # ensure use chromium with wayland flags and that always opens a new window
+    # set to be the generic chromium.desktop
+    REPO_CONFIG / "applications/chromium-wayland-newwindow.desktop": DOT_LOCAL / "share/applications/chromium.desktop",
+
+    # Xdefaults is deprecated upstream, but make link til we don't need
+    REPO_CONFIG / "Xresources":  Path.home() / ".Xdefaults",
+    REPO_CONFIG / "/zsh/zshenv": Path.home() / ".zshenv",
+    #  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
+}
+
+parser = argparse.ArgumentParser(description="setup all config dotfiles")
+parser.add_argument("--dry", action="store_true", help="say it, don't do it")
+args = parser.parse_args()
+
+
+def softlink_into_dotconfig(filenames):
+    for name in filenames:
+        real_path = REPO_CONFIG / name
+        sym_link = HOME_CONFIG / name
+        force_symlink(real_path, sym_link)
+
+
+def force_symlink(real_path, sym_link):
+    if sym_link.exists():
+        if sym_link.is_symlink():
+            # Assume this is the symlink we want (safe assumption)
+            print(f"Exists: {sym_link} -> {real_path}")
+            return
+        else:
+            # nuke it, we want our own thing there
+            print(f"Removing: {sym_link}")
+            if not args.dry:
+                if sym_link.is_dir():
+                    shutil.rmtree(sym_link)
+                else:
+                    sym_link.unlink()
+
+    print(f"Creating: {sym_link} -> {real_path}")
+    if not args.dry:
+        sym_link.symlink_to(real_path)
+
+
+def make_dir(name):
+    """Make a directory relative to home dir."""
+    path = Path.home() / name
+    print(f"Ensuring: {path}")
+    if not args.dry:
+        path.mkdir(parents=True, exist_ok=True)
+
+
+def make_other_sym_links(real_to_link):
+    """Takes a dict of real to link paths and force_symlink's them."""
+    for real_path, sym_link in real_to_link.items():
+        force_symlink(real_path, sym_link)
+
+
+def ensure_dirs(dirs):
+    """Ensure that each home has been made or exists."""
+    for name in dirs:
+        make_dir(name)
+
+
+if __name__ == '__main__':
+    ensure_dirs(ENSURE_DIRS)
+    softlink_into_dotconfig(SOFTLINK_INTO_CONFIG)
+    make_other_sym_links(OTHER_SYM_LINKS)

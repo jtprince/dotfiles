@@ -1,16 +1,18 @@
+
+# Some programs do not understand the XDG spec and put things in config when
+# they should go in .cache.  Ignore their junk.
+
 /config/moc/cache
 /config/moc/pid
 /config/moc/last_directory
+
 /config/zsh/.zcompdump*
-/bin/biber
-/bin/exercism
-/bin/qprot-paired
-/bin/qprot-param
-/bin/qspec-paired
-/bin/qspec-param
-/bin/getfdr
-/bin/msconvert
-/bin/mspicture
-/bin/crux
+
+/config/pulse/*.tdb
+/config/pulse/cookie
+/config/pulse/*-default-sink
+/config/pulse/*-default-source
+
 .tags
 .vim
+.python-version
