@@ -460,9 +460,8 @@ bindsym XF86Calculator exec terminal-emulator -e ipython
 
 bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
-# bindsym Print exec sc --dir ~/screenshots --timestamp screenshot -o e
-# bindsym $mod+Print exec sc -w --dir ~/screenshots --timestamp window
-# bindsym $mod+Print exec sc -b --dir ~/screenshots --timestamp box -o e --ocr
+bindsym Print exec sc-sway screen
+bindsym $mod+Print exec sc-sway area --ocr
 
 ###########################
 # Keyboard shortcuts

@@ -19,7 +19,6 @@ opts = OptionParser.new do |op|
   op.on("-d", "--export-dpi <#{opt[:export_dpi]}>", "rasterizes at this dpi") {|v| opt[:export_dpi] = v }
   op.on("-p", "--png", "export as png") {|v| opt[:png] = v }
   op.on("-b", "--bkg <color>", "export bkg color") {|v| opt[:bkg] = v }
-  op.on("--link", "assumes svglinkify.py magenta box links") {|v| opt[:linkify] = v }
   op.on("--dry", "just print out the command") {|v| opt[:dry] = v }
 end
 
@@ -65,19 +64,4 @@ ARGV.each do |file|
 
   cmd = build_conversion_cmd(file, outfile_for_conversion, opt)
   run cmd, opt
-
-  if opt[:linkify]
-    svg_outfile = base + ".linkify.svg"
-    if file =~ /\.svgz/
-      run "gunzip < #{file.esc} > #{svg_outfile}", opt
-    else
-      svg_outfile = file
-    end
-    linkify_cmd = ["svglinkify.py", svg_outfile, outfile_for_conversion, outfile].join(" ")
-    run linkify_cmd, opt
-    if svg_outfile =~ /\.linkify.svg$/
-      File.unlink(svg_outfile) if File.exist?(svg_outfile)
-    end
-    File.unlink(outfile_for_conversion) if File.exist?(outfile_for_conversion)
-  end
 end

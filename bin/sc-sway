@@ -1,116 +1,46 @@
 #!/usr/bin/env python
 
+# yay -S grimshot tesseract tesseract-data-eng
+# pip install pytesseract
 
+import shlex
+import os
+import datetime
 import subprocess
 import argparse
 from pathlib import Path
 
+DEFAULT_DIR = Path.home() / "screenshots"
 
-LIKE_CHEESE = [
-    "say 茄子[eggplant]",
-    "say pickles",
-    "Sig ‘appelsin",
-    "käsekuchen",
-    "sei, no",
-    "kimchi",
-    "säg ‘omelett",
-    "say سیب[apple]",
-    "pepsi",
-    "beanjack",
-]
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "type",
+    default="screen",
+    choices=["screen", "area", "active", "output", "window"],
+    help="grab a specific area",
+)
+parser.add_argument(
+    "-o", "--ocr", action="store_true", help="run ocr and copy to clipboard"
+)
+parser.add_argument(
+    "--no-eog", action="store_true", help="do not startup eog with image"
+)
+args = parser.parse_args()
 
-viewers = [
-    "geeqie",
-    "eog",
-    "inkscape",
-    "gimp",
-]
+now = datetime.datetime.now(tz=datetime.timezone.utc)
+now_stamp = now.isoformat().replace("T", "--").replace(":", "").split(".")[0]
 
-window_to_filename = {
-    "window": "window",
-    "active": "window",
-    "root": "screenshot",
-    "box": "box",
-}
+filename = f"{args.type}-{now_stamp}.png"
+image_path = DEFAULT_DIR / filename
 
-DEFAULT_DIR = Path.home() / 'screenshots'
 
-# opt = OpenStruct.new( window: :root )
-# parser = OptionParser.new do |op|
-#   op.banner = "usage: #{File.basename(__FILE__)} [OPTS] filename[.png]"
-#   op.separator "output: filename.png [by default captures entire screen]"
-#   op.separator "if no filename, then writes ~/screenshots/window|screenshot|box-<timestamp>.png"
-#   op.separator ""
-#   op.on("-d", "--delay <sec>", Integer, "delay that many seconds (Int)") {|v| opt.delay = v }
-#   op.on("-a", "--active", "capture the active window") { opt.window = :active }
-#   op.on("-b", "--box", "draw a box to capture") { opt.window = :box }
-#   op.on("-w", "--window", "select a window to capture") { opt.window = :window }
-#   op.on("-o", "--open <s>", viewers_bold_string) {|v| opt.open = viewers[v] || v }
-#   op.on("--ocr", "ocr with pytesseract and xclip") {|v| opt.ocr = v }
-#   op.on("-p", "--print", "print file directly with lp") {|v| opt.print = v }
-#   op.on("--dir <s>", "save to this directory") {|v| opt.dir = v }
-#   op.on("--timestamp", "add a date/time stamp to filename") {|v| opt.timestamp = v }
-#   op.on("-v", "--verbose", "talk about it") {|v| $VERBOSE = 3 }
-# end
-# parser.parse!
-#
-# ### TODO: implement ability to optionally enter filename on open or print (use tmpfile)
-#
-# filename = ARGV.shift
-# unless filename
-#   filename = window_to_filename[opt.window]
-#   opt.timestamp = true
-#   opt.dir = DEFAULT_DIR
-# end
-#
-# filename += ".png" unless filename[/\.png/i]
-#
-# TIME_STAMP_FORMAT = "%Y-%m-%d--%H-%M-%S"
-# if opt.timestamp
-#   ext = File.extname(filename)
-#   base = filename.chomp(ext)
-#   filename = base + "-" + Time.now.strftime(TIME_STAMP_FORMAT) + ext
-# end
-# filename_esc = Shellwords.escape(filename)
-#
-# if opt.delay
-#   printv "Action in "
-#   opt.delay.downto(1) do |cnt|
-#     printv "#{cnt}.. "
-#     sleep(1)
-#   end
-#   putsv LIKE_CHEESE.sample + "!"
-# end
-#
-# # create the command
-# cmd_parts = ["import"]
-# unless opt.window == :box
-#   cmd_parts << "-window" << get_window_id[opt.window].call
-# end
-# cmd_parts << filename_esc
-# cmd = cmd_parts.join(' ')
-#
-# dir = (opt.dir && File.expand_path(opt.dir) ) || Dir.pwd
-# FileUtils.mkpath(dir) unless File.exist?(dir)
-#
-# Dir.chdir(dir) do
-#   system cmd
-#
-#   if opt.print
-#     system "lp #{filename_esc}"
-#   end
-#
-#   if opt.ocr
-#     require 'open3'
-#     stdout, stderr, status = Open3.capture3("pytesseract #{filename_esc}")
-#     # sitll needs work, but this is the basic idea!!
-#     system "echo -n #{Shellwords.escape(stdout)} | clip"
-#   end
-#
-#   if opt.open
-#     sleep(0.1)
-#     open_cmd = "#{opt.open} #{filename_esc}"
-#     putsv open_cmd
-#     system open_cmd
-#   end
-# end
+cmd = ["grimshot", "save", args.type, str(image_path)]
+
+subprocess.run(cmd)
+
+if args.ocr:
+    output = subprocess.check_output(["pytesseract", str(image_path)], text=True)
+    quoted = shlex.quote(output)
+    subprocess.run(f'echo "{quoted}" | clip', shell=True)
+
+subprocess.run(["eog", str(image_path)])

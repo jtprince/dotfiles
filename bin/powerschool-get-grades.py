@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
 # yay -S geckodriver
-# pip install selenium bs4 tabulate
+# pip install selenium bs4 tabulate lxml
 
-import datetime
-from typing import Optional
 import argparse
+import datetime
 import os
 import re
-from dataclasses import dataclass
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Optional
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
