@@ -462,6 +462,7 @@ bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
 bindsym Print exec sc-sway screen
 bindsym $mod+Print exec sc-sway area --ocr
+bindsym $mod+Shift+Print exec sc-sway area --espeak
 
 ###########################
 # Keyboard shortcuts
