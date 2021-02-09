@@ -6,7 +6,7 @@ import subprocess
 
 
 @dataclasses.dataclass(frozen=True)
-class PASink:
+class PulseaudioSink:
     """A Pulseaudio Sink.
 
     Contains data from pactl, supplemented by pacmd.

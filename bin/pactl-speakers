@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+import argparse
+from pulseaudio_sink import PulseaudioSink
+
+LIST = "list"
+TOGGLE = "toggle"
+
+parser = argparse.ArgumentParser()
+parser.add_argument("action", choices=[TOGGLE, LIST], help="do something")
+args = parser.parse_args()
+
+# TODO: pull these from some local file
+BLESSED_DESCRIPTIONS = [
+    "USB PnP Audio Device Analog Stereo",
+    "Family 17h (Models 10h-1fh) HD Audio Controller Speaker + Headphones",
+]
+
+def get_and_display_current_state():
+    for sink in PulseaudioSink.get_sinks():
+        if sink.description in BLESSED_DESCRIPTIONS:
+            description_line = sink.description
+            if sink.is_default():
+                description_line += " <===== DEFAULT"
+
+            print(description_line)
+
+
+def get_next_best_sink():
+    """Returns the next blessed speaker that's not default."""
+    for sink in PulseaudioSink.get_sinks():
+        if sink.description in BLESSED_DESCRIPTIONS:
+            if not sink.is_default():
+                return sink
+
+
+if args.action == LIST:
+    get_and_display_current_state()
+elif args.action == TOGGLE:
+    sink = get_next_best_sink()
+    sink.set_default()
+
