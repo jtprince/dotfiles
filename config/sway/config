@@ -7,6 +7,7 @@
 
 # exec --no-startup-id dbus-launch --sh-syntax --exit-with-session i3 -V -d all > ~/.config/i3/i3log-$(date +'%F-%k-%M-%S') 2>&1
 exec --no-startup-id autostart
+exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.90 --focused 0.95 --app_ids Alacritty
 # in /etc/profile.d/jre.sh
 exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 exec --no-startup-id exec mako
@@ -193,14 +194,14 @@ bindsym --locked XF86AudioPlay $playpause
 bindsym --locked $mod+p $playpause
 
 bindsym --locked XF86AudioNext $nextsong
-bindsym --locked $mod+Shift+bracketright $nextsong
+bindsym --locked $mod+bracketright $nextsong
 # only implemented on some players
-bindsym --locked $mod+bracketright $seekforward
+bindsym --locked $mod+Shift+bracketright $seekforward
 
 bindsym --locked XF86AudioPrev $previoussong
-bindsym --locked $mod+Shift+bracketleft $previoussong
+bindsym --locked $mod+bracketleft $previoussong
 # only implemented on some players
-bindsym --locked $mod+bracketleft $seekbackward
+bindsym --locked $mod+Shift+bracketleft $seekbackward
 
 
 #########################
@@ -395,7 +396,10 @@ bindsym $mod+Ctrl+Shift+8 move workspace $ws8
 #######################
 
 # for_window [title="Hangouts"] move container to workspace $ws7
+#
 for_window [window_role="pop-up"] floating enabled
+# Superceded by sway-inactive-window-transparency.py at top:
+# for_window [app_id="Alacritty"] opacity 0.95
 
 #######################
 # RESIZE
@@ -508,7 +512,10 @@ bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
 # ISSUES with turning off display in a way that will wakeup on mouse/keyboard
 # bindsym $mod+Ctrl+Shift+D exec sleep 1 && swaymsg output * dpms off
 
-bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
+# bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
+
+# Allows us to re-sleep the laptop if lock screen is up
+bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
 
 #bindsym XF86Sleep exec echo -n mem > /sys/power/state
 
