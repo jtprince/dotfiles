@@ -7,7 +7,7 @@
 
 # exec --no-startup-id dbus-launch --sh-syntax --exit-with-session i3 -V -d all > ~/.config/i3/i3log-$(date +'%F-%k-%M-%S') 2>&1
 exec --no-startup-id autostart
-exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.90 --focused 0.95 --app_ids Alacritty
+exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty
 # in /etc/profile.d/jre.sh
 exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 exec --no-startup-id exec mako
