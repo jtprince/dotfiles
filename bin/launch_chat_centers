@@ -5,20 +5,12 @@ delay = 0.6
 # An invocation using a separate gmail profile:
 # chromium --new-window --user-data-dir=~/.config/chromium-crux
 
-STANDALONE = nil
-BROWSER = "chromium --new-window"
-SLACK_APP = "slack"
-CHROME_EMBEDDED_SLACK_APP = "run-desktop ~/Desktop/slack.desktop"
-TEAMS_APP = "teams"
+BROWSER = "chromium -enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal --new-window"
 SMS_MESSAGES = "https://messages.google.com/web/"
 
 # SLACK_URL = "https://3plcentral-tech.slack.com"
 [
-  [SLACK_APP],
-  # [CHROME_EMBEDDED_SLACK_APP],
   [BROWSER, SMS_MESSAGES],
-  [STANDALONE, TEAMS_APP],
-  # [BROWSER, SLACK_URL],
 ].each do |cmd|
   cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd
   cmd_forked = "#{cmd_joined} &"

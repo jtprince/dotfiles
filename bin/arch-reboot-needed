@@ -6,7 +6,7 @@ import argparse
 import re
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--verbose", action='store_true', help="give more info")
+parser.add_argument("--quiet", action='store_true', help="quiet")
 args = parser.parse_args()
 
 
@@ -23,8 +23,9 @@ if match:
 
 running_version = run_shell_cmd("uname -r")
 
-print(f"Running : {running_version}")
-print(f"Compiled: {compiled_version}")
+if not args.quiet:
+    print(f"🏃 {running_version}")
+    print(f"📕 {compiled_version}")
 
 if compiled_version != running_version:
     print("Boot required")
