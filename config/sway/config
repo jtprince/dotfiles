@@ -469,9 +469,11 @@ bindsym XF86Calculator exec terminal-emulator -e ipython
 
 bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
-bindsym Print exec sc-sway screen
-bindsym $mod+Print exec sc-sway area --ocr
-bindsym $mod+Shift+Print exec sc-sway area --espeak
+bindsym Print exec screenshot-sway screen --eog
+bindsym $mod+Print exec screenshot-sway area --ocr --eog
+bindsym $mod+Ctrl+Print exec screenshot-sway area --ocr --annotate --eog
+bindsym $mod+Shift+Print exec screenshot-sway window --ocr --eog
+bindsym $mod+Ctrl+Shift+Print exec screenshot-sway window --ocr --annotate --eog
 
 ###########################
 # Keyboard shortcuts

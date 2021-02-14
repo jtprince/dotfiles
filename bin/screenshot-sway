@@ -1,0 +1,220 @@
+#!/usr/bin/env python
+"""
+
+Arch:
+    yay -S grimshot tesseract tesseract-data-eng swappy \
+        python-pytesseract espeak pico-tts sox
+
+If you are using a different python env:
+    pip install pytesseract
+"""
+
+import time
+import shlex
+import os
+import re
+import datetime
+import subprocess
+import argparse
+from pathlib import Path
+from subprocess import Popen, PIPE
+
+from itertools import islice, tee
+
+
+class Screenshot:
+    DEFAULT_DIR = Path.home() / "screenshots"
+
+    SPEAK_COMMANDS = dict(
+        espeak="espeak --stdin",
+        picotts="pico-tts | play -t raw -r 16k -e signed -b 16 -c 1 - tempo {tempo}",
+    )
+
+    SENTENCE_SPLIT_RE = re.compile(r"(?<=[\.\?\!])\s+")
+    # Could use PyICU (see http://userguide.icu-project.org/boundaryanalysis)
+    # But this is probably about as good. Sentence endings are inherently
+    # ambiguous in English.  But more rare to end a sentence on an
+    # abbreviation so assume an abbreviation is not a sentence end.
+    NOT_SENTENCE_ENDS = re.compile(r"(Mr|Mrs|Dr|Ms)\.")
+    DEFAULT_SENTENCE_PAUSE_SECONDS = 0.2
+    DEFAULT_TTS_TEMPO = 1.5
+
+    @staticmethod
+    def _concatenate_lines(text):
+        return re.sub(r"(?<!\n)\n(?!\n)", " ", text).replace("- ", "")
+
+    def get_args(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "type",
+            default="screen",
+            choices=["screen", "area", "active", "output", "window"],
+            help="grab a specific area",
+        )
+        parser.add_argument(
+            "--annotate",
+            action="store_true",
+            help="annotate the image",
+        )
+        parser.add_argument(
+            "-o",
+            "--ocr",
+            action="store_true",
+            help="run ocr, write txt file, and copy to clipboard",
+        )
+        parser.add_argument(
+            "--ocr-separate-lines",  # ocr_separate_lines
+            action="store_true",
+            help="do not concatenate all the text.",
+        )
+        parser.add_argument(
+            "-t", "--tts", action="store_true", help="run ocr and then say it"
+        )
+        parser.add_argument(
+            "--tts-sentence-pause",  # tts_sentence_pause
+            type=float,
+            default=self.DEFAULT_SENTENCE_PAUSE_SECONDS,
+            help="seconds to pause between sentences",
+        )
+        parser.add_argument(
+            "--tts-tempo",  # tts_tempo
+            type=float,
+            default=self.DEFAULT_TTS_TEMPO,
+            help="how fast to read",
+        )
+        parser.add_argument(
+            "--tts-engine",  # tts_engine
+            default="picotts",
+            choices=["picotts", "espeak"],
+            help="run ocr and then say it",
+        )
+        parser.add_argument(
+            "--eog",
+            action="store_true",
+            help="open final image in eog",
+        )
+        args = parser.parse_args()
+        if args.tts:
+            args.ocr = True
+
+        return args
+
+    def create_path_noext(self):
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        now_stamp = (
+            now.isoformat().replace("T", "--").replace(":", "").split(".")[0]
+        )
+
+        filename_noext = f"{self.args.type}-{now_stamp}"
+        return self.DEFAULT_DIR / filename_noext
+
+    def __init__(self):
+        self.args = self.get_args()
+        print(self.args)
+        self.noext_path = self.create_path_noext()
+        self.image_path = self.noext_path.with_suffix(".png")
+        self.annotated_path = self.noext_path.with_suffix(
+            ".annotated" + self.image_path.suffix
+        )
+        self.text_path = self.image_path.with_suffix(".txt")
+
+    def run(self):
+        print("CAPTURE SCREENSHOT!")
+        self.capture_screenshot()
+        print("WRITING IMAGET TO TEXT!")
+        self.write_image_to_text()
+        print("TEXT to SPEECH!")
+        self.text_to_speech()
+        print("ANNOTATING iamge!")
+        self.annotate_image()
+        print("OPEN WITH EOG!")
+        self.open_with_eog()
+
+    def capture_screenshot(self):
+        grimshot_cmd = self._create_screenshot_cmd()
+        subprocess.run(grimshot_cmd)
+
+    def annotate_image(self):
+        if self.args.annotate:
+            cmd = [
+                "swappy",
+                "--file",
+                str(self.image_path),
+                "--output-file",
+                str(self.annotated_path),
+            ]
+            subprocess.run(cmd)
+
+    def write_image_to_text(self):
+        if self.args.ocr:
+            output = subprocess.check_output(
+                ["pytesseract", str(self.image_path)], text=True
+            )
+            text = output.strip().strip("'").strip("'")
+            if not self.args.ocr_separate_lines:
+                text = self._concatenate_lines(text)
+            print("The text used for OCR:", text)
+            print("The repr of text used for OCR:", repr(text))
+            self.text_path.write_text(text)
+            self._copy_text_file_to_clipboard(self.text_path)
+
+    def _create_screenshot_cmd(self):
+        return ["grimshot", "save", self.args.type, str(self.image_path)]
+
+    @staticmethod
+    def _copy_text_file_to_clipboard(text_path):
+        subprocess.run(f"cat {str(text_path)} | clip", shell=True)
+
+    def _split_into_sentences(self, text):
+        sentences = re.split(self.SENTENCE_SPLIT_RE, text)
+        indexes_of_partials = [
+            idx
+            for idx, sentence in enumerate(sentences[0:-1])
+            if self.NOT_SENTENCE_ENDS.search(sentence)
+        ]
+        final_sentences = []
+        for index, sentence in enumerate(sentences):
+            if (index - 1) in indexes_of_partials:
+                final_sentences[-1] = " ".join([final_sentences[-1], sentence])
+            else:
+                final_sentences.append(sentence)
+
+        return final_sentences
+
+    def text_to_speech(self):
+        if self.args.tts:
+            # picotts can only process a certain amount of text
+            # So, split into sentences and read each one individually.
+            # As a bonus, gives us ability to dial in wait between sentences.
+            ocr_cmd = self.SPEAK_COMMANDS[self.args.tts_engine].format(
+                tempo=self.args.tts_tempo
+            )
+            text = self.text_path.read_text()
+            sentences = self._split_into_sentences(text)
+            for sentence in sentences:
+                sentence = sentence.replace('"', r"")
+                sentence = sentence.replace(r"`", "'")
+                subprocess.run(f'echo "{sentence}" | {ocr_cmd}', shell=True)
+                time.sleep(self.args.tts_sentence_pause)
+
+    def open_with_eog(self):
+        if self.args.eog:
+            image_path_to_open = (
+                self.annotated_path
+                if self.annotated_path.exists()
+                else self.image_path
+            )
+            subprocess.run(["eog", str(image_path_to_open)])
+
+
+if __name__ == "__main__":
+    screenshot = Screenshot()
+    screenshot.run()
+
+    # test the sentence splitter.
+    # text = str(
+    #     "This is my text! A real sentence. "
+    #     "A fake ending Mr. Jones, Dr. Hannibal, "
+    #     "Mrs. Sweeney, and Ms. Limey. How about that?"
+    # )
+    # screenshot._split_into_sentences(text)
