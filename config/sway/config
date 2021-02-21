@@ -428,14 +428,14 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
 #########################
 # Preferred applications
 #########################
-# set $browser1 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal
-# set $browser2 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland
+# set $browser1 google-chrome-stable --enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chrome-personal
+# set $browser2 google-chrome-stable --enable-features=UseOzonePlatform --ozone-platform=wayland
 
-# set $browsertest chromium --user-data-dir=~/.config/chromium-test
+# set $browsertest google-chrome-stable --user-data-dir=~/.config/chrome-test
 
 set $chrome_wayland_opts --enable-features=UseOzonePlatform --ozone-platform=wayland
-set $browser1 chromium --user-data-dir=/home/jtprince/.config/chromium-personal $chrome_wayland_opts
-set $browser2 chromium $chrome_wayland_opts
+set $browser1 google-chrome-stable --user-data-dir=/home/jtprince/.config/chrome-personal $chrome_wayland_opts
+set $browser2 google-chrome-stable $chrome_wayland_opts
 set $newwindow --new-window
 
 bindsym $mod+x exec terminal-emulator

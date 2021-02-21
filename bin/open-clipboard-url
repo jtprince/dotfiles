@@ -27,7 +27,7 @@ else:
 if url:
     #subprocess.call(["xdg-open", url])
     # less portable, but with better behavior
-    cmd = ["chromium", "--new-window", url]
+    cmd = ["google-chrome-stable", "--new-window", url]
     notifycmd = ["notify-send"] + [" ".join(cmd)]
     subprocess.call(notifycmd)
     subprocess.call(cmd)

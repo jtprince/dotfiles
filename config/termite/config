@@ -22,7 +22,7 @@ cursor_blink = system
 cursor_shape = block
 
 # $BROWSER is used by default
-browser = chromium-browser
+browser = google-chrome-stable
 
 # word characters used for word selection
 # (default if unset: all graphic non-punctuation/space characters)

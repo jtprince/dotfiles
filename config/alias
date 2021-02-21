@@ -120,9 +120,9 @@ alias mplayer="mplayer -ao pulse -af scaletempo"
 
 # applications
 alias exercism="exercism --config $HOME/.config/exercism.json"
-alias chromiumpersonal="chromium --user-data-dir=$HOME/.config/chromium-personal"
-alias chromiumfaenrandir="chromium --user-data-dir=$HOME/.config/chromium-faenrandir"
-alias chromiummelissa="chromium --user-data-dir=$HOME/.config/chromium-melissa"
+alias chromepersonal="google-chrome-stable --user-data-dir=$HOME/.config/chrome-personal"
+alias chromefaenrandir="google-chrome-stable --user-data-dir=$HOME/.config/chrome-faenrandir"
+alias chromemelissa="google-chrome-stable --user-data-dir=$HOME/.config/chrome-melissa"
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
 # not using right now

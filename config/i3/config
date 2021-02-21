@@ -260,10 +260,9 @@ bindsym $mod+Ctrl+Shift+z move container to workspace back_and_forth
 # Preferred applications
 #########################
 # todo: figure out how to use $HOME var here
-set $browser1 chromium --user-data-dir=/home/jtprince/.config/chromium-personal
-set $browser2 chromium
+set $browser1 google-chrome-stable --user-data-dir=/home/jtprince/.config/chrome-personal
+set $browser2 google-chrome-stable
 set $newwindow --new-window
-# set $browsertest chromium --user-data-dir=/home/jtprince/.config/chromium-test
 
 bindsym $mod+x exec terminal-emulator
 

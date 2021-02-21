@@ -8,11 +8,11 @@ from time import sleep
 DELAY = 0.5
 
 home = Path.home()
-BROWSER = "chromium"
+BROWSER = "google-chrome-stable"
 DATA_DIR_KEY = "--user-data-dir"
 
 NEW_WINDOW = "--new-window"
-PERSONAL_DATA_DIR = home / ".config" / "chromium-personal"
+PERSONAL_DATA_DIR = home / ".config" / "chrome-personal"
 
 PERSONAL_BROWSER = [BROWSER, f"{DATA_DIR_KEY}={str(PERSONAL_DATA_DIR)}", NEW_WINDOW]
 OWLET_BROWSER = [BROWSER, NEW_WINDOW]

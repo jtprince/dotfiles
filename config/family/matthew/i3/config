@@ -27,7 +27,7 @@ floating_modifier $mod
 bindsym $mod+x exec i3-sensible-terminal
 
 # start a browser
-bindsym $mod+i exec chromium
+bindsym $mod+i exec google-chrome-stable
 
 # start minecraft
 bindsym $mod+m exec minecraft

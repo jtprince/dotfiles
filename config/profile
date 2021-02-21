@@ -77,7 +77,7 @@ export PYTHON_CONFIGURE_OPTS="--enable-shared"
 
 # for xdg-open
 export DE=generic
-export BROWSER=/usr/bin/chromium
+export BROWSER=/usr/bin/google-chrome-stable
 
 # cheatsheets (yay -S python-cheat python-pygments)
 export DEFAULT_CHEAT_DIR=$XDG_CONFIG_HOME/cheats

@@ -2,10 +2,7 @@
 
 delay = 0.6
 
-# An invocation using a separate gmail profile:
-# chromium --new-window --user-data-dir=~/.config/chromium-crux
-
-BROWSER = "chromium -enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chromium-personal --new-window"
+BROWSER = "google-chrome-stable -enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chrome-personal --new-window"
 SMS_MESSAGES = "https://messages.google.com/web/"
 
 # SLACK_URL = "https://3plcentral-tech.slack.com"

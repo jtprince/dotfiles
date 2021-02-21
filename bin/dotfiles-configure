@@ -70,9 +70,9 @@ OTHER_SYM_LINKS = {
 
     REPO_CONFIG / "mimeapps.list":  DOT_LOCAL / "share/applications/mimeapps.list",
 
-    # ensure use chromium with wayland flags and that always opens a new window
-    # set to be the generic chromium.desktop
-    REPO_CONFIG / "applications/chromium-wayland-newwindow.desktop": DOT_LOCAL / "share/applications/chromium.desktop",
+    # ensure use chrome with wayland flags and that always opens a new window
+    # set to be the generic chrome .desktop
+    REPO_CONFIG / "applications/google-chrome-wayland-newwindow.desktop": DOT_LOCAL / "share/applications/google-chrome.desktop",
 
     # Xdefaults is deprecated upstream, but make link til we don't need
     REPO_CONFIG / "Xresources":  Path.home() / ".Xdefaults",
