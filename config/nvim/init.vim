@@ -181,6 +181,8 @@ let g:black_linelength=80
 "
 " consider rope for auto import
 
+Plug 'mustache/vim-mustache-handlebars'
+
 
 call plug#end()
 

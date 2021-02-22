@@ -2,7 +2,7 @@
 image/jpeg=eog.desktop
 image/png=eog.desktop
 image/svg+xml=eog.desktop;inkscape.desktop
-text/html=chromium.desktop
+text/html=google-chrome.desktop
 text/plain=gvim.desktop
 inode/directory=thunar.desktop
 # spreadsheets
@@ -19,7 +19,7 @@ text/tsv=libreoffice-calc.desktop
 image/jpeg=eog.desktop
 image/png=eog.desktop
 image/svg+xml=eog.desktop;inkscape.desktop
-text/html=chromium.desktop
+text/html=google-chrome.desktop
 text/plain=gvim.desktop
 inode/directory=thunar.desktop
 # spreadsheets

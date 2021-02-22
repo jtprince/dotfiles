@@ -443,6 +443,7 @@ bindsym $mod+x exec terminal-emulator
 bindsym XF86HomePage exec $browser1
 bindsym $mod+i exec $browser1
 bindsym $mod+Shift+I exec $browser2
+bindsym $mod+Ctrl+Shift+I exec firefox -P personal
 
 bindsym XF86Mail exec $browser1 $newwindow https://mail.google.com
 bindsym $mod+e exec $browser1 $newwindow http://mail.google.com
