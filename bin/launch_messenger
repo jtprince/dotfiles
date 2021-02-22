@@ -5,7 +5,6 @@ delay = 0.6
 BROWSER = "google-chrome-stable -enable-features=UseOzonePlatform --ozone-platform=wayland --user-data-dir=/home/jtprince/.config/chrome-personal --new-window"
 SMS_MESSAGES = "https://messages.google.com/web/"
 
-# SLACK_URL = "https://3plcentral-tech.slack.com"
 [
   [BROWSER, SMS_MESSAGES],
 ].each do |cmd|
