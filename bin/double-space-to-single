@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+
+
+# requires sad to be configured
+
+
+parser = argparse.ArgumentParser(
+    description="Looks for two spaces after period."
+)
+parser.add_argument("paths", nargs="+", help="files to look in (e.g. '**/*.py'")
+parser.add_argument(
+    "-k",
+    "--commit",
+    action="store_true",
+    help="commit the changes after preview",
+)
+args = parser.parse_args()
+
+paths = " ".join(args.paths)
+cmd = f"ls {paths} | sad '\.  (\w)' '. $1'"
+
+if args.commit:
+    cmd += " -k"
+
+subprocess.run(cmd, shell=True)
