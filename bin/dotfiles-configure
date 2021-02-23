@@ -35,6 +35,7 @@ SOFTLINK_INTO_CONFIG = [
     "latex",
     "conky",
     "blockify",
+    "mypy",
     "ranger",
     "picom",
     "alacritty",
