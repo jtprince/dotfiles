@@ -11,13 +11,7 @@ CEND = "\33[0m"
 
 
 def get_output(cmd):
-    print("GETTING OUTPUT:", cmd)
     return subprocess.check_output(cmd, shell=True, text=True).strip()
-
-
-def run(cmd):
-    print("RUNNING:", cmd)
-    return subprocess.run(cmd, shell=True, text=True)
 
 
 parser = argparse.ArgumentParser(
