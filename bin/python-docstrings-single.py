@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+# requires rg (aka ripgrep) to be installed
 
 import argparse
 import re
