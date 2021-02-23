@@ -19,7 +19,9 @@ def run(cmd):
     return subprocess.run(cmd, shell=True, text=True)
 
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    description="Finds instances where docstring is a single line long."
+)
 parser.add_argument("start_path", nargs="*", default=".", help="starting path")
 parser.add_argument(
     "-l",
