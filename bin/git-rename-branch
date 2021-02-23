@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+
+import argparse
+import subprocess
+
+
+def get_output(cmd):
+    print("GETTING OUTPUT:", cmd)
+    return subprocess.check_output(cmd, shell=True, text=True).strip()
+
+
+def run(cmd):
+    print("RUNNING:", cmd)
+    return subprocess.run(cmd, shell=True, text=True)
+
+
+DEFAULT_BRANCH = get_output("git rev-parse --abbrev-ref HEAD")
+
+parser = argparse.ArgumentParser()
+parser.add_argument("new_name", help="new name for branch")
+parser.add_argument(
+    "-r",
+    "--remote",
+    action="store_true",
+    help="delete old remote branch; push new branch",
+)
+old_name_action = parser.add_argument(
+    "--old-name",
+    default=DEFAULT_BRANCH,
+    help=f'currently "{DEFAULT_BRANCH}"',
+)
+
+args = parser.parse_args()
+
+if args.old_name == "master":
+    raise argparse.ArgumentError(
+        old_name_action, "--old-name cannot be 'master'"
+    )
+
+
+current_branch = get_output("git rev-parse --abbrev-ref HEAD")
+
+was_on_old_branch = current_branch == args.old_name
+
+if was_on_old_branch:
+    # move to master, but only if no modified files
+    modified_files = get_output("git ls-files -m")
+    if modified_files:
+        raise RuntimeError(
+            "\n\nYou have modified files. `git stash` or something before proceeding."
+        )
+    run("git checkout master")
+
+# rename local branch
+run(f"git branch -m {args.old_name} {args.new_name}")
+
+if args.remote:
+    run(f"git push origin :{args.old_name}")
+    run(f"git push -u origin {args.new_name}")
+
+
+if was_on_old_branch:
+    # move to the newly created branch if we were on old branch
+    run(f"git checkout {args.new_name}")
