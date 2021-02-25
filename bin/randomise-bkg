@@ -32,6 +32,7 @@ EXTS =
     %w(png jpg)
   else
     %w(png)
+  end
 
 files_w_ext = Dir[*EXTS.map {|ext| BKG_DIR + "/*.#{ext}" }]
 

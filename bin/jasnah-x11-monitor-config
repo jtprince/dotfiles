@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "monitor",
+    nargs="?",
+    default="laptop",
+    choices=["laptop", "desk", "treadmill"],
+)
+parser.add_argument("--dry", action="store_true", help="dry run")
+args = parser.parse_args()
+
+
+commands = dict(
+    laptop="xrandr --output eDP --primary --mode 1920x1080 --pos 0x0 --rotate normal --output HDMI-A-0 --off --output DisplayPort-0 --off --output DisplayPort-1 --off --output DisplayPort-2 --off --output DisplayPort-3 --off --output DisplayPort-4 --off",
+    desk="xrandr --output eDP --off --output HDMI-A-0 --off --output DisplayPort-0 --off --output DisplayPort-1 --off --output DisplayPort-2 --mode 1920x1080 --pos 0x0 --rotate normal --output DisplayPort-3 --off --output DisplayPort-4 --off",
+    treadmill="xrandr --output eDP --off --output HDMI-A-0 --off --output DisplayPort-0 --off --output DisplayPort-1 --off --output DisplayPort-2 --off --output DisplayPort-3 --mode 1920x1080 --pos 0x0 --rotate normal --output DisplayPort-4 --off",
+)
+
+cmd = commands[args.monitor]
+
+cmd += " && keyboard-setup"
+cmd += " && randomise-bkg"
+
+
+if args.dry:
+    print(cmd)
+else:
+    subprocess.run(cmd, shell=True)

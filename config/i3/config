@@ -20,22 +20,17 @@ exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 # VARIABLES
 #########################
 
-## set to Win (then swap Alt and Win with evdev or xmodmap etc.)
+## set to Win (but swap Alt and Win)
 # alt=Mod1 win=Mod4
 set $mod Mod4
-# MAC - keyboard (if not using plugged in keyboard)
-#set $mod Mod1
+
 set $left Tab
-set $right l
-set $down j
-set $up k
-## left (with shift held down)
 set $LeftShift Tab
-## right (with shift held down)
+set $right l
 set $RightShift L
-## down (with shift held down)
+set $down j
 set $DownShift J
-## up (with shift held down)
+set $up k
 set $UpShift K
 
 #########################
@@ -109,7 +104,7 @@ client.background       $white
 
 
 ###########################
-# KEYBOARD and MONITOR KEYS
+# KEYBOARD KEYS
 ###########################
 set $majorlightadjust major
 set $mediumlightadjust medium
@@ -137,6 +132,9 @@ bindsym $mod+o exec --no-startup-id /home/jtprince/advance-paste.rb
 bindsym XF86KbdBrightnessDown exec --no-startup-id kbd-backlight down
 bindsym XF86KbdBrightnessUp exec --no-startup-id kbd-backlight up
 
+# TODO: fix this:
+# bindsym XF86ToggleTouchpad exec --no-startup-id
+
 #########################
 # SOUND
 #########################
@@ -151,38 +149,47 @@ set $voldown exec --no-startup-id /usr/bin/pulseaudio-ctl down
 set $mute exec --no-startup-id /usr/bin/pulseaudio-ctl mute
 set $mutefor exec --no-startup-id mute-for
 
-bindsym $mod+parenright $volup 2
-bindsym $mod+parenleft $voldown 2
-bindsym $mod+Shift+parenright $volup 5
-bindsym $mod+Shift+parenleft $voldown 5
-bindsym $mod+Ctrl+Shift+parenright $volup 20
-bindsym $mod+Ctrl+Shift+parenleft $voldown 20
+bindsym $mod+0 $volup 2
+bindsym $mod+9 $voldown 2
+bindsym $mod+Shift+0 $volup 5
+bindsym $mod+Shift+9 $voldown 5
+bindsym $mod+Ctrl+Shift+0 $volup 20
+bindsym $mod+Ctrl+Shift+9 $voldown 20
 bindsym $mod+minus $mute
+bindsym $mod+Shift minus $mutefor 25
 
-bindsym XF86AudioRaiseVolume $volup 4
-bindsym XF86AudioLowerVolume $voldown 4
+bindsym XF86AudioRaiseVolume $volup 2
+bindsym XF86AudioLowerVolume $voldown 2
 bindsym XF86AudioMute $mute
+
+bindsym Shift+XF86AudioMute exec --no-startup-id pactl-speakers toggle
+bindsym Shift+XF86AudioPlay exec music-player
 
 bindsym $mod+backslash exec pavucontrol --tab 5
 
 #########################
 # Music player
 #########################
+
 set $playpause exec --no-startup-id playerctl play-pause
 set $nextsong exec --no-startup-id playerctl next
 set $previoussong exec --no-startup-id playerctl previous
+set $seekforward exec --no-startup-id playerctl position 10+
+set $seekbackward exec --no-startup-id playerctl position 10-
 
 # commands for music player
 bindsym XF86AudioPlay $playpause
-bindsym XF86AudioNext $nextsong
-bindsym XF86AudioPrev $previoussong
-# key 1 on my microsoft keyboard
-# shuffle the playlist
-#bindsym XF86Launch5 exec mpc shuffle
-#
 bindsym $mod+p $playpause
+
+bindsym XF86AudioNext $nextsong
 bindsym $mod+bracketright $nextsong
+# only implemented on some players
+bindsym $mod+Shift+bracketright $seekforward
+
+bindsym XF86AudioPrev $previoussong
 bindsym $mod+bracketleft $previoussong
+# only implemented on some players
+bindsym $mod+Shift+bracketleft $seekbackward
 
 #########################
 # DEFAULTS
@@ -255,109 +262,6 @@ bindsym $mod+Shift+z move container to workspace back_and_forth; workspace back_
 
 # move selected to previously focused workspace
 bindsym $mod+Ctrl+Shift+z move container to workspace back_and_forth
-
-#########################
-# Preferred applications
-#########################
-# todo: figure out how to use $HOME var here
-set $browser1 google-chrome-stable --user-data-dir=/home/jtprince/.config/chrome-personal
-set $browser2 google-chrome-stable
-set $newwindow --new-window
-
-bindsym $mod+x exec terminal-emulator
-
-bindsym XF86HomePage exec $browser1
-bindsym $mod+i exec $browser1
-bindsym $mod+Shift+I exec $browser2
-# bindsym $mod+Ctrl+Shift+T exec $browsertest
-
-bindsym XF86Mail exec $browser1 $newwindow http://gmail.com
-bindsym $mod+e exec $browser1 $newwindow http://gmail.com
-bindsym $mod+Shift+E exec $browser2 $newwindow2 http://gmail.com
-
-bindsym $mod+c exec $browser1 $newwindow http://calendar.google.com
-bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow2 http://calendar.google.com
-
-bindsym $mod+y exec $browser1 $newwindow https://mail.google.com/tasks/ig
-bindsym $mod+Shift+Y exec $browser2 $newwindow2 https://mail.google.com/tasks/ig
-
-bindsym $mod+Ctrl+Shift+I exec open-clipboard-url
-
-bindsym $mod+n exec file-manager
-
-bindsym $mod+Shift+T exec todo
-
-bindsym XF86Documents exec libreoffice --minimized --nologo --writer
-# bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
-bindsym $mod+g exec alacritty -e sleep-and-start-nvim
-
-bindsym XF86Calculator exec x-terminal-emulator -x python3
-
-bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
-
-bindsym Print exec sc --dir /home/jtprince/screenshots --timestamp screenshot -o e
-#bindsym $mod+Print exec sc -w --dir /home/jtprince/screenshots --timestamp window
-bindsym $mod+Print exec sc -b --dir /home/jtprince/screenshots --timestamp box -o e --ocr
-
-###########################
-# Keyboard shortcuts
-###########################
-
-# F9 as middle click (paste primary)
-bindcode 75 exec --no-startup-id xdotool click 2
-
-# ☆ <Favorites> toggles monitor setting
-
-bindsym XF86Display exec --no-startup-id autorandr --change && keyboard-setup && randomise-bkg
-bindsym XF86Favorites exec --no-startup-id autorandr --change && keyboard-setup && randomise-bkg
-
-# TODO: fix this:
-# bindsym XF86ToggleTouchpad exec --no-startup-id
-
-# favorites #1 key
-bindsym XF86Launch5 exec --no-startup-id xrandr --auto && randomise-bkg
-# favorites #2 key
-bindsym XF86Launch6 exec --no-startup-id laptop-keyboard keyboard toggle
-
-###########################
-# LIFE, DEATH, and SLEEPING
-###########################
-
-# kill focused window
-bindsym $mod+Shift+C kill
-
-# open a file in gvim with fzf
-# WIP: for some reason this will not work (but will when launched from # terminal)!
-# for_window [instance="menu-launcher"] floating enable
-# bindsym $mod+Shift+O exec --no-startup-id urxvt -title "launch in gvim" -name "menu-launcher" -e bash -c 'cmd=$(fzfo); setsid -f $cmd'
-bindsym $mod+Shift+P exec dmenu_run
-
-# rofi:
-# yay -S dmenu-recent-aliases-git
-# bindsym $mod+Shift+P exec rofi -show run
-
-# reload the configuration file
-bindsym $mod+Shift+R reload
-
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3 -- I tend to reload instead)
-bindsym $mod+Shift+U restart
-
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+Q exit
-
-# power/on-off management:
-# note, you may need to: sudo chmod u+s /sbin/poweroff
-bindsym $mod+Ctrl+Shift+P exec --no-startup-id before-i3-exit && systemctl poweroff
-bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboot
-# suspend (RAM)
-bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
-bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
-# turn off display (called as a shortcut it immediately wakes up w/o sleep added)
-bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
-
-bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
-
-#bindsym XF86Sleep exec echo -n mem > /sys/power/state
 
 #######################
 # FOCUS
@@ -476,7 +380,6 @@ bindsym $mod+Ctrl+Shift+asterisk move workspace $ws8
 # App/Window Prefs
 #######################
 
-# for_window [title="Hangouts"] move container to workspace $ws7
 for_window [window_role="pop-up"] floating enabled
 
 #######################
@@ -497,6 +400,106 @@ bindsym $mod+Ctrl+Shift+$DownShift resize grow   down 10 px or 10 ppt
 
 #bindsym k resize shrink up 10 px or 10 ppt
 bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
+
+#########################
+# Preferred applications
+#########################
+
+set $browser1 google-chrome-stable --user-data-dir=/home/jtprince/.config/chrome-personal
+set $browser2 google-chrome-stable
+set $newwindow --new-window
+
+bindsym $mod+x exec terminal-emulator
+
+bindsym XF86HomePage exec $browser1
+bindsym $mod+i exec $browser1
+bindsym $mod+Shift+I exec $browser2
+bindsym $mod+Ctrl+Shift+I exec firefox -P personal
+
+bindsym XF86Mail exec $browser1 $newwindow http://mail.google..com
+bindsym $mod+e exec $browser1 $newwindow http://mail.google.com
+bindsym $mod+Shift+E exec $browser2 $newwindow2 http://mail.google.com
+
+bindsym $mod+c exec $browser1 $newwindow http://calendar.google.com
+bindsym $mod+Ctrl+Shift+C exec $browser2 $newwindow2 http://calendar.google.com
+
+# bindsym $mod+y exec $browser1 $newwindow https://mail.google.com/tasks/ig
+# bindsym $mod+Shift+Y exec $browser2 $newwindow2 https://mail.google.com/tasks/ig
+
+bindsym $mod+n exec file-manager
+
+bindsym $mod+Shift+T exec todo
+
+bindsym XF86Documents exec libreoffice --minimized --nologo --writer
+# bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
+bindsym $mod+g exec alacritty -e sleep-and-start-nvim
+
+bindsym XF86Calculator exec terminal-emulator -e ipython
+
+bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
+
+bindsym Print exec sc --dir /home/jtprince/sc --timestamp screenshot -o e
+bindsym $mod+Print exec sc -b --dir /home/jtprince/screenshots --timestamp box -o e --ocr
+
+###########################
+# Keyboard shortcuts
+###########################
+
+# F9 as middle click (paste primary)
+bindcode 75 exec --no-startup-id xdotool click 2
+
+# ☆ <Favorites> toggles monitor setting
+
+# TODO: redo this to match jasnah-monitor-config (and make that more generic)
+bindsym XF86Favorites exec --no-startup-id jasnah-x11-monitor-config desk
+bindsym Shift+XF86Favorites exec --no-startup-id jasnah-x11-monitor-config treadmill
+bindsym XF86Display exec --no-startup-id jasnah-x11-monitor-config laptop
+
+# favorites #1 key
+# bindsym XF86Launch5 exec --no-startup-id xrandr --auto && randomise-bkg
+# favorites #2 key
+bindsym XF86Launch6 exec --no-startup-id laptop-keyboard keyboard toggle
+
+###########################
+# LIFE, DEATH, and SLEEPING
+###########################
+
+# kill focused window
+bindsym $mod+Shift+C kill
+
+# open a file in gvim with fzf
+# WIP: for some reason this will not work (but will when launched from # terminal)!
+# for_window [instance="menu-launcher"] floating enable
+# bindsym $mod+Shift+O exec --no-startup-id urxvt -title "launch in gvim" -name "menu-launcher" -e bash -c 'cmd=$(fzfo); setsid -f $cmd'
+bindsym $mod+Shift+P exec dmenu_run
+
+# rofi:
+# yay -S dmenu-recent-aliases-git
+# bindsym $mod+Shift+P exec rofi -show run
+
+# reload the configuration file
+# bindsym $mod+Shift+R restart
+
+# restart sway/i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+U reload
+
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+Q exit
+
+# power/on-off management:
+# note, you may need to: sudo chmod u+s /sbin/poweroff
+bindsym $mod+Ctrl+Shift+P exec --no-startup-id before-i3-exit && systemctl poweroff
+bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboot
+# suspend (RAM)
+bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
+bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
+# turn off display (called as a shortcut it immediately wakes up w/o sleep added)
+bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
+
+bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
+
+bindsym XF86Sleep exec --no-startup-id suspend-with-screenlock
+
 
 #######################
 # MISC - editing
