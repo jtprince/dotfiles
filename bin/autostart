@@ -30,6 +30,10 @@ if [ "$1" != "late" ]; then
         # Xresources
         xrdb -merge ~/.Xresources
 
+        if cmd_exists dunst; then
+            dunst &
+        fi
+
         if cmd_exists picom ; then
             picom-toggle start
         fi

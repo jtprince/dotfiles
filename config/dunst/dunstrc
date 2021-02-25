@@ -15,7 +15,7 @@
     geometry = "0x0-0+0"
     transparency = 40
 
-    idle_threshold = 120
+    # idle_threshold = 120
 
     monitor = 0
     follow = none
@@ -27,7 +27,7 @@
 
     separator_color = auto
 
-    icon_path = /usr/share/icons/Adwaita/16x16/status/:/usr/share/icons/Adwaita/16x16/devices/
+    icon_path = /usr/share/icons/Adwaita/16x16/status/:/usr/share/icons/Adwaita/16x16/devices/:/usr/share/icons/Adwaita/16x16/legacy/
 
 
 [shortcuts]
@@ -38,19 +38,35 @@
     history = mod4+ctrl+grave
 
 [urgency_low]
-    transparency = 60
+    transparency = 70
     font = Monospace-6
     #background = "#00BF06"
-    background = "#08301B"
+    # background = "#08301B"
     foreground = "#AAAAAA"
-    timeout = 1
+    timeout = 2
 
 [urgency_normal]
+    transparency = 60
     background = "#00039B"
     foreground = "#EEEEEE"
     timeout = 4
 
 [urgency_critical]
+    transparency = 20
     background = "#dc322f"
     foreground = "#DDDDDD"
-    timeout = 0
+    timeout = 10
+
+[pulseaudio-ctl]
+    transparency = 10
+    background = "#00FF00"
+    foreground = "#000000"
+    timeout = 1
+    format = "%b"
+
+[youtube-music]
+    transparency = 10
+    background = "#00FF00"
+    foreground = "#000000"
+    timeout = 2
+    format = "%b"
