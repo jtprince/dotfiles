@@ -29,9 +29,9 @@ BKG_DIR << '/dual' if $DUAL_MONITORS
 
 EXTS =
   if session_type == 'wayland'
-    %w(png jpg)
-  else
     %w(png)
+  else
+    %w(png jpg)
   end
 
 files_w_ext = Dir[*EXTS.map {|ext| BKG_DIR + "/*.#{ext}" }]
