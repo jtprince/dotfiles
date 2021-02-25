@@ -44,6 +44,9 @@
 # https://www.mercurial-scm.org/
 --ignore-directory=is:.hg
 
+# Mypy
+--ignore-directory=is:.mypy_cache
+
 # Quilt
 # https://directory.fsf.org/wiki/Quilt
 --ignore-directory=is:.pc

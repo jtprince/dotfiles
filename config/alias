@@ -99,7 +99,6 @@ alias nvimscratch="nvim -c 'let g:pymode_rope=0'"
 alias gvimscratch="nvim-gtk -- -c 'let g:pymode_rope=0'"
 alias mdkir="mkdir"
 alias eixt="exit"
-alias ack="ack --ignore-file=is:.tags"
 
 # latex
 alias latexmk="latexmk -pdf -xelatex"
