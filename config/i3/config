@@ -201,11 +201,11 @@ workspace_layout stacking
 ## focus follows mouse <yes|no>
 focus_follows_mouse no
 
-## border style for new windows <normal|1pixel|none>
-new_window normal
+## border style for new windows
+default_border normal 1
 
 ## border style for for floating windows <normal|1pixel|none>
-new_float 1pixel
+default_floating_border normal 1
 
 # hit same workspace focus key *again* and returns to previously focused
 workspace_auto_back_and_forth yes
