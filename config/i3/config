@@ -160,6 +160,10 @@ bindsym $mod+Shift minus $mutefor 25
 
 bindsym XF86AudioRaiseVolume $volup 2
 bindsym XF86AudioLowerVolume $voldown 2
+bindsym Shift+XF86AudioRaiseVolume $volup 5
+bindsym Shift+XF86AudioLowerVolume $voldown 5
+bindsym $mod+Ctrl+Shift+XF86AudioRaiseVolume $volup 20
+bindsym $mod+Ctrl+Shift+XF86AudioLowerVolume $voldown 20
 bindsym XF86AudioMute $mute
 
 bindsym Shift+XF86AudioMute exec --no-startup-id pactl-speakers toggle
@@ -411,7 +415,6 @@ set $newwindow --new-window
 
 bindsym $mod+x exec terminal-emulator
 
-bindsym XF86HomePage exec $browser1
 bindsym $mod+i exec $browser1
 bindsym $mod+Shift+I exec $browser2
 bindsym $mod+Ctrl+Shift+I exec firefox -P personal
@@ -451,9 +454,10 @@ bindcode 75 exec --no-startup-id xdotool click 2
 # ☆ <Favorites> toggles monitor setting
 
 # TODO: redo this to match jasnah-monitor-config (and make that more generic)
-bindsym XF86Favorites exec --no-startup-id jasnah-x11-monitor-config desk
-bindsym Shift+XF86Favorites exec --no-startup-id jasnah-x11-monitor-config treadmill
-bindsym XF86Display exec --no-startup-id jasnah-x11-monitor-config laptop
+bindsym XF86HomePage exec --no-startup-id jasnah-x11-monitor-config desk
+bindsym XF86Favorites exec --no-startup-id jasnah-x11-monitor-config treadmill
+bindsym XF86Display exec --no-startup-id jasnah-x11-monitor-config
+
 
 # favorites #1 key
 # bindsym XF86Launch5 exec --no-startup-id xrandr --auto && randomise-bkg
