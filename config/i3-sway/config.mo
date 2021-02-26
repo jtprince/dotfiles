@@ -165,7 +165,7 @@ workspace_auto_back_and_forth yes
 default_orientation vertical
 
 # Use Mouse+$mod to drag floating windows to their wanted position
-floating_modifier $mod normal
+{{floating_modifier}}
 
 #force_focus_wrapping yes
 
@@ -402,9 +402,9 @@ set $monitor_laptop_cmd {{monitor_laptop_cmd}}
 set $monitor_primary1_cmd {{monitor_primary1_cmd}}
 set $monitor_primary2_cmd {{monitor_primary2_cmd}}
 
-bindsym $locked XF86HomePage exec --no-startup-id $monitor_laptop_cmd
-bindsym $locked XF86Favorites exec --no-startup-id $monitor_primary1_cmd
-bindsym $locked XF86Display exec --no-startup-id $monitor_primary2_cmd
+bindsym $locked XF86Display exec --no-startup-id $monitor_laptop_cmd
+bindsym $locked XF86HomePage exec --no-startup-id $monitor_primary1_cmd
+bindsym $locked XF86Favorites exec --no-startup-id $monitor_primary2_cmd
 
 {{laptop_keyboard_toggle}}
 
@@ -441,7 +441,6 @@ bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboo
 # suspend (RAM)
 bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
 bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
-# turn off display (called as a shortcut it immediately wakes up w/o sleep added)
 
 {{special_sleep}}
 

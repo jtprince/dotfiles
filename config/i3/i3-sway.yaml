@@ -1,0 +1,63 @@
+introductory_notes: |
+  # userguide: http://i3wm.org/docs/userguide.html
+
+  # use i3-get-window-critera to get window class, etc.
+  # use i3-unused-bindings to see which key combos are available
+
+  # xmodmap -pke # to see most keybindings
+  # use xev to interactively get most keynames
+  # use evtest to determine hard-to-get keynames
+startup_programs: ""
+locked: ""
+appearance_special: ""
+appearance_output: ""
+appearance_notes: ""
+floating_modifier: |
+  floating_modifier $mod
+chrome_environment_opts: ""
+screenshot_commands: |
+  bindsym Print exec sc --dir /home/jtprince/sc --timestamp screenshot -o e
+  bindsym $mod+Print exec sc -b --dir /home/jtprince/screenshots --timestamp box -o e --ocr
+middle_click: |
+  # F9 as middle click (paste primary)
+  bindcode 75 exec --no-startup-id xdotool click 2
+monitor_laptop_cmd: >-
+  jasnah-x11-monitor-config laptop
+monitor_primary1_cmd: >-
+  jasnah-x11-monitor-config desk
+monitor_primary2_cmd: >-
+  jasnah-x11-monitor-config treadmill
+laptop_keyboard_toggle: |
+  # favorites #1 key
+  # bindsym XF86Launch5 exec --no-startup-id xrandr --auto && randomise-bkg
+  # favorites #2 key
+  bindsym XF86Launch6 exec --no-startup-id laptop-keyboard keyboard toggle
+exit_cmd: >-
+    exit
+special_sleep: |
+
+  # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
+  bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
+  bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
+scratchpad: ""
+misc_editing: |
+  #######################
+  # MISC - editing
+  #######################
+  ## keep the dangerous ones off until needed
+  bindsym $mod+Shift+F exec pylint-patch fix
+  bindsym $mod+Shift+G exec pylint-patch auto
+  # bindsym $mod+Shift+D exec pylint-patch delete
+  # bindsym $mod+Shift+O exec pylint-patch top
+
+  bindsym $mod+Shift+M exec fix
+scripting: |
+  #######################
+  # I3 SCRIPTING
+  #######################
+
+  ## (turn this on if you are ready to start scripting things with i3:)
+
+  # create a socket for other processes to hook into
+  #ipc-socket ~/.i3/ipc.sock
+keybindings: ""

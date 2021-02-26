@@ -219,6 +219,7 @@ default_orientation vertical
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod normal
 
+
 #force_focus_wrapping yes
 
 #########################
@@ -459,9 +460,9 @@ set $monitor_laptop_cmd jasnah-monitor-config laptop
 set $monitor_primary1_cmd jasnah-monitor-config desk
 set $monitor_primary2_cmd jasnah-monitor-config treadmill
 
-bindsym $locked XF86HomePage exec --no-startup-id $monitor_laptop_cmd
-bindsym $locked XF86Favorites exec --no-startup-id $monitor_primary1_cmd
-bindsym $locked XF86Display exec --no-startup-id $monitor_primary2_cmd
+bindsym $locked XF86Display exec --no-startup-id $monitor_laptop_cmd
+bindsym $locked XF86HomePage exec --no-startup-id $monitor_primary1_cmd
+bindsym $locked XF86Favorites exec --no-startup-id $monitor_primary2_cmd
 
 
 
@@ -498,7 +499,6 @@ bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboo
 # suspend (RAM)
 bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
 bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
-# turn off display (called as a shortcut it immediately wakes up w/o sleep added)
 
 # Allows us to re-sleep the laptop if lock screen is up
 bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
