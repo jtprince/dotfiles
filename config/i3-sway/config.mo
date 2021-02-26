@@ -1,16 +1,11 @@
-# See `man 5 sway` for reference.
-
+{{introductory_notes}}
 ######################################
 # STARTUP PROGRAMS & SETTINGS (Early)
 ######################################
 
 exec --no-startup-id autostart
 
-exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty
-# in /etc/profile.d/jre.sh
-exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
-exec --no-startup-id exec mako
-
+{{startup_programs}}
 #########################
 # VARIABLES
 #########################
@@ -28,7 +23,7 @@ set $DownShift J
 set $up k
 set $UpShift K
 
-set $locked --locked
+set $locked {{locked}}
 set $noid --no-startup-id
 
 #########################
@@ -38,13 +33,7 @@ set $noid --no-startup-id
 set $globalfontsize 8
 font pango:Droid Sans Mono $globalfontsize
 
-# horizontal vertical padding
-titlebar_padding 5 2
-# gaps inner 4
-# gaps outer 2
-# smart_gaps on
-# smart_borders on
-
+{{appearance_special}}
 
 set $subgreen #60a471
 
@@ -64,35 +53,8 @@ client.placeholder      $ddblue    $ddblue    $white   $ddblue    $ddblue
 
 client.background       $white
 
-output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
-
-# TODO: figure out how to randomize on demand and use env vars
-# output * bg /home/jtprince/arch-linux-universe-wallpapers_30371_1920x1200.jpg fill
-# get the names of outputs by running:
-#
-#     swaymsg -t get_outputs
-#
-#     wdisplays  # like arandr
-#
-# output HDMI-A-1 resolution 1920x1080 position 1920,0
-# output HDMI-A-1 resolution 1920x1080 position 0,0
-# output HDMI-A-1 disable
-#
-# For example:
-# swaymsg output eDP-1 disable
-
-# Example configuration:
-#
-#   input &quot;2:14:SynPS/2_Synaptics_TouchPad&quot; {
-#       dwt enabled
-#       tap enabled
-#       natural_scroll enabled
-#       middle_emulation enabled
-#   }
-#
-# You can get the names of your inputs by running: swaymsg -t get_inputs
-# Read `man 5 sway-input` for more information about this section.
-
+{{appearance_output}}
+{{appearance_notes}}
 
 #########################
 # KEYBOARD KEYS
@@ -394,7 +356,7 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
 # Preferred applications
 #########################
 
-set $chrome_env_opts --enable-features=UseOzonePlatform --ozone-platform=wayland
+set $chrome_env_opts {{chrome_environment_opts}}
 set $browser1 google-chrome-stable --user-data-dir=/home/jtprince/.config/chrome-personal $chrome_env_opts
 set $browser2 google-chrome-stable $chrome_env_opts
 set $newwindow --new-window
@@ -427,29 +389,24 @@ bindsym XF86Calculator exec --no-startup-id notifications-toggle
 
 bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
-bindsym Print exec screenshot-sway screen --eog
-bindsym $mod+Print exec screenshot-sway area --ocr --eog
-bindsym $mod+Ctrl+Print exec screenshot-sway area --ocr --annotate --eog
-bindsym $mod+Shift+Print exec screenshot-sway window --ocr --eog
-bindsym $mod+Ctrl+Shift+Print exec screenshot-sway window --ocr --annotate --eog
-
+{{screenshot_commands}}
 
 ###########################
 # Keyboard shortcuts
 ###########################
 
-
+{{middle_click}}
 
 # ☆ <Favorites> toggles monitor setting
-set $monitor_laptop_cmd jasnah-monitor-config laptop
-set $monitor_primary1_cmd jasnah-monitor-config desk
-set $monitor_primary2_cmd jasnah-monitor-config treadmill
+set $monitor_laptop_cmd {{monitor_laptop_cmd}}
+set $monitor_primary1_cmd {{monitor_primary1_cmd}}
+set $monitor_primary2_cmd {{monitor_primary2_cmd}}
 
 bindsym $locked XF86HomePage exec --no-startup-id $monitor_laptop_cmd
 bindsym $locked XF86Favorites exec --no-startup-id $monitor_primary1_cmd
 bindsym $locked XF86Display exec --no-startup-id $monitor_primary2_cmd
 
-
+{{laptop_keyboard_toggle}}
 
 ###########################
 # LIFE, DEATH, and SLEEPING
@@ -475,7 +432,7 @@ bindsym $mod+Shift+P exec dmenu_run
 bindsym $mod+Shift+U reload
 
 # Exit sway (logs you out of your Wayland session)
-bindsym $mod+Shift+Q exec swaymsg exit
+bindsym $mod+Shift+Q exec {{exit_cmd}}
 
 # power/on-off management:
 # note, you may need to: sudo chmod u+s /sbin/poweroff
@@ -486,27 +443,14 @@ bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
 bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
 # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
 
-# Allows us to re-sleep the laptop if lock screen is up
-bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
-
+{{special_sleep}}
 
 bindsym XF86Sleep exec --no-startup-id suspend-with-screenlock
 
 
-# Scratchpad:
+{{scratchpad}}
 
-# Sway has a &quot;scratchpad&quot;, which is a bag of holding for windows.
-# You can send windows there and get them back later.
-
-# Move the currently focused window to the scratchpad
-# bindsym $mod+Shift+minus move scratchpad
-
-# Show the next scratchpad window or hide the focused scratchpad window.
-# If there are multiple scratchpad windows, this command cycles through them.
-# bindsym $mod+minus scratchpad show
-
-
-
+{{misc_editing}}
 
 #######################
 # BAR
@@ -535,13 +479,6 @@ bar {
   }
 }
 
-include /etc/sway/config.d/*
+{{scripting}}
 
-
-#######################
-# Keybindings
-#######################
-input * {
-    xkb_options &quot;caps:escape,altwin:swap_lalt_lwin&quot;
-}
-
+{{keybindings}}

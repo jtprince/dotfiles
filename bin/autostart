@@ -6,68 +6,63 @@ function cmd_exists {
 
 session_type=${XDG_SESSION_TYPE:-x11}
 
-if [ "$1" != "late" ]; then
+# gnome keyring
+eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
 
-    # gnome keyring
-    eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+pulseaudio --start
 
-    pulseaudio --start
+if [[ "$session_type" == "wayland" ]]; then
+    ################################################
+    # Sway/wayland specific
+    ################################################
 
-    if [[ "$session_type" == "wayland" ]]; then
-        ################################################
-        # Sway/wayland specific
-        ################################################
+    # full applet does not currently work
+    # use nmtui{,-connect,-edit,-hostname} instead
+    nm-applet --indicator &
 
-        # full applet does not currently work
-        # use nmtui{,-connect,-edit,-hostname} instead
-        nm-applet --indicator &
-
-    else
-
-        ################################################
-        # X11 specific config
-        ################################################
-        # Xresources
-        xrdb -merge ~/.Xresources
-
-        if cmd_exists dunst; then
-            dunst &
-        fi
-
-        if cmd_exists picom ; then
-            picom-toggle start
-        fi
-
-        if cmd_exists autoxrandr ; then
-            autoxrandr --change
-        fi
-
-        notify-send -u low 'Configuring keyboard.'
-        keyboard-setup
-
-        # clipboard
-        xclip -silent &
-
-        # nm-applet
-        nm-applet &
-
-        # sound tray
-        pasystray &
-    fi
-
-    # dropbox
-    if cmd_exists dropbox-cli ; then
-        dropbox-cli start
-    fi
-
-    if cmd_exists megasync ; then
-        megasync &
-    fi
-
-    # example of launching specific app on a workspace
-    # i3-msg 'workspace 8:w8; exec sleep 3 && music-player'
-
-    notify-send -u low 'initialized!'
 else
-    randomise-bkg
+
+    ################################################
+    # X11 specific config
+    ################################################
+    # Xresources
+    xrdb -merge ~/.Xresources
+
+    if cmd_exists dunst; then
+        dunst &
+    fi
+
+    if cmd_exists picom ; then
+        picom-toggle start
+    fi
+
+    if cmd_exists autoxrandr ; then
+        autoxrandr --change
+    fi
+
+    notify-send -u low 'Configuring keyboard.'
+    keyboard-setup
+
+    # clipboard
+    xclip -silent &
+
+    # nm-applet
+    nm-applet &
+
+    # sound tray
+    pasystray &
 fi
+
+# dropbox
+if cmd_exists dropbox-cli ; then
+    dropbox-cli start
+fi
+
+if cmd_exists megasync ; then
+    megasync &
+fi
+
+# example of launching specific app on a workspace
+# i3-msg 'workspace 8:w8; exec sleep 3 && music-player'
+
+notify-send -u low 'initialized!'

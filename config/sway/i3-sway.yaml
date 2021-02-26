@@ -1,0 +1,88 @@
+introductory_notes: |
+    # See `man 5 sway` for reference.
+startup_programs: |
+    exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty
+    # in /etc/profile.d/jre.sh
+    exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
+    exec --no-startup-id exec mako
+locked: >-
+    --locked
+appearance_special: |
+    # horizontal vertical padding
+    titlebar_padding 5 2
+    # gaps inner 4
+    # gaps outer 2
+    # smart_gaps on
+    # smart_borders on
+appearance_output: |
+    output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
+appearance_notes: |
+    # TODO: figure out how to randomize on demand and use env vars
+    # output * bg /home/jtprince/arch-linux-universe-wallpapers_30371_1920x1200.jpg fill
+    # get the names of outputs by running:
+    #
+    #     swaymsg -t get_outputs
+    #
+    #     wdisplays  # like arandr
+    #
+    # output HDMI-A-1 resolution 1920x1080 position 1920,0
+    # output HDMI-A-1 resolution 1920x1080 position 0,0
+    # output HDMI-A-1 disable
+    #
+    # For example:
+    # swaymsg output eDP-1 disable
+
+    # Example configuration:
+    #
+    #   input "2:14:SynPS/2_Synaptics_TouchPad" {
+    #       dwt enabled
+    #       tap enabled
+    #       natural_scroll enabled
+    #       middle_emulation enabled
+    #   }
+    #
+    # You can get the names of your inputs by running: swaymsg -t get_inputs
+    # Read `man 5 sway-input` for more information about this section.
+chrome_environment_opts: >-
+    --enable-features=UseOzonePlatform --ozone-platform=wayland
+screenshot_commands: |
+    bindsym Print exec screenshot-sway screen --eog
+    bindsym $mod+Print exec screenshot-sway area --ocr --eog
+    bindsym $mod+Ctrl+Print exec screenshot-sway area --ocr --annotate --eog
+    bindsym $mod+Shift+Print exec screenshot-sway window --ocr --eog
+    bindsym $mod+Ctrl+Shift+Print exec screenshot-sway window --ocr --annotate --eog
+middle_click: ""
+monitor_laptop_cmd: >-
+    jasnah-monitor-config laptop
+monitor_primary1_cmd: >-
+    jasnah-monitor-config desk
+monitor_primary2_cmd: >-
+    jasnah-monitor-config treadmill
+laptop_keyboard_toggle: ""
+exit_cmd: >-
+    swaymsg exit
+special_sleep: |
+    # Allows us to re-sleep the laptop if lock screen is up
+    bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
+scratchpad: |
+    # Scratchpad:
+
+    # Sway has a "scratchpad", which is a bag of holding for windows.
+    # You can send windows there and get them back later.
+
+    # Move the currently focused window to the scratchpad
+    # bindsym $mod+Shift+minus move scratchpad
+
+    # Show the next scratchpad window or hide the focused scratchpad window.
+    # If there are multiple scratchpad windows, this command cycles through them.
+    # bindsym $mod+minus scratchpad show
+misc_editing: ""
+scripting: |
+    include /etc/sway/config.d/*
+keybindings: |
+    #######################
+    # Keybindings
+    #######################
+    input * {
+        xkb_options "caps:escape,altwin:swap_lalt_lwin"
+    }
