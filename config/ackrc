@@ -40,6 +40,18 @@
 # ignore tags file
 --ignore-file=is:.tags
 
+# ignore tags file
+--ignore-file=is:.sops.yaml
+
+# spectral file
+--ignore-file=is:.spectral.yaml
+
+# gitignore
+--ignore-file=is:.gitignore
+
+# a terrible file on owlet repos
+--ignore-file=is:swagger-ui-bundle.js
+
 # Mercurial
 # https://www.mercurial-scm.org/
 --ignore-directory=is:.hg
