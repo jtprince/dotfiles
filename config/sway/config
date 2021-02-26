@@ -14,16 +14,6 @@
 
 # See `man 5 sway` for reference.
 
-######################################
-# STARTUP PROGRAMS & SETTINGS (Early)
-######################################
-
-exec --no-startup-id autostart
-
-exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty
-# in /etc/profile.d/jre.sh
-exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
-exec --no-startup-id exec mako
 
 #########################
 # VARIABLES
@@ -44,6 +34,17 @@ set $UpShift K
 
 set $locked --locked
 set $noid --no-startup-id
+
+######################################
+# STARTUP PROGRAMS & SETTINGS (Early)
+######################################
+
+exec $noid autostart
+
+exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty
+# in /etc/profile.d/jre.sh
+exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
+exec --no-startup-id exec mako
 
 #########################
 # APPEARANCE
@@ -111,41 +112,40 @@ output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
 #########################
 # KEYBOARD KEYS
 #########################
-set $majorlightadjust major
-set $mediumlightadjust medium
-set $minorlightadjust minor
-set $finelightadjust fine
 
-bindsym XF86MonBrightnessDown exec --no-startup-id laptop-monitor-brightness auto '-' $majorlightadjust
-bindsym XF86MonBrightnessUp exec --no-startup-id laptop-monitor-brightness auto '+' $majorlightadjust
-bindsym $mod+XF86MonBrightnessDown exec --no-startup-id laptop-monitor-brightness auto '-' $mediumlightadjust
-bindsym $mod+XF86MonBrightnessUp exec --no-startup-id laptop-monitor-brightness auto '+' $mediumlightadjust
-bindsym $mod+Shift+XF86MonBrightnessDown exec --no-startup-id laptop-monitor-brightness auto '-' $minorlightadjust
-bindsym $mod+Shift+XF86MonBrightnessUp exec --no-startup-id laptop-monitor-brightness auto '+' $minorlightadjust
-bindsym $mod+Ctrl+Shift+XF86MonBrightnessDown exec --no-startup-id laptop-monitor-brightness auto '-' $finelightadjust
-bindsym $mod+Ctrl+Shift+XF86MonBrightnessUp exec --no-startup-id laptop-monitor-brightness auto '+' $finelightadjust
+set $brightcmd_base laptop-monitor-brightness auto
 
-bindsym $mod+o exec --no-startup-id /home/jtprince/advance-paste.rb
+bindsym XF86MonBrightnessDown exec $noid $brightcmd_base '-' major
+bindsym XF86MonBrightnessUp exec $noid $brightcmd_base '+' major
+bindsym $mod+XF86MonBrightnessDown exec $noid $brightcmd_base '-' medium
+bindsym $mod+XF86MonBrightnessUp exec $noid $brightcmd_base '+' medium
+bindsym $mod+Shift+XF86MonBrightnessDown exec $noid $brightcmd_base '-' minor
+bindsym $mod+Shift+XF86MonBrightnessUp exec $noid $brightcmd_base '+' minor
+bindsym $mod+Ctrl+Shift+XF86MonBrightnessDown exec $noid $brightcmd_base '-' fine
+bindsym $mod+Ctrl+Shift+XF86MonBrightnessUp exec $noid $brightcmd_base '+' fine
 
-bindsym XF86KbdBrightnessDown exec --no-startup-id kbd-backlight down
-bindsym XF86KbdBrightnessUp exec --no-startup-id kbd-backlight up
+bindsym $mod+o exec $noid /home/jtprince/advance-paste.rb
+
+bindsym XF86KbdBrightnessDown exec $noid kbd-backlight down
+bindsym XF86KbdBrightnessUp exec $noid kbd-backlight up
 
 # TODO: fix this:
-# bindsym XF86ToggleTouchpad exec --no-startup-id
+# bindsym XF86ToggleTouchpad exec $noid
 
 #########################
 # SOUND
 #########################
 
 ## parentheses left and right to change volume
-# if the wrong sink is being accessed, then figure out the index of your sink and (if 3 is the index):
+# if the wrong sink is being accessed, then figure out the index of your sink
+# and (if 3 is the index):
 #     pacmd set-default-sink 3
 # Get the indexes being used:
 #     pacmd list-sinks | egrep '(index|used by)'
-set $volup exec --no-startup-id /usr/bin/pulseaudio-ctl up
-set $voldown exec --no-startup-id /usr/bin/pulseaudio-ctl down
-set $mute exec --no-startup-id /usr/bin/pulseaudio-ctl mute
-set $mutefor exec --no-startup-id mute-for
+set $volup exec $noid /usr/bin/pulseaudio-ctl up
+set $voldown exec $noid /usr/bin/pulseaudio-ctl down
+set $mute exec $noid /usr/bin/pulseaudio-ctl mute
+set $mutefor exec $noid mute-for
 
 bindsym $mod+0 $volup 2
 bindsym $mod+9 $voldown 2
@@ -165,7 +165,7 @@ bindsym $mod+Ctrl+Shift+XF86AudioLowerVolume $voldown 20
 
 bindsym $locked XF86AudioMute $mute
 
-bindsym $locked Shift+XF86AudioMute exec --no-startup-id pactl-speakers toggle
+bindsym $locked Shift+XF86AudioMute exec $noid pactl-speakers toggle
 bindsym $locked Shift+XF86AudioPlay exec music-player
 
 bindsym $mod+backslash exec pavucontrol --tab 5
@@ -174,11 +174,11 @@ bindsym $mod+backslash exec pavucontrol --tab 5
 # Music player
 #########################
 
-set $playpause exec --no-startup-id playerctl play-pause
-set $nextsong exec --no-startup-id playerctl next
-set $previoussong exec --no-startup-id playerctl previous
-set $seekforward exec --no-startup-id playerctl position 10+
-set $seekbackward exec --no-startup-id playerctl position 10-
+set $playpause exec $noid playerctl play-pause
+set $nextsong exec $noid playerctl next
+set $previoussong exec $noid playerctl previous
+set $seekforward exec $noid playerctl position 10+
+set $seekbackward exec $noid playerctl position 10-
 
 # commands for music player
 bindsym $locked XF86AudioPlay $playpause
@@ -390,27 +390,27 @@ for_window [window_role="pop-up"] floating enabled
 # RESIZE
 #######################
 
-# resize window (you can also use the mouse for that - (Alt-right-click))
-# I only *grow* windows, for simplicity's sake
+# For simplicity, windows only *grow*
 
 #bindsym $left resize shrink left 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+$LeftShift resize grow   left 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+$LeftShift resize grow left 10 px or 10 ppt
 
 #bindsym l resize shrink right 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+$RightShift resize grow   right 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+$RightShift resize grow right 10 px or 10 ppt
 
 #bindsym j resize shrink down 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+$DownShift resize grow   down 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+$DownShift resize grow down 10 px or 10 ppt
 
 #bindsym k resize shrink up 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+$UpShift resize grow   up 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+$UpShift resize grow up 10 px or 10 ppt
 
 #########################
 # Preferred applications
 #########################
 
 set $chrome_env_opts --enable-features=UseOzonePlatform --ozone-platform=wayland
-set $browser1 google-chrome-stable --user-data-dir=/home/jtprince/.config/chrome-personal $chrome_env_opts
+set $personal_dir_flag --user-data-dir=/home/jtprince/.config/chrome-personal
+set $browser1 google-chrome-stable $personal_dir_flag $chrome_env_opts
 set $browser2 google-chrome-stable $chrome_env_opts
 set $newwindow --new-window
 
@@ -435,10 +435,10 @@ bindsym $mod+n exec file-manager
 bindsym $mod+Shift+T exec todo
 
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
-# bindsym $mod+g exec env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
+# env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
 bindsym $mod+g exec alacritty -e sleep-and-start-nvim
 
-bindsym XF86Calculator exec --no-startup-id notifications-toggle
+bindsym XF86Calculator exec $noid notifications-toggle
 
 bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
@@ -460,9 +460,9 @@ set $monitor_laptop_cmd jasnah-monitor-config laptop
 set $monitor_primary1_cmd jasnah-monitor-config desk
 set $monitor_primary2_cmd jasnah-monitor-config treadmill
 
-bindsym $locked XF86Display exec --no-startup-id $monitor_laptop_cmd
-bindsym $locked XF86HomePage exec --no-startup-id $monitor_primary1_cmd
-bindsym $locked XF86Favorites exec --no-startup-id $monitor_primary2_cmd
+bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
+bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
+bindsym $locked XF86Favorites exec $noid $monitor_primary2_cmd
 
 
 
@@ -470,20 +470,12 @@ bindsym $locked XF86Favorites exec --no-startup-id $monitor_primary2_cmd
 # LIFE, DEATH, and SLEEPING
 ###########################
 
-# kill focused window
+# close focused window
 bindsym $mod+Shift+C kill
 
-# open a file in gvim with fzf
-# WIP: for some reason this will not work (but will when launched from # terminal)!
-# for_window [instance="menu-launcher"] floating enable
-# bindsym $mod+Shift+O exec --no-startup-id urxvt -title "launch in gvim" -name "menu-launcher" -e bash -c 'cmd=$(fzfo); setsid -f $cmd'
 bindsym $mod+Shift+P exec dmenu_run
 
-# rofi:
-# yay -S dmenu-recent-aliases-git
-# bindsym $mod+Shift+P exec rofi -show run
-
-# restart sway/i3 inplace (preserves your layout/session, can be used to upgrade i3)
+# restart sway/i3 inplace (preserves layout/session, for upgrading i3)
 # bindsym $mod+Shift+R restart
 
 # Reload the configuration file
@@ -494,17 +486,16 @@ bindsym $mod+Shift+Q exec swaymsg exit
 
 # power/on-off management:
 # note, you may need to: sudo chmod u+s /sbin/poweroff
-bindsym $mod+Ctrl+Shift+P exec --no-startup-id before-i3-exit && systemctl poweroff
-bindsym $mod+Ctrl+Shift+R exec --no-startup-id before-i3-exit && systemctl reboot
+bindsym $mod+Ctrl+Shift+P exec $noid before-i3-exit && systemctl poweroff
+bindsym $mod+Ctrl+Shift+R exec $noid before-i3-exit && systemctl reboot
 # suspend (RAM)
-bindsym $mod+Ctrl+Shift+S exec --no-startup-id suspend-with-screenlock
-bindsym $mod+Ctrl+Shift+H exec --no-startup-id hibernate-with-screenlock
+bindsym $mod+Ctrl+Shift+S exec $noid suspend-with-screenlock
+bindsym $mod+Ctrl+Shift+H exec $noid hibernate-with-screenlock
+
+bindsym XF86Sleep exec $noid suspend-with-screenlock
 
 # Allows us to re-sleep the laptop if lock screen is up
 bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
-
-
-bindsym XF86Sleep exec --no-startup-id suspend-with-screenlock
 
 
 # Scratchpad:
