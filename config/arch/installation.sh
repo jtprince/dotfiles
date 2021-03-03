@@ -3,17 +3,21 @@
 # This is composed as a bash script, but I typically execute each line
 # individually so that I can deal with any issues as they arise.
 
-# core 1 - linux
+############################
+# CORE
+############################
+
+# linux
 pacman -S base base-devel linux linux-firmware  man-db man-pages texinfo --noconfirm
 
-# core 2 - networking and communication
+# networking and communication
 pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfirm
 
-# core 3 - shell, permissions, git, and firmware support
+# shell, permissions, git, and firmware support
 # (udisks2 for uefi support in fwupdmgr)
 pacman -S zsh git sudo vi vim nvim unzip p7zip udisks2 dmenu --noconfirm
 
-# core 4 - terminals
+# main terminals
 pacman -S xterm alacritty --noconfirm
 
 # those in wheel group can sudo with password
@@ -48,7 +52,9 @@ pacman -S xf86-video-intel mesa --noconfirm
 # ...|Eterm|aterm|...
 # ...|Eterm|alacritty|aterm|...
 
----
+############################
+# Graphical Interface
+############################
 
 # Make a user
 useradd -m -g users -G wheel -s /bin/zsh jtprince ;  passwd jtprince
@@ -61,15 +67,61 @@ pacman -S lightdm lightdm-gtk-greeter accountsservice --noconfirm ; systemctl en
 systemctl start lightdm
 # then login to i3, start browser, sign-in your user, and get this file!
 
+############################
+# Primary browser
+############################
+
+yay -S google-chrome --noconfirm
+
+############################
+# AUR helper
+############################
+
 ## Install yay
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 
-# install main browser
-yay -S google-chrome --noconfirm
+############################
+# MEGA
+############################
 
-#### Other sway/wayland stuff
+# open browser, navigate here and download and install
+# https://mega.nz/sync
+sudo pacman -U Download/megasync-x86_64.pkg.tar.zst
+# Login so it can start
+# jtprince@gmail.com
+
+############################
+# Dropbox
+############################
+
+# install dropbox
+yay -S dropbox dropbox-cli
+# If you have gpg import errors, you'll probably need to do this:
+curl https://linux.dropbox.com/fedora/rpm-public-key.asc
+gpg --import rpm-public-key.asc
+
+# reflector (for mirrorlists) NOTE: pause dropbox sync for this
+yay -S reflector --noconfirm;  sudo reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
+
+############################
+# dotfiles
+############################
+
+# Password related utilities
+~/MEGA/env/passwds_logins/INSTALL.sh
+
+git clone git@github.com:jtprince/dotfiles.git
+cd ~ && ln -s ~/dotfiles/bin && rehash
+dotfiles-configure --dry
+dotfiles-configure
+
+############################
+# OTHER
+############################
+
+# Other sway/wayland stuff
 
 yay -S wl-clipboard wl-clipboard-x11 wdisplays azote mako grimshot python-i3ipc
 # pipewire screensharing stuff
@@ -80,26 +132,6 @@ yay -S libpipewire02
 # now go set the pipewire flag for chromium at this url (in both your settings)
 chrome://flags/#enable-webrtc-pipewire-capturer
 
-# open browser, navigate here and download and install
-# https://mega.nz/sync
-sudo pacman -U Download/megasync-x86_64.pkg.tar.zst
-# Login so it can start
-# jtprince@gmail.com
-
-# install dropbox
-yay -S dropbox dropbox-cli
-# If you have gpg import errors, you'll probably need to do this:
-curl https://linux.dropbox.com/fedora/rpm-public-key.asc
-gpg --import rpm-public-key.asc
-
----
-
-# reflector (for mirrorlists) NOTE: pause dropbox sync for this
-yay -S reflector --noconfirm;  sudo reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
-
-# Password related utilities
-~/MEGA/env/passwds_logins/INSTALL.sh
-
 # ntpd
 sudo pacman -S ntp --noconfirm; sudo systemctl enable ntpd.service
 
@@ -108,9 +140,6 @@ sudo pacman -S networkmanager network-manager-applet --noconfirm; sudo systemctl
 
 # keychain
 yay -S keychain docker-credential-secretservice-bin --noconfirm
-
-git clone git@github.com:jtprince/dotfiles.git
-sh /home/jtprince/dotfiles/config/dotmation/config.sh
 
 # compositing manager
 yay -S picom --noconfirm
