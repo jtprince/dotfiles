@@ -152,6 +152,9 @@ curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.p
 python ./get-poetry.py
 ```
 
+# handlr for mime-type management
+yay -S handlr-bin
+
 # ruby
 # probably already installed
 yay -S openssl readline zlib --noconfirm
