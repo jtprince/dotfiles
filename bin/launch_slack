@@ -2,13 +2,14 @@
 
 delay = 0.6
 
-BROWSER = "google-chrome-stable \"$EXTRA_CHROME_BROWSER_FLAGS\" --new-window"
+# BROWSER = "google-chrome-stable \"$EXTRA_CHROME_BROWSER_FLAGS\" --new-window"
+# SLACK_URL = "https://owletcare.slack.com"
 
 SLACK = "slack"
-SLACK_URL = "https://owletcare.slack.com"
+
 [
   [SLACK],
-  [BROWSER, SLACK_URL],
+#   [BROWSER, SLACK_URL],
 ].each do |cmd|
   cmd_joined = cmd.is_a?(Array) ? cmd.compact.join(' ') : cmd
   cmd_forked = "#{cmd_joined} &"

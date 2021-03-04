@@ -1,30 +1,17 @@
-# soft link into ~/.config/ (new xdg spec) and into ~/.local/share/applications/ (for xdg-open)
-image/jpeg=eog.desktop
-image/png=eog.desktop
-image/svg+xml=eog.desktop;inkscape.desktop
-text/html=google-chrome.desktop
-text/plain=gvim.desktop
-inode/directory=thunar.desktop
-# spreadsheets
-application/vnd.ms-excel=libreoffice-calc.desktop
-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop
-application/xls=libreoffice-calc.desktop
-text/csv=libreoffice-calc.desktop
-text/tsv=libreoffice-calc.desktop
-
-# I'm not sure the difference between Default Applications and Added
-# Associations, but I've seen other programs put entries in *both*, so I'll
-# repeat that
 [Added Associations]
-image/jpeg=eog.desktop
-image/png=eog.desktop
-image/svg+xml=eog.desktop;inkscape.desktop
-text/html=google-chrome.desktop
-text/plain=gvim.desktop
-inode/directory=thunar.desktop
-# spreadsheets
-application/vnd.ms-excel=libreoffice-calc.desktop
-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop
-application/xls=libreoffice-calc.desktop
-text/csv=libreoffice-calc.desktop
-text/tsv=libreoffice-calc.desktop
+
+[Default Applications]
+application/pdf=org.gnome.Evince.desktop;
+application/vnd.ms-excel=libreoffice-calc.desktop;
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=libreoffice-calc.desktop;
+application/xls=libreoffice-calc.desktop;
+image/jpeg=org.gnome.eog.desktop;
+image/png=org.gnome.eog.desktop;
+image/svg+xml=org.inkscape.Inkscape.desktop;
+inode/directory=pcmanfm.desktop;
+text/csv=libreoffice-calc.desktop;
+text/html=google-chrome.desktop;
+text/tsv=libreoffice-calc.desktop;
+text/uri-list=google-chrome.desktop;
+x-scheme-handler/http=google-chrome.desktop;
+x-scheme-handler/https=google-chrome.desktop;

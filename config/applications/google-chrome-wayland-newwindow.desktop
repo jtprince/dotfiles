@@ -4,7 +4,8 @@ Name=Chromium
 GenericName=Web Browser
 Comment=Access the Internet
 # note that we start a new window by default
-Exec=/usr/bin/google-chrome-stable $EXTRA_CHROME_BROWSER_FLAGS --new-window %U
+# Exec=/usr/bin/google-chrome-stable $EXTRA_CHROME_BROWSER_FLAGS --new-window %U
+Exec=sh -c "/usr/bin/google-chrome-stable \$EXTRA_CHROME_BROWSER_FLAGS --new-window %U"
 StartupNotify=true
 Terminal=false
 Icon=google-chrome-stable
@@ -14,7 +15,7 @@ Actions=new-window;new-private-window;
 
 [Desktop Action new-window]
 Name=New Window
-Exec=/usr/bin/google-chrome-stable $EXTRA_CHROME_BROWSER_FLAGS
+Exec=sh -c "/usr/bin/google-chrome-stable \$EXTRA_CHROME_BROWSER_FLAGS"
 
 [Desktop Action new-private-window]
 Name=New Incognito Window

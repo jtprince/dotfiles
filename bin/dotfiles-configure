@@ -70,6 +70,7 @@ OTHER_SYM_LINKS = {
     CLOUD_ENV / "cloud-and-apis/slack-term":  HOME_CONFIG / "slack-term",
 
     REPO_CONFIG / "mimeapps.list":  DOT_LOCAL / "share/applications/mimeapps.list",
+    REPO_CONFIG / "mimeapps.list":  HOME_CONFIG / "mimeapps.list",
 
     # ensure use chrome with wayland flags and that always opens a new window
     # set to be the generic chrome .desktop
