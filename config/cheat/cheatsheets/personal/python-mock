@@ -27,3 +27,19 @@
 
     mock.assert_called_once_with(<args or kwargs>)
     mock.assert_called_with(<args or kwargs>)
+
+# The 3 levels of mocking
+
+## spec - Terrible
+
+<need example>
+
+## spec_set=True - Okay
+
+<need example>
+spec_set=<ref> or spec_set=True
+
+## Autospec - Gold Standard to create a mock
+
+unittest.mock.create_autospec(spec=<class or instance>, spec_set=True)
+mocker.create_autospec(spec=<class or instance>, spec_set=True)
