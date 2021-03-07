@@ -4,10 +4,10 @@
     geometry = "350x5-0+24"
     indicate_hidden = yes
     shrink = yes
-    transparency = 20
+    transparency = 15
     notification_height = 0
     separator_height = 2
-    padding = 0
+    padding = 6
     horizontal_padding = 8
     frame_width = 3
     frame_color = "#282828"
@@ -24,7 +24,7 @@
     sort = yes
 
     idle_threshold = 120
-    font = Monospace 14
+    font = Monospace 10
     line_height = 0
     markup = full
 
@@ -52,10 +52,11 @@
     icon_position = left
     max_icon_size = 40
     #icon_path = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/:/usr/share/icons/Adwaita/256x256/status/
+    icon_path = /usr/share/icons/Adwaita/48x48/legacy/:/usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/:/usr/share/icons/Adwaita/256x256/status/
     sticky_history = yes
     history_length = 20
     dmenu = /usr/bin/dmenu -p dunst:
-    browser = /usr/bin/firefox -new-tab
+    browser = /usr/bin/google-chrome-stable --new-window
 
     # Always run rule-defined scripts, even if the notification is suppressed
     always_run_script = true
