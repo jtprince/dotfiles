@@ -76,6 +76,8 @@ OTHER_SYM_LINKS = {
     # set to be the generic chrome .desktop
     REPO_CONFIG / "applications/google-chrome-wayland-newwindow.desktop": DOT_LOCAL / "share/applications/google-chrome.desktop",
 
+    REPO_CONFIG / "pandoc/reference": DOT_LOCAL / "share/pandoc",
+
     # Xdefaults is deprecated upstream, but make link til we don't need
     REPO_CONFIG / "Xresources":  Path.home() / ".Xdefaults",
     REPO_CONFIG / "/zsh/zshenv": Path.home() / ".zshenv",

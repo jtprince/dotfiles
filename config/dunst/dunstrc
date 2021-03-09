@@ -94,6 +94,21 @@
     frame_color = "#fabd2f"
     timeout = 10
 
+[volume]
+    appname = "pulseaudio-ctl"
+    icon = "multimedia-volume-control"
+    # summary = "*Volume*"
+
+    background = "#000000"
+    foreground = "#FFFFFF"
+    set_stack_tag = 'volume'
+    timeout = 4
+
+
+# FILTERS ARE THESE:
+# appname, summary, body, icon, category, match_transient and msg_urgency to matc
+
+
 # Every section that isn't one of the above is interpreted as a rules to
 # override settings for certain messages.
 # Messages can be matched by "appname", "summary", "body", "icon", "category",
