@@ -95,7 +95,7 @@
     timeout = 10
 
 [volume]
-    appname = "pulseaudio-ctl"
+    appname = "volume-and-notify"
     icon = "multimedia-volume-control"
     # summary = "*Volume*"
 
