@@ -453,7 +453,7 @@ bindsym $mod+Shift+P exec dmenu_run
 bindsym $mod+Shift+U reload
 
 # Exit sway (logs you out of your Wayland session)
-bindsym $mod+Shift+Q exec exit
+bindsym $mod+Shift+Q exec i3-msg exit
 
 # power/on-off management:
 # note, you may need to: sudo chmod u+s /sbin/poweroff

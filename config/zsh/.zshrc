@@ -233,3 +233,11 @@ fi
 # codefresh
 # this is really slow, so until we figure out why, skip it
 # [[ $commands[codefresh] ]] && source <(codefresh completion zsh)
+
+###############################################################################
+# Corrections
+###############################################################################
+
+# disable corrections on args
+unsetopt correct_all
+setopt correct

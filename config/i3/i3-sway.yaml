@@ -33,7 +33,7 @@ laptop_keyboard_toggle: |
   # favorites #2 key
   bindsym XF86Launch6 exec --no-startup-id laptop-keyboard keyboard toggle
 exit_cmd: >-
-    exit
+    i3-msg exit
 special_sleep: |
 
   # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
