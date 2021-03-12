@@ -444,13 +444,9 @@ yay -S informant --noconfirm
 ## kube
 #########################################
 
-yay -S kubectl --noconfirm
-
-# kubectl-use is easiest way to control context and namespace
-curl -LO https://github.com/kvaps/kubectl-use/raw/master/kubectl-use
-cat ./kubectl-use  # scan for security vulnerabilities
-chmod +x ./kubectl-use
-mv ./kubectl-use ~/.local/bin/kubectl-use
+yay -S kubectl kubectx --noconfirm
+# then without the dry
+kubernetes-setup-credentials --with-login --credentials --nicknames --dry
 
 #########################################
 ## OPTIONAL

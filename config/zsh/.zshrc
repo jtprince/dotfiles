@@ -222,11 +222,6 @@ fi
 # kubectl
 # [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 
-# kubectl-use
-# if command -V kubectl-use >/dev/null; then
-#   source <(kubectl-use -completion)
-# fi
-
 # helm
 # [[ $commands[helm] ]] && source <(helm completion zsh)
 
