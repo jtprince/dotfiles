@@ -9,15 +9,23 @@ from pathlib import Path
 #############################
 # CONFIG
 #############################
-EMAIL = "jprince@owletcare.com"
 BASE_DIR = Path.home() / "MEGA/env/work/owlet/secrets/firebase"
 
 # files under BASE_DIR/<env>
-APIKEY = "apikey"
-PASSWORD = "password"
+files = dict(
+    email="email",
+    user_uid="user_uid",
+    password="password",
+    apikey="apikey",
+)
 
 default_env = "dev"
 #############################
+
+
+def get_file_contents(env_path, name):
+    return (env_path / name).read_text().strip()
+
 
 URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword"
 
@@ -26,11 +34,27 @@ CACHE_DIR.mkdir(exist_ok=True)
 
 parser = argparse.ArgumentParser(description="prints the token with no newline")
 parser.add_argument("env", nargs="?", default=default_env, help="environment")
-parser.add_argument("--list", action='store_true', help="print possible envs and exit")
-parser.add_argument("-c", "--cache", action='store_true', help="writes to ")
+parser.add_argument(
+    "--list", action="store_true", help="print possible envs and exit"
+)
+parser.add_argument(
+    "-u", "--user-dir", default="default", help="name of dir for the user"
+)
+parser.add_argument(
+    "-c",
+    "--cache",
+    action="store_true",
+    help="writes to .cache/owlet/token-{env}",
+)
+parser.add_argument(
+    "-a", "--all", action="store_true", help="display all user info"
+)
+parser.add_argument(
+    "-e", "--export", action="store_true", help="display export statements (implies --all)"
+)
 args = parser.parse_args()
-
-
+if args.export:
+    args.all = True
 
 
 if args.list:

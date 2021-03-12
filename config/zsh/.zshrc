@@ -217,12 +217,18 @@ fi
 # autocomplete
 ###############################################################################
 
+# RIGHT NOW WE HAVE THESE in _completion dir for quick startup
 
 # kubectl
-[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+# [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+
+# kubectl-use
+# if command -V kubectl-use >/dev/null; then
+#   source <(kubectl-use -completion)
+# fi
 
 # helm
-[[ $commands[helm] ]] && source <(helm completion zsh)
+# [[ $commands[helm] ]] && source <(helm completion zsh)
 
 # codefresh
 # this is really slow, so until we figure out why, skip it

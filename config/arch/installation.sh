@@ -441,6 +441,18 @@ yay -S github-cli --noconfirm
 yay -S informant --noconfirm
 
 #########################################
+## kube
+#########################################
+
+yay -S kubectl --noconfirm
+
+# kubectl-use is easiest way to control context and namespace
+curl -LO https://github.com/kvaps/kubectl-use/raw/master/kubectl-use
+cat ./kubectl-use  # scan for security vulnerabilities
+chmod +x ./kubectl-use
+mv ./kubectl-use ~/.local/bin/kubectl-use
+
+#########################################
 ## OPTIONAL
 #########################################
 
