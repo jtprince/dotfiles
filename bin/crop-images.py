@@ -3,25 +3,23 @@
 import argparse
 from pathlib import Path
 
-from PIL import Image, ImageOps
+# assumes images gathered from half screen on chrome browser
 
-parser = argparse.ArgumentParser(description="")
-parser.add_argument("images", nargs="+", type=Path, help="paths to image files")
-parser.add_argument("-t", "--top", default=0, type=int, help="crop from top")
-parser.add_argument(
-    "-b", "--bottom", default=0, type=int, help="crop from bottom"
-)
-parser.add_argument("-l", "--left", default=0, type=int, help="crop from left")
-parser.add_argument(
-    "-r", "--right", default=0, type=int, help="crop from right"
-)
-args = parser.parse_args()
+left = 45
+right = 52
+top = 70
+bottom = 3
 
-border = (args.left, args.top, args.right, args.bottom)
+# WIP
 
-for image_path in args.images:
-    image = Image.open(image_path)
-
-    outfile = image_path.with_suffix(".cropped" + image_path.suffix)
-    cropped_image = ImageOps.crop(image, border)
-    cropped_image.save(str(outfile))
+# cmd = f"crop-images.py {{{}}} "-l {left} -r {right} -t {top} -b {bottom}"
+#
+# parser = argparse.ArgumentParser(description="")
+# parser.add_argument("images", nargs="+", type=Path, help="paths to image files")
+# args = parser.parse_args()
+#
+# for image_path in args.images:
+#     image = Image.open(image_path)
+#
+#     outfile = image_path.with_suffix(".cropped" + image_path.suffix)
+# subprocess.run(cmd, shell=true)

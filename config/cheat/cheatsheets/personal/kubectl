@@ -1,6 +1,22 @@
+## Getting Started
+
+# get credentials for a cluster
+gcloud container clusters get-credentials platform --project owletcare-dev --region us-central1
+
+# use kubectx to set a nickname
+kubectx dev=gke_owletcare-dev_us-central1_platform
+
+# Or just run my script: kubernetes-setup-credentials
+
+## Misc
 
 # ssh into a box
 kubectl exec --stdin --tty device-registration-v1-redis-master-0 -- /bin/bash
+
+## Standard Operations
+
+# see what pods exist
+kubectl get pods
 
 # create a pod
     ---
@@ -17,6 +33,3 @@ kubectl exec --stdin --tty device-registration-v1-redis-master-0 -- /bin/bash
     ---
 
 kubectl create -f somepodspec.yaml
-
-# see what pods exist
-kubectl get pods

@@ -1,0 +1,111 @@
+#!/usr/bin/env python
+
+import subprocess
+import argparse
+import dataclasses
+import time
+
+DEFAULT_NAMESPACE = "platform"
+
+parser = argparse.ArgumentParser()
+args = parser.add_argument("deployment_name", help="the name of the deployment")
+args = parser.add_argument("--context", required=True, help="the context")
+args = parser.add_argument(
+    "--namespace", default=DEFAULT_NAMESPACE, help="the namespace"
+)
+args = parser.add_argument(
+    "--final-num-replicas",
+    default=1,
+    help="create this many replicas after going to zero regardless of how many existed initially",
+)
+args = parser.add_argument("--dry", action="store_true", help="don't do it")
+args = parser.parse_args()
+
+current_context = subprocess.check_output(
+    "kubectx --current", shell=True, text=True
+).strip()
+print("CURRENT CONTEXT:", current_context)
+
+if args.context != current_context:
+    raise ValueError("--context must match `kubectx --current`")
+
+if "prod" in current_context:
+    raise RuntimeError(
+        "This script cannot be run in any prod environment, sorry."
+    )
+    exit()  # insurance
+
+
+@dataclasses.dataclass
+class Deployment:
+    name: str
+    namespace: str
+    params: dict
+
+    REPLICAS = "replicas"
+    READY_REPLICAS = "readyReplicas"
+
+    def get_status(self, key=REPLICAS):
+        num_replicas_str = self.get_output(
+            f"kubectl get deployments --namespace {self.namespace} {self.name} "
+            f"-o json | jq '.status.{key}'"
+        ).strip()
+
+        if num_replicas_str == "null":
+            num_replicas_str = "0"
+
+        return int(num_replicas_str)
+
+    def scale_replicas(self, number):
+        self.run(
+            f"kubectl scale deployments/{self.name} --namespace {self.namespace} --replicas={number}"
+        )
+
+    def run(self, cmd):
+        # print("Running:", cmd)
+        if not self.params["dry"]:
+            return subprocess.run(
+                cmd,
+                shell=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+
+    def get_output(self, cmd):
+        # print("Get output from:", cmd)
+        if not self.params["dry"]:
+            return subprocess.check_output(cmd, shell=True, text=True)
+
+    def has_replicas(self):
+        return self.get_status(key=self.REPLICAS) > 0
+
+    def num_replicas(self):
+        return self.get_status(key=self.REPLICAS)
+
+    def num_ready_replicas(self):
+        return self.get_status(key=self.READY_REPLICAS)
+
+    def refresh_replicas(self):
+        """Drop to zero and then back to whatever it was before."""
+        # turn to zero
+        print("Setting replicas to 0 ", end="", flush=True)
+        self.scale_replicas(0)
+        print(".", end="", flush=True)
+        while num_replicas := self.num_replicas():
+            print(".", end="", flush=True)
+            time.sleep(4)
+        print(" done!", flush=True)
+
+        desired_replicas = self.params["final_num_replicas"]
+        print(f"Setting replicas to {desired_replicas} ", end="", flush=True)
+        self.scale_replicas(desired_replicas)
+        while (num_ready := self.num_ready_replicas()) < desired_replicas:
+            print(f".", end="", flush=True)
+            time.sleep(4)
+
+        print(" done!", flush=True)
+        print(f"READY: {num_ready}/{desired_replicas}", flush=True)
+
+
+deployment = Deployment(args.deployment_name, args.namespace, vars(args))
+deployment.refresh_replicas()

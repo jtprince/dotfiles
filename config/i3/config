@@ -428,8 +428,8 @@ set $monitor_primary1_cmd jasnah-x11-monitor-config desk
 set $monitor_primary2_cmd jasnah-x11-monitor-config treadmill
 
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
-bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
-bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd
+bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd && sleep 1 && pactl-speakers toggle && sleep 1
+bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd && sleep 1 && pactl-speakers toggle && sleep 1
 
 # favorites #1 key
 # bindsym XF86Launch5 exec --no-startup-id xrandr --auto &amp;&amp; randomise-bkg
