@@ -20,6 +20,8 @@ files = dict(
 )
 
 default_env = "dev"
+
+DO_NOT_DISPLAY = ["password", "apikey"]
 #############################
 
 
@@ -41,16 +43,13 @@ parser.add_argument(
     "-u", "--user-dir", default="default", help="name of dir for the user"
 )
 parser.add_argument(
-    "-c",
-    "--cache",
-    action="store_true",
-    help="writes to .cache/owlet/token-{env}",
-)
-parser.add_argument(
     "-a", "--all", action="store_true", help="display all user info"
 )
 parser.add_argument(
-    "-e", "--export", action="store_true", help="display export statements (implies --all)"
+    "-e",
+    "--export",
+    action="store_true",
+    help="display export statements (implies --all)",
 )
 args = parser.parse_args()
 if args.export:
@@ -65,25 +64,33 @@ if args.list:
     exit(0)
 
 
-env_path = BASE_DIR / args.env
+env_path = BASE_DIR / args.env / args.user_dir
 
-api_key = (env_path / APIKEY).read_text().strip()
-password = (env_path / PASSWORD).read_text().strip()
+data = {
+    key: (env_path / filename).read_text().strip()
+    for key, filename in files.items()
+}
 
-data = dict(
-    email=EMAIL,
-    password=password,
+body = dict(
+    email=data["email"],
+    password=data["password"],
     returnSecureToken=True,
 )
-params = dict(key=api_key)
+params = dict(key=data["apikey"])
 
-response = requests.post(URL, json=data, params=params)
+response = requests.post(URL, json=body, params=params)
 
-token = response.json()['idToken']
+token = response.json()["idToken"]
 
-if args.cache:
-    CACHE_FILE = CACHE_DIR / f"token-{args.env}"
-    CACHE_FILE.write_text(token)
-    print(f"wrote to: {str(CACHE_FILE)}", file=sys.stderr)
+if args.all:
+    token_key = "token" if args.export else "Authorization"
+    display_data = data | {token_key: token}
+    for key in DO_NOT_DISPLAY:
+        display_data.pop(key)
+    for key, val in display_data.items():
+        if args.export:
+            print(f"export {key.upper()}='{val}'")
+        else:
+            print(f"{key}: {val}")
 else:
     print(token, end="")
