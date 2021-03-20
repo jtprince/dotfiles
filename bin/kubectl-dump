@@ -30,16 +30,20 @@ output = subprocess.check_output(cmd, shell=True, text=True)
 yaml.safe_load(output)
 data = yaml.safe_load(output)
 
-metadata = data["metadata"]
+data.pop("status", None)
 
-REMOVE = [
+METADATA_REMOVE = [
     "resourceVersion",
     "uid",
-    "annotations",
+    # annotations (specifically, kubectl.kubernetes.io/last-applied-configuration)
+    # is needed by kubectl apply
+    # "annotations",
     "creationTimestamp",
     "selfLink",
     "managedFields",
 ]
+
+metadata = data["metadata"]
 
 for key in REMOVE:
     metadata.pop(key, None)

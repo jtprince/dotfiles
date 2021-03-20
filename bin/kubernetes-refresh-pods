@@ -9,7 +9,6 @@ DEFAULT_NAMESPACE = "platform"
 
 parser = argparse.ArgumentParser()
 args = parser.add_argument("deployment_name", help="the name of the deployment")
-args = parser.add_argument("--context", required=True, help="the context")
 args = parser.add_argument(
     "--namespace", default=DEFAULT_NAMESPACE, help="the namespace"
 )
@@ -17,6 +16,16 @@ args = parser.add_argument(
     "--final-num-replicas",
     default=1,
     help="create this many replicas after going to zero regardless of how many existed initially",
+)
+args = parser.add_argument(
+    "--zero",
+    action="store_const",
+    const=0,
+    dest="final_num_replicas",
+    help="just set to zero and walk away",
+)
+args = parser.add_argument(
+    "--ALLOW-PRODUCTION", action="store_true", help="allow the command on prod"
 )
 args = parser.add_argument("--dry", action="store_true", help="don't do it")
 args = parser.parse_args()
@@ -26,14 +35,10 @@ current_context = subprocess.check_output(
 ).strip()
 print("CURRENT CONTEXT:", current_context)
 
-if args.context != current_context:
-    raise ValueError("--context must match `kubectx --current`")
-
-if "prod" in current_context:
+if ("prod" in current_context) and not args.ALLOW_PRODUCTION:
     raise RuntimeError(
-        "This script cannot be run in any prod environment, sorry."
+        "Cannot run in a prod environment, use --ALLOW-PRODUCTION to override."
     )
-    exit()  # insurance
 
 
 @dataclasses.dataclass
@@ -90,6 +95,9 @@ class Deployment:
         # turn to zero
         print("Setting replicas to 0 ", end="", flush=True)
         self.scale_replicas(0)
+        if self.params['dry']:
+            print("<Using --dry, and the rest requires results, so exiting>")
+            exit(1) 
         print(".", end="", flush=True)
         while num_replicas := self.num_replicas():
             print(".", end="", flush=True)
@@ -97,6 +105,9 @@ class Deployment:
         print(" done!", flush=True)
 
         desired_replicas = self.params["final_num_replicas"]
+        if desired_replicas == 0:
+            print("Leaving replicas at zero")
+            return
         print(f"Setting replicas to {desired_replicas} ", end="", flush=True)
         self.scale_replicas(desired_replicas)
         while (num_ready := self.num_ready_replicas()) < desired_replicas:

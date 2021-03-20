@@ -91,7 +91,7 @@ for branch_name, branches in branch_name_groups.items():
                 f"git diff {remote}", print_cmd=True, print_response=True
             )
             if not response:
-                print("No difference between local branch and {remote}")
+                print(f"No difference between local branch and {remote}")
                 print("So, going to force delete local branch")
                 response = run(
                     f"git branch -D {branch_}",

@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+from pathlib import Path
+import re
+import argparse
+import json
+import subprocess
+from subprocess import PIPE, Popen
+import io
+import pystache
+
+
+def _ensure_only_deliberate_production(args):
+    current_context = subprocess.check_output(
+        "kubectx --current", text=True, shell=True
+    ).strip()
+    if "prod" in current_context and not args.PRODUCTION:
+        raise RuntimeError(
+            "Cannot run this in prod context without --ALLOW-PRODUCTION flag"
+        )
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "template",
+    type=Path,
+    help=str(
+        "The deployment yaml.mo file. "
+        "This is a deployment yaml (see kubectl-dump) with mustache templates.",
+    )
+)
+parser.add_argument(
+    "replacements",
+    nargs="*",
+    help=str(
+        "replacement data for mustache fields in form <key>=<val>, "
+        "e.g. timeout=13"
+    )
+)
+parser.add_argument(
+    "--show-rendered", action='store_true', help="show rendered template and exit"
+)
+parser.add_argument(
+    "--ALLOW-PRODUCTION", action='store_true', help="allow to be run on production"
+)
+args = parser.parse_args()
+_ensure_only_deliberate_production(args)
+
+
+data = dict(
+    replacement.split('=', maxsplit=1) for replacement in args.replacements
+)
+
+mustache_template = args.template.read_text()
+rendered_file = pystache.render(mustache_template, data)
+if args.show_rendered:
+    print(rendered_file)
+    exit(0)
+
+io.StringIO(rendered_file)
+
+# print("Running: 'kubectl apply -f -' on the filled in template...")
+process = Popen(["kubectl", "apply", "-f", "-"], text=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+stdout, stderr = process.communicate(rendered_file)
+
+print(stdout)
+if stderr:
+    print("!! STDERR:")
+    print(stderr)
+
+exit(0)
