@@ -1,0 +1,142 @@
+#!/usr/bin/env python
+
+# ----------------------------------------------------------------------
+# modified from:
+# https://github.com/vinay20045/json-to-csv/blob/master/json_to_csv.py
+# modifications are Copyright (c) John Prince working for Owlet
+# Also released on under MIT License
+# ----------------------------------------------------------------------
+# MIT License
+#
+# Copyright (c) 2017 Vinay NP <vinay@askvinay.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# ----------------------------------------------------------------------
+
+
+import sys
+import csv
+import json
+from itertools import chain
+from pathlib import Path
+import argparse
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "json_file_paths", nargs="+", type=Path, help="path to files with json"
+)
+parser.add_argument("--jsonl", action="store_true", help="file is jsonl")
+parser.add_argument(
+    "--node",
+    help="the node in a dict where resides the list of dicts to become csv",
+)
+parser.add_argument(
+    "--insert-filename-as",
+    help="insert name of the file under specified header",
+)
+
+
+args = parser.parse_args()
+
+
+def to_string(s):
+    try:
+        return str(s)
+    except:
+        return s.encode("utf-8")
+
+
+def reduce_(key, value) -> list[tuple[str, object]]:
+    """Returns a list of pairs representing reduced mappings.
+
+    May need some work with deeply nested stuff.
+    """
+    pairs = []
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            pairs.extend(reduce_(f"{key}_{to_string(index)}", item))
+
+    if isinstance(value, dict):
+        for sub_key, sub_val in value.items():
+            pairs.extend(reduce_(f"{key}_{to_string(sub_key)}", sub_val))
+
+    else:
+        pairs.append((to_string(key), to_string(value)))
+
+    return pairs
+
+
+def reduce_mapping(data):
+    # for key, val in data.items():
+    #     reduced = reduce_(key, val)
+    #     print(reduced)
+    return dict(
+        chain.from_iterable(reduce_(key, val) for key, val in data.items())
+    )
+
+
+def insert_filename(data, key, path, args):
+    """Inserts the filename of path under key and returns data."""
+    if args.insert_filename_as:
+        data[key] = path.name
+    return data
+
+
+def assemble_line_generator(path, args):
+    if args.jsonl:
+        return (
+            insert_filename(
+                reduce_mapping(json.loads(line)), args.insert_filename_as, path, args
+            )
+            for line in path.open()
+            if line.strip()
+        )
+
+    data = json.load(path)
+    if args.node:
+        list_of_dicts = data[args.node]
+    else:
+        list_of_dicts = data
+
+    return (
+        insert_filename_as(
+            reduce_mapping(mapping), args.insert_filename_as, path, args
+        )
+        for mapping in list_of_dicts
+    )
+
+
+data_rows = chain.from_iterable(
+    (assemble_line_generator(path, args) for path in args.json_file_paths)
+)
+
+
+# could throw in an argument to skip deep check of headers
+all_keys = set()
+replay_rows = []
+for row in data_rows:
+    all_keys.update(row.keys())
+    replay_rows.append(row)
+
+
+writer = csv.DictWriter(sys.stdout, fieldnames=all_keys)
+writer.writeheader()
+for data_row in replay_rows:
+    writer.writerow(data_row)

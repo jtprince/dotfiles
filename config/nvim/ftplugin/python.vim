@@ -18,6 +18,7 @@ iab improt import
 iab imrpot import
 iab imrpt import
 iab imprt import
+iab iport import
 
 noremap <leader>o <Esc>:CocCommand python.sortImports<CR>
 
