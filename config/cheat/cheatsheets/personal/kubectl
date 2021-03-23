@@ -33,3 +33,17 @@ kubectl get pods
     ---
 
 kubectl create -f somepodspec.yaml
+
+# create a tmp pod and ssh into it for work in that enviroment
+
+kubectl run tmp-debug --image=ubuntu -o yaml --command -- sleep 1200
+kubectl run tmp-debug --image=ubuntu -o yaml --command -- sleep infinity
+kubectl exec -it tmp-debug  -- bash
+
+# login to a pod
+
+## default container:
+kubectl exec -it <Pod_Name>  -- /bin/bash
+
+# specific container:
+kubectl exec -it <Pod_Name> -c <Container_Name> -- /bin/bash

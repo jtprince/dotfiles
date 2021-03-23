@@ -45,7 +45,7 @@ METADATA_REMOVE = [
 
 metadata = data["metadata"]
 
-for key in REMOVE:
+for key in METADATA_REMOVE:
     metadata.pop(key, None)
 
 print(yaml.dump(data), end="")
