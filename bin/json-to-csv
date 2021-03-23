@@ -29,7 +29,8 @@
 # SOFTWARE.
 # ----------------------------------------------------------------------
 
-
+# pip install flatten_json
+from flatten_json import flatten
 import sys
 import csv
 import json
@@ -63,33 +64,8 @@ def to_string(s):
         return s.encode("utf-8")
 
 
-def reduce_(key, value) -> list[tuple[str, object]]:
-    """Returns a list of pairs representing reduced mappings.
-
-    May need some work with deeply nested stuff.
-    """
-    pairs = []
-    if isinstance(value, list):
-        for index, item in enumerate(value):
-            pairs.extend(reduce_(f"{key}_{to_string(index)}", item))
-
-    if isinstance(value, dict):
-        for sub_key, sub_val in value.items():
-            pairs.extend(reduce_(f"{key}_{to_string(sub_key)}", sub_val))
-
-    else:
-        pairs.append((to_string(key), to_string(value)))
-
-    return pairs
-
-
 def reduce_mapping(data):
-    # for key, val in data.items():
-    #     reduced = reduce_(key, val)
-    #     print(reduced)
-    return dict(
-        chain.from_iterable(reduce_(key, val) for key, val in data.items())
-    )
+    return flatten(data)
 
 
 def insert_filename(data, key, path, args):
