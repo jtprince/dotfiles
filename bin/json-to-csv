@@ -98,12 +98,16 @@ def insert_filename(data, key, path, args):
         data[key] = path.name
     return data
 
+def to_json(line):
+    # print(line)
+    return json.loads(line)
+
 
 def assemble_line_generator(path, args):
     if args.jsonl:
         return (
             insert_filename(
-                reduce_mapping(json.loads(line)), args.insert_filename_as, path, args
+                reduce_mapping(to_json(line)), args.insert_filename_as, path, args
             )
             for line in path.open()
             if line.strip()
