@@ -139,3 +139,6 @@ alias conky="conky --config $HOME/.config/conky/conky.conf"
 alias mp3encodinginfo="ffprobe -show_format 2>/dev/null"
 
 alias prn="poetry run"
+
+alias kubeon="export ZSH_KUBECTL_DISPLAY=true"
+alias kubeoff="export ZSH_KUBECTL_DISPLAY=false"

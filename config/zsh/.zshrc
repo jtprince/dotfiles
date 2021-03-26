@@ -98,6 +98,17 @@ export NUM_CPU_CORES=`grep -c ^processor /proc/cpuinfo`
 alias bundlei="bundle install --jobs=$NUM_CPU_CORES"
 
 ###############################################################################
+# Prompt
+###############################################################################
+
+# See jtprince.zsh-theme for more style
+
+# If you have variables in your prompt, they will be substituted in each time
+# its displayed. Consider single quotes to ensure the variable exists as a
+# variable.
+setopt prompt_subst
+
+###############################################################################
 # Functions
 ###############################################################################
 

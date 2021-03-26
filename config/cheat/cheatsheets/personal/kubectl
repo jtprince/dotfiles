@@ -47,3 +47,13 @@ kubectl exec -it <Pod_Name>  -- /bin/bash
 
 # specific container:
 kubectl exec -it <Pod_Name> -c <Container_Name> -- /bin/bash
+
+# logs
+
+## get the logs for a pod (you really want events in most cases!)
+kubernetes-get-events [deployment_name|pod_name]
+kubectl get event --field-selector involvedObject.name=accounts-v1-5cdcbc56bd-hc25s
+
+# get pods associated with a deployment (called a "release" in the output)
+kubectl get pods --selector release=<deployment_name> --no-headers=true --output name
+# outputs pod/<podname> and <podname> is what you want

@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+
+
+import subprocess
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "names",
+    nargs="+",
+    help="pod or deployment name (e.g., accounts-v1 or accounts-v1-9f54b84c6-jtwdc)",
+)
+parser.add_argument(
+    "-o",
+    "--output",
+    help="valid input to kubectl -o, e.g., yaml",
+)
+parser.add_argument("-v", "--verbose", action='store_true', help="talk about it")
+
+args = parser.parse_args()
+
+
+def printv(*args_, **kwargs):
+    if args.verbose:
+        print(*args_, **kwargs)
+
+def check_output(cmd):
+    printv(f"Running: {cmd}")
+    return subprocess.check_output(
+        cmd, shell=True, text=True, stderr=subprocess.DEVNULL
+    )
+
+
+def run(cmd):
+    printv(f"Running: {cmd}")
+    return subprocess.run(
+        cmd, shell=True, text=True
+    )
+
+
+def is_pod_name(name):
+    try:
+        check_output(
+            f"kubectl get pods {name} --output name",
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def get_pods_from_deployment(name):
+    output = subprocess.check_output(
+        f"kubectl get pods --selector=release={name} --no-headers=true --output name",
+        text=True,
+        shell=True,
+    )
+    return [
+        line.strip().split("/", 1)[-1]
+        for line in output.split("\n")
+        if line.strip()
+    ]
+
+
+pod_names = []
+
+for name in args.names:
+    if is_pod_name(name):
+        pod_names.append(name)
+    else:
+        some_pod_names = get_pods_from_deployment(name)
+        printv(f"Pods associated with deployment {name}: ", some_pod_names)
+        pod_names.extend(some_pod_names)
+
+
+for pod_name in pod_names:
+    base_cmd = (
+        f"kubectl get event --field-selector involvedObject.name={pod_name}"
+    )
+    if args.output:
+        # should shell escape for special custom column notation
+        base_cmd += f" --output {args.output}"
+
+    run(base_cmd)

@@ -42,8 +42,29 @@ ZSH_THEME_GIT_PROMPT_RENAMED="%{$terminfo[bold]$fg[magenta]%}➜"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$terminfo[bold]$fg[yellow]%}═"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$terminfo[bold]$fg[cyan]%}✭"
 
+ZSH_THEME_KUBECTX_PROD_PREFIX="%{$fg_bold[red]%}"
+ZSH_THEME_KUBECTX_PROD_SUFFIX="%{$reset_color%}"
+ZSH_THEME_KUBECTX_NOT_PROD_PREFIX="%{$fg[blue]%}"
+ZSH_THEME_KUBECTX_NOT_PROD_SUFFIX="%{$reset_color%}"
+
+function kubectl_context_display() {
+    "${ZSH_KUBECTL_DISPLAY:=true}"
+    if [ "$ZSH_KUBECTL_DISPLAY" = true ]; then
+        kubectl_context=`kubectx -c`
+        if [[ $kubectl_context =~ "prod" ]]; then
+            echo " ${ZSH_THEME_KUBECTX_PROD_PREFIX}>>>${kubectl_context}>>>${ZSH_THEME_KUBECTX_PROD_SUFFIX} "
+        else
+            echo " ${ZSH_THEME_KUBECTX_NOT_PROD_PREFIX}⎈${kubectl_context}${ZSH_THEME_KUBECTX_NOT_PROD_SUFFIX} "
+        fi
+    else
+        echo " "
+    fi
+}
+
+# because we have prompt_subst set, then we want a string that will be
+# substituted at display time. escape those vars
 PROMPT="
-${user} ${pwd} $ "
+${user} ${pwd}\$(kubectl_context_display)$ "
 
 #RPROMPT="${return_code} ${git_branch} ${rbenv}"
 RPROMPT="${return_code} ${git_branch} ${virtualenv_prompt}"
