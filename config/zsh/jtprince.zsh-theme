@@ -48,7 +48,7 @@ ZSH_THEME_KUBECTX_NOT_PROD_PREFIX="%{$fg[blue]%}"
 ZSH_THEME_KUBECTX_NOT_PROD_SUFFIX="%{$reset_color%}"
 
 function kubectl_context_display() {
-    "${ZSH_KUBECTL_DISPLAY:=true}"
+    # assumes that ZSH_KUBECTL_DISPLAY is already set
     if [ "$ZSH_KUBECTL_DISPLAY" = true ]; then
         kubectl_context=`kubectx -c`
         if [[ $kubectl_context =~ "prod" ]]; then

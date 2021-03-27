@@ -40,6 +40,9 @@ export GPG_TTY=`tty`
 # Did not receive a reply..." errors with GTK3
 export NO_AT_BRIDGE=1
 
+# Whether to begin with kubectx shown in prompt by default
+export ZSH_KUBECTL_DISPLAY=false
+
 #####################################################
 # PATHS and SIMILAR
 #####################################################
@@ -86,18 +89,6 @@ export CHEATCOLORS=true
 ## OWLET
 export OWLET_PYPROJECT_FILE="$HOME/owlet/ci-kit/bin/python/configuration/pyproject.toml"
 export OWLET_COVERAGERC_FILE="$HOME/owlet/ci-kit/bin/python/configuration/.coveragerc"
-
-#####################################################
-# LOCAL
-#####################################################
-
-# jtprince.dev.doba.com
-export RMT="root@jtprince.dev.doba.com"
-# follow this with two slashes to get to root ...doba.com//home/build/...
-export RMTSCP="scp://root@jtprince.dev.doba.com"
-
-export STAGING="root@staging.doba.com"
-export SALTSERVER="ec2-user@salt.doba.com"
 
 #####################################################
 # Language Specific
