@@ -1,0 +1,7 @@
+
+# recreate the lock file without upgrading
+poetry lock --no-update
+
+# ensure that you can view the github prompt on install or update
+poetry install -vv
+poetry update -vv
