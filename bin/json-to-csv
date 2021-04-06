@@ -47,13 +47,13 @@ def assemble_line_generator(path, args):
             if line.strip()
         )
 
-    data = json.load(path)
+    data = json.load(path.open())
     if args.node:
         list_of_dicts = data[args.node]
     else:
         list_of_dicts = data
 
-    return (reduce_mapping(mapping) for mapping in list_of_dicts)
+    return (flatten(mapping) for mapping in list_of_dicts)
 
 
 data_rows = chain.from_iterable(
