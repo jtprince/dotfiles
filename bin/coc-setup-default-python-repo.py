@@ -7,25 +7,22 @@ import subprocess
 import textwrap
 from pathlib import Path
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--skip-root-check", action="store_true")
 args = parser.parse_args()
 
 
 _OWLET_PYPROJECT_FILE = Path(os.environ["OWLET_PYPROJECT_FILE"]).resolve()
+project_root = str(Path.cwd())
 
 ISORT_ARGS = dict(
-    owlet=f"--apply -rc -sp {_OWLET_PYPROJECT_FILE} -sl".split(),
-    owlet_new=f"--settings-path {_OWLET_PYPROJECT_FILE}".split(),
+    owlet=f"--src {project_root} --settings-path {_OWLET_PYPROJECT_FILE}".split(),
     personal=[],
 )
 PYLINT_ARGS = dict(
     owlet=f"--rcfile {_OWLET_PYPROJECT_FILE}".split(),
-    owlet_new=f"--rcfile {_OWLET_PYPROJECT_FILE}".split(),
     personal=["--rcfile", str(Path.home() / ".config/pylintrc")],
 )
-OWLET_CURRENT = "owlet_new"
 
 
 def is_owlet_repo():
@@ -38,7 +35,7 @@ def get_isort_args():
 
     These are modulated based on whether it's an Owlet repo or personal.
     """
-    key = OWLET_CURRENT if is_owlet_repo() else "personal"
+    key = "owlet" if is_owlet_repo() else "personal"
     return ISORT_ARGS[key]
 
 
@@ -47,7 +44,7 @@ def get_pylint_args():
 
     These are modulated based on whether it's an Owlet repo or personal.
     """
-    key = OWLET_CURRENT if is_owlet_repo() else "personal"
+    key = "owlet" if is_owlet_repo() else "personal"
     return PYLINT_ARGS[key]
 
 
