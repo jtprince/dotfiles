@@ -23,7 +23,7 @@ page = open('https://www.archlinux.org/news/') {|io| io.read }
 
 doc = Nokogiri::HTML(page) {|cfg| cfg.noblanks.nonet }
 
-rows = doc.xpath(%Q{//table[@id='article-list']//tr[@class='odd']})[0,num].map do |rownode|
+rows = doc.xpath(%Q{//table[@id='article-list']//tr[@class='results']})[0,num].map do |rownode|
   rownode_to_row(rownode)
 end
 

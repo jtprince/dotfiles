@@ -28,6 +28,22 @@
     mock.assert_called_once_with(<args or kwargs>)
     mock.assert_called_with(<args or kwargs>)
 
+# How to mock a method without dealing with self
+
+If you patch a method directly, like this:
+    mock = mocker.patch("my.path.SomeClass.some_method", side_effect=KeyError("some msg"))
+
+Then, the call made to that method will also include `self` and that's awkward :/
+
+Instead of splitting out the call_args or mocking self or something like that,
+just mock the class and the process of creating the object, like this:
+
+    mock_cls = mocker.patch("my.path.SomeClass"
+    method_mock = mock_cls.return_value.some_method
+    method_mock.side_effect = KeyError("some msg"))
+
+[Note to self: Is this the optimal way of circumventing the self issue??]
+
 # The 3 levels of mocking
 
 ## spec - Terrible
@@ -43,3 +59,4 @@ spec_set=<ref> or spec_set=True
 
 unittest.mock.create_autospec(spec=<class or instance>, spec_set=True)
 mocker.create_autospec(spec=<class or instance>, spec_set=True)
+mocker.patch("some.path", autospec=True, spec_set=True)
