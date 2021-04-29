@@ -1,0 +1,115 @@
+#!/usr/bin/env python
+import argparse
+import subprocess
+import time
+import textwrap
+
+
+# WIP = work in progress
+wip_prefix = "WIP"
+parser = argparse.ArgumentParser()
+parser.add_argument("message", nargs="*", default=[wip_prefix])
+parser.add_argument(
+    "-d",
+    "--description",
+    nargs="*",
+    default=[],
+    help="description lines (i.e., text after 2 newlines in $EDITOR commit)",
+)
+parser.add_argument(
+    "-w",
+    "--wip",
+    action="store_true",
+    help="prepends {} to the commit message".format(wip_prefix),
+)
+parser.add_argument(
+    "-p", "--push", action="store_true", help="also push to remote"
+)
+parser.add_argument(
+    "--no-all",
+    action="store_true",
+    # git commit
+    # ...
+    # --all "Tell the command to automatically stage files that have been
+    #        modified and deleted, but new files you have not told Git about
+    #        are not affected."
+    help="don't use -a/--all during the commit",
+)
+parser.add_argument(
+    "--dry", action="store_true", help="don't actually do it (turns on verbose)"
+)
+parser.add_argument(
+    "-v", "--verbose", action="store_true", help="talk about it"
+)
+parser.add_argument(
+    "-m",
+    "--master",
+    action="store_true",
+    help="this is a commit to master (don't append branch name)",
+)
+args = parser.parse_args()
+if args.dry:
+    args.verbose = True
+
+
+def printv(*args_, **kwargs):
+    if args.verbose:
+        print(*args_, **kwargs,)
+
+
+description_ar = args.description
+message_ar = args.message
+
+message = " ".join(message_ar)
+
+if args.wip:
+    if message != wip_prefix:
+        message = wip_prefix + " " + message
+
+if description_ar:
+    description = " ".join(description_ar)
+    wrapped_desc = "".join(textwrap.wrap(description, 72))
+    message += "\n\n" + wrapped_desc
+
+if not args.master:
+    printv("Ensure that this isn't master.")
+    branch = (
+        subprocess.check_output("git rev-parse --abbrev-ref HEAD".split())
+        .decode("utf-8")
+        .rstrip("\n")
+    )
+    if branch == "master":
+        raise Exception(
+            "You are appending master as the branch!  If you really want that: gitci -m"
+        )
+    message += "\n\n" + branch
+
+print("COMMIT MESSAGE:")
+print("---")
+print(message)
+print("---")
+
+cmd = ["git", "commit"]
+if not args.no_all:
+    cmd.append("--all")
+
+cmd.append("--message")
+cmd.append(message)
+
+printv("Calling (with proper shellescapes on message):")
+printv(' '.join(cmd))
+if not args.dry:
+    subprocess.call(cmd)
+
+time.sleep(1)
+
+if args.push:
+    have_remote = subprocess.check_output(
+        "git config --get remote.origin.url".split()
+    )
+    printv(f"Checking for remote...{bool(have_remote)}")
+
+    if have_remote:
+        printv("Pushing to remote.")
+        if not args.dry:
+            subprocess.call("git push".split())
