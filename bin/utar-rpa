@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+for file in "$@"; do
+    unrpa -mp "${file%.rpa}" "$file"
+done

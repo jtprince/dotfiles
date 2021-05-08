@@ -51,4 +51,8 @@ noremap <leader>B Obreakpoint()<Esc>0w
 nnoremap <silent> <M-CR>   :ImportSymbol<CR>
 inoremap <silent> <M-CR>   <Esc>:ImportSymbol<CR>a
 
+" hop to next/prev class or def
+nnoremap ]] /^\s*class\|^\s*def<CR>
+nnoremap [[ ?^\s*class\|^\s*def<CR>
+
 
