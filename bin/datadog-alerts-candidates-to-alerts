@@ -12,16 +12,23 @@ args = parser.parse_args()
 
 text = args.infile.read_text()
 
-to_match = "@slack-alerts-candidates"
-num_candidates = text.count(to_match)
-if num_candidates != 2:
-    raise RuntimeError(f"Expected 2 instances of {repr(to_match)}")
 
-FIRST_REPLACEMENT = "@slack-alerts @opsgenie-owlet-platform"
-SECOND_REPLACEMENT = "@slack-alerts @opsgenie-acknowledge"
+def replace_alerts_candidates(text):
+    to_match = "@slack-alerts-candidates"
+    num_candidates = text.count(to_match)
+    if num_candidates != 2:
+        raise RuntimeError(f"Expected 2 instances of {repr(to_match)}")
 
-for replacement in [FIRST_REPLACEMENT, SECOND_REPLACEMENT]:
-    text = text.replace(to_match, replacement, 1)
+    FIRST_REPLACEMENT = "@slack-alerts @opsgenie-owlet-platform"
+    SECOND_REPLACEMENT = "@slack-alerts @opsgenie-acknowledge"
+
+    for replacement in [FIRST_REPLACEMENT, SECOND_REPLACEMENT]:
+        text = text.replace(to_match, replacement, 1)
+
+    return text
+
+
+text = replace_alerts_candidates(text)
 
 args.infile.write_text(text)
 
