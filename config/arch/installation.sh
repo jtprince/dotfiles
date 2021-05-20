@@ -296,10 +296,10 @@ pyenv global 3.8.6
 # If you see this error message:
 # "This script requires vim7.0+ with Python 3.6 support", then you need to:
 pip install neovim
+# for pymarkdown
+pip install PyMarkdown
 
 gem install pry clipboard solargraph
-# markdown lint tool, aliased for me as markdown-lint
-gem install mdl
 
 # universal ctags
 yay -S ctags --noconfirm

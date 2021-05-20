@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import re
 import subprocess
 
 parser = argparse.ArgumentParser()
@@ -13,11 +14,58 @@ parser.add_argument(
 parser.add_argument("--dry", action="store_true", help="dry run")
 args = parser.parse_args()
 
+display_port_re = re.compile(r"(DisplayPort-\d+) connected")
+
+
+def get_first_displayports():
+    output = subprocess.check_output("xrandr", shell=True, text=True)
+    matches = display_port_re.findall(output)
+    return matches[0:2]
+
+
+desk_input, treadmill_input = get_first_displayports()
+
+input_off_str = "--output {} --off"
+
+
+def display_ports_off(exclude=None):
+    exclude = exclude or []
+    display_ports_off = []
+    for num in range(1, 10):
+        xinput = f"DisplayPort-{num}"
+        if xinput not in exclude:
+            display_ports_off.append(input_off_str.format(xinput))
+    return display_ports_off
+
+
+input_on_str = "--output {} --mode 1920x1080 --pos 0x0 --rotate normal"
+
+edp_off = input_off_str.format("eDP")
+
+
+def make_edp_opts():
+    return " ".join([input_on_str.format("eDP")] + display_ports_off())
+
+
+def make_desk_opts():
+    return " ".join(
+        [input_on_str.format(desk_input)] + display_ports_off([desk_input])
+        + [edp_off]
+    )
+
+
+def make_treadmill_opts():
+    return " ".join(
+        [input_on_str.format(treadmill_input)]
+        + display_ports_off([treadmill_input])
+        + [edp_off]
+    )
+
 
 commands = dict(
-    laptop="xrandr --output eDP --primary --mode 1920x1080 --pos 0x0 --rotate normal --output HDMI-A-0 --off --output DisplayPort-0 --off --output DisplayPort-1 --off --output DisplayPort-2 --off --output DisplayPort-3 --off --output DisplayPort-4 --off",
-    desk="xrandr --output eDP --off --output HDMI-A-0 --off --output DisplayPort-0 --off --output DisplayPort-1 --off --output DisplayPort-2 --mode 1920x1080 --pos 0x0 --rotate normal --output DisplayPort-3 --off --output DisplayPort-4 --off",
-    treadmill="xrandr --output eDP --off --output HDMI-A-0 --off --output DisplayPort-0 --off --output DisplayPort-1 --off --output DisplayPort-2 --off --output DisplayPort-3 --mode 1920x1080 --pos 0x0 --rotate normal --output DisplayPort-4 --off",
+    laptop=f"xrandr {make_edp_opts()}",
+    desk=f"xrandr {make_desk_opts()}",
+    treadmill=f"xrandr {make_treadmill_opts()}",
 )
 
 cmd = commands[args.monitor]
