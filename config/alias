@@ -65,6 +65,7 @@ alias owlet_pylint="pylint --rcfile=$OWLET_PYPROJECT_FILE"
 
 # ruby
 alias be="bundle exec"
+alias markdown_lint="mdl"
 
 # file system
 alias ls="ls --color=auto"

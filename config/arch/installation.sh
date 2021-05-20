@@ -298,6 +298,8 @@ pyenv global 3.8.6
 pip install neovim
 
 gem install pry clipboard solargraph
+# markdown lint tool, aliased for me as markdown-lint
+gem install mdl
 
 # universal ctags
 yay -S ctags --noconfirm

@@ -16,6 +16,11 @@
     unstaged = diff
     both = diff HEAD
 
+    reponame = "!f() { \
+        name=$(basename $(git remote get-url origin) .git); \
+        echo $name; \
+    }; f"
+
     # hist = !git --no-pager log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
     hist = log --graph --all --source --abbrev-commit  --decorate --pretty=oneline
     oneline = log --pretty=oneline
@@ -27,6 +32,12 @@
     track = "!f(){ branch=$(git rev-parse --abbrev-ref HEAD); cmd=\"git branch --track $branch ${1:-origin}/${2:-$branch}\"; $cmd; }; f"
     ignore = update-index --assume-unchanged
     unignore = update-index --no-assume-unchanged
+
+    # Open CodeFresh: opens url https://g.codefresh.io/builds2?filter=repository:<REPO>
+    cf = "!f() { repo=$(git reponame); \
+        url=https://g.codefresh.io/builds2?filter=repository:$repo; echo $url; echo ''; \
+        xdg-open $url; \
+    }; f"
 
 [color]
     ui = auto
