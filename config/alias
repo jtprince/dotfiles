@@ -37,6 +37,9 @@ alias bzip='bzip2'
 # put things into home.  But the shim isn't easy to write, so shortcut.
 alias jra='jira-cli'
 
+# fuzzy find open
+alias ff='fzfo'
+
 # wine
 alias wine32="export WINEARCH=win32; export WINEPREFIX=$HOME/.wine32; wine"
 alias winecfg32="export WINEARCH=win32; export WINEPREFIX=$HOME/.wine32; winecfg"
