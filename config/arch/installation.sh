@@ -15,7 +15,10 @@ pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfir
 
 # shell, permissions, git, and firmware support
 # (udisks2 for uefi support in fwupdmgr)
-pacman -S zsh git sudo vi vim neovim vim-plug git-delta-bin unzip p7zip udisks2 dmenu --noconfirm
+pacman -S zsh git sudo  unzip p7zip udisks2 dmenu --noconfirm
+
+# editors
+pacman -S vi vim neovim vim-plug git-delta-bin ctags --noconfirm
 
 # main terminals
 pacman -S xterm alacritty --noconfirm
