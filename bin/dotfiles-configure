@@ -80,7 +80,7 @@ OTHER_SYM_LINKS = {
 
     # Xdefaults is deprecated upstream, but make link til we don't need
     REPO_CONFIG / "Xresources":  Path.home() / ".Xdefaults",
-    REPO_CONFIG / "/zsh/zshenv": Path.home() / ".zshenv",
+    REPO_CONFIG / "zsh/zshenv": Path.home() / ".zshenv",
     #  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
 }
 
@@ -93,6 +93,13 @@ def softlink_into_dotconfig(filenames):
     for name in filenames:
         real_path = REPO_CONFIG / name
         sym_link = HOME_CONFIG / name
+        force_symlink(real_path, sym_link)
+
+
+def softlink_into_home(filenames):
+    for name in filenames:
+        real_path = REPO_CONFIG / name
+        sym_link = HOME / ("." + name)
         force_symlink(real_path, sym_link)
 
 
@@ -139,4 +146,5 @@ def ensure_dirs(dirs):
 if __name__ == '__main__':
     ensure_dirs(ENSURE_DIRS)
     softlink_into_dotconfig(SOFTLINK_INTO_CONFIG)
+    softlink_into_home(SOFTLINK_INTO_HOME)
     make_other_sym_links(OTHER_SYM_LINKS)

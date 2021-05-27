@@ -18,7 +18,7 @@ pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfir
 pacman -S zsh git sudo  unzip p7zip udisks2 dmenu --noconfirm
 
 # editors
-pacman -S vi vim neovim vim-plug git-delta-bin ctags --noconfirm
+pacman -S vi vim neovim vim-plug git-delta-bin fzf ctags --noconfirm
 
 # main terminals
 pacman -S xterm alacritty --noconfirm
@@ -254,7 +254,7 @@ yay -S gnome-themes-standard  --noconfirm
 # yay -S acpi cbatticon  --noconfirm
 
 # rg, ack, fd, fzf command (way better grep and needed for proximity-sort)
-yay -S ripgrep ack fd fzf --noconfirm
+yay -S ripgrep ack fd --noconfirm
 
 # essential media players and control (xava is for fun visualizer)
 yay -S youtube-music-bin playerctl xava --noconfirm
@@ -262,6 +262,12 @@ yay -S youtube-music-bin playerctl xava --noconfirm
 #############################
 # AFTER RE-LOGIN
 #############################
+nvim -> :PlugInstall
+
+# for reading settings file and other json stuff
+:CocInstall coc-json
+:CocInstall coc-python
+:CocInstall coc-solargraph
 
 # install jira-cli
 yay -S npm --noconfirm
@@ -283,17 +289,9 @@ pip install PyMarkdown
 
 gem install pry clipboard solargraph
 
-# universal ctags
-yay -S ctags --noconfirm
-
-nvim -> :PlugInstall
-# for reading settings file and other json stuff
-:CocInstall coc-json
-:CocInstall coc-python
-:CocInstall coc-solargraph
 
 # sad
-yay -S sad fzf git-delta-bin
+yay -S sad --noconfirm
 
 # locate
 yay -S mlocate --noconfirm; sudo updatedb
@@ -328,22 +326,6 @@ yay -S gnome-system-monitor gnome-power-manager --noconfirm
 # cheat sheets
 yay -S cheat --noconfirm
 
-# for personal python tray apps
-# yay -S libappindicator-gtk3
-
-# I haven't needed this for a while, so maybe see if really need it??
-# haveged (generates system entropy to enable key signing)
-# https://www.archlinux.org/news/gnupg-21-and-the-pacman-keyring/
-# sudo bash
-# ``` # can copy and paste in one chunk below
-# pacman -S haveged --noconfirm
-# systemctl start haveged
-# systemctl enable haveged
-# rm -fr /etc/pacman.d/gnupg
-# pacman-key --init
-# pacman-key --populate archlinux
-# exit
-# ```
 
 # NEED TO FIGURE OUT THAT SYSTEMD stuff and do it!!
 
