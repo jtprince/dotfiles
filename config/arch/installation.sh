@@ -15,7 +15,7 @@ pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfir
 
 # shell, permissions, git, and firmware support
 # (udisks2 for uefi support in fwupdmgr)
-pacman -S zsh git sudo vi vim nvim unzip p7zip udisks2 dmenu --noconfirm
+pacman -S zsh git sudo vi vim neovim vim-plug git-delta-bin unzip p7zip udisks2 dmenu --noconfirm
 
 # main terminals
 pacman -S xterm alacritty --noconfirm
@@ -45,6 +45,7 @@ pacman -S xorg-server-xwayland
 ## install nvidia, ati, or intel specific drivers
 # intel
 pacman -S xf86-video-intel mesa --noconfirm
+pacman -S xf86-video-nouveau --noconfirm
 # <...>
 # systemctl enable nvidia-persistenced  # if nvidia
 
@@ -57,7 +58,8 @@ pacman -S xf86-video-intel mesa --noconfirm
 ############################
 
 # Make a user
-useradd -m -g users -G wheel -s /bin/zsh jtprince ;  passwd jtprince
+useradd -m -g users -G wheel -s /bin/zsh jtprince
+passwd jtprince
 
 ### JUMP to graphical interface
 
@@ -68,12 +70,6 @@ systemctl start lightdm
 # then login to i3, start browser, sign-in your user, and get this file!
 
 ############################
-# Primary browser
-############################
-
-yay -S google-chrome --noconfirm
-
-############################
 # AUR helper
 ############################
 
@@ -81,6 +77,13 @@ yay -S google-chrome --noconfirm
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
+
+############################
+# Primary browser
+############################
+
+yay -S google-chrome --noconfirm
+google-chrome-stable --user-data-dir=$HOME/.config/chrome-personal
 
 ############################
 # MEGA
@@ -110,6 +113,7 @@ yay -S reflector --noconfirm;  sudo reflector --country US --fastest 10 --age 6 
 ############################
 
 # Password related utilities
+chmod +x ~/MEGA/env/passwds_logins/INSTALL.sh
 ~/MEGA/env/passwds_logins/INSTALL.sh
 
 git clone git@github.com:jtprince/dotfiles.git
@@ -200,9 +204,6 @@ yay -S dtrx zip xclip ack --noconfirm
 # install lxde (as a backup X desktop environment)
 sudo pacman -S lxde --noconfirm
 
-# urxvt (can't be --noconfirm)
-# yay -S rxvt-unicode-patched urxvt-perls urxvt-font-size-git
-
 # configure your primary backlight output (typically acpi_video0 or intel_backlight)
 # sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
 # showing icons on all desktops for now
@@ -259,38 +260,16 @@ yay -S youtube-music-bin playerctl xava --noconfirm
 # AFTER RE-LOGIN
 #############################
 
-# setup autorandr if X11
-# autorandr saves setups, detects them, and changes to them automatically
-yay -S autorandr --noconfirm
-
-# OR kanshi
-# note the name or identifier of each 'Output' line
-mkdir -p ~/.config/kanshi && touch ~/.config/kanshi/config
-
-swaymsg -t get_outputs
-
-# gvim ~/.config/kanshi/config
-```
-# an example
-profile {
-	output eDP-1 disable
-    output "Unknown HP VH240a 6CM83029MD" mode 1920x1080 position 0,0
-}
-
-profile {
-	output eDP-1 enable
-}
-```
-
 # install jira-cli
+yay -S npm --noconfirm
 npm install -g jira-cli
 # to complete install, execute command from my README.md
 cat ~/MEGA/env/cloud-and-apis/jira/jira-cli/README.md
 
 pyenv install --list
 # update these to latest patch version for each minor
-pyenv install 3.7.9; pyenv install 3.8.6; pyenv install 3.9.0
-pyenv global 3.8.6
+pyenv install 3.7.10; pyenv install 3.8.9; pyenv install 3.9.4
+pyenv global 3.9.4
 # you need the neovim module in your current python shim for the nvim python
 # plugin to work:
 # If you see this error message:
