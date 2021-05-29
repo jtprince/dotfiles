@@ -361,9 +361,6 @@ yay -S docker docker-compose --noconfirm
 sudo gpasswd -a jtprince docker
 sudo systemctl enable docker.service
 
-# flashplugin
-yay -S flashplugin pepper-flash --noconfirm
-
 # torrents
 yay -S deluge-gtk --noconfirm
 
@@ -373,6 +370,20 @@ yay -S deluge-gtk --noconfirm
 # mkdir ~/mnt
 # simple-mtpfs --device 1 ~/mnt
 # [will appear in thunar then]
+
+# install secondary browser
+yay -S firefox --noconfirm
+
+# git and github
+# gh
+yay -S github-cli --noconfirm
+
+# informant (ensure arch news is read)
+yay -S informant --noconfirm
+
+######################################
+# LAPTOP SPECIFIC
+######################################
 
 # using tlp for battery optimizations
 # follow instructions here: https://linrunner.de/tlp/installation/arch.html
@@ -391,20 +402,8 @@ sudo systemctl mask systemd-rfkill.socket
 # sudo systemctl enable laptop-mode.service
 # sudo systemctl enable acpid.service
 
-# install secondary browser
-yay -S firefox --noconfirm
-
 # timezone update utility
 yay -S tzupdate --noconfirm
-
-# git and github
-# diffr (better diff)
-# yay -S diffr --noconfirm
-# gh
-yay -S github-cli --noconfirm
-
-# informant (ensure arch news is read)
-yay -S informant --noconfirm
 
 #########################################
 ## kube
@@ -418,10 +417,6 @@ kubernetes-setup-credentials --with-login --credentials --nicknames --dry
 ## OPTIONAL
 #########################################
 
-Install the openconnect to connect to cisco vpn for 3plcentral
-yay -S openconnect
-
-
 # enable dnsmasq to shorten dns lookup
 sudo pacman -S dnsmasq
 sudo systemctl enable dnsmasq.service
@@ -434,19 +429,3 @@ yay -S wine-staging wine_gecko wine-mono
 winecfg # --> go to staging tab and click Enable_CSMT for better graphic performance
 # for gaming in wine (necessary fonts already installed)
 yay -S lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-alsa-oss lib32-openal lib32-libxml2 lib32-mpg123 lib32-lcms2 lib32-giflib lib32-libpng lib32-gnutls lib32-virtualgl lib32-libldap
-
-# drone (right now we are using 0.7.0 and later versions are busted)
-# get the drone-cli PKGBUILD file and edit:
-# pkgver=0.7.0
-# sha256sums=('456b315245aacc9586622a8b3873c880c34f68c1f6d86c5e000abc3da411e28f')
-# then makepkg and sudo pacman -U <pkg>.tar.xz
-
-#########################################
-## NOT REALLY USING
-#########################################
-
-# astah [optional]
-yay -S astah-community jre
-# then replace the last line of the file /usr/bin/astah with this:
-export JAVA_HOME=/usr/lib/jvm/java-8-jre/jre
-/usr/lib/jvm/java-8-jre/jre/bin/java $JAVA_OPTS -splash:"$ASTAH_HOME"/astah_splash_community.png -jar $CLASSPATH "$1" "$2" "$3" -nojvchk
