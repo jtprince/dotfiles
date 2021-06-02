@@ -56,6 +56,10 @@ alias ....='cd ../../..'
 alias ...='cd ../..'
 alias ..='cd ..'
 
+# pdf
+alias pdf-cat='pdfunite'
+alias pdf-combine='pdfunite'
+
 ## OWLET
 alias owlet_black="black --config $OWLET_PYPROJECT_FILE"
 

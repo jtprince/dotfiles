@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+
+import argparse
+import math
+import subprocess
+from pathlib import Path
+
+DEFAULT_OUTFORMAT = "output%d.pdf"
+
+
+def magnitude (value):
+    if (value == 0): return 0
+    return int(math.floor(math.log10(abs(value))))
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("infile", type=Path, help="the pdf input file")
+parser.add_argument(
+    # escape the % with a %
+    "outfile_format", nargs="?", default=DEFAULT_OUTFORMAT, help="like output%%d.pdf"
+)
+parser.add_argument(
+    "--no-adjust-padding",
+    action="store_true",
+    help="do not automatically adjust filename zero padding",
+)
+args = parser.parse_args()
+
+
+def get_number_pages(path):
+    response = subprocess.check_output(["file", str(path)], text=True)
+    parts = response.split()
+    assert parts[-1] == 'pages'
+    return int(parts[-2])
+
+
+num_pages = get_number_pages(args.infile)
+padding = magnitude(num_pages) + 1
+
+outfile_format = args.outfile_format
+
+if not args.no_adjust_padding:
+    new_outfile_format = outfile_format.replace("%d", f"%0{padding}d")
+    if new_outfile_format != outfile_format:
+        print(f"Adjusting format to: {new_outfile_format}")
+        outfile_format = new_outfile_format
+
+
+cmd = [
+    "pdfseparate",
+    args.infile,
+    outfile_format
+]
+
+subprocess.run(cmd)

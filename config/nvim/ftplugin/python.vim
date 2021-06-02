@@ -5,6 +5,10 @@ function! SetupMethod()
     r~/.config/nvim/ftplugin/python-fragments/setup_method.py
 endfunction
 
+function! CommandlineProgram()
+    r~/.config/nvim/ftplugin/python-fragments/commandline_program.py
+endfunction
+
 
 function! SearchUnderKeyword()
   return expand("<cword>")
@@ -26,10 +30,6 @@ noremap <leader>o <Esc>:CocCommand python.sortImports<CR>
 " turn a single line comment into a multi-line comment.
 noremap <leader>C <Esc>0wea<Enter><Esc>$bba<Enter><Enter><Esc>d0k$o<Enter><Esc>kkd
 
-" turn a single multi-line comment into a single line comment (geared around 4
-" lines of comment).
-noremap <leader>c <Esc>0JJJJ)b
-
 " pylint disable using the X11 buffer (highlight 'E1101-no-member' and it will
 " inject the trailer:  pylint: disable=no-member
 noremap <leader>a <Esc>$a  # pylint: disable=<Esc>"*p<Esc>?=<Enter>wkwx<Esc>:noh<Enter>$
@@ -42,8 +42,6 @@ noremap <leader>b <Esc>:Black<Enter>
 " insert breakpoint above the current line and position cursor at start of
 " breakpoint
 noremap <leader>B Obreakpoint()<Esc>0w
-
-" noremap <leader>s :call SetupMethod()<Esc>fo
 
 " auto imports
 " https://github.com/wookayin/vim-autoimport
