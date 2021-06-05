@@ -1,0 +1,14 @@
+
+# TLP (no real meaning, I remember as "True Linux Power")
+
+# Get basic info about tlp
+tlp-stat -s
+
+# List batteries and info
+sudo tlp-stat -b
+
+# fill up the battery completely (til next boot)
+sudo tlp fullcharge
+
+# apply normal configured settings (e.g., after fullcharge w/ no boot)
+sudo setcharge
