@@ -11,4 +11,4 @@ sudo tlp-stat -b
 sudo tlp fullcharge
 
 # apply normal configured settings (e.g., after fullcharge w/ no boot)
-sudo setcharge
+sudo tlp setcharge
