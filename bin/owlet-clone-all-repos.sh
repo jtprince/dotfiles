@@ -9,6 +9,7 @@ repos="
 platform-team-documentation
 platform-on-call
 accounts
+accounts-v2
 aoni-response-subscriber
 app-device-registration
 ayla-exporter
@@ -47,6 +48,7 @@ firebase-profiler-subscriber
 firmware
 key-generator
 mydbr
+openapi-generator-templates
 owlet-management-portal
 owlet-management-portal-backend
 owletFirebase
