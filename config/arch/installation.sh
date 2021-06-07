@@ -18,7 +18,7 @@ pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfir
 pacman -S zsh git sudo  unzip p7zip udisks2 dmenu --noconfirm
 
 # editors
-pacman -S vi vim neovim vim-plug git-delta-bin fzf ctags --noconfirm
+pacman -S vi vim neovim  fzf ctags --noconfirm
 
 # main terminals
 pacman -S xterm alacritty --noconfirm
@@ -81,6 +81,13 @@ git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 
+# other neovim stuff and copy/paste stuff from aur
+yay -S xclip vim-plug git-delta-bin --noconfirm
+# <start in dmenu>:
+xclip -silent
+
+yay -S paru-bin --noconfirm
+
 ############################
 # Primary browser
 ############################
@@ -98,15 +105,6 @@ sudo pacman -U Download/megasync-x86_64.pkg.tar.zst
 # Login so it can start
 # jtprince@gmail.com
 
-############################
-# Dropbox
-############################
-
-# install dropbox
-yay -S dropbox dropbox-cli
-# If you have gpg import errors, you'll probably need to do this:
-curl https://linux.dropbox.com/fedora/rpm-public-key.asc
-gpg --import rpm-public-key.asc
 
 # reflector (for mirrorlists) NOTE: pause dropbox sync for this
 yay -S reflector --noconfirm;  sudo reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
@@ -139,6 +137,7 @@ yay -S libpipewire02
 # now go set the pipewire flag for chromium at this url (in both your settings)
 chrome://flags/#enable-webrtc-pipewire-capturer
 
+
 # ntpd
 sudo pacman -S ntp --noconfirm; sudo systemctl enable ntpd.service
 
@@ -160,7 +159,7 @@ python ./get-poetry.py
 ```
 
 # handlr for mime-type management
-yay -S handlr-bin
+yay -S handlr-bin --noconfirm
 
 # ruby
 # probably already installed
@@ -173,9 +172,10 @@ CONFIGURE_OPTS="--with-readline-dir=/usr/include/readline" rbenv install <SOME_V
 rbenv global <SOME_VERSION>
 
 # notifications
-# was using dunst, trying out xfce4-notifyd
-yay -S xfce4-notifyd --noconfirm
+# yay -S xfce4-notifyd --noconfirm
 # configure with xfce4-notifyd-config
+# Was using xfce4-notifyd, now using dunst
+yay -S dunst --noconfirm
 
 # sound
 yay -S pulseaudio pulseaudio-alsa pulseaudio-ctl --noconfirm
@@ -202,7 +202,7 @@ yay -S xcursor-vanilla-dmz --noconfirm
 yay -S ntfs-3g --noconfirm
 
 # extraction and search
-yay -S dtrx zip xclip ack --noconfirm
+yay -S dtrx zip ack --noconfirm
 
 # install lxde (as a backup X desktop environment)
 sudo pacman -S lxde --noconfirm
@@ -277,8 +277,8 @@ cat ~/MEGA/env/cloud-and-apis/jira/jira-cli/README.md
 
 pyenv install --list
 # update these to latest patch version for each minor
-pyenv install 3.7.10; pyenv install 3.8.9; pyenv install 3.9.4
-pyenv global 3.9.4
+pyenv install 3.7.10; pyenv install 3.8.10; pyenv install 3.9.5
+pyenv global 3.9.5
 # you need the neovim module in your current python shim for the nvim python
 # plugin to work:
 # If you see this error message:
@@ -305,12 +305,6 @@ yay -S archey3 feh mplayer inkscape gimp eog geeqie gthumb youtube-dl pandoc-bin
 # slack using system qt should avoid some wayland failures
 yay -S slack-desktop zoom-system-qt --noconfirm
 yay -S libreoffice libmythes mythes-en --noconfirm
-
-# texlive fonts (needed for pandoc pdf conversion)
-# texlive-latexextra needed for etoolbox.sty
-yay -S texlive-core texlive-fontsextra texlive-latexextra --noconfirm
-sudo ln -s /etc/fonts/conf.avail/09-texlive-fonts.conf /etc/fonts/conf.d/09-texlive-fonts.conf
-sudo fc-cache && sudo mkfontscale && sudo mkfontdir && sudo rm -f fonts.dir fonts.scale
 
 # ranger and deps
 yay -S ranger atool highlight mediainfo odt2txt perl-image-exiftool transmission-cli w3m libcaca --noconfirm
@@ -372,7 +366,7 @@ yay -S deluge-gtk --noconfirm
 # [will appear in thunar then]
 
 # install secondary browser
-yay -S firefox --noconfirm
+yay -S midori --noconfirm
 
 # git and github
 # gh
@@ -416,6 +410,21 @@ kubernetes-setup-credentials --with-login --credentials --nicknames --dry
 #########################################
 ## OPTIONAL
 #########################################
+
+# texlive fonts (needed for pandoc pdf conversion)
+# texlive-latexextra needed for etoolbox.sty
+yay -S texlive-core texlive-fontsextra texlive-latexextra --noconfirm
+sudo ln -s /etc/fonts/conf.avail/09-texlive-fonts.conf /etc/fonts/conf.d/09-texlive-fonts.conf
+sudo fc-cache && sudo mkfontscale && sudo mkfontdir && sudo rm -f fonts.dir fonts.scale
+
+############################
+# Dropbox
+############################
+# install dropbox
+yay -S dropbox dropbox-cli
+# If you have gpg import errors, you'll probably need to do this:
+curl https://linux.dropbox.com/fedora/rpm-public-key.asc
+gpg --import rpm-public-key.asc
 
 # enable dnsmasq to shorten dns lookup
 sudo pacman -S dnsmasq
