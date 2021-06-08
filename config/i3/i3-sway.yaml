@@ -29,7 +29,7 @@ monitor_primary2_cmd: >-
   jasnah-x11-monitor-config treadmill
 laptop_keyboard_toggle: |
   # favorites #1 key
-  # bindsym XF86Launch5 exec --no-startup-id xrandr --auto && randomise-bkg
+  # bindsym XF86Launch5 exec --no-startup-id xrandr --auto ; randomise-bkg
   # favorites #2 key
   bindsym XF86Launch6 exec --no-startup-id laptop-keyboard keyboard toggle
 exit_cmd: >-
@@ -37,7 +37,7 @@ exit_cmd: >-
 special_sleep: |
 
   # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
-  bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
+  bindsym $mod+Ctrl+Shift+D exec sleep 1 ; xset dpms force off
   bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
 scratchpad: ""
 misc_editing: |

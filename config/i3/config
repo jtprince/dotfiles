@@ -428,11 +428,11 @@ set $monitor_primary1_cmd jasnah-x11-monitor-config desk
 set $monitor_primary2_cmd jasnah-x11-monitor-config treadmill
 
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
-bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd && sleep 1 && pactl-speakers toggle && sleep 1
-bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd && sleep 1 && pactl-speakers toggle && sleep 1
+bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
+bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd
 
 # favorites #1 key
-# bindsym XF86Launch5 exec --no-startup-id xrandr --auto &amp;&amp; randomise-bkg
+# bindsym XF86Launch5 exec --no-startup-id xrandr --auto ; randomise-bkg
 # favorites #2 key
 bindsym XF86Launch6 exec --no-startup-id laptop-keyboard keyboard toggle
 
@@ -467,7 +467,7 @@ bindsym XF86Sleep exec $noid suspend-with-screenlock
 
 
 # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
-bindsym $mod+Ctrl+Shift+D exec sleep 1 &amp;&amp; xset dpms force off
+bindsym $mod+Ctrl+Shift+D exec sleep 1 ; xset dpms force off
 bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
 
 

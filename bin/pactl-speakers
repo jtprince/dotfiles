@@ -13,7 +13,8 @@ args = parser.parse_args()
 # TODO: pull these from some local file
 BLESSED_DESCRIPTIONS = [
     "USB PnP Audio Device Analog Stereo",
-    "Family 17h (Models 10h-1fh) HD Audio Controller Speaker + Headphones",
+    # "Family 17h (Models 10h-1fh) HD Audio Controller Speaker + Headphones",
+    "Family 17h (Models 10h-1fh) HD Audio Controller Analog Stereo"
 ]
 
 def get_and_display_current_state():
