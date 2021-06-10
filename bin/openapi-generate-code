@@ -22,6 +22,11 @@ parser.add_argument("--dry", action="store_true", help="just show the commands")
 parser.add_argument(
     "--no-cleanup", action="store_true", help="don't delete extra files"
 )
+parser.add_argument(
+    "--no-recheckout",
+    action="store_true",
+    help="do not re-check out standard files",
+)
 args = parser.parse_args()
 
 
@@ -58,6 +63,18 @@ cmd = [
     "openapi-generator-templates/python-flask-config.yaml",
 ]
 run(cmd, args)
+
+
+if not args.no_recheckout:
+    recheckout = [
+        ".openapi-generator/FILES",
+        "app/__main__.py",
+        "app/controllers/accounts_controller.py",
+        "app/controllers/profiles_controller.py",
+        "app/controllers/security_controller_.py",
+    ]
+    cmd = ["git", "checkout"] + recheckout
+    run(cmd, args)
 
 if not args.no_cleanup:
     for filename in [bundled_schema_path, "app/test"]:
