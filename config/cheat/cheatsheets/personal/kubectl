@@ -57,3 +57,10 @@ kubectl get event --field-selector involvedObject.name=accounts-v1-5cdcbc56bd-hc
 # get pods associated with a deployment (called a "release" in the output)
 kubectl get pods --selector release=<deployment_name> --no-headers=true --output name
 # outputs pod/<podname> and <podname> is what you want
+
+# get secrets
+kubectl get secrets
+
+# grab specific secret:
+kubectl get secret device-replicator-v1-basic-auth -oyaml | yq -r ".data.username" | base64 -d
+kubectl get secret device-replicator-v1-basic-auth -oyaml | yq -r ".data.passwordProd" | base64 -d

@@ -56,6 +56,7 @@ OwletVideoProto
 powlet
 registration-publisher
 remote-config
+RTDB-replacement-design
 sftp
 sftp-manufacturing
 skeleton-flask
@@ -74,6 +75,7 @@ tutk-manager
 user-mapper
 vital-data
 "
+
 
 for dir in $repos; do
     if [[ -d "$dir" ]]; then

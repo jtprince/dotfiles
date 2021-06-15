@@ -407,6 +407,9 @@ yay -S kubectl kubectx --noconfirm
 # then without the dry
 kubernetes-setup-credentials --with-login --credentials --nicknames --dry
 
+# NOW GO AND INSTALL stuff for work
+cat ~/MEGA/env/work/owlet/INSTALLATION.md
+
 #########################################
 ## OPTIONAL
 #########################################
