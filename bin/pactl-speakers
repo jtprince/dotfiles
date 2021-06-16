@@ -19,7 +19,7 @@ BLESSED_DESCRIPTIONS = [
 
 def get_and_display_current_state():
     for sink in PulseaudioSink.get_sinks():
-        print("SINK!", sink)
+        # print("SINK!", sink)
         if sink.description in BLESSED_DESCRIPTIONS:
             description_line = sink.description
             if sink.is_default():
