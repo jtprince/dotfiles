@@ -63,14 +63,24 @@ alias pdf-cat='pdfunite'
 alias pdf-combine='pdfunite'
 
 ## OWLET
+export OWLET_CONFIGURATION="$HOME/owlet/ci-kit/bin/python/configuration"
+
 alias owlet_black="black --config $OWLET_PYPROJECT_FILE"
 
 alias owlet_test_all="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
 alias owlet_test_unit="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests/unit"
 
 alias owlet_isort="isort --sp $OWLET_PYPROJECT_FILE --src ."
-alias owlet_lint_all="isort --sp $OWLET_PYPROJECT_FILE --src . . && black --config $OWLET_PYPROJECT_FILE ."
+alias owlet_lint_all="black --config $OWLET_PYPROJECT_FILE . && isort --sp $OWLET_PYPROJECT_FILE --src . **/*.py"
 alias owlet_pylint="pylint --rcfile=$OWLET_PYPROJECT_FILE"
+
+alias owlet_pylint_global="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_global.toml"
+alias owlet_pylint_global_oas="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_global.toml --ignore=app/models"
+alias owlet_pylint_models="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_generated_models.toml"
+alias owlet_pylint_tests="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_tests.toml"
+
+alias owlet_test_all="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
+alias owlet_test_unit="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests/unit"
 
 # ruby
 alias be="bundle exec"

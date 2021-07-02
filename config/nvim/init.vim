@@ -336,7 +336,6 @@ autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 
 function PrePythonCleanup()
     execute 'Black'
-    " execute '%s/\s\+$//e'
     execute 'CocCommand python.sortImports'
 endfunction
 autocmd BufWritePost *.py call Flake8()

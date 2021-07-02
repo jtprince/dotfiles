@@ -259,6 +259,9 @@ yay -S ripgrep ack fd --noconfirm
 # essential media players and control (xava is for fun visualizer)
 yay -S youtube-music-bin playerctl xava --noconfirm
 
+# for screenshot OCR
+yay -S python-pytesseract tesseract-data-eng --noconfirm
+
 #############################
 # AFTER RE-LOGIN
 #############################
