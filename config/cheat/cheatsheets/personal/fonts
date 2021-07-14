@@ -1,0 +1,7 @@
+
+# list all your fonts
+fc-list
+
+These can be used in a guivim like this:
+
+set guifont=NotoSansMono:h14

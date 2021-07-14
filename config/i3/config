@@ -403,8 +403,7 @@ bindsym $mod+n exec file-manager
 bindsym $mod+Shift+T exec todo
 
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
-# env NVIM_GTK_NO_HEADERBAR=1 nvim-gtk -- -c 'let g:pymode_rope=0'
-bindsym $mod+g exec alacritty -e sleep-and-start-nvim
+bindsym $mod+g exec gvim
 
 bindsym XF86Calculator exec $noid notifications-toggle
 

@@ -1,3 +1,6 @@
 #!/bin/bash
 
 setxkbmap -option caps:escape -option altwin:swap_lalt_lwin
+
+# default is 660 25; this makes typematic delay and rate a little more snappy
+xset r rate 350 30

@@ -130,6 +130,9 @@ autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 Plug 'fidian/hexmode'
 let g:hexmode_patterns = '*.bin,*.exe,*.dat,*.o'
 
+" Enables :rename <new_filename>
+Plug 'danro/rename.vim'
+
 "" python mode is the only reliable way to get at rope functionality
 "Plug 'python-mode/python-mode', { 'branch': 'develop' }
 "let g:python3_host_prog = '/usr/bin/python3'
