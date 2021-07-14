@@ -51,10 +51,14 @@ Plug 'christoomey/vim-titlecase'
 " crs coerce to snake_case; crc coerce to camelCase
 Plug 'tpope/vim-abolish'
 
-" Distraction gree editing (:Goyo to toggle)
+" Distraction free editing (:Goyo to toggle)
 Plug 'junegunn/goyo.vim'
 let g:goyo_width = '90%'
 let g:goyo_height = '90%'
+
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 " markdown
 " May also consider gabrielelana's https://github.com/gabrielelana/vim-markdown
@@ -382,6 +386,15 @@ noremap <leader>Y "+y
 noremap <leader><C-Y> "+c
 " noremap <leader><p> "*p
 " noremap <leader><P> "+p
+"
+" =======================================================================
+" Telescope config
+" =======================================================================
+nnoremap <leader>fs <cmd>Telescope grep_string<cr>
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 " COLOR CONFIG ===============================================================
 
