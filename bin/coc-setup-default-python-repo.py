@@ -16,7 +16,9 @@ _OWLET_PYPROJECT_FILE = Path(os.environ["OWLET_PYPROJECT_FILE"]).resolve()
 project_root = str(Path.cwd())
 
 ISORT_ARGS = dict(
-    owlet=f"--src {project_root} --settings-path {_OWLET_PYPROJECT_FILE}".split(),
+    owlet=(
+        f"--src {project_root} --settings-path {_OWLET_PYPROJECT_FILE}".split()
+    ),
     personal=[],
 )
 PYLINT_ARGS = dict(
@@ -49,10 +51,11 @@ def get_pylint_args():
 
 
 DEFAULTS = {
+    "python.linting.enabled": True,
     "python.linting.pylintEnabled": True,
     "python.linting.flake8Enabled": True,
-    "python.linting.enabled": True,
     "python.jediEnabled": False,
+    "python.linting.mypyEnabled": True,
 }
 
 
