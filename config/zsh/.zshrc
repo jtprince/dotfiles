@@ -3,42 +3,15 @@ if [ -z "$HAVE_READ_JTP_PROFILE" ]; then
     source ~/.profile
 fi
 
-function cmd_exists {
-    command -v "$1" >/dev/null 2>&1
-}
-
 ###############################################################################
-# Environment
-###############################################################################
-
-# xfce4-terminal currently has bug in Ubuntu preventing
-# it from propogating the TERM variable properly.
-# gnome-terminal will support 256 colors with this:
-
-# Use emacs keybindings even if our EDITOR is set to vi
-bindkey -e
-
-###############################################################################
-# oh my zsh
-###############################################################################
-
-#ZSH=$HOME/.config/oh-my-zsh
-
-# plugins in ~/.oh-my-zsh/plugins/*
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# plugins=(poetry git ruby rake python poetry)
-
-#DISABLE_AUTO_UPDATE="true"
-#source $ZSH/oh-my-zsh.sh
-
-
-###############################################################################
-# Prompt
+# library files
 ###############################################################################
 
 for config_file (~/.config/zsh/lib/*.zsh); do
   source $config_file
 done
+
+
 
 DISABLE_AUTO_TITLE="false"
 
@@ -47,38 +20,6 @@ function set_terminal_title() {
 }
 
 source ~/.config/zsh/jtprince.zsh-theme
-
-# completion
-# Put code completion fragments in ./completion directory
-fpath=($ZDOTDIR/completion $fpath)
-# Use modern completion system
-autoload -Uz compinit
-compinit
-
-zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*' completer _expand _complete _correct _approximate
-zstyle ':completion:*' format 'Completing %d'
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' menu select=2
-eval "$(dircolors -b)"
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' list-colors ''
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
-zstyle ':completion:*' menu select=long
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*' use-compctl false
-zstyle ':completion:*' verbose true
-
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
-
-# by default: export WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>'
-# we take out the slash, period, angle brackets, dash here.
-export WORDCHARS='*?_[]~=&;!#$%^(){}'
-
-[[ -n "${key[PageUp]}"   ]]  && bindkey  "${key[PageUp]}"    history-beginning-search-backward
-[[ -n "${key[PageDown]}" ]]  && bindkey  "${key[PageDown]}"  history-beginning-search-forward
 
 
 ###############################################################################

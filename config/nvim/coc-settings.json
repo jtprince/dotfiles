@@ -1,5 +1,6 @@
 {
   "python.jediEnabled": false,
+  "markdownlint.OnChange": false,
   "$schema": "http://json-schema.org/draft-06/schema",
   "description": "Configuration file for coc.nvim",
   "additionalProperties": false,

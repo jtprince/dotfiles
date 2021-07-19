@@ -1,6 +1,4 @@
 
-
-
 ## Command history configuration
 if [ -z $HISTFILE ]; then
     HISTFILE=~/.cache/.zsh_history

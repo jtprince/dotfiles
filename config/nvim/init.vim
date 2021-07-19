@@ -99,8 +99,9 @@ let g:vim_markdown_auto_insert_bullets = 0
 let g:vim_markdown_new_list_item_indent = 0
 
 " let g:vim_markdown_conceal = 1
-"
 
+" Glow [path-to-md-file] (q to close)
+Plug 'npxbr/glow.nvim', {'do': ':GlowInstall', 'branch': 'main'}
 
 " Note using ctrlp, instead trying out FZF
 " Plug 'kien/ctrlp.vim'
@@ -399,6 +400,11 @@ nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+
+" =======================================================================
+" Glow
+" =======================================================================
+nnoremap <leader>m <cmd>Glow<cr>
 
 " =======================================================================
 " Treesitter config

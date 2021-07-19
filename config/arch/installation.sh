@@ -82,7 +82,7 @@ cd yay
 makepkg -si
 
 # other neovim stuff and copy/paste stuff from aur
-yay -S xclip vim-plug git-delta-bin --noconfirm
+yay -S xclip vim-plug git-delta --noconfirm
 # <start in dmenu>:
 xclip -silent
 
