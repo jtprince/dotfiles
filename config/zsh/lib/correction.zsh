@@ -1,7 +1,6 @@
 if [[ "$DISABLE_CORRECTION" == "true" ]]; then
   return
 else
-  setopt correct_all
   alias rake='nocorrect rake'
   alias man='nocorrect man'
   alias mv='nocorrect mv'
@@ -13,3 +12,7 @@ else
   #alias hpodder='nocorrect hpodder'
   alias sudo='nocorrect sudo'
 fi
+
+# disable corrections on args
+unsetopt correct_all
+setopt correct

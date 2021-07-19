@@ -137,6 +137,9 @@ yay -S libpipewire02
 # now go set the pipewire flag for chromium at this url (in both your settings)
 chrome://flags/#enable-webrtc-pipewire-capturer
 
+# sheldon
+mkdir /home/jtprince/.local/share/sheldon/
+yay -S sheldon-bin --noconfirm
 
 # ntpd
 sudo pacman -S ntp --noconfirm; sudo systemctl enable ntpd.service

@@ -37,6 +37,7 @@ ZSH_THEME_GIT_PROMPT_SUFFIX=")"             # At the very end of the prompt
 ZSH_THEME_GIT_PROMPT_DIRTY="*"              # Text to display if the branch is dirty
 ZSH_THEME_GIT_PROMPT_CLEAN=""               # Text to display if the branch is clean
 
-# Setup the prompt with pretty colors
+# If you have variables in your prompt, they will be substituted in each time
+# its displayed. Consider single quotes to ensure the variable exists as a
+# variable.
 setopt prompt_subst
-

@@ -40,6 +40,27 @@ cd () {
   fi
 }
 
-#alias md='mkdir -p'
-#alias rd=rmdir
 alias d='dirs -v | head -10'
+
+
+# no 'cd dir' just 'dir'
+# setopt AUTO_CD
+
+# pipe to multiple outputs at once:
+# e.g., $ < in > out1 > out2
+setopt MULTIOS
+
+# This makes cd=pushd
+setopt AUTO_PUSHD
+
+# No more annoying pushd messages...
+# setopt PUSHD_SILENT
+
+# blank pushd goes to home
+setopt PUSHD_TO_HOME
+
+# this will ignore multiple directories for the stack.  Useful?  I dunno.
+setopt PUSHD_IGNORE_DUPS
+
+# 10 second wait if you do something that will delete everything.
+setopt RM_STAR_WAIT

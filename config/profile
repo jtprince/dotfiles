@@ -18,6 +18,8 @@ export XDG_CACHE_HOME="$HOME/.cache"
 # gnome-terminal will support 256 colors with this:
 export TERM="xterm-256color"
 
+export NUM_CPU_CORES=`grep -c ^processor /proc/cpuinfo`
+
 # https://wiki.archlinux.org/index.php/GNOME_Keyring
 export SSH_AUTH_SOCK
 export GPG_AGENT_INFO
