@@ -38,7 +38,12 @@ alias bzip='bzip2'
 alias jra='jira-cli'
 
 # fuzzy find open
-alias ff='fzfo'
+alias ff='fuzzy-file-open'
+alias fzfo='fuzzy-file-open'
+
+# like z but for files using fzf
+alias zf='fuzzy-file-open-top-hit'
+alias fz='fuzzy-file-open-top-hit'
 
 alias ghtoken="cat $HOME/MEGA/env/cloud-and-apis/github/access_tokens/owlet_repo_and_read_package.token.txt | clip -q"
 

@@ -3,7 +3,7 @@
 if [ $# -eq 0 ]; then
     response=$(fzf)
 else
-    response=$(fzf --query "$*")
+    response=$(fzf --select-1 --query "$*")
 fi
 
 if [ -n "$response" ]; then

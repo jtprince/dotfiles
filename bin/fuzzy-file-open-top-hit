@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import subprocess
+import argparse
+
+parser = argparse.ArgumentParser(description="open first n fzf files matched")
+parser.add_argument("fragments", nargs="+", help="fragments to match on")
+parser.add_argument(
+    "--num-files",
+    "-n",
+    type=int,
+    default=1,
+    help="the number of files to open, default 1",
+)
+args = parser.parse_args()
+
+cmd = ["fzf", "--filter", " ".join(args.fragments)]
+
+output = subprocess.check_output(cmd, text=True)
+files = output.split("\n")
+files_to_open = files[0 : args.num_files]
+open_cmd = ["gvim", *files_to_open]
+
+subprocess.run(open_cmd)
