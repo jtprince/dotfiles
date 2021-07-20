@@ -25,3 +25,12 @@ fpath=($ZDOTDIR/completion $fpath)
 #
 #zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 #zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+
+
+CASE_SENSITIVE="false"
+setopt MENU_COMPLETE
+setopt no_list_ambiguous
+
+autoload -Uz compinit
+compinit
+zstyle ':completion:*' menu yes select
