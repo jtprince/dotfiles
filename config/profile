@@ -27,7 +27,6 @@ export GNOME_KEYRING_CONTROL
 export GNOME_KEYRING_PID
 
 export EDITOR=nvim
-export NVIM_GTK_NO_HEADERBAR=1
 export INTERF=/etc/network/interfaces
 export WINEPREFIX="$HOME/.wine"
 # prevents wine from using windows apps as default applications
