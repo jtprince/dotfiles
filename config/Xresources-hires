@@ -1,4 +1,0 @@
-
-#include ".config/Xresources.d/cursor-hires"
-#include ".config/Xresources.d/font-hires"
-#include ".config/Xresources.d/urxvt"

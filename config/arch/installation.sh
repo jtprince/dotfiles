@@ -257,7 +257,7 @@ yay -S gnome-themes-standard  --noconfirm
 # yay -S acpi cbatticon  --noconfirm
 
 # rg, ack, fd, fzf command (way better grep and needed for proximity-sort)
-yay -S ripgrep ack fd --noconfirm
+yay -S ripgrep ack fd meld --noconfirm
 
 # essential media players and control (xava is for fun visualizer)
 yay -S youtube-music-bin playerctl xava --noconfirm

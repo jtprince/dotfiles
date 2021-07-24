@@ -16,3 +16,5 @@
 .vim
 .python-version
 /config/git/gitk
+
+config/gtkrc-2.0-local

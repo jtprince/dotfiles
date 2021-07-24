@@ -1,0 +1,7 @@
+
+#include ".config/Xresources.d/cursor-generic"
+#include ".config/Xresources.d/cursor-hd"
+#include ".config/Xresources.d/font-generic"
+#include ".config/Xresources.d/font-hd"
+#include ".config/Xresources.d/urxvt"
+#include ".config/Xresources.d/zutty"

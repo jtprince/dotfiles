@@ -4,14 +4,77 @@ from subprocess import run
 import argparse
 from pathlib import Path
 import shutil
+import dataclasses
 
 HOME = Path.home()
 REPO_CONFIG = (Path(__file__).resolve().parent.parent / "config").resolve()
-HOME_CONFIG = HOME / '.config'
+HOME_CONFIG = HOME / ".config"
 CLOUD_ENV = HOME / "MEGA" / "env"
 DOT_LOCAL = HOME / ".local"
 
 # TODO: rip out config data into separate yaml file
+
+
+@dataclasses.dataclass(frozen=True)
+class Symlink:
+    destination: Path
+    link: Path
+
+
+class Symlinker:
+    def __init__(self, dry=False):
+        self.dry = dry
+
+    def ensure(self, symlink: Symlink):
+        if symlink.link.exists():
+            if symlink.link.is_symlink():
+                # Assume this is the symlink we want (safe assumption)
+                print(f"Exists: {symlink.link} -> {symlink.destination}")
+                return
+            else:
+                # nuke it, we want our own thing there
+                print(f"Removing: {symlink.link}")
+                if not self.dry:
+                    if symlink.link.is_dir():
+                        shutil.rmtree(symlink.link)
+                    else:
+                        symlink.link.unlink()
+
+        print(f"Creating: {symlink.link} -> {symlink.destination}")
+        if not self.dry:
+            symlink.link.symlink_to(symlink.destination)
+
+    def ensure_dirs(self, dirs: list[Path]):
+        """Ensure that each home has been made or exists."""
+        for name in dirs:
+            self._make_dir(name)
+
+    def softlink_into_dotconfig(self, filenames: list[str]):
+        for name in filenames:
+            self.ensure(
+                Symlink(destination=REPO_CONFIG / name, link=HOME_CONFIG / name)
+            )
+
+    def softlink_into_home(self, filenames):
+        for name in filenames:
+            self.ensure(
+                Symlink(
+                    destination=REPO_CONFIG / name, link=HOME / ("." + name)
+                )
+            )
+
+    def make_other_sym_links(self, symlinks: list[Symlink]):
+        """Takes a dict of real to link paths and force_symlink's them."""
+        for symlink in symlinks:
+            self.ensure(symlink)
+
+    def _make_dir(self, name):
+        """Make a directory relative to home dir."""
+        path = HOME / name
+        print(f"Ensuring: {path}")
+        if not self.dry:
+            path.mkdir(parents=True, exist_ok=True)
+
 
 # relative to ~/
 ENSURE_DIRS = [
@@ -55,96 +118,75 @@ SOFTLINK_INTO_CONFIG = [
 
 # Softlink into home dotfile as "$HOME/.{name}"
 SOFTLINK_INTO_HOME = [
-    "gtkrc-2.0",
     "pryrc",
     "irbrc",
     "gemrc",
     "docker",
     "profile",
     "xprofile",
+    "gtkrc-2.0",
 ]
 
 # full path on the left to full path on the right
-OTHER_SYM_LINKS = {
-    CLOUD_ENV / "gpg/dot-gnupg": Path.home() / ".gnupg",
-    CLOUD_ENV / "cloud-and-apis/slack-term":  HOME_CONFIG / "slack-term",
-
-    REPO_CONFIG / "mimeapps.list":  DOT_LOCAL / "share/applications/mimeapps.list",
-    REPO_CONFIG / "mimeapps.list":  HOME_CONFIG / "mimeapps.list",
-
+OTHER_SYM_LINKS = [
+    Symlink(destination=CLOUD_ENV / "gpg/dot-gnupg", link=HOME / ".gnupg"),
+    Symlink(
+        destination=CLOUD_ENV / "cloud-and-apis/slack-term",
+        link=HOME_CONFIG / "slack-term",
+    ),
+    Symlink(
+        destination=REPO_CONFIG / "mimeapps.list",
+        link=DOT_LOCAL / "share/applications/mimeapps.list",
+    ),
+    Symlink(
+        destination=REPO_CONFIG / "mimeapps.list",
+        link=HOME_CONFIG / "mimeapps.list",
+    ),
     # ensure use chrome with wayland flags and that always opens a new window
     # set to be the generic chrome .desktop
-    REPO_CONFIG / "applications/google-chrome-wayland-newwindow.desktop": DOT_LOCAL / "share/applications/google-chrome.desktop",
-
-    REPO_CONFIG / "pandoc/reference": DOT_LOCAL / "share/pandoc",
-
-    # Xdefaults is deprecated upstream, but make link til we don't need
-    REPO_CONFIG / "Xresources":  Path.home() / ".Xdefaults",
-    REPO_CONFIG / "zsh/zshenv": Path.home() / ".zshenv",
+    Symlink(
+        destination=REPO_CONFIG
+        / "applications/google-chrome-wayland-newwindow.desktop",
+        link=DOT_LOCAL / "share/applications/google-chrome.desktop",
+    ),
+    Symlink(
+        destination=REPO_CONFIG / "pandoc/reference",
+        link=DOT_LOCAL / "share/pandoc",
+    ),
+    Symlink(destination=REPO_CONFIG / "zsh/zshenv", link=HOME / ".zshenv"),
     #  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
-}
+]
+RESOLUTIONS = ["4k", "hd"]
 
 parser = argparse.ArgumentParser(description="setup all config dotfiles")
+parser.add_argument(
+    "-r",
+    "--resolution",
+    default="hd",
+    choices=RESOLUTIONS,
+    help="resolution to use (default hd)",
+)
 parser.add_argument("--dry", action="store_true", help="say it, don't do it")
 args = parser.parse_args()
 
+linker = Symlinker(dry=args.dry)
 
-def softlink_into_dotconfig(filenames):
-    for name in filenames:
-        real_path = REPO_CONFIG / name
-        sym_link = HOME_CONFIG / name
-        force_symlink(real_path, sym_link)
+xresources_resolution_path = f"Xresources-{args.resolution}"
+gtkrc_local_path= REPO_CONFIG / f"gtkrc-2.0-{args.resolution}"
 
-
-def softlink_into_home(filenames):
-    for name in filenames:
-        real_path = REPO_CONFIG / name
-        sym_link = HOME / ("." + name)
-        force_symlink(real_path, sym_link)
-
-
-def force_symlink(real_path, sym_link):
-    if sym_link.exists():
-        if sym_link.is_symlink():
-            # Assume this is the symlink we want (safe assumption)
-            print(f"Exists: {sym_link} -> {real_path}")
-            return
-        else:
-            # nuke it, we want our own thing there
-            print(f"Removing: {sym_link}")
-            if not args.dry:
-                if sym_link.is_dir():
-                    shutil.rmtree(sym_link)
-                else:
-                    sym_link.unlink()
-
-    print(f"Creating: {sym_link} -> {real_path}")
-    if not args.dry:
-        sym_link.symlink_to(real_path)
+xresources_path = REPO_CONFIG / xresources_resolution_path
+OTHER_SYM_LINKS.extend(
+    [
+        Symlink(destination=xresources_path, link=HOME / ".Xresources"),
+        # Xdefaults is deprecated upstream, but make link til we don't need
+        Symlink(destination=xresources_path, link=HOME / ".Xdefaults"),
+        Symlink(destination=gtkrc_local_path, link=HOME / ".gtkrc-2.0-local"),
+    ]
+)
 
 
-def make_dir(name):
-    """Make a directory relative to home dir."""
-    path = Path.home() / name
-    print(f"Ensuring: {path}")
-    if not args.dry:
-        path.mkdir(parents=True, exist_ok=True)
-
-
-def make_other_sym_links(real_to_link):
-    """Takes a dict of real to link paths and force_symlink's them."""
-    for real_path, sym_link in real_to_link.items():
-        force_symlink(real_path, sym_link)
-
-
-def ensure_dirs(dirs):
-    """Ensure that each home has been made or exists."""
-    for name in dirs:
-        make_dir(name)
-
-
-if __name__ == '__main__':
-    ensure_dirs(ENSURE_DIRS)
-    softlink_into_dotconfig(SOFTLINK_INTO_CONFIG)
-    softlink_into_home(SOFTLINK_INTO_HOME)
-    make_other_sym_links(OTHER_SYM_LINKS)
+if __name__ == "__main__":
+    linker.ensure_dirs(ENSURE_DIRS)
+    linker.softlink_into_dotconfig(SOFTLINK_INTO_CONFIG)
+    linker.softlink_into_home(SOFTLINK_INTO_HOME)
+    linker.make_other_sym_links(OTHER_SYM_LINKS)

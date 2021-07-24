@@ -1,5 +1,0 @@
-
-#include ".config/Xresources.d/cursor"
-#include ".config/Xresources.d/font"
-#include ".config/Xresources.d/urxvt"
-#include ".config/Xresources.d/zutty"
