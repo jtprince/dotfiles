@@ -5,6 +5,7 @@ startup_programs: |
   # in /etc/profile.d/jre.sh
   exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
   exec --no-startup-id exec mako
+  exec --no-startup-id pipewire
 locked: >-
   --locked
 appearance_special: |
@@ -15,7 +16,7 @@ appearance_special: |
   # smart_gaps on
   # smart_borders on
 appearance_output: |
-  output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
+  # output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
 appearance_notes: |
   # TODO: figure out how to randomize on demand and use env vars
   # output * bg /home/jtprince/arch-linux-universe-wallpapers_30371_1920x1200.jpg fill
@@ -87,4 +88,6 @@ keybindings: |
   #######################
   input * {
       xkb_options "caps:escape,altwin:swap_lalt_lwin"
+      repeat_delay 300
+      repeat_rate 30
   }

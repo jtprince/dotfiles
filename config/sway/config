@@ -45,6 +45,7 @@ exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --foc
 # in /etc/profile.d/jre.sh
 exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 exec --no-startup-id exec mako
+exec --no-startup-id pipewire
 
 #########################
 # APPEARANCE
@@ -79,7 +80,7 @@ client.placeholder      $ddblue    $ddblue    $white   $ddblue    $ddblue
 
 client.background       $white
 
-output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
+# output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
 
 # TODO: figure out how to randomize on demand and use env vars
 # output * bg /home/jtprince/arch-linux-universe-wallpapers_30371_1920x1200.jpg fill
@@ -98,7 +99,7 @@ output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
 
 # Example configuration:
 #
-#   input &quot;2:14:SynPS/2_Synaptics_TouchPad&quot; {
+#   input "2:14:SynPS/2_Synaptics_TouchPad" {
 #       dwt enabled
 #       tap enabled
 #       natural_scroll enabled
@@ -497,7 +498,7 @@ bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
 
 # Scratchpad:
 
-# Sway has a &quot;scratchpad&quot;, which is a bag of holding for windows.
+# Sway has a "scratchpad", which is a bag of holding for windows.
 # You can send windows there and get them back later.
 
 # Move the currently focused window to the scratchpad
@@ -544,6 +545,8 @@ include /etc/sway/config.d/*
 # Keybindings
 #######################
 input * {
-    xkb_options &quot;caps:escape,altwin:swap_lalt_lwin&quot;
+    xkb_options "caps:escape,altwin:swap_lalt_lwin"
+    repeat_delay 300
+    repeat_rate 30
 }
 

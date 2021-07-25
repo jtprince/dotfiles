@@ -128,14 +128,17 @@ dotfiles-configure
 
 # Other sway/wayland stuff
 
-yay -S wl-clipboard wl-clipboard-x11 wdisplays azote mako grimshot python-i3ipc
+# ------------------------------------------------------------------
+# These clipboards are incompatible between sway and X11. Choose 1.
+yay -S xclip
+# yay -S wl-clipboard-x11
+# ------------------------------------------------------------------
+
+yay -S wl-clipboard wdisplays azote mako grimshot python-i3ipc
 # pipewire screensharing stuff
 yay -S pipewire xdg-desktop-portal xdg-desktop-portal-wlr
-# chromium is on an older pipewire version, is this still needed?
-# check https://wiki.archlinux.org/index.php/PipeWire
-yay -S libpipewire02
 # now go set the pipewire flag for chromium at this url (in both your settings)
-chrome://flags/#enable-webrtc-pipewire-capturer
+# chrome://flags/#enable-webrtc-pipewire-capturer
 
 # sheldon
 mkdir /home/jtprince/.local/share/sheldon/

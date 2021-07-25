@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # /usr/bin/urxvt
-/usr/bin/alacritty "$@"
+WINIT_X11_SCALE_FACTOR=1 /usr/bin/alacritty "$@"

@@ -25,4 +25,7 @@ runshell(cmd)
 cmd = f"cat {str(preamble)} _config_no_preamble > config"
 runshell(cmd)
 
+# This is dumb. Need to determine culprit, but in meantime...
+runshell("""sed -i 's/&quot;/"/g' config""")
+
 runshell("rm _config_no_preamble")
