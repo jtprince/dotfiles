@@ -116,6 +116,7 @@ SOFTLINK_INTO_CONFIG = [
     "npmrc",
     "pulseaudio-ctl",
     "nvim",
+    "sheldon",
     "mimeapps.list",
     "Xresources.d",
 ]
