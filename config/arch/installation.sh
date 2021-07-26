@@ -82,7 +82,7 @@ cd yay
 makepkg -si
 
 # other neovim stuff and copy/paste stuff from aur
-yay -S xclip vim-plug git-delta --noconfirm
+yay -S xclip vim-plug git-delta sheldon-bin --noconfirm
 # <start in dmenu>:
 xclip -silent
 
@@ -134,15 +134,12 @@ yay -S xclip
 # yay -S wl-clipboard-x11
 # ------------------------------------------------------------------
 
-yay -S wl-clipboard wdisplays azote mako grimshot python-i3ipc
+yay -S wl-clipboard wdisplays azote mako grimshot python-i3ipc --noconfirm
 # pipewire screensharing stuff
-yay -S pipewire xdg-desktop-portal xdg-desktop-portal-wlr
+yay -S pipewire xdg-desktop-portal xdg-desktop-portal-wlr --noconfirm
 # now go set the pipewire flag for chromium at this url (in both your settings)
 # chrome://flags/#enable-webrtc-pipewire-capturer
 
-# sheldon
-mkdir /home/jtprince/.local/share/sheldon/
-yay -S sheldon-bin --noconfirm
 
 # ntpd
 sudo pacman -S ntp --noconfirm; sudo systemctl enable ntpd.service
@@ -275,7 +272,7 @@ nvim -> :PlugInstall
 
 # for reading settings file and other json stuff
 :CocInstall coc-json
-:CocInstall coc-python
+:CocInstall coc-pyright
 :CocInstall coc-solargraph
 
 # install jira-cli
@@ -286,8 +283,8 @@ cat ~/MEGA/env/cloud-and-apis/jira/jira-cli/README.md
 
 pyenv install --list
 # update these to latest patch version for each minor
-pyenv install 3.7.10; pyenv install 3.8.10; pyenv install 3.9.5
-pyenv global 3.9.5
+pyenv install 3.7.11; pyenv install 3.8.11; pyenv install 3.9.6
+pyenv global 3.9.6
 # you need the neovim module in your current python shim for the nvim python
 # plugin to work:
 # If you see this error message:
@@ -327,7 +324,7 @@ yay -S gcc-fortran --noconfirm
 yay -S gnome-system-monitor gnome-power-manager --noconfirm
 
 # cheat sheets
-yay -S cheat --noconfirm
+yay -S cheat-bin --noconfirm
 
 
 # NEED TO FIGURE OUT THAT SYSTEMD stuff and do it!!

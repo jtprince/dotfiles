@@ -359,7 +359,8 @@ set $browser1 google-chrome-stable {{chrome_environment_opts}} --user-data-dir=/
 set $browser2 google-chrome-stable {{chrome_environment_opts}}
 set $newwindow --new-window
 
-bindsym $mod+x exec terminal-emulator
+# not sure why need full path here :/
+bindsym $mod+x exec /home/jtprince/bin/terminal-emulator
 
 bindsym $mod+i exec $browser1
 bindsym $mod+Shift+I exec $browser2

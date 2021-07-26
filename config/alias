@@ -128,6 +128,9 @@ alias vimdir="nvimdir"
 alias i3dir="cd $HOME/dotfiles/config/i3/"
 alias i3up="gvim $HOME/dotfiles/config/i3/i3-sway.yaml"
 alias i3swayup="gvim $HOME/dotfiles/config/i3-sway/config.mo"
+alias swayconfigup="gvim $HOME/dotfiles/config/sway/config"
+alias swayup="gvim $HOME/dotfiles/config/sway/i3-sway.yaml"
+alias swaydir="gvim $HOME/dotfiles/config/sway/"
 
 # latex
 alias latexmk="latexmk -pdf -xelatex"
