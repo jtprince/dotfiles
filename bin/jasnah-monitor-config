@@ -4,17 +4,21 @@ import argparse
 import subprocess
 
 LAPTOP = "Chimei Innolux Corporation 0x1409 0x00000000"
-DESK = "Unknown HP VH240a 6CM83029MD"
-TREADMILL = "Ancor Communications Inc VN279 L3LMQS057980"
+# HOME
+# DESK = "Dell Inc. DELL S2721QS CB64M43"
+# WORK
+DESK = "Dell Inc. DELL U2722D 122BS83"
+# TREADMILL = "Ancor Communications Inc VN279 L3LMQS057980"
 
 MONITORS = dict(
     laptop=LAPTOP,
     desk=DESK,
-    treadmill=TREADMILL,
+    # treadmill=TREADMILL,
 )
 
 config = dict(
-    enable="enable pos 0 0",
+    laptop="enable pos 0 0",
+    desk="enable scale 1.2 pos 0 0",
     disable="disable",
 )
 
@@ -23,7 +27,8 @@ parser.add_argument(
     "monitor",
     nargs="?",
     default="laptop",
-    choices=["laptop", "desk", "treadmill"],
+    # choices=["laptop", "desk", "treadmill"],
+    choices=["laptop", "desk"],
 )
 parser.add_argument("--dry", action="store_true", help="dry run")
 args = parser.parse_args()
@@ -44,7 +49,7 @@ def create_single_monitor_commands(value):
         for name in to_disable
     ]
     enable_cmd = create_swaymsg_output_command(
-        MONITORS[value], config["enable"]
+        MONITORS[value], config[value]
     )
     all_cmds = disable_cmds + [enable_cmd]
     return all_cmds

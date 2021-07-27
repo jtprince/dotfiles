@@ -45,7 +45,7 @@ exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --foc
 # in /etc/profile.d/jre.sh
 exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
 exec --no-startup-id exec mako
-exec --no-startup-id pipewire
+# exec_always "systemctl --user import-environment"
 
 #########################
 # APPEARANCE
@@ -80,7 +80,7 @@ client.placeholder      $ddblue    $ddblue    $white   $ddblue    $ddblue
 
 client.background       $white
 
-# output * bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
+output "*" bg /home/jtprince/backgrounds/beforethestorm_1920x1200.png fill
 
 # TODO: figure out how to randomize on demand and use env vars
 # output * bg /home/jtprince/arch-linux-universe-wallpapers_30371_1920x1200.jpg fill
@@ -457,7 +457,7 @@ bindsym $mod+Ctrl+Shift+Print exec screenshot-sway window --ocr --annotate --eog
 # ☆ <Favorites> toggles monitor setting
 set $monitor_laptop_cmd jasnah-monitor-config laptop
 set $monitor_primary1_cmd jasnah-monitor-config desk
-set $monitor_primary2_cmd jasnah-monitor-config treadmill
+set $monitor_primary2_cmd jasnah-monitor-config laptop
 
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
 bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
@@ -549,5 +549,9 @@ input * {
     xkb_options "caps:escape,altwin:swap_lalt_lwin"
     repeat_delay 300
     repeat_rate 30
+}
+input type:touchpad {
+  tap enabled
+  natural_scroll enabled
 }
 

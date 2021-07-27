@@ -126,6 +126,8 @@ dotfiles-configure
 # OTHER
 ############################
 
+# SET PARALLEL DOWNLOADS to 5 in pacman.conf!!!!!!!!!!!!!!!
+
 # Other sway/wayland stuff
 
 # ------------------------------------------------------------------
@@ -353,8 +355,9 @@ yay -S system-config-printer --noconfirm
 # system monitoring
 yay -S libstatgrab pystatgrab gnome-system-monitor --noconfirm
 
-# aws and google cli
-yay -S aws-cli google-cloud-sdk --noconfirm
+# aws and google cli as needed
+yay -S aws-cli --noconfirm
+# yay -S google-cloud-sdk --noconfirm
 
 # docker
 yay -S docker docker-compose --noconfirm

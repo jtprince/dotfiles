@@ -15,15 +15,15 @@ NEW_WINDOW = "--new-window"
 PERSONAL_DATA_DIR = home / ".config" / "chrome-personal"
 
 PERSONAL_BROWSER = [BROWSER, f"{DATA_DIR_KEY}={str(PERSONAL_DATA_DIR)}", NEW_WINDOW]
-OWLET_BROWSER = [BROWSER, NEW_WINDOW]
+WORK_BROWSER = [BROWSER, NEW_WINDOW]
 
 GMAIL = "https://gmail.com"
 CALENDAR = "https://calendar.google.com"
 
 cmds = [
     PERSONAL_BROWSER + [GMAIL],
-    OWLET_BROWSER + [GMAIL],
-    OWLET_BROWSER + [CALENDAR],
+    WORK_BROWSER + [GMAIL],
+    WORK_BROWSER + [CALENDAR],
     PERSONAL_BROWSER + [CALENDAR],
 ]
 
