@@ -35,8 +35,10 @@ EXTS =
   end
 
 files_w_ext = Dir[*EXTS.map {|ext| BKG_DIR + "/*.#{ext}" }]
+shellsafe_filename = Shellwords.escape(files_w_ext.sample)
 
-bkg_prog =
+
+cmd =
   if session_type == 'x11'
     if `which feh`.size > 0
       # feh is in official repos, so using it
@@ -46,15 +48,13 @@ bkg_prog =
     elsif `which hsetroot`.size > 0
       # putting feh as default since hsetroot seems a little flaky at moment
       # (put into AUR from community)
-      'hsetroot -fill'
+      "hsetroot -fill #{shellsafe_filename}"
     else
       abort "need feh or hsetroot to work!"
     end
   else
-    echo "issues :("
-    # `swaymsg 'output * bg /home/jtprince/backgrounds'`
+    "swaymsg 'output * bg #{shellsafe_filename} fill'"
   end
 
-cmd = "#{bkg_prog} '#{Shellwords.escape(files_w_ext.sample)}'"
 puts cmd if $VERBOSE
 system cmd
