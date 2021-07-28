@@ -10,6 +10,8 @@
 # linux
 pacman -S base base-devel linux linux-firmware  man-db man-pages texinfo --noconfirm
 
+# Install any special firmware noted for your device (e.g., upd72020x-fw for Thinkpad webcam)
+
 # networking and communication
 pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfirm
 
@@ -136,7 +138,9 @@ yay -S xclip
 # yay -S wl-clipboard-x11
 # ------------------------------------------------------------------
 
-yay -S wl-clipboard wdisplays azote mako grimshot python-i3ipc --noconfirm
+# wf-recorder is for screen recording
+# mako is for notifications
+yay -S wl-clipboard wdisplays azote mako grimshot python-i3ipc wf-recorder --noconfirm
 # pipewire screensharing stuff
 yay -S pipewire xdg-desktop-portal xdg-desktop-portal-wlr --noconfirm
 # now go set the pipewire flag for chromium at this url (in both your settings)
@@ -148,6 +152,10 @@ sudo pacman -S ntp --noconfirm; sudo systemctl enable ntpd.service
 
 # install network manager
 sudo pacman -S networkmanager network-manager-applet --noconfirm; sudo systemctl enable NetworkManager
+
+yay -S awsvpnclient
+# Start the gui client:
+# /opt/awsvpnclient/AWS\ VPN\ Client
 
 # keychain
 yay -S keychain docker-credential-secretservice-bin --noconfirm
@@ -327,6 +335,7 @@ yay -S gnome-system-monitor gnome-power-manager --noconfirm
 
 # cheat sheets
 yay -S cheat-bin --noconfirm
+mkdir ~/src ; cd ~/src ; git clone git@github.com:cheat/cheatsheets.git ; cd
 
 
 # NEED TO FIGURE OUT THAT SYSTEMD stuff and do it!!

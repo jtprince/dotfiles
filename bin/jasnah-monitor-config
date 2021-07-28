@@ -2,23 +2,55 @@
 
 import argparse
 import subprocess
+import re
+import json
+
+monitor_keys = ["make", "model", "serial"]
+
+
+def get_monitor_make_model_serial():
+    monitors = json.loads(
+        subprocess.check_output(["swaymsg", "-t", "get_outputs"], text=True)
+    )
+    monitor_labels = []
+    for monitor in monitors:
+        monitor_labels.append(" ".join([monitor[key] for key in monitor_keys]))
+
+    return monitor_labels
+
 
 LAPTOP = "Chimei Innolux Corporation 0x1409 0x00000000"
-# HOME
-# DESK = "Dell Inc. DELL S2721QS CB64M43"
-# WORK
-DESK = "Dell Inc. DELL U2722D 122BS83"
-# TREADMILL = "Ancor Communications Inc VN279 L3LMQS057980"
+
+DELL_UHD = "Dell Inc. DELL U2722D 122BS83"
+DELL_4K = "Dell Inc. DELL S2721QS CB64M43"
+
+# For reference, my work and home monitors are:
+MONITOR_SCALE = {
+    LAPTOP: 1,
+    DELL_UHD: 1,
+    DELL_4K: 1.6,
+}
+
+monitor_ids = get_monitor_make_model_serial()
+desk = next(
+    (
+        monitor_id
+        for monitor_id in monitor_ids
+        if monitor_id.startswith("Dell Inc.")
+    ),
+    None,
+)
+
 
 MONITORS = dict(
     laptop=LAPTOP,
-    desk=DESK,
+    desk=desk,
     # treadmill=TREADMILL,
 )
 
 config = dict(
-    laptop="enable pos 0 0",
-    desk="enable scale 1.2 pos 0 0",
+    laptop="enable scale {scale} pos 0 0",
+    desk="enable scale {scale} pos 0 0",
     disable="disable",
 )
 
@@ -48,10 +80,13 @@ def create_single_monitor_commands(value):
         create_swaymsg_output_command(name, config["disable"])
         for name in to_disable
     ]
+    scale = MONITOR_SCALE[MONITORS[value]]
     enable_cmd = create_swaymsg_output_command(
-        MONITORS[value], config[value]
+        MONITORS[value], config[value].format(scale=scale)
     )
     all_cmds = disable_cmds + [enable_cmd]
+    for cmd in all_cmds:
+        print(cmd)
     return all_cmds
 
 

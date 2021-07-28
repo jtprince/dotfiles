@@ -158,7 +158,7 @@ RESOLUTION_INDEPENDENT_LINKS = [
         link=DOT_LOCAL / "share/pandoc",
     ),
     Symlink(REPO_CONFIG / "zsh/zshenv", link=HOME / ".zshenv"),
-    #  ln 'okularpartrc', '.kde4/share/config/okularpartrc'
+    Symlink(HOME / "src/cheatsheets", link=HOME_CONFIG / "cheat/cheatsheets/community")
 ]
 
 _RESOLUTIONS = ["4k", "hd"]

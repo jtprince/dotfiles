@@ -2,10 +2,9 @@ introductory_notes: |
   # See `man 5 sway` for reference.
 startup_programs: |
   exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty
-  # in /etc/profile.d/jre.sh
-  exec --no-startup-id export _JAVA_AWT_WM_NONREPARENTING=1
+  exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
   exec --no-startup-id exec mako
-  # exec_always "systemctl --user import-environment"
+  exec --no-startup-id systemctl --user import-environment
 locked: >-
   --locked
 appearance_special: |
@@ -93,5 +92,12 @@ keybindings: |
   }
   input type:touchpad {
     tap enabled
-    natural_scroll enabled
+    dwt enabled
+    # natural_scroll enabled
+    middle_emulation enabled
+  }
+  input type:mouse {
+    accel_profile adaptive
+    # Following line didn't work:
+    # pointer_accel 1.2
   }

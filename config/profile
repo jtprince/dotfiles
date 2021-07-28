@@ -91,6 +91,9 @@ export CHEATCOLORS=true
 export OWLET_PYPROJECT_FILE="$HOME/owlet/ci-kit/bin/python/configuration/pyproject.toml"
 export OWLET_COVERAGERC_FILE="$HOME/owlet/ci-kit/bin/python/configuration/.coveragerc"
 
+# SCREENSHOT
+export XDG_SCREENSHOTS_DIR="$HOME/screenshots"
+
 #####################################################
 # Language Specific
 #####################################################
