@@ -49,6 +49,8 @@ def get_best_pyenv_python_version():
     ).strip()
 
 
+if args.version:
+    version = args.version
 if not args.version:
     if PYPROJECT.exists():
         # TODO: if --best could use best possible version compatible with
