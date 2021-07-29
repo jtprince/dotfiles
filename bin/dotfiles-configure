@@ -161,14 +161,14 @@ RESOLUTION_INDEPENDENT_LINKS = [
     Symlink(HOME / "src/cheatsheets", link=HOME_CONFIG / "cheat/cheatsheets/community")
 ]
 
-_RESOLUTIONS = ["4k", "hd"]
+_RESOLUTIONS = ["4k", "hd", "mid"]
 parser = argparse.ArgumentParser(description="setup all config dotfiles")
 parser.add_argument(
     "-r",
     "--resolution",
-    default="hd",
+    default="mid",
     choices=_RESOLUTIONS,
-    help="resolution to use (default hd)",
+    help="resolution to use (default mid)",
 )
 parser.add_argument("--dry", action="store_true", help="say it, don't do it")
 args = parser.parse_args()
