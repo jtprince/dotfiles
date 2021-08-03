@@ -9,7 +9,7 @@ import dataclasses
 HOME = Path.home()
 REPO_CONFIG = (Path(__file__).resolve().parent.parent / "config").resolve()
 HOME_CONFIG = HOME / ".config"
-CLOUD_ENV = HOME / "MEGA" / "env"
+CLOUD_ENV = HOME / "Dropbox" / "env"
 DOT_LOCAL = HOME / ".local"
 
 # TODO: rip out config data into separate yaml file

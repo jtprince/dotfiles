@@ -19,9 +19,9 @@ username = sys.argv[1]
 
 user_agent = ("User-Agent: linux.reddit-inbox-tray:v0.0.1 (by /u/bwv549)")
 
-REDDIT_ENV_PATH = "/home/jtprince/MEGA/env/reddit"
+REDDIT_ENV_PATH = "/home/jtprince/Dropbox/env/reddit"
 # ICON_PATH = "
-# ICON_PATH = "/home/jtprince/MEGA/env/reddit/icons"
+# ICON_PATH = "/home/jtprince/Dropbox/env/reddit/icons"
 client_data = "dev_client.yml"
 MESSAGES_ICON = 'gtk3-demo'
 NO_MESSAGES_ICON = 'gtk-3-demo-symbolic.symbolic'

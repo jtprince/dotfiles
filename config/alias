@@ -45,7 +45,7 @@ alias fzfo='fuzzy-file-open'
 alias zf='fuzzy-file-open-top-hit'
 alias fz='fuzzy-file-open-top-hit'
 
-alias ghtoken="cat $HOME/MEGA/env/cloud-and-apis/github/access_tokens/owlet_repo_and_read_package.token.txt | clip -q"
+alias ghtoken="cat $HOME/Dropbox/env/cloud-and-apis/github/access_tokens/owlet_repo_and_read_package.token.txt | clip -q"
 
 # wine
 alias wine32="export WINEARCH=win32; export WINEPREFIX=$HOME/.wine32; wine"

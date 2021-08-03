@@ -9,7 +9,7 @@ require 'json'
 require 'time'
 require 'yaml'
 
-CLOUD_ROOT = ENV['HOME'] + "/MEGA"
+CLOUD_ROOT = ENV['HOME'] + "/Dropbox"
 
 def get_quotes
   quotes_file = CLOUD_ROOT + "/quotes/short.txt"

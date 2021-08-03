@@ -8,7 +8,7 @@ from pathlib import Path
 
 home = Path.home()
 
-SAVE_TO = home / "MEGA/env/passwds_logins/"
+SAVE_TO = home / "Dropbox/env/passwds_logins/"
 
 
 @contextmanager

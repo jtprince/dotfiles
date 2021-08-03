@@ -9,7 +9,7 @@ from pathlib import Path
 #############################
 # CONFIG
 #############################
-BASE_DIR = Path.home() / "MEGA/env/work/owlet/secrets/firebase"
+BASE_DIR = Path.home() / "Dropbox/env/work/owlet/secrets/firebase"
 
 # files under BASE_DIR/<env>
 files = dict(

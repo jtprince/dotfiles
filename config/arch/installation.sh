@@ -100,16 +100,6 @@ yay -S paru-bin --noconfirm
 yay -S google-chrome --noconfirm
 google-chrome-stable --user-data-dir=$HOME/.config/chrome-personal
 
-############################
-# MEGA
-############################
-
-# open browser, navigate here and download and install
-# https://mega.nz/sync
-sudo pacman -U Download/megasync-x86_64.pkg.tar.zst
-# Login so it can start
-# jtprince@gmail.com
-
 
 # reflector (for mirrorlists) NOTE: pause dropbox sync for this
 # rsync is needed for lots of the reflector uris
@@ -120,8 +110,8 @@ yay -S reflector rsync --noconfirm;  sudo reflector --country US --fastest 10 --
 ############################
 
 # Password related utilities
-chmod +x ~/MEGA/env/passwds_logins/INSTALL.sh
-~/MEGA/env/passwds_logins/INSTALL.sh
+chmod +x ~/Dropbox/env/passwds_logins/INSTALL.sh
+~/Dropbox/env/passwds_logins/INSTALL.sh
 
 git clone git@github.com:jtprince/dotfiles.git
 cd ~ && ln -s ~/dotfiles/bin && rehash
@@ -261,7 +251,7 @@ yay -S otf-font-awesome --noconfirm
 yay -S otf-ipafont culmus cantarell-fonts --noconfirm
 
 # link my own batch of fonts
-ln -s ~/MEGA/env/appearance/fonts/dot-fonts ~/.local/share/fonts
+ln -s ~/Dropbox/env/appearance/fonts/dot-fonts ~/.local/share/fonts
 fc-cache
 
 # icons and themes
@@ -292,7 +282,7 @@ nvim -> :PlugInstall
 # install jira-cli
 npm install -g jira-cli
 # to complete install, execute command from my README.md
-cat ~/MEGA/env/cloud-and-apis/jira/jira-cli/README.md
+cat ~/Dropbox/env/cloud-and-apis/jira/jira-cli/README.md
 
 pyenv install --list
 # update these to latest patch version for each minor
@@ -427,9 +417,6 @@ yay -S tzupdate --noconfirm
 yay -S kubectl kubectx --noconfirm
 # then without the dry
 kubernetes-setup-credentials --with-login --credentials --nicknames --dry
-
-# NOW GO AND INSTALL stuff for work
-cat ~/MEGA/env/work/owlet/INSTALLATION.md
 
 #########################################
 ## OPTIONAL

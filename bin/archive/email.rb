@@ -35,7 +35,7 @@ if ARGV.size < 1
   exit
 end
 
-my_email_gmail_app_password = IO.read(ENV['HOME'] + "/MEGA/env/email/gmail_email_app_password")
+my_email_gmail_app_password = IO.read(ENV['HOME'] + "/Dropbox/env/email/gmail_email_app_password")
 
 unless opt[:dry]
   Mail.defaults do

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TOKEN="$HOME/MEGA/env/cloud-and-apis/gitlab/access-token"
+TOKEN="$HOME/Dropbox/env/cloud-and-apis/gitlab/access-token"
 SOURCE="master"
 TARGET="dev"
 PROJECT='helms-deep'
