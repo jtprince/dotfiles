@@ -15,6 +15,7 @@ BLESSED_DESCRIPTIONS = [
     "USB PnP Audio Device Analog Stereo",
     "Family 17h (Models 10h-1fh) HD Audio Controller Speaker + Headphones",
     # "Family 17h (Models 10h-1fh) HD Audio Controller Analog Stereo"
+    "Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones"
 ]
 
 def get_and_display_current_state():

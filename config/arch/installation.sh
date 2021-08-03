@@ -11,13 +11,16 @@
 pacman -S base base-devel linux linux-firmware  man-db man-pages texinfo --noconfirm
 
 # Install any special firmware noted for your device (e.g., upd72020x-fw for Thinkpad webcam)
+# and sof-firmware for advanced sound cards
+pacman -S sof-firmware
 
 # networking and communication
 pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfirm
 
 # shell, permissions, git, and firmware support
 # (udisks2 for uefi support in fwupdmgr)
-pacman -S zsh git sudo  unzip p7zip udisks2 dmenu --noconfirm
+# npm for coc
+pacman -S zsh git sudo  unzip p7zip udisks2 npm dmenu --noconfirm
 
 # editors
 pacman -S vi vim neovim  fzf ctags --noconfirm
@@ -109,7 +112,8 @@ sudo pacman -U Download/megasync-x86_64.pkg.tar.zst
 
 
 # reflector (for mirrorlists) NOTE: pause dropbox sync for this
-yay -S reflector --noconfirm;  sudo reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
+# rsync is needed for lots of the reflector uris
+yay -S reflector rsync --noconfirm;  sudo reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
 
 ############################
 # dotfiles
@@ -153,7 +157,7 @@ sudo pacman -S ntp --noconfirm; sudo systemctl enable ntpd.service
 # install network manager
 sudo pacman -S networkmanager network-manager-applet --noconfirm; sudo systemctl enable NetworkManager
 
-yay -S awsvpnclient
+yay -S awsvpnclient --noconfirm; sudo systemctl enable awsvpnclient
 # Start the gui client:
 # /opt/awsvpnclient/AWS\ VPN\ Client
 
@@ -286,7 +290,6 @@ nvim -> :PlugInstall
 :CocInstall coc-solargraph
 
 # install jira-cli
-yay -S npm --noconfirm
 npm install -g jira-cli
 # to complete install, execute command from my README.md
 cat ~/MEGA/env/cloud-and-apis/jira/jira-cli/README.md
