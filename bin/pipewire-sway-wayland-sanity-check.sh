@@ -47,4 +47,4 @@ systemctl --user status xdg-desktop-portal
 # systemctl --user start xdg-desktop-portal
 # systemctl --user start xdg-desktop-portal
 
-
+echo "IF EVERYTHING IS WORKING ABOVE, then TRY REBOOTING and it SHOULD then WORK!"
