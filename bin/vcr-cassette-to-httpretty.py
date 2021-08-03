@@ -5,7 +5,6 @@ import json
 
 import yaml
 
-
 parser = argparse.ArgumentParser(
     description="converty VCR.py cassettes to httpretty registrations"
 )

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import argparse
-import subprocess
 import os
+import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument("infile", help="the path to the file")

@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-from usb import USBError
-import usb.core, usb.util
-from array import array
-from collections import defaultdict, Counter
-import logging, time, sys
+import logging
+import sys
 import threading
+import time
+from array import array
+from collections import Counter, defaultdict
+
+import usb.core
+import usb.util
+from usb import USBError
 
 log = logging.getLogger(__name__)
 
@@ -445,7 +449,8 @@ def close_pole(poll):
     poll.stop_poll()
 
 if __name__ == '__main__':
-    import signal, argparse
+    import argparse
+    import signal
 
     parser = argparse.ArgumentParser(description='Start an iClicker poll')
     parser.add_argument('--debug', action='store_true', default=False,

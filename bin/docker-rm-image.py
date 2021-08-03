@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 # from argcomplete.completers import ChoicesCompleter
-from subprocess import run
 from argparse import ArgumentParser
+from subprocess import run
 
 # TODO: interpret image id as an id (can do a simple match to existing ids)
 # and accept that also

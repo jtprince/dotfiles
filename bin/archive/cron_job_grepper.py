@@ -3,6 +3,7 @@
 import argparse
 import re
 
+
 class CronStatus(object):
     START_MATCH = 'From root@Cron'
     DATE_MATCH = 'Date:'

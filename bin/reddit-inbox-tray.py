@@ -4,9 +4,10 @@ import sys
 import time
 from threading import Thread
 
-import yaml
-import praw
 import gi
+import praw
+import yaml
+
 # these must come after import gi and before other imports
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')

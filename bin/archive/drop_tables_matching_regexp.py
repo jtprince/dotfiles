@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import sys
-import sqlite3
 import argparse
 import re
+import sqlite3
+import sys
 
 parser = argparse.ArgumentParser(description='deletes tables matching some regular expression')
 parser.add_argument('database', help='the database file')

@@ -4,9 +4,7 @@ import argparse
 import os
 import re
 import sys
-from itertools import islice
-from itertools import takewhile
-from itertools import tee
+from itertools import islice, takewhile, tee
 
 try:
     from itertools import izip  # python 2

@@ -4,7 +4,6 @@ import argparse
 import os
 from pathlib import Path
 
-
 parser = argparse.ArgumentParser(
     description="find all missing __init__.py files"
 )

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import re
 import argparse
-from pathlib import Path
+import re
 from collections import Counter
+from pathlib import Path
 
 
 class DuplicateReferences(Exception):

@@ -3,8 +3,7 @@
 import json
 import random
 import string
-from argparse import ArgumentDefaultsHelpFormatter
-from argparse import ArgumentParser
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from os import environ
 
 import requests

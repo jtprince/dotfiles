@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
+import codecs
 import os
-import sys
 import re
 import subprocess
-import codecs
+import sys
 import time
+
 
 def get_music_dir(mpdconf):
     with open(mpdconf) as mpdconf_io:

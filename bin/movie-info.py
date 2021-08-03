@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 # pip install --user tmdbsimple
-import tmdbsimple as tmdb
 import argparse
 import os
+
+import tmdbsimple as tmdb
 
 APIKEY_FILE = os.path.join(os.getenv("HOME"), "Dropbox", "env", "tmdb", "APIKEY")
 

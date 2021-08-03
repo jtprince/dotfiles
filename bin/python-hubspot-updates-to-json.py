@@ -12,8 +12,8 @@ output: writes a line of json for each to stdout
 """
 LEADERS = ('contact_data=', 'update_request=')
 
-import sys
 import json
+import sys
 import traceback
 
 if len(sys.argv) == 1:

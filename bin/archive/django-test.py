@@ -8,6 +8,7 @@ import subprocess
 import sys
 from time import time
 
+
 def convert_to_module_notation(filename):
     filename = filename.replace('/', '.')
     filename = filename.replace('.py', '')

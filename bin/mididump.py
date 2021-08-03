@@ -2,8 +2,9 @@
 """
 Print a description of a MIDI file.
 """
-import midi
 import sys
+
+import midi
 
 if len(sys.argv) != 2:
     print "Usage: {0} <midifile>".format(sys.argv[0])
