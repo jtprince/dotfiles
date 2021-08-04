@@ -2,8 +2,11 @@
 tags: [ networking ]
 ---
 
+# TYPICAL usage:
+ nmcli d wifi connect <SSID> password <your password>
+
 # show your connections
-nmcli connection show 
+nmcli connection show
 
 # Connect to a wireless access point - Parameters:
 # 	<wiface> -- the name of your wireless interface
@@ -51,7 +54,7 @@ nmcli con up <name>
 sudo nmcli con import type openvpn file <path_to_ovpn_file>
 
 # show your connections
-nmcli connection show 
+nmcli connection show
 
 # connect to openvpn
 nmcli connection up myopenvpn
