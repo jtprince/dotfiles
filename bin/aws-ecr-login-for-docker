@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+
+parser = argparse.ArgumentParser(description="docker login to aws ECR")
+args = parser.parse_args()
+
+buggy_login_cmd = subprocess.check_output(
+    "aws ecr get-login", shell=True, text=True
+)
+
+# If you don't do anything, the current aws ecr get-login is bad
+#     > unknown shorthand flag: 'e' in -e
+# So, strip out the nonsense before calling
+working_login_cmd = buggy_login_cmd.replace(" -e none ", " ")
+
+subprocess.run(working_login_cmd, shell=True)

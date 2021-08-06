@@ -544,7 +544,7 @@ include /etc/sway/config.d/*
 #######################
 # Keybindings
 #######################
-input * {
+input type:keyboard {
     xkb_options "caps:escape,altwin:swap_lalt_lwin"
     repeat_delay 300
     repeat_rate 30
@@ -557,6 +557,8 @@ input type:touchpad {
 }
 input type:mouse {
   accel_profile adaptive
-  # pointer_accel 1.2
+  # Following line didn&#39;t work:
+  pointer_accel 0.5
 }
+input 0:5:Lid_Switch events disabled
 

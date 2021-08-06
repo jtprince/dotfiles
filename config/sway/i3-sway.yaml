@@ -85,7 +85,7 @@ keybindings: |
   #######################
   # Keybindings
   #######################
-  input * {
+  input type:keyboard {
       xkb_options "caps:escape,altwin:swap_lalt_lwin"
       repeat_delay 300
       repeat_rate 30
@@ -99,5 +99,6 @@ keybindings: |
   input type:mouse {
     accel_profile adaptive
     # Following line didn't work:
-    # pointer_accel 1.2
+    pointer_accel 0.5
   }
+  input 0:5:Lid_Switch events disabled

@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import pathlib
+
+HOME = pathlib.Path.home()
+CONFIG = HOME / ".config"
+CHROME_FLAGS = CONFIG / "chrome-flags.conf"
+
+WAYLAND_FLAGS = [
+    "--enable-features=UseOzonePlatform",
+    "--ozone-platform=wayland",
+]
+
+
+def run(cmd):
+    subprocess.run(cmd, shell=True)
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "state", choices=["on", "off"], help="set things to use wayland"
+)
+args = parser.parse_args()
+
+
+def set_chrome_flags():
+    print(f"rewriting {str(CHROME_FLAGS)} with wayland options")
+    CHROME_FLAGS.unlink(missing_ok=True)
+    CHROME_FLAGS.write_text("".join(map(lambda val: val + "\n", WAYLAND_FLAGS)))
+
+
+def unset_chrome_flags():
+    print(f"removing special chrome flags: {str(CHROME_FLAGS)}")
+    CHROME_FLAGS.unlink(missing_ok=True)
+
+
+def uninstall(pkg):
+    run(f"yay -Rs {pkg} --noconfirm")
+
+
+def install(pkg):
+    run(f"yay -S {pkg} --noconfirm")
+
+
+# wayland
+if args.state == "on":
+    set_chrome_flags()
+    uninstall("xclip")
+    install("wl-clipboard-x11")
+else:
+    unset_chrome_flags()
+    uninstall("wl-clipboard-x11")
+    install("xclip")
