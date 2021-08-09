@@ -51,6 +51,9 @@ Plug 'christoomey/vim-titlecase'
 " crs coerce to snake_case; crc coerce to camelCase
 Plug 'tpope/vim-abolish'
 
+Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
+
+
 " Distraction free editing (:Goyo to toggle)
 Plug 'junegunn/goyo.vim'
 let g:goyo_width = '90%'
@@ -102,6 +105,16 @@ let g:vim_markdown_new_list_item_indent = 0
 
 " Glow [path-to-md-file] (q to close)
 Plug 'npxbr/glow.nvim', {'do': ':GlowInstall', 'branch': 'main'}
+
+Plug 'axlebedev/footprints'
+let g:footprintsColor = '#c0c0c0'
+" let g:footprintsTermColor = '143'
+let g:footprintsEasingFunction = 'linear'
+let g:footprintsHistoryDepth = 20
+let g:footprintsExcludeFiletypes = ['magit', 'nerdtree', 'diff']
+" disable until I can figure out color scheme
+let g:footprintsEnabledByDefault = 0
+let g:footprintsOnCurrentLine = 0
 
 " Note using ctrlp, instead trying out FZF
 " Plug 'kien/ctrlp.vim'
@@ -402,9 +415,23 @@ nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 " =======================================================================
-" Glow
+" Glow config
 " =======================================================================
 nnoremap <leader>m <cmd>Glow<cr>
+
+" =======================================================================
+" Wilder config
+" =======================================================================
+"
+" Until wilder is installed with PlugInstall, cmdline suggestions will be broken
+call wilder#enable_cmdline_enter()
+set wildcharm=<Tab>
+cmap <expr> <Tab> wilder#in_context() ? wilder#next() : "\<Tab>"
+cmap <expr> <S-Tab> wilder#in_context() ? wilder#previous() : "\<S-Tab>"
+
+" only / and ? are enabled by default
+call wilder#set_option('modes', ['/', '?', ':'])
+call wilder#set_option('renderer', wilder#popupmenu_renderer({'highlighter': wilder#basic_highlighter()}))
 
 " =======================================================================
 " Treesitter config

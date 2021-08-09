@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+
+parser = argparse.ArgumentParser(description="inject current python into jupyter as a kernel")
+args = parser.parse_args()
+
+subprocess.run("pip install ipykernel", shell=True)
+subprocess.run("sudo python -m ipykernel install --name=$(basename $VIRTUAL_ENV)", shell=True)

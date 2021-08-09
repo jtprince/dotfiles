@@ -129,6 +129,10 @@ if [ -d ~/.poetry ]; then
     export PATH="$HOME/.poetry/bin:$PATH"
 fi
 
+if [ -d ~/.cargo ]; then
+    source $HOME/.cargo/env
+fi
+
 # https://github.com/cheat/cheat use FZF (fuzzy finder) `yay -S fzf`
 export CHEAT_USE_FZF=true
 export GITHUB_TOKEN="$(cat ~/Dropbox/env/cloud-and-apis/github/access_tokens/owlet_repo_and_read_package.token.txt)"

@@ -58,4 +58,3 @@ nmcli connection show
 
 # connect to openvpn
 nmcli connection up myopenvpn
-

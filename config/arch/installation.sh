@@ -160,6 +160,10 @@ yay -S picom --noconfirm
 # for python
 yay -S pyenv pyenv-virtualenv python-pip ipython python-black python-pynvim python-poetry --noconfirm ; mkdir -p ~/virtualenvs
 
+# for matplotlib (tk to avoid 'No module name '_tkinter')
+yay -S tk tcl python-pmw
+# not sure if I really need tcl and python-pmw ??
+
 ```
 curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py > get-poetry.py
 python ./get-poetry.py

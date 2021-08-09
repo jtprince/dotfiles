@@ -1,22 +1,20 @@
 " Indentation code from Eric Mc Sween <em@tomcom.de> and David Bustos <bustos@caltech.edu>
 " Only load this indent file when no other was loaded.
 
-function! SetupMethod()
-    r~/.config/nvim/ftplugin/python-fragments/setup_method.py
+function! InsertCommandlineProgram()
+    " the -1read inserts without the extra newline at the top
+    .-1read ~/.config/nvim/ftplugin/python-fragments/commandline_program.py
 endfunction
 
-function! CommandlineProgram()
-    r~/.config/nvim/ftplugin/python-fragments/commandline_program.py
+function! InsertSetupMethod()
+    " the -1read inserts without the extra newline
+    .-1read ~/.config/nvim/ftplugin/python-fragments/setup_method.py
 endfunction
 
-
-function! SearchUnderKeyword()
-  return expand("<cword>")
-endfun
-
+" Telescope is currently doing this, so disabling for now
 " ,s -> search for word across codebase
 " noremap <leader>s :execute ':CocSearch ' . SearchUnderKeyword()<CR>
-noremap <leader>s :execute ':CocSearch ' . expand("<cword>") <CR>
+" noremap <leader>s :execute ':CocSearch ' . expand("<cword>") <CR>
 
 iab improt import
 iab imrpot import
