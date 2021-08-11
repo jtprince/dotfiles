@@ -20,3 +20,13 @@ highlight StatusLine ctermfg=blue       ctermbg=white
 highlight Statement  ctermfg=Yellow     cterm=NONE
 highlight Type                          cterm=NONE
 
+" The popup menu/window
+" highlight Pmenu ctermfg=Black ctermbg=gray
+" highlight Pmenu ctermfg=Black ctermbg=gray
+
+highlight Pmenu cterm=NONE ctermfg=77 ctermbg=238
+highlight PmenuSel ctermfg=77 ctermbg=19
+" no idea what this means
+highlight PmenuSbar ctermfg=16
+" no idea what this means
+highlight PmenuThumb ctermfg=16

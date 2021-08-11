@@ -3,7 +3,7 @@ tags: [ networking ]
 ---
 
 # TYPICAL usage:
- nmcli d wifi connect <SSID> password <your password>
+nmcli d wifi connect <SSID> password <your password>
 
 # show your connections
 nmcli connection show
@@ -13,6 +13,9 @@ nmcli connection show
 #	<ssid> -- the SSID of the access point
 #	<pass> -- the WiFi password
 nmcli d wifi connect <ssid> password <pass> iface <wiface>
+
+# signal strength
+nmcli dev wifi list | grep '^[I\*]'
 
 # Disconnect from WiFi - Parameters:
 #	<wiface> -- the name of your wireless interface
