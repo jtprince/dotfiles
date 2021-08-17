@@ -116,14 +116,14 @@ let g:footprintsExcludeFiletypes = ['magit', 'nerdtree', 'diff']
 let g:footprintsEnabledByDefault = 0
 let g:footprintsOnCurrentLine = 0
 
-" Note using ctrlp, instead trying out FZF
-" Plug 'kien/ctrlp.vim'
-" I USE FZF, installed by yay -S fzf, which loads the file already
-" open fzf in popup window:
-let g:fzf_layout = { 'window': { 'width': 0.95, 'height': 0.8 } }
+"" Note using ctrlp, instead trying out FZF
+"" Plug 'kien/ctrlp.vim'
+"" I USE FZF, installed by yay -S fzf, which loads the file already
+"" open fzf in popup window:
+"let g:fzf_layout = { 'window': { 'width': 0.95, 'height': 0.8 } }
 
-" Also use a set of customization commands for fzf
-Plug 'junegunn/fzf.vim'
+"" Also use a set of customization commands for fzf
+"Plug 'junegunn/fzf.vim'
 
 " search fzf in proximity to current buffer
 " yay -S proximity-sort ripgrep
@@ -143,11 +143,16 @@ endfunction
 " json with comments
 Plug 'kevinoid/vim-jsonc'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
+" " coc needs to be rooted for things like pylint to work properly!
+" autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json']
 
-" coc needs to be rooted for things like pylint to work properly!
-autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json']
+" This is the main one
+Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+
+" 9000+ Snippets
+Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
 
 Plug 'fidian/hexmode'
 let g:hexmode_patterns = '*.bin,*.exe,*.dat,*.o'
@@ -178,8 +183,8 @@ Plug 'danro/rename.vim'
 "" The command: <Ctrl-c> f
 ""     will find all occurences of the python name under the cursor
 
-" FZF (ctrl-p alternative) bindings
-noremap <C-f> :FZF<CR>
+"" FZF (ctrl-p alternative) bindings
+"noremap <C-f> :FZF<CR>
 
 noremap <C-n> :bnext<CR>
 noremap <C-p> :bprevious<CR>
@@ -350,7 +355,6 @@ autocmd Filetype html setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype javascript setlocal ts=4 sw=4 sts=4 expandtab
 autocmd Filetype tex setlocal foldmethod=syntax
-autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 
 " to get folds going on most filetypes, merely do
 " set foldmethod=syntax
@@ -361,7 +365,7 @@ autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
 
 function PrePythonCleanup()
     execute 'Black'
-    execute 'CocCommand python.sortImports'
+    " execute 'CocCommand python.sortImports'
 endfunction
 autocmd BufWritePost *.py call Flake8()
 autocmd BufWritePre *.py call PrePythonCleanup()

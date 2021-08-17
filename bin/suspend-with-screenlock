@@ -5,6 +5,7 @@ imagefile="/usr/local/share/backgrounds/Braunwald_switzerland.png"
 
 if [ "$session_type" == "wayland" ]; then
     swaylock -f -i "$imagefile" && sleep 1 && systemctl suspend
+    # physlock -d && systemctl suspend
 else
     fuzzy_lock
     sleep 1

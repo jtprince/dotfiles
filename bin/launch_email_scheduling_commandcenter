@@ -23,8 +23,8 @@ CALENDAR = "https://calendar.google.com"
 cmds = [
     PERSONAL_BROWSER + [GMAIL],
     WORK_BROWSER + [GMAIL],
-    WORK_BROWSER + [CALENDAR],
     PERSONAL_BROWSER + [CALENDAR],
+    WORK_BROWSER + [CALENDAR],
 ]
 
 for cmd in cmds:
