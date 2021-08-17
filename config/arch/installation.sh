@@ -20,7 +20,7 @@ pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfir
 # shell, permissions, git, and firmware support
 # (udisks2 for uefi support in fwupdmgr)
 # npm for coc
-pacman -S zsh git sudo  unzip p7zip udisks2 npm dmenu --noconfirm
+pacman -S zsh git sudo  unzip p7zip udisks2 npm bemenu-dmenu-wayland --noconfirm
 
 # editors
 pacman -S vi vim neovim  fzf ctags --noconfirm
@@ -44,7 +44,7 @@ pacman -S i3-wm i3lock --noconfirm
 ############################
 
 pacman -S sway swaylock
-pacman -S xorg-server-xwayland
+pacman -S xorg-xwayland
 
 ############################
 # X11 details
@@ -290,6 +290,7 @@ cat ~/Dropbox/env/cloud-and-apis/jira/jira-cli/README.md
 
 pyenv install --list
 # update these to latest patch version for each minor
+CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"
 pyenv install 3.7.11; pyenv install 3.8.11; pyenv install 3.9.6
 pyenv global 3.9.6
 # you need the neovim module in your current python shim for the nvim python
