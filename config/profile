@@ -170,3 +170,5 @@ export CHEAT_USER_DIR="$HOME/.config/cheats"
 
 export ACKRC="$HOME/.config/ackrc"
 
+# java windows don't work well with tiling wm's and I always use one
+export _JAVA_AWT_WM_NONREPARENTING=1

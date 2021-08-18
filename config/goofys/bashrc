@@ -1,0 +1,24 @@
+
+alias .........='cd ../../../../../../../..'
+alias ........='cd ../../../../../../..'
+alias .......='cd ../../../../../..'
+alias ......='cd ../../../../..'
+alias .....='cd ../../../..'
+alias ....='cd ../../..'
+alias ...='cd ../..'
+alias ..='cd ..'
+
+alias sl="ls"
+alias givm="gvim"
+alias gvmi="gvim"
+alias gimv="gvim"
+alias gim="gvim"
+alias gvi="gvim"
+
+alias gti="git"
+alias mdkir="mkdir"
+alias eixt="exit"
+
+alias rgrep="grep -rs"
+alias rgreptext="grep -rs --binary-files=without-match"
+alias gg="git grep"

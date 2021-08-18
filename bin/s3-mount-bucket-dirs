@@ -1,0 +1,134 @@
+#!/usr/bin/env python
+
+import subprocess
+import argparse
+from pathlib import Path
+
+
+setup_instructions = """
+prereq - pull down catfs from https://github.com/kahing/catfs/releases/
+chmod +x and put in ~/.local/bin, which should be on your path.  Also
+make a cache dir for goofys.  For example:
+
+```
+mkdir -p ~/.local/bin
+cd ~/.local.bin
+wget https://github.com/kahing/catfs/releases/download/v0.8.0/catfs
+chmod +x catfs
+# check that <$HOME>.local/bin is in your $PATH (if not, add it)
+echo $PATH | grep '.local/bin'
+mkdir -p ~/.cache/goofys
+```
+
+Also, note that interactive shell prompts can slow down interaction with
+the underlying s3 filesystem.  Consider starting a bash prompt with a
+clean environment before navigating:
+
+    env -i bash --noprofile --norc
+"""
+
+
+parser = argparse.ArgumentParser(
+    description="mount s3 buckets. Expects dirs to exist and to mirror the bucket names on s3."
+)
+parser.add_argument(
+    "dirs",
+    nargs="*",
+    type=Path,
+    help=f"the dirs to mount (relative to {Path.cwd()}",
+)
+parser.add_argument(
+    "-u", "--unmount", action="store_true", help="unmount all the dirs"
+)
+parser.add_argument("-a", "--all", action="store_true", help="mount all dirs")
+parser.add_argument(
+    "-l", "--list", action="store_true", help="list mounted dirs"
+)
+parser.add_argument("-v", "--verbose", action="store_true", help="say it")
+parser.add_argument(
+    "-s",
+    "--shell",
+    action="store_true",
+    help="start a stripped down bash shell",
+)
+parser.add_argument(
+    "--setup-instructions",
+    action="store_true",
+    help="print instructions and exit",
+)
+args = parser.parse_args()
+
+
+def run(cmd):
+    if args.verbose:
+        print(cmd)
+    subprocess.run(cmd, shell=True)
+
+
+def get_paths():
+    return [path for path in Path.cwd().iterdir() if path.is_dir()]
+
+def get_mounted_paths():
+    mounted = []
+    for path in get_paths():
+        output = subprocess.check_output(
+            f"df -P {str(path)} | tail -1 |  cut -d' ' -f 1",
+            shell=True,
+            text=True,
+        ).strip()
+        if output == "/dev/fuse":
+            mounted.append(path)
+    return mounted
+
+
+def unmount(path):
+    print(f"Unmounting {path.name}")
+    run(f"fusermount -u {path.name} 2>/dev/null")
+
+
+if args.setup_instructions:
+    print(setup_instructions)
+    exit(0)
+
+
+if args.all:
+    args.dirs = get_paths()
+
+
+if args.unmount:
+    mounted_paths = get_mounted_paths()
+    if not mounted_paths:
+        print("nothing to unmount")
+    else:
+        for path in mounted_paths:
+            unmount(path)
+    exit(0)
+
+
+if args.list:
+    for path in get_mounted_paths():
+        print(path.name)
+
+
+for path in args.dirs:
+    dir_ = path.name
+    print(f"Mounting {dir_}")
+    cache_dir = str(Path.home() / ".cache/goofys")
+    run(f"goofys --cheap --cache '--free:5%:{cache_dir}' {dir_} {dir_}")
+
+
+if args.shell:
+    single_dir = len(args.dirs) == 1
+
+    bashrc = Path.home() / ".config/goofys/bashrc"
+    cmd = (
+        f"env -i bash --noprofile --rcfile {str(bashrc)}",
+    )
+
+    if args.verbose:
+        print("opening stripped down shell")
+        print(cmd)
+
+    if single_dir:
+        print(f"cd {args.dirs[0].name}")
+    subprocess.run(cmd, shell=True)

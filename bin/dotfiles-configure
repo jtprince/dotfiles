@@ -119,6 +119,7 @@ SOFTLINK_INTO_CONFIG = [
     "sheldon",
     "mimeapps.list",
     "Xresources.d",
+    "goofys",
 ]
 
 # Softlink into home dotfile as "$HOME/.{name}"
