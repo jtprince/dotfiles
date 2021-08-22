@@ -38,6 +38,8 @@ Plug 'ntpeters/vim-better-whitespace'
 "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 "let g:deoplete#enable_at_startup = 1
 
+Plug 'flazz/vim-colorschemes'
+
 Plug 'nvie/vim-flake8'
 " <F7> runs flake8
 
@@ -53,6 +55,15 @@ Plug 'tpope/vim-abolish'
 
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
 
+" plenary required by gitlinker.nvim
+Plug 'nvim-lua/plenary.nvim'
+Plug 'ruifm/gitlinker.nvim'
+" gy (yank current file, current version w/ lines if visual mode)
+" gY yank repo url to clipboard
+" gB open repo url in your default browser
+
+" For communication with qtconsole
+Plug 'jupyter-vim/jupyter-vim'
 
 " Distraction free editing (:Goyo to toggle)
 Plug 'junegunn/goyo.vim'
@@ -143,16 +154,16 @@ endfunction
 " json with comments
 Plug 'kevinoid/vim-jsonc'
 
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
 " " coc needs to be rooted for things like pylint to work properly!
-" autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json']
+autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json']
 
 " This is the main one
-Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+" Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
 
 " 9000+ Snippets
-Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
+" Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
 
 Plug 'fidian/hexmode'
 let g:hexmode_patterns = '*.bin,*.exe,*.dat,*.o'
@@ -160,9 +171,13 @@ let g:hexmode_patterns = '*.bin,*.exe,*.dat,*.o'
 " Enables :rename <new_filename>
 Plug 'danro/rename.vim'
 
+" Set the python that nvim will use globally
+" This will need to change if you need/want to use a specific virtualenv with
+" nvim.
+" let g:python3_host_prog = '/usr/bin/python3'
+
 "" python mode is the only reliable way to get at rope functionality
 "Plug 'python-mode/python-mode', { 'branch': 'develop' }
-"let g:python3_host_prog = '/usr/bin/python3'
 
 "let g:pymode_python = 'python3'
 "" turn off default pymode options and just set what we want
@@ -217,7 +232,12 @@ Plug 'mustache/vim-mustache-handlebars'
 call plug#end()
 
 " always show statusline
-:set laststatus=2
+set laststatus=2
+
+set termguicolors
+set pumblend=25
+set winblend=25
+
 
 " Rope autocomplete
 " pip install --user rope ropevim
@@ -456,6 +476,17 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 EOF
+
+" =======================================================================
+" Gitlinker
+" =======================================================================
+
+lua <<EOF
+    require"gitlinker".setup()
+    vim.api.nvim_set_keymap('n', '<leader>gY', '<cmd>lua require"gitlinker".get_repo_url()<cr>', {silent = true})
+    vim.api.nvim_set_keymap('n', '<leader>gB', '<cmd>lua require"gitlinker".get_repo_url({action_callback = require"gitlinker.actions".open_in_browser})<cr>', {silent = true})
+EOF
+
 
 " COLOR CONFIG ===============================================================
 

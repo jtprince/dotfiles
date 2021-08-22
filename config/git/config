@@ -86,7 +86,10 @@
 	helper = cache --timeout=2629800
 [submodule]
 	recurse = true
-[status]
-	submodulesummary = 1
+# on git status this step is currently hanging! Not sure why:
+# run_command: git-submodule summary --cached --for-status --summary-limit 1 HEAD
+# disable until figure it out
+# [status]
+# 	submodulesummary = 1
 [init]
 	defaultBranch = main
