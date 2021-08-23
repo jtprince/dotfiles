@@ -32,13 +32,16 @@ let g:NERDDefaultAlign = 'left'
 let g:NERDCommentEmptyLines = 1
 let g:NERDTrimTrailingWhitespace = 1
 
+
+Plug 'tpope/vim-fugitive'
+
 Plug 'ntpeters/vim-better-whitespace'
 " :StripWhitespace (also :ToggleWhitespace)
 
 "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 "let g:deoplete#enable_at_startup = 1
 
-Plug 'flazz/vim-colorschemes'
+Plug 'jtprince/vim-colorschemes'
 
 Plug 'nvie/vim-flake8'
 " <F7> runs flake8
@@ -157,11 +160,9 @@ Plug 'kevinoid/vim-jsonc'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
 " " coc needs to be rooted for things like pylint to work properly!
-autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json']
+autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json', ".python-version"]
 
-" This is the main one
 " Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
-
 " 9000+ Snippets
 " Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
 
@@ -214,9 +215,8 @@ noremap <C-p> :bprevious<CR>
 " even following branch: stable it's broken like this: https://github.com/psf/black/issues/1304
 " Plug 'psf/black', { 'branch': 'stable' }
 " so peg to specific version for now :/
-Plug 'psf/black', { 'commit': 'ce14fa8b497bae2b50ec48b3bd7022573a59cdb1' }
-
-let g:black_linelength=80
+" Plug 'psf/black', { 'commit': 'ce14fa8b497bae2b50ec48b3bd7022573a59cdb1' }
+" let g:black_linelength=80
 
 " Provides autoimport, but requires python2 :/
 " Plug 'dbsr/vimpy'
@@ -234,10 +234,12 @@ call plug#end()
 " always show statusline
 set laststatus=2
 
+" emit true, 24-bit color to the terminal
 set termguicolors
 set pumblend=25
 set winblend=25
-
+" haven't been able to get guicursor to work on alacritty
+" set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 
 " Rope autocomplete
 " pip install --user rope ropevim
@@ -319,9 +321,6 @@ function NoWordWrap()
 endfunction
 
 " WINDOW NAV =================================================================
-" easier window control generally
-noremap <leader>w <C-w>
-
 " easier window navigation by holding down Ctrl
 map <C-J> <C-W>j
 map <C-K> <C-W>k
@@ -383,12 +382,14 @@ autocmd Filetype tex setlocal foldmethod=syntax
 " pretty format json:
 "%!python -m json.tool
 
+" This is not working right now :/, need to debug more
 function PrePythonCleanup()
-    execute 'Black'
-    " execute 'CocCommand python.sortImports'
+    call CocAction('format')
+    CocCommand python.sortImports
+    sleep 50m
 endfunction
-autocmd BufWritePost *.py call Flake8()
 autocmd BufWritePre *.py call PrePythonCleanup()
+autocmd BufWritePost *.py call Flake8()
 
 " SIMPLE TRANSFORMATIONS =================================================
 " pretty print the json
@@ -412,6 +413,19 @@ noremap hh gg
 
 noremap F <PAGEDOWN>M
 noremap D <PAGEUP>M
+
+" =======================================================================
+" COC config
+" =======================================================================
+" Code action on <leader>a
+vmap <leader>a <Plug>(coc-codeaction-selected)<CR>
+nmap <leader>a <Plug>(coc-codeaction-selected)<CR>
+
+" Goto definition
+nmap <silent> cd <Plug>(coc-definition)
+" Open definition in a split window
+nmap <silent> cv :vsp<CR><Plug>(coc-definition)<C-W>L
+
 
 " =======================================================================
 " X11 copy/paste buffers
@@ -455,7 +469,7 @@ cmap <expr> <S-Tab> wilder#in_context() ? wilder#previous() : "\<S-Tab>"
 
 " only / and ? are enabled by default
 call wilder#set_option('modes', ['/', '?', ':'])
-call wilder#set_option('renderer', wilder#popupmenu_renderer({'highlighter': wilder#basic_highlighter()}))
+call wilder#set_option('renderer', wilder#popupmenu_renderer({'winblend': 17, 'highlighter': wilder#basic_highlighter()}))
 
 " =======================================================================
 " Treesitter config
@@ -491,4 +505,3 @@ EOF
 " COLOR CONFIG ===============================================================
 
 colorscheme tortejtp
-" colorscheme jtplight

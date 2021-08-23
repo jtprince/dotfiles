@@ -280,8 +280,12 @@ nvim -> :PlugInstall
 
 # for reading settings file and other json stuff
 :CocInstall coc-json
+:CocInstall coc-spell-checker
 :CocInstall coc-pyright
 :CocInstall coc-solargraph
+:CocInstall coc-git
+:CocInstall coc-yaml
+:CocInstall coc-prettier
 
 # install jira-cli
 npm install -g jira-cli

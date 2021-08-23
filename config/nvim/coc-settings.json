@@ -1,5 +1,20 @@
 {
   "python.jediEnabled": false,
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.linting.mypyEnabled": true,
+  "coc-preferences.formatOnSaveFiletypes": [
+    "python",
+    "yaml",
+    "json"
+  ],
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "80"]
+  "python.linting.pylintArgs": [
+    "--rcfile",
+    "/home/jtprince/.config/pylintrc"
+  ],
   "markdownlint.OnChange": false,
   "$schema": "http://json-schema.org/draft-06/schema",
   "description": "Configuration file for coc.nvim",
@@ -879,7 +894,7 @@
     },
     "coc.preferences.formatOnSaveFiletypes": {
       "type": "array",
-      "default": [],
+      "default": ["python", "json", "yaml"],
       "description": "Filetypes that should run format on save.",
       "items": {
         "type": "string"

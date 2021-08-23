@@ -52,10 +52,12 @@ def get_pylint_args():
 
 DEFAULTS = {
     "python.linting.enabled": True,
+    "python.formatting.provider": "black",
     "python.linting.pylintEnabled": True,
     "python.linting.flake8Enabled": True,
     "python.jediEnabled": False,
     "python.linting.mypyEnabled": True,
+    "coc-preferences.formatOnSaveFiletypes": ["python", "yaml", "json"],
 }
 
 
