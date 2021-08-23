@@ -32,6 +32,9 @@ let g:NERDDefaultAlign = 'left'
 let g:NERDCommentEmptyLines = 1
 let g:NERDTrimTrailingWhitespace = 1
 
+" vim-misc required for vim-colorscheme-switcher
+Plug 'xolox/vim-misc'
+Plug 'xolox/vim-colorscheme-switcher'
 
 Plug 'tpope/vim-fugitive'
 
@@ -422,9 +425,9 @@ vmap <leader>a <Plug>(coc-codeaction-selected)<CR>
 nmap <leader>a <Plug>(coc-codeaction-selected)<CR>
 
 " Goto definition
-nmap <silent> cd <Plug>(coc-definition)
+nmap <leader>fp <Plug>(coc-definition)
 " Open definition in a split window
-nmap <silent> cv :vsp<CR><Plug>(coc-definition)<C-W>L
+nmap <leader>fd :vsp<CR><Plug>(coc-definition)<C-W>L
 
 
 " =======================================================================
@@ -439,6 +442,7 @@ noremap <leader>Y "+y
 
 " doesn't work
 " noremap <leader><C-y> "*c
+" ,<Ctrl+Shift+y>
 noremap <leader><C-Y> "+c
 " noremap <leader><p> "*p
 " noremap <leader><P> "+p
@@ -501,6 +505,14 @@ lua <<EOF
     vim.api.nvim_set_keymap('n', '<leader>gB', '<cmd>lua require"gitlinker".get_repo_url({action_callback = require"gitlinker.actions".open_in_browser})<cr>', {silent = true})
 EOF
 
+
+" =======================================================================
+" ColorSchemeSwitcher
+" =======================================================================
+
+nnoremap <leader>sn <cmd>NextColorScheme<cr>
+nnoremap <leader>sp <cmd>PrevColorScheme<cr>
+nnoremap <leader>sr <cmd>RandomColorScheme<cr>
 
 " COLOR CONFIG ===============================================================
 
