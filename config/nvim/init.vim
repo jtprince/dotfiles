@@ -161,7 +161,7 @@ endfunction
 Plug 'kevinoid/vim-jsonc'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-let g:coc_config_home = $XDG_CONFIG_HOME."/nvim/coc-settings.json"
+let g:coc_config_home = $XDG_CONFIG_HOME."/nvim"
 " " coc needs to be rooted for things like pylint to work properly!
 autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json', ".python-version"]
 

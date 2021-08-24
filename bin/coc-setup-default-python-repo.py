@@ -53,11 +53,13 @@ def get_pylint_args():
 DEFAULTS = {
     "python.linting.enabled": True,
     "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--line-length", "80"],
     "python.linting.pylintEnabled": True,
     "python.linting.flake8Enabled": True,
     "python.jediEnabled": False,
     "python.linting.mypyEnabled": True,
-    "coc-preferences.formatOnSaveFiletypes": ["python", "yaml", "json"],
+    # This isn't really working right now, so using BufWritePre
+    # "coc-preferences.formatOnSaveFiletypes": ["python", "yaml", "json"],
 }
 
 

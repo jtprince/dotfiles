@@ -7,6 +7,7 @@
 ## set to Win (but swap Alt and Win)
 # alt=Mod1 win=Mod4
 set $mod Mod4
+set $altmod Mod1
 
 set $left Tab
 set $LeftShift Tab
@@ -403,6 +404,8 @@ set $monitor_primary2_cmd {{monitor_primary2_cmd}}
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
 bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
 bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd
+
+bindsym $altmod+p {{monitor_laptop_cmd}}
 
 {{laptop_keyboard_toggle}}
 
