@@ -176,3 +176,5 @@ alias prn="poetry run"
 
 alias kubeon="export ZSH_KUBECTL_DISPLAY=true"
 alias kubeoff="export ZSH_KUBECTL_DISPLAY=false"
+
+alias sshproxy="ssh -ND 8080 enveda-datascience-instance1"

@@ -88,6 +88,14 @@ makepkg -si
 
 # other neovim stuff and copy/paste stuff from aur
 yay -S xclip vim-plug git-delta sheldon-bin --noconfirm
+
+# install lanuage servers
+# available language servers https://wiki.archlinux.org/title/Neovim#Tips_and_tricks
+yay -S pyright rust-analyzer  gopls yaml-language-server-bin --noconfirm
+# would like to do solargraph, but giving errors:
+# ruby-solargraph
+
+
 # <start in dmenu>:
 xclip -silent
 
@@ -302,6 +310,7 @@ pyenv global 3.9.6
 # If you see this error message:
 # "This script requires vim7.0+ with Python 3.6 support", then you need to:
 pip install neovim
+
 # for pymarkdown
 pip install PyMarkdown
 

@@ -160,14 +160,18 @@ endfunction
 " json with comments
 Plug 'kevinoid/vim-jsonc'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-let g:coc_config_home = $XDG_CONFIG_HOME."/nvim"
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" let g:coc_config_home = $XDG_CONFIG_HOME."/nvim"
 " " coc needs to be rooted for things like pylint to work properly!
-autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json', ".python-version"]
+" autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json', ".python-version"]
+"
 
-" Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+" Required for LSP support for coq:
+Plug 'neovim/nvim-lspconfig'
+
+Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
 " 9000+ Snippets
-" Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
+Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
 
 Plug 'fidian/hexmode'
 let g:hexmode_patterns = '*.bin,*.exe,*.dat,*.o'
@@ -215,11 +219,11 @@ noremap <C-p> :bprevious<CR>
 " \ }
 " let g:ctrlp_follow_symlinks = 1
 
-" even following branch: stable it's broken like this: https://github.com/psf/black/issues/1304
-" Plug 'psf/black', { 'branch': 'stable' }
-" so peg to specific version for now :/
-" Plug 'psf/black', { 'commit': 'ce14fa8b497bae2b50ec48b3bd7022573a59cdb1' }
-" let g:black_linelength=80
+Plug 'psf/black', { 'branch': 'stable' }
+let g:black_linelength=80
+
+Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
+g:isort_command = 'isort --profile black'
 
 " Provides autoimport, but requires python2 :/
 " Plug 'dbsr/vimpy'
@@ -387,8 +391,10 @@ autocmd Filetype tex setlocal foldmethod=syntax
 
 " This is not working right now :/, need to debug more
 function PrePythonCleanup()
-    call CocAction('format')
-    CocCommand python.sortImports
+    execute 'Isort'
+    execute 'Black'
+    " call CocAction('format')
+    " CocCommand python.sortImports
     sleep 50m
 endfunction
 autocmd BufWritePre *.py call PrePythonCleanup()
@@ -421,13 +427,13 @@ noremap D <PAGEUP>M
 " COC config
 " =======================================================================
 " Code action on <leader>a
-vmap <leader>a <Plug>(coc-codeaction-selected)<CR>
-nmap <leader>a <Plug>(coc-codeaction-selected)<CR>
+" vmap <leader>a <Plug>(coc-codeaction-selected)<CR>
+" nmap <leader>a <Plug>(coc-codeaction-selected)<CR>
 
 " Goto definition
-nmap <leader>fp <Plug>(coc-definition)
+" nmap <leader>fp <Plug>(coc-definition)
 " Open definition in a split window
-nmap <leader>fd :vsp<CR><Plug>(coc-definition)<C-W>L
+" nmap <leader>fd :vsp<CR><Plug>(coc-definition)<C-W>L
 
 
 " =======================================================================
@@ -493,6 +499,25 @@ require'nvim-treesitter.configs'.setup {
     additional_vim_regex_highlighting = true,
   },
 }
+EOF
+
+" =======================================================================
+" COQ config
+" =======================================================================
+" COQhelp config
+let g:coq_settings = {
+    \ 'auto_start': v:true,
+    \ 'display.pum.fast_close': v:false,
+\ }
+
+" =======================================================================
+" LSP config
+" =======================================================================
+lua << EOF
+    local lsp = require "lspconfig"
+    local coq = require "coq"
+
+    lsp.pyright.setup(coq.lsp_ensure_capabilities())
 EOF
 
 " =======================================================================

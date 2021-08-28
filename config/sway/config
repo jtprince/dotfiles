@@ -437,7 +437,7 @@ bindsym $mod+Shift+T exec todo
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
 bindsym $mod+g exec gvim
 
-bindsym XF86Calculator exec $noid notifications-toggle
+# bindsym XF86Calculator exec $noid notifications-toggle
 
 bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
@@ -463,8 +463,7 @@ bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
 bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
 bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd
 
-bindsym $altmod+p jasnah-monitor-config laptop
-
+bindsym $locked Shift+XF86Calculator exec $noid $monitor_primary2_cmd
 
 
 ###########################
