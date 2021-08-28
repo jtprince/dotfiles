@@ -1,4 +1,24 @@
+
+export XDG_SESSION_DESKTOP=sway
 export XDG_CURRENT_DESKTOP=sway
+export DESKTOP_SESSION=sway
 export MOZ_ENABLE_WAYLAND=1
 export EXTRA_CHROME_BROWSER_FLAGS="--enable-features=UseOzonePlatform --ozone-platform=wayland"
-export export QT_QPA_PLATFORM="wayland;xcb"
+
+# Otherwise get a warning seat.d ... could not connect to socket ... seatd.sock"
+LIBSEAT_BACKEND=logind
+
+
+# XKB
+XKB_DEFAULT_LAYOUT=us
+
+# QT
+export export QT_QPA_PLATFORM="wayland-egl;wayland;xcb"
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+# OTHER?
+export CLUTTER_BACKEND=wayland
+export SDL_VIDEODRIVER=wayland
+
+# not sure what this line does?
+# export WLR_DRM_DEVICES=/dev/dri/card0
