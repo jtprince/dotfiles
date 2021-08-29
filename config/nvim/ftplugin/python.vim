@@ -11,22 +11,19 @@ function! InsertSetupMethod()
     .-1read ~/.config/nvim/ftplugin/python-fragments/setup_method.py
 endfunction
 
-" Telescope is currently doing this, so disabling for now
-" ,s -> search for word across codebase
-" noremap <leader>s :execute ':CocSearch ' . SearchUnderKeyword()<CR>
-" noremap <leader>s :execute ':CocSearch ' . expand("<cword>") <CR>
-
 iab improt import
 iab imrpot import
 iab imrpt import
 iab imprt import
 iab iport import
+iab impot import
+iab impowt import
+iab imropt import
+iab ipt import
+iab ipt import
+iab ii import
 
-noremap <leader>o <Esc>:CocCommand python.sortImports<CR>
-
-" uses john's mapping for movement
-" turn a single line comment into a multi-line comment.
-" noremap <leader>C <Esc>0wea<Enter><Esc>$bba<Enter><Enter><Esc>d0k$o<Enter><Esc>kkd
+noremap <leader>o <Esc>:Isort<CR>
 
 " pylint disable using the X11 buffer (highlight 'E1101-no-member' and it will
 " inject the trailer:  pylint: disable=no-member
@@ -35,7 +32,7 @@ noremap <leader>o <Esc>:CocCommand python.sortImports<CR>
 " The movement down one line (with left hand navigation) assumes that an import line was added
 " noremap <leader>i <Esc>mw:PymodeRopeAutoImport<Enter>1<Enter><Esc>:Isort<Enter>`wf
 
-noremap <leader>b <Esc>:call CocAction('format')<Enter>
+noremap <leader>b <Esc>:Black<Enter>
 
 " insert breakpoint above the current line and position cursor at start of
 " breakpoint

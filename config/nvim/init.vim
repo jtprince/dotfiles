@@ -1,12 +1,14 @@
 " John T. Prince
 
-" PACKAGE MGT ================================================================
+" ============================================================================
+" PACKAGE MGT
+" ============================================================================
 "   STEPS:
 "   yay -S neovim-plug-git
-"   yay -S nodejs   # for coc
 "   mkdir ~/.local/share/vimplugins
 "
 "   After altering, run :PlugInstall to update
+"   (source $MYVIMRC to refresh)
 "
 call plug#begin('~/.local/share/vimplugins')
 " automatically sets:
@@ -15,6 +17,7 @@ call plug#begin('~/.local/share/vimplugins')
 "
 " Must use single quotes
 
+" c-tags ---------------------------------------------------------------------
 " pacaur -S universal-ctags-git
 Plug 'ludovicchabant/vim-gutentags'
 let g:gutentags_ctags_tagfile='.tags'
@@ -22,79 +25,36 @@ let g:gutentags_ctags_tagfile='.tags'
 " CTRL+t climb back up the tree
 " :tag function_name
 " :help tags
-" Plug 'ycm-core/YouCompleteMe'
 
-Plug 'powerline/powerline'
-
+" comments -------------------------------------------------------------------
 Plug 'scrooloose/nerdcommenter'
 " Align all comments to the left margin
 let g:NERDDefaultAlign = 'left'
 let g:NERDCommentEmptyLines = 1
 let g:NERDTrimTrailingWhitespace = 1
 
+" testing --------------------------------------------------------------------
+Plug 'vim-test/vim-test'
+
+" colorscheme ----------------------------------------------------------------
 " vim-misc required for vim-colorscheme-switcher
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-colorscheme-switcher'
+Plug 'jtprince/vim-colorschemes'
+Plug 'bluz71/vim-moonfly-colors'
+Plug 'shaunsingh/moonlight.nvim'
+Plug 'Neur1n/neucs.vim'
 
+" git -------------------------------------------------------------------------
 Plug 'tpope/vim-fugitive'
 
-Plug 'ntpeters/vim-better-whitespace'
-" :StripWhitespace (also :ToggleWhitespace)
-
-"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-"let g:deoplete#enable_at_startup = 1
-
-Plug 'jtprince/vim-colorschemes'
-
-Plug 'nvie/vim-flake8'
-" <F7> runs flake8
-
-Plug 'vim-ruby/vim-ruby'
-Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-
-Plug 'gisraptor/vim-lilypond-integrator'
-Plug 'vim-scripts/AnsiEsc.vim'
-Plug 'christoomey/vim-titlecase'
-
-" crs coerce to snake_case; crc coerce to camelCase
-Plug 'tpope/vim-abolish'
-
-Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
-
-" plenary required by gitlinker.nvim
-Plug 'nvim-lua/plenary.nvim'
+" plenary required by gitlinker.nvim (sourced above with telescope)
 Plug 'ruifm/gitlinker.nvim'
 " gy (yank current file, current version w/ lines if visual mode)
 " gY yank repo url to clipboard
 " gB open repo url in your default browser
 
-" For communication with qtconsole
-Plug 'jupyter-vim/jupyter-vim'
-
-" Distraction free editing (:Goyo to toggle)
-Plug 'junegunn/goyo.vim'
-let g:goyo_width = '90%'
-let g:goyo_height = '90%'
-
-" Telescope necessary plugins
-Plug 'nvim-lua/popup.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
-
-" Treesitter
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
-" markdown
-" May also consider gabrielelana's https://github.com/gabrielelana/vim-markdown
-" In the past, have used 'tpope/vim-markdown'
-"
-" And have used vim-markdown-toc:
-"" Plug 'mzlogin/vim-markdown-toc'
-" let g:vmt_auto_update_on_save = 1
-" let g:vmt_dont_insert_fence = 0
-
-" For now, using plasticboy's markdown plugin
-
+" markdown ------------------------------------------------------------------
 " Tabular is used to format markdown tables
 Plug 'godlygeek/tabular'
 " JSON front matter highlight plugin
@@ -118,54 +78,10 @@ let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_auto_insert_bullets = 0
 let g:vim_markdown_new_list_item_indent = 0
 
-" let g:vim_markdown_conceal = 1
-
 " Glow [path-to-md-file] (q to close)
 Plug 'npxbr/glow.nvim', {'do': ':GlowInstall', 'branch': 'main'}
 
-Plug 'axlebedev/footprints'
-let g:footprintsColor = '#c0c0c0'
-" let g:footprintsTermColor = '143'
-let g:footprintsEasingFunction = 'linear'
-let g:footprintsHistoryDepth = 20
-let g:footprintsExcludeFiletypes = ['magit', 'nerdtree', 'diff']
-" disable until I can figure out color scheme
-let g:footprintsEnabledByDefault = 0
-let g:footprintsOnCurrentLine = 0
-
-"" Note using ctrlp, instead trying out FZF
-"" Plug 'kien/ctrlp.vim'
-"" I USE FZF, installed by yay -S fzf, which loads the file already
-"" open fzf in popup window:
-"let g:fzf_layout = { 'window': { 'width': 0.95, 'height': 0.8 } }
-
-"" Also use a set of customization commands for fzf
-"Plug 'junegunn/fzf.vim'
-
-" search fzf in proximity to current buffer
-" yay -S proximity-sort ripgrep
-" https://balatero.com/writings/vim/fzf-ripgrep-proximity-sort/
-"
-function! g:FzfFilesSource()
-  let l:base = fnamemodify(expand('%'), ':h:.:S')
-  let l:proximity_sort_path = '/usr/bin/proximity-sort'
-
-  if base == '.'
-    return 'rg --files'
-  else
-    return printf('rg --files | %s %s', l:proximity_sort_path, expand('%'))
-  endif
-endfunction
-
-" json with comments
-Plug 'kevinoid/vim-jsonc'
-
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" let g:coc_config_home = $XDG_CONFIG_HOME."/nvim"
-" " coc needs to be rooted for things like pylint to work properly!
-" autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json', ".python-version"]
-"
-
+" lsp and autocomplete ------------------------------------------------------
 " Required for LSP support for coq:
 Plug 'neovim/nvim-lspconfig'
 
@@ -173,16 +89,27 @@ Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
 " 9000+ Snippets
 Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
 
-Plug 'fidian/hexmode'
-let g:hexmode_patterns = '*.bin,*.exe,*.dat,*.o'
+" Telescope -----------------------------------------------------------------
+" plenary and popup are requirements
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
-" Enables :rename <new_filename>
-Plug 'danro/rename.vim'
+" python  -------------------------------------------------------------------
 
 " Set the python that nvim will use globally
 " This will need to change if you need/want to use a specific virtualenv with
 " nvim.
 " let g:python3_host_prog = '/usr/bin/python3'
+
+Plug 'nvie/vim-flake8'
+" <F7> runs flake8
+
+Plug 'psf/black', { 'branch': 'stable' }
+let g:black_linelength=80
+
+Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
+let g:isort_command = 'isort'
 
 "" python mode is the only reliable way to get at rope functionality
 "Plug 'python-mode/python-mode', { 'branch': 'develop' }
@@ -206,38 +133,71 @@ Plug 'danro/rename.vim'
 "" The command: <Ctrl-c> f
 ""     will find all occurences of the python name under the cursor
 
-"" FZF (ctrl-p alternative) bindings
-"noremap <C-f> :FZF<CR>
-
-noremap <C-n> :bnext<CR>
-noremap <C-p> :bprevious<CR>
-
-" Ctrl-P config
-" let g:ctrlp_custom_ignore = {
-"     \ 'dir':  '\.git$\|\.hg$\|\.svn$\|\.yardoc\|public\/images\|public\/system\|tmp$\|node_modules$',
-"     \ 'file': '\.pyc\.exe$\|\.so$\|\.dat$'
-" \ }
-" let g:ctrlp_follow_symlinks = 1
-
-Plug 'psf/black', { 'branch': 'stable' }
-let g:black_linelength=80
-
-Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
-g:isort_command = 'isort --profile black'
-
-" Provides autoimport, but requires python2 :/
-" Plug 'dbsr/vimpy'
-" let g:vimpy_prompt_resolve = 1
-" let g:vimpy_remove_unused = 1
-" :VimpyCheckLine
-"
 " consider rope for auto import
+
+" misc ----------------------------------------------------------------------
 
 Plug 'mustache/vim-mustache-handlebars'
 
+Plug 'ntpeters/vim-better-whitespace'
+" :StripWhitespace (also :ToggleWhitespace)
+
+Plug 'vim-ruby/vim-ruby'
+
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+
+Plug 'gisraptor/vim-lilypond-integrator'
+Plug 'vim-scripts/AnsiEsc.vim'
+Plug 'christoomey/vim-titlecase'
+
+" crs coerce to snake_case; crc coerce to camelCase
+Plug 'tpope/vim-abolish'
+
+Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
+
+" For communication with qtconsole
+Plug 'jupyter-vim/jupyter-vim'
+" Edit jupyter files directly (requires pip install jupytext)
+Plug 'goerz/jupytext.vim'
+
+" Distraction free editing (:Goyo to toggle)
+Plug 'junegunn/goyo.vim'
+let g:goyo_width = '90%'
+let g:goyo_height = '90%'
+
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+Plug 'fidian/hexmode'
+let g:hexmode_patterns = '*.bin,*.exe,*.dat,*.o'
+
+" Enables :rename <new_filename>
+Plug 'danro/rename.vim'
+
+" json with comments
+Plug 'kevinoid/vim-jsonc'
+
+Plug 'fladson/vim-kitty'
+
+" not using right now -----------------------------------------------------
+
+" Plug 'axlebedev/footprints'
+" let g:footprintsColor = '#c0c0c0'
+" " let g:footprintsTermColor = '143'
+" let g:footprintsEasingFunction = 'linear'
+" let g:footprintsHistoryDepth = 20
+" let g:footprintsExcludeFiletypes = ['magit', 'nerdtree', 'diff']
+" " disable until I can figure out color scheme
+" let g:footprintsEnabledByDefault = 0
+" let g:footprintsOnCurrentLine = 0
+
+" Am I really using this?
+" Plug 'powerline/powerline'
 
 call plug#end()
 
+" ============================================================================
+" GLOBAL CONFIG
+" ============================================================================
 " always show statusline
 set laststatus=2
 
@@ -299,6 +259,11 @@ set foldlevel=20                " Start with a deep foldlevel
 
 " NOTE: Holding down SHIFT enables before mousing over a selection enables
 " a terminal to grab the selection for pasting
+
+" BUFFERS ====================================================================
+
+noremap <C-n> :bnext<CR>
+noremap <C-p> :bprevious<CR>
 
 " SEARCH =====================================================================
 
@@ -424,19 +389,6 @@ noremap F <PAGEDOWN>M
 noremap D <PAGEUP>M
 
 " =======================================================================
-" COC config
-" =======================================================================
-" Code action on <leader>a
-" vmap <leader>a <Plug>(coc-codeaction-selected)<CR>
-" nmap <leader>a <Plug>(coc-codeaction-selected)<CR>
-
-" Goto definition
-" nmap <leader>fp <Plug>(coc-definition)
-" Open definition in a split window
-" nmap <leader>fd :vsp<CR><Plug>(coc-definition)<C-W>L
-
-
-" =======================================================================
 " X11 copy/paste buffers
 " =======================================================================
 
@@ -521,6 +473,19 @@ lua << EOF
 EOF
 
 " =======================================================================
+" vim-test
+" =======================================================================
+
+let test#python#runner = 'pytest'
+let test#strategy = 'neovim'
+
+nnoremap <leader>tn <cmd>TestNearest<cr>
+nnoremap <leader>tf <cmd>TestFile<cr>
+nnoremap <leader>ts <cmd>TestSuite<cr>
+nnoremap <leader>tl <cmd>TestLast<cr>
+nnoremap <leader>tg <cmd>TestVisit<cr>
+
+" =======================================================================
 " Gitlinker
 " =======================================================================
 
@@ -541,4 +506,6 @@ nnoremap <leader>sr <cmd>RandomColorScheme<cr>
 
 " COLOR CONFIG ===============================================================
 
-colorscheme tortejtp
+set background=dark
+let g:moonlight_terminal_italics=1
+colorscheme moonlight

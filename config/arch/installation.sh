@@ -309,7 +309,7 @@ pyenv global 3.9.6
 # plugin to work:
 # If you see this error message:
 # "This script requires vim7.0+ with Python 3.6 support", then you need to:
-pip install neovim
+pip install neovim jupytext
 
 # for pymarkdown
 pip install PyMarkdown

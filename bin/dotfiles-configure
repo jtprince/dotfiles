@@ -106,6 +106,7 @@ SOFTLINK_INTO_CONFIG = [
     "ranger",
     "picom",
     "alacritty",
+    "kitty",
     "isort.cfg",
     "cheat",
     "flake8",

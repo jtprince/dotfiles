@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+import argparse
+import json
+import os
+from pathlib import Path
+
+
+PYRIGHT_CONF_FILENAME = "pyrightconfig.json"
+GITIGNORE_FILENAME = ".gitignore"
+
+
+default_dir = Path(".")
+parser = argparse.ArgumentParser(
+    description=str(
+        "Creates a pyrightconfig.json file with current venv. "
+        "Run from project root."
+    )
+)
+parser.add_argument(
+    "-f",
+    "--force",
+    action="store_true",
+    help="write over an existing pyrightconfig.json file"
+)
+parser.add_argument(
+    "-i",
+    "--add-to-gitignore",
+    action="store_true",
+    help="ensure that pyrightconfig.json is in .gitignore",
+)
+args = parser.parse_args()
+
+
+try:
+    venv_path = Path(os.environ["VIRTUAL_ENV"]).resolve()
+except KeyError:
+    print("VIRTUAL_ENV is not set! (is your venv activated?")
+    exit(1)
+
+
+parent = venv_path.parent
+name = venv_path.name
+
+data = {"venvPath": str(parent), "venv": str(name)}
+
+outfile = Path.cwd() / PYRIGHT_CONF_FILENAME
+if outfile.exists() and not args.force:
+    print(f"{PYRIGHT_CONF_FILENAME} exists (use --force to overwrite)")
+else:
+    print(f"writing venvPath and venv to {PYRIGHT_CONF_FILENAME}")
+    outfile.write_text(json.dumps(data, indent=2))
+
+if args.add_to_gitignore:
+    gitignore_path = Path.cwd() / GITIGNORE_FILENAME
+    lines = gitignore_path.read_text().split("\n")
+    has_pyrightconfig_line = any(
+        line
+        for line in lines
+        if line.strip() in ["pyrightconfig.json", "/pyrightconfig.json"]
+    )
+    if has_pyrightconfig_line:
+        print(f"{GITIGNORE_FILENAME} already has {PYRIGHT_CONF_FILENAME}, nothing to do.")
+    else:
+        print(f"appending {PYRIGHT_CONF_FILENAME} into {GITIGNORE_FILENAME}")
+        lines.extend(["", "/pyrightconfig.json"])
+        gitignore_path.write_text("\n".join(lines) + "\n")
