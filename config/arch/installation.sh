@@ -217,8 +217,8 @@ yay -S tree --noconfirm
 # cursor
 yay -S xcursor-vanilla-dmz --noconfirm
 
-# common file systems
-yay -S ntfs-3g --noconfirm
+# common file system stuff
+yay -S ntfs-3g trash-cli --noconfirm
 
 # extraction and search
 yay -S dtrx zip ack --noconfirm
