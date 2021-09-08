@@ -51,7 +51,7 @@ class Symlinker:
                     else:
                         symlink.link.unlink()
 
-        print(f"ln -s {symlink.link} {symlink.destination}")
+        print(f"ln -s {symlink.destination} {symlink.link}")
         if not self.dry:
             symlink.link.symlink_to(symlink.destination)
 
