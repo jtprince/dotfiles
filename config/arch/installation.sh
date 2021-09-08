@@ -106,6 +106,7 @@ yay -S paru-bin --noconfirm
 ############################
 
 yay -S google-chrome --noconfirm
+yay -S vieb-bin --noconfirm
 google-chrome-stable --user-data-dir=$HOME/.config/chrome-personal
 
 
@@ -220,8 +221,8 @@ yay -S xcursor-vanilla-dmz --noconfirm
 # common file system stuff
 yay -S ntfs-3g trash-cli --noconfirm
 
-# extraction and search
-yay -S dtrx zip ack --noconfirm
+# extraction, search, backups
+yay -S dtrx zip ack rdiff-backup --noconfirm
 
 # install lxde (as a backup X desktop environment)
 sudo pacman -S lxde --noconfirm
@@ -328,7 +329,7 @@ yay -S mlocate --noconfirm; sudo updatedb
 yay -S evince --noconfirm; gsettings set org.gnome.Evince page-cache-size 2014
 
 # note: would install pdftk-bin here, but not working??
-yay -S archey3 feh mplayer inkscape gimp eog geeqie gthumb youtube-dl pandoc-bin mp3splt audacity --noconfirm
+yay -S archey3 feh mplayer inkscape gimp eog geeqie gthumb nomacs youtube-dl pandoc-bin mp3splt audacity --noconfirm
 # slack using system qt should avoid some wayland failures
 yay -S slack-desktop zoom-system-qt --noconfirm
 yay -S libreoffice libmythes mythes-en --noconfirm

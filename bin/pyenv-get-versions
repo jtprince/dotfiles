@@ -11,6 +11,12 @@ parser.add_argument(
     action="store_true",
     help="print the best pyenv version",
 )
+parser.add_argument(
+    "--miniconda",
+    action="store_true",
+    help="gets miniconda versions",
+)
+
 args = parser.parse_args()
 
 
@@ -26,21 +32,24 @@ def run(cmd):
     return reply.stdout
 
 
-def get_available_pyenv_python_versions():
-    """ Returns all available pyenv python versions, in ascending order. """
+def get_available_pyenv_python_versions(args):
+    """Returns all available pyenv python versions, in ascending order. """
     reply = run(["pyenv", "versions", "--bare"])
     available_ = []
     for line in reply.split("\n"):
 
         chars = line.strip()
         if "/" not in chars:
-            if chars.replace(".", "").isdigit():
+            if args.miniconda:
+                if chars.startswith("miniconda"):
+                    available_.append(chars)
+            elif chars.replace(".", "").isdigit():
                 available_.append(chars)
 
     return available_
 
 
-available = get_available_pyenv_python_versions()
+available = get_available_pyenv_python_versions(args)
 
 if args.best:
     print(available[-1])

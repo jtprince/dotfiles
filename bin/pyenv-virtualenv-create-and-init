@@ -25,6 +25,11 @@ parser.add_argument(
     ),
 )
 parser.add_argument(
+    "--miniconda",
+    action="store_true",
+    help="install latest miniconda",
+)
+parser.add_argument(
     "--version",
     help=str(
         "the python version to use. Defaults to best pyproject version or "
@@ -51,9 +56,12 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def get_best_pyenv_python_version():
+def get_best_pyenv_python_version(miniconda: bool = False) -> str:
+    cmd = [PYENV_GET_VERSIONS_CMD, "--best"]
+    if miniconda:
+        cmd += ["--miniconda"]
     return subprocess.check_output(
-        [PYENV_GET_VERSIONS_CMD, "--best"],
+        cmd,
         text=True,
     ).strip()
 
@@ -68,7 +76,6 @@ if args.refresh:
             VERSION_FILE_PATH.unlink(missing_ok=True)
 
 
-
 if args.version:
     version = args.version
 if not args.version:
@@ -76,10 +83,11 @@ if not args.version:
         # TODO: if --best could use best possible version compatible with
         # pyproject.toml.  For now, just use whatever
         # pyproject-get-best-pyenv-python-version returns
+        print(PYPROJECT_PYENV_CMD)
         version = subprocess.check_output(PYPROJECT_PYENV_CMD, text=True).strip()
     else:
-        if args.best:
-            version = get_best_pyenv_python_version()
+        if args.best or args.miniconda:
+            version = get_best_pyenv_python_version(miniconda=args.miniconda)
         else:
             # current version
             version = sys.version.split()[0]
@@ -87,6 +95,10 @@ if not args.version:
 
 if args.name:
     VENV_NAME = args.name
+elif args.miniconda:
+    # conda will create its own virtual environments, use current best, don't
+    # make a specific sub env
+    VENV_NAME = version
 else:
     VENV_NAME = "-".join([str(pathlib.Path.cwd().name), version])
 

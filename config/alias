@@ -4,6 +4,9 @@ alias AWSSTOP="aws ec2 stop-instances --instance-ids $AWSID"
 alias AWSSTART="aws ec2 start-instances --instance-ids $AWSID"
 alias gotoaws="ssh $RMT -t 'source /home/jtprince/dotfiles/config/remote_root_bashrc; cd /home/build; bash -l'"
 
+# AWS VPN
+alias awsvpn="/opt/awsvpnclient/AWS\ VPN\ Client &"
+
 # apt-get
 # alias apti='sudo apt-get install'
 # alias aptinstall='sudo apt-get install'
@@ -118,21 +121,26 @@ alias eixt="exit"
 
 # edit arch installation file
 alias archup="gvim $HOME/dotfiles/config/arch/installation.sh"
+alias archenvdir="pushd $HOME/Dropbox/env/os/arch"
+
+# edit zshrc
+alias zshup="gvim $HOME/dotfiles/config/zsh/.zshrc"
+alias zshdir="pushd $HOME/dotfiles/config/zsh/"
 
 # edit init.vim installation file
 alias nvimup="gvim $HOME/dotfiles/config/nvim/init.vim"
 alias vimup="nvimup"
-alias nvimdir="cd $HOME/dotfiles/config/nvim/"
+alias nvimdir="pushd $HOME/dotfiles/config/nvim/"
 alias vimdir="nvimdir"
 
-alias i3dir="cd $HOME/dotfiles/config/i3/"
+alias i3dir="pushd $HOME/dotfiles/config/i3/"
 alias i3up="gvim $HOME/dotfiles/config/i3/i3-sway.yaml"
 alias i3swayup="gvim $HOME/dotfiles/config/i3-sway/config.mo"
 alias swayconfigmoup="gvim $HOME/dotfiles/config/i3-sway/config.mo"
 alias swayconfigup="gvim $HOME/dotfiles/config/sway/config"
 alias swayup="gvim $HOME/dotfiles/config/sway/i3-sway.yaml"
-alias swaydir="cd $HOME/dotfiles/config/sway/"
-alias swaybuild="cd $HOME/dotfiles/config/i3-sway && ./build-all.sh"
+alias swaydir="pushd $HOME/dotfiles/config/sway/"
+alias swaybuild="pushd $HOME/dotfiles/config/i3-sway && ./build-all.sh"
 
 # latex
 alias latexmk="latexmk -pdf -xelatex"
@@ -154,10 +162,16 @@ alias mplayer="mplayer -ao pulse -af scaletempo"
 #alias youtube-dl="youtube-dl --prefer-ffmpeg"
 
 # applications
-alias exercism="exercism --config $HOME/.config/exercism.json"
-alias chromepersonal="google-chrome-stable --user-data-dir=$HOME/.config/chrome-personal"
-alias chromefaenrandir="google-chrome-stable --user-data-dir=$HOME/.config/chrome-faenrandir"
-alias chromemelissa="google-chrome-stable --user-data-dir=$HOME/.config/chrome-melissa"
+GOOGLE_CHROME="google-chrome-stable"
+VIEB="vieb"
+alias viebwork="$VIEB"
+alias chromepersonal="$GOOGLE_CHROME --user-data-dir=$HOME/.config/chrome-personal"
+alias viebpersonal="$VIEB --user-data-dir=$HOME/.config/vieb-personal"
+alias chromefaenrandir="$GOOGLE_CHROME --user-data-dir=$HOME/.config/chrome-faenrandir"
+alias chromefaenrandir="$GOOGLE_CHROME --user-data-dir=$HOME/.config/chrome-faenrandir"
+alias chromemelissa="$GOOGLE_CHROME --user-data-dir=$HOME/.config/chrome-melissa"
+alias chromeproxy="$GOOGLE_CHROME --proxy-bypass-list=localhost,10.0.0.0/8,127.0.0.0/8,192.168.0.0/16 --proxy-server=socks5://localhost:8080 --user-data-dir=$HOME/.config/chrome-with-proxy"
+
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
 # not using right now
@@ -178,3 +192,9 @@ alias kubeon="export ZSH_KUBECTL_DISPLAY=true"
 alias kubeoff="export ZSH_KUBECTL_DISPLAY=false"
 
 alias sshproxy="ssh -ND 8080 enveda-datascience-instance1"
+
+alias lab8101="ssh -N -L 8101:localhost:8101 enveda-datascience-instance1"
+alias lab8101bkg="ssh -N -f -L 8101:localhost:8101 enveda-datascience-instance1"
+alias lab_start="jupyter lab --no-browser --ip=127.0.0.1 --port=8101"
+
+alias condaenvs="conda info --env"

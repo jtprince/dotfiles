@@ -32,7 +32,10 @@ def run(cmd):
 
 def get_project_name_and_min_python_version():
     """Returns the project name and min python version."""
-    python_version_re = re.compile(r"^python\s*=\s*[\"'][~\^]?([\d\.]+)[\"']")
+    # handles ~3.8.11, ^3.8.11
+    # handles this notation: ">=3.8,<3.10" but only by grabbing the min
+    # pretty brittle, needs reworking
+    python_version_re = re.compile(r"^python\s*=\s*[\"'][~\^>=]+([\d\.]+)[,\"']")
     repo_name_re = re.compile(r"^name\s*=\s*[\"']([\w\-]+)[\"']")
 
     version_match = next(
