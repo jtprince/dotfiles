@@ -51,7 +51,7 @@ class Symlinker:
                     else:
                         symlink.link.unlink()
 
-        print(f"Creating: {symlink.link} -> {symlink.destination}")
+        print(f"ln -s {symlink.link} {symlink.destination}")
         if not self.dry:
             symlink.link.symlink_to(symlink.destination)
 
@@ -75,7 +75,7 @@ class Symlinker:
     def _make_dir(self, name):
         """Make a directory relative to home dir."""
         path = HOME / name
-        print(f"Ensuring: {path}")
+        print(f"mkdir -p {path}")
         if not self.dry:
             path.mkdir(parents=True, exist_ok=True)
 
