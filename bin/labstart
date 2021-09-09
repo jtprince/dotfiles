@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+import argparse
+
+parser = argparse.ArgumentParser(description="run jupyter lab")
+parser.add_argument("directory", help="dir name to chdir into")
+parser.add_argument("--conda-env", help="name of conda env (defaults to {directory})")
+args = parser.parse_args()
+
+os.chdir(args.directory)
+
+print("##################################################################")
+print("##################################################################")
+print("RUN THIS!")
+print()
+print("export LABPORT=8101")
+print("ssh -N -L $LABPORT:localhost:$LABPORT enveda-datascience-instance1")
+print()
+print("##################################################################")
+subprocess.run(f"jupyter lab --no-browser --ip=127.0.0.1 --port=8101", shell=True)
