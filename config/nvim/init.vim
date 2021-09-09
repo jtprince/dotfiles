@@ -137,6 +137,10 @@ let g:isort_command = 'isort'
 
 " misc ----------------------------------------------------------------------
 
+Plug 'triglav/vim-visual-increment'
+
+Plug 'mechatroner/rainbow_csv'
+
 Plug 'mustache/vim-mustache-handlebars'
 
 Plug 'ntpeters/vim-better-whitespace'

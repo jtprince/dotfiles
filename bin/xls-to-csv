@@ -4,7 +4,7 @@ require 'shellwords'
 require 'optparse'
 
 parser = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename(__FILE__)} <file>.xls ..."
+  op.banner = "usage: #{File.basename(__FILE__)} <file>.xls(x) ..."
 end
 parser.parse!
 
