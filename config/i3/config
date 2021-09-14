@@ -425,14 +425,23 @@ bindcode 75 exec --no-startup-id xdotool click 2
 
 # ☆ <Favorites> toggles monitor setting
 set $monitor_laptop_cmd jasnah-x11-monitor-config laptop
+set $monitor_laptop_cmd_integer 
 set $monitor_primary1_cmd jasnah-x11-monitor-config desk
-set $monitor_primary2_cmd jasnah-x11-monitor-config treadmill
+set $monitor_primary1_cmd_integer 
 
+# LAPTOP
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
-bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
-bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd
+bindsym $locked Shift+XF86HomePage exec $noid $monitor_laptop_cmd
+bindsym $locked Shift+XF86Calculator exec $noid $monitor_laptop_cmd
 
-bindsym $mod+Ctrl+Shift+h jasnah-x11-monitor-config laptop
+# LAPTOP integer scaling
+bindsym $locked Ctrl+Shift+XF86Calculator exec $noid $monitor_laptop_cmd_integer
+
+# PRIMARY MONITOR
+bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
+
+# PRIMARY MONITOR integer scaling
+bindsym $locked Ctrl+Shift+XF86HomePage exec $noid $monitor_primary1_cmd_integer
 
 # favorites #1 key
 # bindsym XF86Launch5 exec --no-startup-id xrandr --auto ; randomise-bkg

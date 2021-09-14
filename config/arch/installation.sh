@@ -167,7 +167,7 @@ yay -S keychain docker-credential-secretservice-bin --noconfirm
 yay -S picom --noconfirm
 
 # for python
-yay -S pyenv pyenv-virtualenv python-pip ipython python-black python-pynvim python-poetry --noconfirm ; mkdir -p ~/virtualenvs
+yay -S pyenv pyenv-virtualenv python-pip ipython python-black python-pynvim python-poetry python-pudb --noconfirm ; mkdir -p ~/virtualenvs
 
 # for matplotlib (tk to avoid 'No module name '_tkinter')
 yay -S tk tcl python-pmw

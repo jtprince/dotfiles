@@ -22,6 +22,7 @@ iab imropt import
 iab ipt import
 iab ipt import
 iab ii import
+iab prtin print
 
 noremap <leader>o <Esc>:Isort<CR>
 

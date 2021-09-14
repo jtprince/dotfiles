@@ -398,14 +398,23 @@ bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
 # ☆ <Favorites> toggles monitor setting
 set $monitor_laptop_cmd {{monitor_laptop_cmd}}
+set $monitor_laptop_cmd_integer {{monitor_laptop_cmd_integer}}
 set $monitor_primary1_cmd {{monitor_primary1_cmd}}
-set $monitor_primary2_cmd {{monitor_primary2_cmd}}
+set $monitor_primary1_cmd_integer {{monitor_primary1_cmd_integer}}
 
+# LAPTOP
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
-bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
-bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd
+bindsym $locked Shift+XF86HomePage exec $noid $monitor_laptop_cmd
+bindsym $locked Shift+XF86Calculator exec $noid $monitor_laptop_cmd
 
-bindsym $mod+Ctrl+Shift+h {{monitor_laptop_cmd}}
+# LAPTOP integer scaling
+bindsym $locked Ctrl+Shift+XF86Calculator exec $noid $monitor_laptop_cmd_integer
+
+# PRIMARY MONITOR
+bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
+
+# PRIMARY MONITOR integer scaling
+bindsym $locked Ctrl+Shift+XF86HomePage exec $noid $monitor_primary1_cmd_integer
 
 {{laptop_keyboard_toggle}}
 

@@ -63,6 +63,7 @@ parser.add_argument(
     # choices=["laptop", "desk", "treadmill"],
     choices=["laptop", "desk"],
 )
+parser.add_argument("--force-integer", action="store_true", help="ensure scaled by integer value")
 parser.add_argument("--dry", action="store_true", help="dry run")
 args = parser.parse_args()
 
@@ -71,7 +72,7 @@ def create_swaymsg_output_command(id, config_str):
     return ["swaymsg", f'output "{id}" {config_str}']
 
 
-def create_single_monitor_commands(value):
+def create_single_monitor_commands(value, force_integer: bool = False):
     to_disable = [
         name
         for monitor_keyword, name in MONITORS.items()
@@ -82,6 +83,7 @@ def create_single_monitor_commands(value):
         for name in to_disable
     ]
     scale = MONITOR_SCALE[MONITORS[value]]
+    scale = round(scale) if force_integer else scale
     enable_cmd = create_swaymsg_output_command(
         MONITORS[value], config[value].format(scale=scale)
     )
@@ -91,7 +93,7 @@ def create_single_monitor_commands(value):
     return all_cmds
 
 
-all_cmds = create_single_monitor_commands(args.monitor)
+all_cmds = create_single_monitor_commands(args.monitor, args.force_integer)
 
 for cmd in all_cmds:
     if args.dry:

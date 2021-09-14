@@ -56,10 +56,12 @@ screenshot_commands: |
 middle_click: ""
 monitor_laptop_cmd: >-
   jasnah-monitor-config laptop
+monitor_laptop_cmd_integer: >-
+  jasnah-monitor-config laptop --force-integer
 monitor_primary1_cmd: >-
   jasnah-monitor-config desk
-monitor_primary2_cmd: >-
-  jasnah-monitor-config laptop
+monitor_primary1_cmd_integer: >-
+  jasnah-monitor-config desk --force-integer
 laptop_keyboard_toggle: ""
 exit_cmd: >-
   swaymsg exit

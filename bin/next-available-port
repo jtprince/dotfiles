@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# requires `telnet`
+# yay -S inetutils
+
+DEFAULT_START_PORT=8100
+START_PORT="${1:-$DEFAULT_START_PORT}"
+
+for port in $(seq "$START_PORT" 65000); do
+    echo -ne "\035" | telnet 127.0.0.1 $port > /dev/null 2>&1
+    [ $? -eq 1 ] && echo "$port" && break
+done

@@ -437,7 +437,7 @@ bindsym $mod+Shift+T exec todo
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
 bindsym $mod+g exec gvim
 
-# bindsym XF86Calculator exec $noid notifications-toggle
+bindsym XF86Calculator exec $noid notifications-toggle
 
 bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 
@@ -456,14 +456,24 @@ bindsym $mod+Ctrl+Shift+Print exec screenshot-sway window --ocr --annotate --eog
 
 # ☆ <Favorites> toggles monitor setting
 set $monitor_laptop_cmd jasnah-monitor-config laptop
+set $monitor_laptop_cmd_integer jasnah-monitor-config laptop --force-integer
 set $monitor_primary1_cmd jasnah-monitor-config desk
-set $monitor_primary2_cmd jasnah-monitor-config laptop
+set $monitor_primary1_cmd_integer jasnah-monitor-config desk --force-integer
 
+# LAPTOP
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
-bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
-bindsym $locked Shift+XF86HomePage exec $noid $monitor_primary2_cmd
+bindsym $locked Shift+XF86HomePage exec $noid $monitor_laptop_cmd
+bindsym $locked Shift+XF86Calculator exec $noid $monitor_laptop_cmd
 
-bindsym $locked Shift+XF86Calculator exec $noid $monitor_primary2_cmd
+# LAPTOP integer scaling
+bindsym $locked Ctrl+Shift+XF86Calculator exec $noid $monitor_laptop_cmd_integer
+
+# PRIMARY MONITOR
+bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
+
+# PRIMARY MONITOR integer scaling
+bindsym $locked Ctrl+Shift+XF86HomePage exec $noid $monitor_primary1_cmd_integer
+
 
 
 ###########################
