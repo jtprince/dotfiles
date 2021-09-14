@@ -11,12 +11,13 @@ args = parser.parse_args()
 
 os.chdir(args.directory)
 
+port = subprocess.check_output("next-available-port", shell=True, text=True)
+
 print("##################################################################")
 print("##################################################################")
 print("RUN THIS!")
 print()
-print("export LABPORT=8101")
-print("ssh -N -L $LABPORT:localhost:$LABPORT enveda-datascience-instance1")
+print(f"ssh -N -L {port}:localhost:{port} enveda-datascience-instance1")
 print()
 print("##################################################################")
-subprocess.run(f"jupyter lab --no-browser --ip=127.0.0.1 --port=8101", shell=True)
+subprocess.run(f"jupyter lab --no-browser --ip=127.0.0.1 --port={port}", shell=True)
