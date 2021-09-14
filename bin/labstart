@@ -11,7 +11,7 @@ args = parser.parse_args()
 
 os.chdir(args.directory)
 
-port = subprocess.check_output("next-available-port", shell=True, text=True)
+port = subprocess.check_output("next-available-port", shell=True, text=True).strip()
 
 print("##################################################################")
 print("##################################################################")
