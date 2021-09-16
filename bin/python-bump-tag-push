@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import subprocess
+
+valid_bumps = [
+    "major",
+    "minor",
+    "patch",
+    "premajor",
+    "preminor",
+    "prepatch",
+    "prerelease",
+]
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--bump", default='patch', choices=valid_bumps)
+parser.add_argument("--dry", action='store_true', help="don't run it")
+args = parser.parse_args()
+
+
+cmds = [
+    ["poetry", "version", args.bump],
+    ["pyprojecttoml-to-setuppy", "pyproject.toml"],
+    ["git", "add", "setup.py", "pyproject.toml"],
+    ["git", "commit", "-m", f"{args.bump} version bump"],
+    ["git", "push"],
+    ["python-tag-and-push-tags"],
+]
+
+for cmd in cmds:
+    cmd_to_display = [(f'"{part}"' if (' ' in part) else part) for part in cmd]
+    print(" ".join(cmd_to_display))
+    if not args.dry:
+        subprocess.run(cmd)

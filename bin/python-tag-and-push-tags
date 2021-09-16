@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+
+import subprocess
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "setup_py",
+    nargs="?",
+    type=Path,
+    default=Path.cwd() / "setup.py",
+    help="path to setup.py file",
+)
+parser.add_argument(
+    "--dry",
+    action='store_true',
+    help="path to setup.py file",
+)
+
+
+args = parser.parse_args()
+
+version = subprocess.check_output(
+    f"python {args.setup_py} --version", shell=True, text=True
+).strip()
+
+def run(cmd):
+    print(cmd)
+    if not args.dry:
+        subprocess.run(cmd, shell=True)
+
+run(f"git tag -a v{version} -m 'version {version}'")
+run(f"git push origin -f --tags")
