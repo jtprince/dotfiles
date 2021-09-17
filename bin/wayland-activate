@@ -2,11 +2,14 @@
 
 import argparse
 import subprocess
-import pathlib
+from pathlib import Path
 
-HOME = pathlib.Path.home()
+HOME = Path.home()
 CONFIG = HOME / ".config"
 CHROME_FLAGS = CONFIG / "chrome-flags.conf"
+ELECTRON_FLAGS = CONFIG / "electron-flags.conf"
+
+flag_paths = [CHROME_FLAGS, ELECTRON_FLAGS]
 
 WAYLAND_FLAGS = [
     "--enable-features=UseOzonePlatform",
@@ -14,7 +17,7 @@ WAYLAND_FLAGS = [
 ]
 
 
-def run(cmd):
+def run(cmd: str):
     subprocess.run(cmd, shell=True)
 
 
@@ -25,35 +28,37 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def set_chrome_flags():
-    print(f"rewriting {str(CHROME_FLAGS)} with wayland options")
-    CHROME_FLAGS.unlink(missing_ok=True)
-    CHROME_FLAGS.write_text("".join(map(lambda val: val + "\n", WAYLAND_FLAGS)))
+def set_chrome_flags(flags_path: Path):
+    print(f"rewriting {str(flags_path)} with wayland options")
+    flags_path.unlink(missing_ok=True)
+    flags_path.write_text("".join(map(lambda val: val + "\n", WAYLAND_FLAGS)))
 
 
-def unset_chrome_flags():
-    print(f"removing special chrome flags: {str(CHROME_FLAGS)}")
-    CHROME_FLAGS.unlink(missing_ok=True)
+def unset_chrome_flags(flags_path: Path):
+    print(f"removing special chrome flags: {str(flags_path)}")
+    flags_path.unlink(missing_ok=True)
 
 
-def uninstall(pkg):
+def uninstall(pkg: str):
     run(f"yay -Rs {pkg} --noconfirm")
 
 
-def install(pkg):
+def install(pkg: str):
     run(f"yay -S {pkg} --noconfirm")
 
 
 # wayland
 if args.state == "on":
-    set_chrome_flags()
+    for flag_path in flag_paths:
+        set_chrome_flags(flag_path)
     uninstall("xclip")
     install("wl-clipboard-x11")
     uninstall("dmenu")
     install("bemenu-dmenu-wayland")
     print("must also change i3/sway config for bemenu to work!")
 else:
-    unset_chrome_flags()
+    for flag_path in flag_paths:
+        unset_chrome_flags(flag_path)
     uninstall("wl-clipboard-x11")
     install("xclip")
     uninstall("bemenu-dmenu-wayland")

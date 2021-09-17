@@ -10,6 +10,8 @@
 # linux
 pacman -S base base-devel linux linux-firmware  man-db man-pages texinfo --noconfirm
 
+
+
 # Install any special firmware noted for your device (e.g., upd72020x-fw for Thinkpad webcam)
 # and sof-firmware for advanced sound cards
 pacman -S sof-firmware
@@ -65,9 +67,18 @@ pacman -S xf86-video-nouveau --noconfirm
 # Graphical Interface
 ############################
 
+# Change the gid of the users to 1221
+# That's a universal gid I use so that I can copy stuff as my own user to ext4
+# backup disks and I don't have to mess with gid's at that point since all
+# consistent.
+groupmod -g 1221 users
+
 # Make a user
 useradd -m -g users -G wheel -s /bin/zsh jtprince
 passwd jtprince
+
+# make sure the uid is 1000 and gid is 1221
+id jtprince
 
 ### JUMP to graphical interface
 
