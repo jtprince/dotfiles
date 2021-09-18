@@ -404,6 +404,8 @@ set $monitor_primary1_cmd_integer {{monitor_primary1_cmd_integer}}
 
 # LAPTOP
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd
+# The monitor key on jasnah lenovo.
+bindsym $locked $mod+F7 exec $noid $monitor_laptop_cmd
 bindsym $locked Shift+XF86HomePage exec $noid $monitor_laptop_cmd
 bindsym $locked Shift+XF86Calculator exec $noid $monitor_laptop_cmd
 
