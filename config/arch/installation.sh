@@ -11,7 +11,6 @@
 pacman -S base base-devel linux linux-firmware  man-db man-pages texinfo --noconfirm
 
 
-
 # Install any special firmware noted for your device (e.g., upd72020x-fw for Thinkpad webcam)
 # and sof-firmware for advanced sound cards
 pacman -S sof-firmware
@@ -55,12 +54,21 @@ pacman -S xorg-xwayland
 # intel
 pacman -S xf86-video-intel mesa --noconfirm
 pacman -S xf86-video-nouveau --noconfirm
+
 # <...>
 # systemctl enable nvidia-persistenced  # if nvidia
 
 # Add alacritty to /etc/bash.bashrc
 # ...|Eterm|aterm|...
 # ...|Eterm|alacritty|aterm|...
+
+############################
+# Video decoding drivers
+############################
+
+# Intel
+# This is a work in progress to know which drivers are necessary
+pacman -S intel-media-driver vulkan-intel --noconfirm
 
 ############################
 # Graphical Interface

@@ -154,7 +154,7 @@ workspace_layout stacking
 focus_follows_mouse no
 
 ## border style for new windows
-default_border normal 1
+# default_border normal 1
 
 ## border style for for floating windows <normal|1pixel|none>
 default_floating_border normal 1

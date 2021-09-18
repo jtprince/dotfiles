@@ -57,6 +57,11 @@ exec $noid autostart
 set $globalfontsize 8
 font pango:Droid Sans Mono $globalfontsize
 
+# i3 gaps rounded
+for_window [class=".*"] border pixel 0
+gaps inner all set 5
+border_radius 7
+smart_borders no_gaps
 
 
 set $subgreen #60a471
@@ -176,7 +181,7 @@ workspace_layout stacking
 focus_follows_mouse no
 
 ## border style for new windows
-default_border normal 1
+# default_border normal 1
 
 ## border style for for floating windows <normal|1pixel|none>
 default_floating_border normal 1
@@ -355,12 +360,7 @@ bindsym $mod+Ctrl+Shift+8 move workspace $ws8
 # App/Window Prefs
 #######################
 
-for_window [class=".*"] border pixel 1
 for_window [window_role="pop-up"] floating enabled
-border_radius 7
-smart_borders on
-smart_borders no_gaps
-
 
 #######################
 # RESIZE
@@ -517,16 +517,11 @@ bindsym $mod+Shift+G exec pylint-patch auto
 bindsym $mod+Shift+M exec fix
 
 
-
-
-
 #######################
 # BAR
 #######################
 
 bar {
-  height 25
-
   mode dock
   position bottom
   font pango:Droid Sans Mono $globalfontsize, Icons $globalfontsize
@@ -558,6 +553,5 @@ bar {
 # create a socket for other processes to hook into
 #ipc-socket ~/.i3/ipc.sock
 
-exec $noid i3 gaps inner all 7
 
 

@@ -9,7 +9,13 @@ introductory_notes: |
   # use evtest to determine hard-to-get keynames
 startup_programs: ""
 locked: ""
-appearance_special: ""
+appearance_special: |
+  # i3 gaps rounded
+  for_window [class=".*"] border pixel 0
+  gaps inner all set 5
+  border_radius 7
+  smart_borders no_gaps
+
 appearance_output: ""
 appearance_notes: ""
 floating_modifier: |

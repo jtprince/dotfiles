@@ -12,6 +12,8 @@ HOME_CONFIG = HOME / ".config"
 CLOUD_ENV = HOME / "Dropbox" / "env"
 DOT_LOCAL = HOME / ".local"
 
+CURRENT_RESOLUTION_MODE = HOME_CONFIG / "current-resolution-mode"
+
 # TODO: rip out config data into separate yaml file
 
 
@@ -161,7 +163,10 @@ RESOLUTION_INDEPENDENT_LINKS = [
         link=DOT_LOCAL / "share/pandoc",
     ),
     Symlink(REPO_CONFIG / "zsh/zshenv", link=HOME / ".zshenv"),
-    Symlink(HOME / "src/cheatsheets", link=HOME_CONFIG / "cheat/cheatsheets/community")
+    Symlink(
+        HOME / "src/cheatsheets",
+        link=HOME_CONFIG / "cheat/cheatsheets/community",
+    ),
 ]
 
 _RESOLUTIONS = ["4k", "hd", "mid"]
@@ -169,12 +174,26 @@ parser = argparse.ArgumentParser(description="setup all config dotfiles")
 parser.add_argument(
     "-r",
     "--resolution",
-    default="mid",
     choices=_RESOLUTIONS,
-    help="resolution to use (default mid)",
+    help="resolution to use (defaults to existing resolution mode)",
 )
+parser.add_argument(
+    "-d",
+    "--display-server",
+    choices=["x11", "wayland"],
+    default="x11",
+    help="display server for which to configure",
+)
+
 parser.add_argument("--dry", action="store_true", help="say it, don't do it")
 args = parser.parse_args()
+
+if args.resolution is None:
+    args.resolution = CURRENT_RESOLUTION_MODE.read_text()
+    print(
+        f"No resolution given, using from {str(CURRENT_RESOLUTION_MODE)}: "
+        f"{args.resolution}"
+    )
 
 linker = Symlinker(dry=args.dry)
 
@@ -188,13 +207,29 @@ def create_resolution_dependent_links(resolution: str):
             REPO_CONFIG / f"gtkrc-2.0-{resolution}",
             link=HOME / ".gtkrc-2.0-local",
         ),
-        Symlink(REPO_CONFIG / f"x11-scale-factor-{resolution}",
-            link=HOME_CONFIG / 'x11-scale-factor'
+        Symlink(
+            REPO_CONFIG / f"x11-scale-factor-{resolution}",
+            link=HOME_CONFIG / "x11-scale-factor",
         ),
     ]
 
 
 resolution_dependent_links = create_resolution_dependent_links(args.resolution)
+
+
+def create_chrome_flag_links(display_server: str):
+    links = []
+    for app in ["chrome", "electron"]:
+        links.append(
+            Symlink(
+                REPO_CONFIG / "chrome" / f"{app}-flags.conf-{display_server}",
+                link=HOME_CONFIG / f"{app}-flags.conf",
+            )
+        )
+    return links
+
+
+display_server_dependent_links = create_chrome_flag_links(args.display_server)
 
 
 if __name__ == "__main__":
@@ -203,3 +238,5 @@ if __name__ == "__main__":
     linker.softlink_into_home(SOFTLINK_INTO_HOME)
     linker.ensure_links(RESOLUTION_INDEPENDENT_LINKS)
     linker.ensure_links(resolution_dependent_links)
+    CURRENT_RESOLUTION_MODE.write_text(args.resolution)
+    linker.ensure_links(display_server_dependent_links)

@@ -1,0 +1,7 @@
+--enable-features=UseOzonePlatform
+--ozone-platform=wayland
+--ignore-gpu-blocklist
+--enable-gpu-rasterization
+--enable-zero-copy
+--disable-gpu-driver-bug-workarounds
+--enable-features=VaapiVideoDecoder
