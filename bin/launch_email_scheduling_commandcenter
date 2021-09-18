@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import subprocess
+import os
 from time import sleep
 
 
@@ -26,6 +27,8 @@ cmds = [
     PERSONAL_BROWSER + [CALENDAR],
     WORK_BROWSER + [CALENDAR],
 ]
+if os.environ.get("XDG_SESSION_DESKTOP") != 'sway':
+    cmds = cmds + [cmds.pop(), cmds.pop()]
 
 for cmd in cmds:
     print(cmd)
