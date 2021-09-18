@@ -1,4 +1,7 @@
 #!/bin/sh
 
-# /usr/bin/urxvt
-WINIT_X11_SCALE_FACTOR=1 /usr/bin/alacritty "$@"
+/usr/bin/alacritty "$@"
+
+# Was doing this, now letting each X11 scale this independently
+# WINIT_X11_SCALE_FACTOR=1 /usr/bin/alacritty "$@"
+

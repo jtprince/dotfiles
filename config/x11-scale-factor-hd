@@ -1,0 +1,2 @@
+export WINIT_X11_SCALE_FACTOR=1
+export BEMENU_SCALE=1.2

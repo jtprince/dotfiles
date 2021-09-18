@@ -53,7 +53,7 @@ if args.state == "on":
         set_chrome_flags(flag_path)
     uninstall("xclip")
     install("wl-clipboard-x11")
-    uninstall("dmenu")
+    uninstall("bemenu-x11")
     install("bemenu-dmenu-wayland")
     print("must also change i3/sway config for bemenu to work!")
 else:
@@ -62,5 +62,5 @@ else:
     uninstall("wl-clipboard-x11")
     install("xclip")
     uninstall("bemenu-dmenu-wayland")
-    install("dmenu")
+    install("bemenu-x11")
     print("must also change i3/sway config for dmenu to work!")

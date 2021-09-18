@@ -23,10 +23,12 @@ middle_click: |
   bindcode 75 exec --no-startup-id xdotool click 2
 monitor_laptop_cmd: >-
   jasnah-x11-monitor-config laptop
+monitor_laptop_cmd_integer: >-
+  jasnah-x11-monitor-config laptop
 monitor_primary1_cmd: >-
   jasnah-x11-monitor-config desk
-monitor_primary2_cmd: >-
-  jasnah-x11-monitor-config treadmill
+monitor_primary1_cmd_integer: >-
+  jasnah-x11-monitor-config desk
 laptop_keyboard_toggle: |
   # favorites #1 key
   # bindsym XF86Launch5 exec --no-startup-id xrandr --auto ; randomise-bkg

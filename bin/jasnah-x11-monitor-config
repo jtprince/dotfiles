@@ -9,67 +9,81 @@ parser.add_argument(
     "monitor",
     nargs="?",
     default="laptop",
-    choices=["laptop", "desk", "treadmill"],
+    choices=["laptop", "desk"],
 )
 parser.add_argument("--dry", action="store_true", help="dry run")
 args = parser.parse_args()
 
-display_port_re = re.compile(r"(DisplayPort-\d+) connected")
+status_line_re = re.compile(r"^([^\s]+) (disconnected|connected)")
+EDP_PREFIX = "eDP"
 
 
-def get_first_displayports():
+def get_displays():
+    """Returns a dict with display name as key and some info value."""
     output = subprocess.check_output("xrandr", shell=True, text=True)
-    matches = display_port_re.findall(output)
-    return matches[0:2]
+    lines = output.split("\n")
+    name_and_status = []
+    after_status_line = False
+    for line in lines:
+        if (
+            after_status_line
+            and name_and_status[-1][-1]["status"] == "connected"
+        ):
+            name_and_status[-1][-1]["resolution"] = line.strip().split()[0]
+            after_status_line = False
+        if match := status_line_re.match(line):
+            name, status = match.groups()
+            name_and_status.append((name, {"status": status}))
+            after_status_line = True
+
+    return dict(name_and_status)
 
 
-desk_input, treadmill_input = get_first_displayports()
+# A dict with display and resolution
+DISPLAYS = get_displays()
+EDP_NAME = next(key for key in DISPLAYS.keys() if key.startswith(EDP_PREFIX))
+
+NON_EDP_NAME = next(
+    key for key, val in DISPLAYS.items() if not key.startswith(EDP_PREFIX) and val['status'] == 'connected'
+)
 
 input_off_str = "--output {} --off"
+input_on_str = "--output {} --mode {} --pos 0x0 --rotate normal"
 
 
-def display_ports_off(exclude=None):
-    exclude = exclude or []
-    display_ports_off = []
-    for num in range(1, 10):
-        xinput = f"DisplayPort-{num}"
-        if xinput not in exclude:
-            display_ports_off.append(input_off_str.format(xinput))
-    return display_ports_off
-
-
-input_on_str = "--output {} --mode 1920x1080 --pos 0x0 --rotate normal"
-
-edp_off = input_off_str.format("eDP")
+def others_off(name):
+    to_turn_off = [
+        display
+        for display, info in DISPLAYS.items()
+        if not display.startswith(name) and info["status"] == "connected"
+    ]
+    return [input_off_str.format(display) for display in to_turn_off]
 
 
 def make_edp_opts():
-    return " ".join([input_on_str.format("eDP")] + display_ports_off())
-
-
-def make_desk_opts():
     return " ".join(
-        [input_on_str.format(desk_input)] + display_ports_off([desk_input])
-        + [edp_off]
+        [input_on_str.format(EDP_NAME, DISPLAYS[EDP_NAME]["resolution"])]
+        + others_off(EDP_NAME)
     )
 
 
-def make_treadmill_opts():
+def make_first_non_edp_opts():
     return " ".join(
-        [input_on_str.format(treadmill_input)]
-        + display_ports_off([treadmill_input])
-        + [edp_off]
+        [
+            input_on_str.format(
+                NON_EDP_NAME, DISPLAYS[NON_EDP_NAME]["resolution"]
+            )
+        ]
+        + others_off(NON_EDP_NAME)
     )
 
 
 commands = dict(
     laptop=f"xrandr {make_edp_opts()}",
-    desk=f"xrandr {make_desk_opts()}",
-    treadmill=f"xrandr {make_treadmill_opts()}",
+    desk=f"xrandr {make_first_non_edp_opts()}",
 )
 
 cmd = commands[args.monitor]
-
 cmd += " && keyboard-setup"
 cmd += " && randomise-bkg"
 

@@ -22,3 +22,8 @@ export SDL_VIDEODRIVER=wayland
 
 # not sure what this line does?
 # export WLR_DRM_DEVICES=/dev/dri/card0
+
+# wayland scales everything properly already, but X11 needs a sense for scale
+export WINIT_X11_SCALE_FACTOR=1
+
+export BEMENU_SCALE=1.5

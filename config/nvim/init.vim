@@ -137,7 +137,9 @@ let g:isort_command = 'isort'
 
 " misc ----------------------------------------------------------------------
 
+" visual select (Ctrl-V) then Ctrl-A to auto-increment
 Plug 'triglav/vim-visual-increment'
+set nrformats=bin,hex,alpha
 
 Plug 'mechatroner/rainbow_csv'
 

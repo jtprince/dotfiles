@@ -40,7 +40,7 @@ set $DownShift J
 set $up k
 set $UpShift K
 
-set $locked 
+set $locked
 set $noid --no-startup-id
 
 ######################################
@@ -425,9 +425,9 @@ bindcode 75 exec --no-startup-id xdotool click 2
 
 # ☆ <Favorites> toggles monitor setting
 set $monitor_laptop_cmd jasnah-x11-monitor-config laptop
-set $monitor_laptop_cmd_integer 
+set $monitor_laptop_cmd_integer jasnah-x11-monitor-config laptop
 set $monitor_primary1_cmd jasnah-x11-monitor-config desk
-set $monitor_primary1_cmd_integer 
+set $monitor_primary1_cmd_integer jasnah-x11-monitor-config desk
 
 # LAPTOP
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd

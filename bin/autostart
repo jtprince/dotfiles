@@ -51,6 +51,8 @@ else
 
     # sound tray
     pasystray &
+
+    randomise-bkg
 fi
 
 # dropbox
@@ -61,6 +63,8 @@ fi
 if cmd_exists megasync ; then
     megasync &
 fi
+
+
 
 # example of launching specific app on a workspace
 # i3-msg 'workspace 8:w8; exec sleep 3 && music-player'

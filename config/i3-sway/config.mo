@@ -18,7 +18,7 @@ set $DownShift J
 set $up k
 set $UpShift K
 
-set $locked {{locked}}
+set $locked{{locked}}
 set $noid --no-startup-id
 
 ######################################

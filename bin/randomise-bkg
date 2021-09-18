@@ -44,7 +44,7 @@ cmd =
       # feh is in official repos, so using it
       prog = 'feh --bg-fill'
       prog << ' --no-xinerama' if $DUAL_MONITORS
-      prog
+      prog << " #{shellsafe_filename}"
     elsif `which hsetroot`.size > 0
       # putting feh as default since hsetroot seems a little flaky at moment
       # (put into AUR from community)
