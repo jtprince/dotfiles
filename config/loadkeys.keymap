@@ -1,0 +1,2 @@
+# caps-lock acts as escape key
+keycode 58 = Escape
