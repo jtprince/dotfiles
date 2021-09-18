@@ -12,7 +12,7 @@ locked: ""
 appearance_special: |
   # i3 gaps rounded
   for_window [class=".*"] border pixel 0
-  gaps inner all set 5
+  gaps inner 5
   border_radius 7
   smart_borders no_gaps
 
