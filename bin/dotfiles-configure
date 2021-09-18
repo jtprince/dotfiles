@@ -125,12 +125,13 @@ SOFTLINK_INTO_CONFIG = [
 
 # Softlink into home dotfile as "$HOME/.{name}"
 SOFTLINK_INTO_HOME = [
+    "xprofile",
+    "xinitrc",
     "pryrc",
     "irbrc",
     "gemrc",
     "docker",
     "profile",
-    "xprofile",
     "gtkrc-2.0",
 ]
 

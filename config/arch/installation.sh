@@ -39,7 +39,6 @@ visudo # then uncomment wheel section
 
 # get xorg display drivers and synaptics
 pacman -S xorg-server xorg-apps xorg-xinit
-pacman -S i3-wm i3lock --noconfirm
 
 ############################
 # Sway core
@@ -111,6 +110,8 @@ yay -S pyright rust-analyzer  gopls yaml-language-server-bin --noconfirm
 xclip -silent
 
 yay -S paru-bin --noconfirm
+
+pacman -S i3-gaps-rounded-git i3lock --noconfirm
 
 ############################
 # Primary browser

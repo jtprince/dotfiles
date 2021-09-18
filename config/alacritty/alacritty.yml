@@ -21,6 +21,10 @@ scrolling:
 window:
   decorations: full
   dynamic_title: true
+  padding:
+    x: 4
+    y: 4
+
 
 hide_cursor_when_typing: false
 
