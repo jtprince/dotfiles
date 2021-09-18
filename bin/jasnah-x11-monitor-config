@@ -86,7 +86,7 @@ commands = dict(
     laptop=f"xrandr {make_edp_opts()}",
 )
 if NON_EDP_NAME:
-    commands[desk] = f"xrandr {make_first_non_edp_opts()}"
+    commands['desk'] = f"xrandr {make_first_non_edp_opts()}"
 
 cmd = commands[args.monitor]
 cmd += " && keyboard-setup"
