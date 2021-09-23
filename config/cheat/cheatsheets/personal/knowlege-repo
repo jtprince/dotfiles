@@ -1,3 +1,23 @@
+
+
+# Add a markdown header
+
+`call InsertKnowledgeRepoHeader()`
+
+# Template for Notebook Raw Header:
+```
+---
+title: <Some Title Here>
+authors:
+- John T. Prince
+tags:
+- <some_tag>
+- <another_tag>
+created_at: <date>
+tldr: <SOME TLDR>
+---
+```
+
 # Add to the repo
 
 ```bash
