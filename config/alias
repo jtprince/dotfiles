@@ -196,6 +196,7 @@ alias sshproxy="ssh -ND 8080 enveda-datascience-instance1"
 alias lab8101="ssh -N -L 8101:localhost:8101 enveda-datascience-instance1"
 alias lab8101bkg="ssh -N -f -L 8101:localhost:8101 enveda-datascience-instance1"
 alias lab_start="jupyter lab --no-browser --ip=127.0.0.1 --port=8101"
+alias socksproxy="ssh -D 8080 -C -N enveda-datascience-instance1"
 
 alias condaenvs="conda info --env"
 
