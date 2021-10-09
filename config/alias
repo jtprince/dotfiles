@@ -5,7 +5,7 @@ alias AWSSTART="aws ec2 start-instances --instance-ids $AWSID"
 alias gotoaws="ssh $RMT -t 'source /home/jtprince/dotfiles/config/remote_root_bashrc; cd /home/build; bash -l'"
 
 # AWS VPN
-alias awsvpn="/opt/awsvpnclient/AWS\ VPN\ Client &"
+# alias awsvpn="/opt/awsvpnclient/AWS\ VPN\ Client &"
 
 # apt-get
 # alias apti='sudo apt-get install'
@@ -191,12 +191,7 @@ alias prn="poetry run"
 alias kubeon="export ZSH_KUBECTL_DISPLAY=true"
 alias kubeoff="export ZSH_KUBECTL_DISPLAY=false"
 
-alias sshproxy="ssh -ND 8080 enveda-datascience-instance1"
-
-alias lab8101="ssh -N -L 8101:localhost:8101 enveda-datascience-instance1"
-alias lab8101bkg="ssh -N -f -L 8101:localhost:8101 enveda-datascience-instance1"
-alias lab_start="jupyter lab --no-browser --ip=127.0.0.1 --port=8101"
-alias socksproxy="ssh -D 8080 -C -N enveda-datascience-instance1"
+alias socksproxy="ssh-proxy enveda-datascience-instance1 8080"
 
 alias condaenvs="conda info --env"
 

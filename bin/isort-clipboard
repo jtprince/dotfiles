@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+import argparse
+import pyperclip
+import isort
+
+
+parser = argparse.ArgumentParser()
+# parser.add_argument()
+args = parser.parse_args()
+
+cliptext = pyperclip.paste()
+
+sorted_code = isort.code(cliptext)
+pyperclip.copy(sorted_code)
+print(sorted_code)

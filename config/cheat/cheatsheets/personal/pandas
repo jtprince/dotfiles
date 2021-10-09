@@ -1,0 +1,6 @@
+
+# show all columns
+pd.set_option('max_columns', None)
+
+# show all rows
+pd.set_option('max_rows', None)

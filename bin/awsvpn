@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/opt/awsvpnclient/AWS\ VPN\ Client &

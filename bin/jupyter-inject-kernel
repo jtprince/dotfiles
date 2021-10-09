@@ -13,4 +13,4 @@ if not env:
     env = subprocess.check_output("basename $VIRTUAL_ENV", shell=True, text=True)
 
 subprocess.run("pip install ipykernel", shell=True)
-subprocess.run(f"python -m ipykernel install --name={env}", shell=True)
+subprocess.run(f"python -m ipykernel install --user --name={env}", shell=True)

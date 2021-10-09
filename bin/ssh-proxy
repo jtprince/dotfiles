@@ -1,0 +1,17 @@
+#!/bin/bash
+
+usage() {
+    echo "<ssh_alias> <port>"
+}
+
+if [ "$#" -ne 2 ]
+then
+    usage >&2
+    exit 1
+fi
+
+while true; do
+    ssh -ND $2 $1
+    echo "ssh proxy disrupted. re-creating in 1 second..."
+    sleep 1
+done
