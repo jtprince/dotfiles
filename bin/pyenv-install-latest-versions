@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import re
+import subprocess
+from collections import defaultdict
+from distutils.version import StrictVersion
+
+CONFIGURE_OPTS = [
+    "--enable-shared",
+    "--enable-loadable-sqlite-extensions",
+    "--with-system-ffi",
+    "--with-ensurepip=upgrade",
+    "--enable-optimizations",
+]
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-l",
+    "--latest-minor-versions",
+    default=3,
+    type=int,
+    help="how many latest minor versions to install",
+)
+args = parser.parse_args()
+
+version_re = re.compile(r"^\d+\.\d+\.\d+$")
+
+versions = (
+    subprocess.check_output("pyenv install --list", shell=True, text=True)
+    .strip()
+    .split("\n")
+)
+versions = [version.strip() for version in versions]
+
+numeric_versions = [
+    version for version in versions if version_re.match(version)
+]
+
+version_by_minor = defaultdict(list)
+for version in numeric_versions:
+    version_by_minor[tuple(map(int, version.split(".")))[0:2]].append(version)
+
+latest_version_tuples = sorted(version_by_minor, reverse=True)
+
+versions_to_install = []
+for key in latest_version_tuples[0 : args.latest_minor_versions]:
+    versions_to_install.append(version_by_minor[key][-1])
+
+
+env = {**os.environ, "CONFIGURE_OPTS": " ".join(CONFIGURE_OPTS)}
+for version in versions_to_install:
+    cmd = ["pyenv", "install", "--skip-existing", version]
+    subprocess.run(cmd, env=env)
+
+print(f"Python versions installed: {' '.join(versions_to_install)}")
