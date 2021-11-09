@@ -42,8 +42,10 @@ else
     i3lock -i "$imagefile" -f -p win
 
     # Turn the screen off after a delay.
-    sleep 2; pgrep i3lock && xset dpms force off
-
-
-
+    # sleep 2; pgrep i3lock && xset dpms force off
+    sleep 2
+    if xrandr | grep -e '^DP.* connected'; then
+        echo "external monitor connected"
+        xset dpms force off
+    fi
 fi

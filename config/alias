@@ -191,8 +191,11 @@ alias prn="poetry run"
 alias kubeon="export ZSH_KUBECTL_DISPLAY=true"
 alias kubeoff="export ZSH_KUBECTL_DISPLAY=false"
 
-alias socksproxy="ssh-proxy enveda-datascience-instance1 8080"
+## proxy to datascience instance
+alias socksproxy="ssh-proxy chaz 8080"
 
 alias condaenvs="conda info --env"
 
 alias icat="kitty +kitten icat"
+
+scocr="sc -b --dir /home/jtprince/screenshots --timestamp box --ocr"

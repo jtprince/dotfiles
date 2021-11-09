@@ -7,14 +7,13 @@
 # Template for Notebook Raw Header:
 ```
 ---
-title: <Some Title Here>
+title: "Some Title Here"
 authors:
 - John T. Prince
 tags:
-- <some_tag>
-- <another_tag>
+- some_tag
 created_at: <date>
-tldr: <SOME TLDR>
+tldr: "<SOME TLDR>"
 ---
 ```
 

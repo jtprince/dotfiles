@@ -8,6 +8,7 @@ TOGGLE = "toggle"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("action", choices=[TOGGLE, LIST], help="do something")
+parser.add_argument("--all", action='store_true', help="list all, even not blessed")
 args = parser.parse_args()
 
 # TODO: pull these from some local file
@@ -15,18 +16,24 @@ BLESSED_DESCRIPTIONS = [
     "USB PnP Audio Device Analog Stereo",
     "Family 17h (Models 10h-1fh) HD Audio Controller Speaker + Headphones",
     # "Family 17h (Models 10h-1fh) HD Audio Controller Analog Stereo"
-    "Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones"
+    "Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones",
+    "TOZO-T10",
+    "Pixel earbuds Analog Stereo",
 ]
 
-def get_and_display_current_state():
+def get_and_display_current_state(list_all=False):
     for sink in PulseaudioSink.get_sinks():
-        # print("SINK!", sink)
         if sink.description in BLESSED_DESCRIPTIONS:
             description_line = sink.description
             if sink.is_default():
                 description_line += " <===== DEFAULT"
 
             print(description_line)
+        else:
+            if list_all:
+                print("(NOT BLESSED)")
+                print("description: ", sink.description, "\n")
+
 
 
 def get_next_best_sink():
@@ -38,7 +45,7 @@ def get_next_best_sink():
 
 
 if args.action == LIST:
-    get_and_display_current_state()
+    get_and_display_current_state(args.all)
 elif args.action == TOGGLE:
     sink = get_next_best_sink()
     sink.set_default()

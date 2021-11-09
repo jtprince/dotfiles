@@ -1,5 +1,9 @@
 
 "clipboard (<ctrl>-c) as link name, primary (X-clipboard) as url address
+
+" if the link has extra lines in it
+map <leader>ml <Esc>i[<Esc>"*pa<Esc>0i<BS><Esc>$a](<Esc>"+pa)
+" if the link has no extra lines in it
 map <leader>mp <Esc>i[<Esc>"*pa](<Esc>"+pa)
 
 " means that 'my-link' will be interpreted as single keyword 'my-link' instead
@@ -19,4 +23,10 @@ function! InsertKnowledgeRepoHeader()
     normal! j
     " move to end of the line, ready to edit the title
     normal! $
+endfunction
+
+
+function! MarkdownToHTMLAndOpenInFirefox()
+    silent !markdown_to_html %
+    silent !firefox "%:r.html"
 endfunction

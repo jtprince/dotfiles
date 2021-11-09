@@ -7,13 +7,20 @@
 # CORE
 ############################
 
-# linux
-pacman -S base base-devel linux linux-firmware  man-db man-pages texinfo --noconfirm
-
+pacman -S \
+    linux \
+    base \
+    base-devel \
+    man-db man-pages \
+    texinfo \
+    --noconfirm
 
 # Install any special firmware noted for your device (e.g., upd72020x-fw for Thinkpad webcam)
 # and sof-firmware for advanced sound cards
-pacman -S sof-firmware
+pacman -S
+    linux-firmware \
+    sof-firmware \
+    --noconfirm
 
 # networking and communication
 pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfirm
@@ -21,7 +28,7 @@ pacman -S iwd wpa_supplicant gnome-keyring dhcpcd openssh wget httpie --noconfir
 # shell, permissions, git, and firmware support
 # (udisks2 for uefi support in fwupdmgr)
 # npm for coc
-pacman -S zsh git sudo  unzip p7zip udisks2 npm bemenu-dmenu-wayland --noconfirm
+pacman -S zsh git sudo  unzip p7zip udisks2 npm  --noconfirm
 
 # editors
 pacman -S vi vim neovim  fzf ctags --noconfirm
@@ -160,6 +167,8 @@ dotfiles-configure
 yay -S xclip
 # yay -S wl-clipboard-x11
 # ------------------------------------------------------------------
+
+yay -S bemenu bemenu-x11 bemenu-dmenu-wayland
 
 # wf-recorder is for screen recording
 # mako is for notifications
@@ -360,8 +369,8 @@ yay -S ranger atool highlight mediainfo odt2txt perl-image-exiftool transmission
 # for password generation
 yay -S words --noconfirm
 
-# for numpy / scipy
-yay -S gcc-fortran --noconfirm
+# for numpy / scipy / sklearn
+yay -S gcc-fortran libffi7 --noconfirm
 
 yay -S gnome-system-monitor gnome-power-manager --noconfirm
 
@@ -421,6 +430,8 @@ yay -S midori --noconfirm
 # git and github
 # gh
 yay -S github-cli --noconfirm
+
+yay -S dragon-drag-and-drop --noconfirm
 
 # informant (ensure arch news is read)
 yay -S informant --noconfirm

@@ -1,0 +1,485 @@
+########################################
+# pacstrap /mnt base linux linux-firmware base-devel python python-ruamel-yaml
+# genfstab -U /mnt >> /mnt/etc/fstab
+# arch-chroot /mnt
+########################################
+root:
+  # packages must all be installable with pacman
+  setup:
+    - _commands:
+      - "ln -sf /usr/share/zoneinfo/America/Denver /etc/localtime"
+      - "hwclock --systohc"
+      - "sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen"
+      - "locale-gen"
+      - "echo -n 'LANG=en_US.UTF-8' > /etc/locale.conf"
+      - "sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf"
+      # script should also do hostname insertions at end of setup
+  documentation:
+    - man-db
+    - man-pages
+    - texinfo
+  core-firmware:
+  ## (e.g., upd72020x-fw for Thinkpad webcam)
+    - sof-firmware
+  core-networking-and-communication:
+    - iwd
+    - wpa_supplicant
+    - gnome-keyring
+    - dhcpcd
+    - openssh
+    - wget
+    - httpie
+  core-utils:
+    - zsh
+    - git
+    - sudo
+    - unzip
+    - p7zip
+  # for uefi support in fwupdmgr
+    - udisks2
+    - npm
+  core-editors:
+    - vi
+    - vim
+    - neovim
+    - fzf
+    - ctags
+  core-terminals:
+    - xterm
+    - alacritty
+  core-x11:
+    - xorg-server
+    - xorg-apps
+    - xorg-xinit
+  core-sway:
+    - sway
+    - swaylock
+    - xorg-xwayland
+  core-video:
+    - mesa
+  video:
+    intel:
+      # WIP
+      - xf86-video-intel
+      - intel-media-driver
+      - vulkan-intel
+    nvidia:
+      # WIP
+      - xf86-video-nouveau
+      - _commands:
+        - systemctl enable nvidia-persistenced
+    amd:
+      # 2D xorg acceleration
+      - xf86-video-amdgpu
+      # vulkan
+      - amdvlk
+      # vidoe acceleration
+      - libva-mesa-driver
+      - mesa-vdpau
+  sudo:
+    - _commands:
+      # those in wheel group can sudo with password
+      - "echo '%wheel ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo"
+  alacritty-bash:
+    - _commands:
+      - "sed -i 's/Eterm/Eterm|alacritty/' /etc/bash.bashrc"
+  reflector:
+    - reflector
+    - rsync
+    - _commands:
+      - "reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist"
+  add-users:
+    - _commands:
+      # Change the gid of the users to 1221
+      # That's a universal gid I use so that I can copy stuff as my own user to ext4
+      # backup disks and I don't have to mess with gid's at that point since all
+      # consistent.
+      - "groupmod -g 1221 users"
+      - "useradd -m -g users -G wheel -s /bin/zsh jtprince"
+      - "passwd jtprince"
+      - "id jtprince"
+  lightdm:
+    - lightdm
+    - lightdm-gtk-greeter
+    - accountsservice
+  # then login to i3, start browser, sign-in your user, and get this file!
+  yay:
+    - _commands:
+      - "git clone https://aur.archlinux.org/yay.git"
+      - "cd yay && makepkg -si && cd $HOME"
+user:
+  nvim-related:
+    - xclip
+    - vim-plug
+    - git-delta
+    - sheldon-bin
+  language-servers:
+    # see https://wiki.archlinux.org/title/Neovim#Tips_and_tricks
+    - pyright
+    - rust-analyzer
+    - gopls
+    - yaml-language-server-bin
+    # would like to do solargraph, but giving errors:
+    # - ruby-solargraph
+  dmenu-like:
+    - bemenu
+    - bemenu-x11
+    - bemenu-dmenu-wayland
+  package-managers:
+    - paru-bin
+  i3:
+    - i3-gaps-rounded-git
+    - i3lock
+  browsers:
+    # google-chrome-stable --user-data-dir=$HOME/.config/chrome-personal
+    - google-chrome
+    - vieb-bin
+  clipboard:
+    - xclip
+  more-wayland:
+    # wayland
+    # - wl-clipboard-x11
+    - wl-clipboard
+    - wdisplays
+    - azote
+    # notifications
+    - mako
+    - grimshot
+    - python-i3ipc
+    # screen recording
+    - wf-recorder
+  pipewire:
+    - pipewire
+    - xdg-desktop-portal
+    - xdg-desktop-portal-wlr
+  ntp:
+    - ntp
+    - _commands:
+      - "sudo systemctl enable ntpd.service"
+  network-manager:
+    - networkmanager
+    - network-manager-applet
+    - _commands:
+      - "sudo systemctl enable NetworkManager"
+  aws:
+    # /opt/awsvpnclient/AWS\ VPN\ Client
+    - awsvpnclient
+    - _commands:
+      - "sudo systemctl enable awsvpnclient"
+  keychain:
+    - keychain
+    - docker-credential-secretservice-bin
+
+# compositing manager
+picom
+
+# for python
+pyenv pyenv-virtualenv python-pip ipython python-black python-pynvim python-poetry python-pudb  ; mkdir -p ~/virtualenvs
+
+# for matplotlib (tk to avoid 'No module name '_tkinter')
+tk tcl python-pmw
+# not sure if I really need tcl and python-pmw ??
+
+```
+curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py > get-poetry.py
+python ./get-poetry.py
+```
+
+# handlr for mime-type management
+handlr-bin
+
+# ruby
+# probably already installed
+openssl readline zlib
+ruby rbenv ruby-build
+# pry likes readline
+rbenv install --list
+CONFIGURE_OPTS="--with-readline-dir=/usr/include/readline" rbenv install <SOME_VERSION>
+# this is critical so that you can install gems with user and not root:
+rbenv global <SOME_VERSION>
+
+# notifications
+# xfce4-notifyd
+# configure with xfce4-notifyd-config
+# Was using xfce4-notifyd, now using dunst
+dunst
+
+# sound
+pulseaudio pulseaudio-alsa pulseaudio-ctl
+# sound tray
+pasystray-git pavucontrol paprefs pavumeter
+
+# bluetooth
+bluez bluez-utils pulseaudio-bluetooth
+
+# screen
+arandr
+
+# file manager and associated
+pcmanfm gvfs gvfs-mtp udisks
+
+# tree thunar thunar-media-tags-plugin thunar-archive-plugin thunar-shares-plugin thunar-volman tumbler ffmpegthumbnailer raw-thumbnailer libgsf thunar-dropbox gvfs gvfs-smb sshfs
+# [now using pcmanfm, which comes with lxde]
+tree
+
+# cursor
+xcursor-vanilla-dmz
+
+# common file system stuff
+ntfs-3g trash-cli
+
+# extraction, search, backups
+dtrx zip ack rdiff-backup
+
+# install lxde (as a backup X desktop environment)
+sudo pacman -S lxde
+
+# configure your primary backlight output (typically acpi_video0 or intel_backlight)
+# sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
+# showing icons on all desktops for now
+
+## Get good font rendering (looks like infinality)
+
+sudo ln -s /etc/fonts/conf.avail/11-lcdfilter-default.conf /etc/fonts/conf.d
+sudo ln -s /etc/fonts/conf.avail/10-sub-pixel-rgb.conf /etc/fonts/conf.d
+
+# ensure that hinting-slight is already linked (should already be set)
+ls -alh  /etc/fonts/conf.d/10-hinting-slight.conf  # should give /etc/fonts/conf.avail/10-hinting-slight.conf
+
+# core fonts
+ttf-dejavu ttf-roboto ttf-ubuntu-font-family
+
+# standard fonts
+noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-ms-fonts ttf-tahoma ttf-liberation ttf-symbola
+
+# programming font with ligatures
+# otf-fira-code
+
+# vim powerline
+powerline-fonts-git
+
+# font for status bar
+ttf-font-icons
+
+# font for fim (see FBFONT in profile)
+terminus-font
+
+# font with great icon support
+otf-font-awesome
+
+# a few others
+otf-ipafont culmus cantarell-fonts
+
+# link my own batch of fonts
+ln -s ~/Dropbox/env/appearance/fonts/dot-fonts ~/.local/share/fonts
+fc-cache
+
+# icons and themes
+gnome-themes-standard
+
+# acpi # only for laptops
+# acpi cbatticon
+
+# rg, ack, fd, fzf command (way better grep and needed for proximity-sort)
+ripgrep ack fd meld
+
+# essential media players and control (xava is for fun visualizer)
+youtube-music-bin playerctl xava
+
+# for screenshot OCR
+python-pytesseract tesseract-data-eng
+
+chmod +x ~/Dropbox/env/passwds_logins/INSTALL.sh
+~/Dropbox/env/passwds_logins/INSTALL.sh
+
+git clone git@github.com:jtprince/dotfiles.git
+cd ~ && ln -s ~/dotfiles/bin && rehash
+dotfiles-configure --dry
+dotfiles-configure
+
+#############################
+# AFTER RE-LOGIN
+#############################
+nvim -> :PlugInstall
+
+# for reading settings file and other json stuff
+:CocInstall coc-json
+:CocInstall coc-spell-checker
+:CocInstall coc-pyright
+:CocInstall coc-solargraph
+:CocInstall coc-git
+:CocInstall coc-yaml
+:CocInstall coc-prettier
+
+# install jira-cli
+npm install -g jira-cli
+# to complete install, execute command from my README.md
+cat ~/Dropbox/env/cloud-and-apis/jira/jira-cli/README.md
+
+pyenv install --list
+# update these to latest patch version for each minor
+CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"
+pyenv install 3.7.11; pyenv install 3.8.11; pyenv install 3.9.6
+pyenv global 3.9.6
+# you need the neovim module in your current python shim for the nvim python
+# plugin to work:
+# If you see this error message:
+# "This script requires vim7.0+ with Python 3.6 support", then you need to:
+pip install neovim jupytext
+
+# for pymarkdown
+pip install PyMarkdown
+
+gem install pry clipboard solargraph
+
+
+# sad
+sad
+
+# locate
+mlocate ; sudo updatedb
+
+# PDF readers
+# zooming is restricted by page cache size, increase to get zoom into large docs
+evince ; gsettings set org.gnome.Evince page-cache-size 2014
+
+# note: would install pdftk-bin here, but not working??
+archey3 feh mplayer inkscape gimp eog geeqie gthumb nomacs youtube-dl pandoc-bin mp3splt audacity
+# slack using system qt should avoid some wayland failures
+slack-desktop zoom-system-qt
+libreoffice libmythes mythes-en
+
+# ranger and deps
+ranger atool highlight mediainfo odt2txt perl-image-exiftool transmission-cli w3m libcaca
+
+# for password generation
+words
+
+# for numpy / scipy
+gcc-fortran
+
+gnome-system-monitor gnome-power-manager
+
+# cheat sheets
+cheat-bin
+mkdir ~/src ; cd ~/src ; git clone git@github.com:cheat/cheatsheets.git ; cd
+
+
+# NEED TO FIGURE OUT THAT SYSTEMD stuff and do it!!
+
+# find which package holds a particular file:
+pkgfile  ; sudo pkgfile --update
+
+# for paccache
+pacman-contrib
+
+# connect android via usb (including usb-c)
+jmtpfs
+mkdir ~/mnt
+# to mount phone once you've plugged it into usb:
+# jmtpfs ~/mnt
+
+# printing
+cups cups-pdf
+system-config-printer
+# sudo systemctl enable cups.service
+# sudo systemctl start cups.service
+# sudo system-config-printer
+
+# hplip
+
+# system monitoring
+libstatgrab pystatgrab gnome-system-monitor
+
+# aws and google cli as needed
+aws-cli
+# google-cloud-sdk
+
+# docker
+docker docker-compose
+sudo gpasswd -a jtprince docker
+sudo systemctl enable docker.service
+
+# torrents
+deluge-gtk
+
+# transfer files with android pixel
+# simple-mtpfs
+# simple-mtpfs -l
+# mkdir ~/mnt
+# simple-mtpfs --device 1 ~/mnt
+# [will appear in thunar then]
+
+# install secondary browser
+midori
+
+# git and github
+# gh
+github-cli
+
+# informant (ensure arch news is read)
+informant
+
+######################################
+# LAPTOP SPECIFIC
+######################################
+
+# using tlp for battery optimizations
+# follow instructions here: https://linrunner.de/tlp/installation/arch.html
+# Should be roughly
+tlp tlp-rdw
+# then run this to know which other packages to install for the system
+sudo tlp-stat -b
+# e.g., `acpi_call`
+sudo systemctl {start,enable} tlp.service
+sudo systemctl enable NetworkManager-dispatcher.service
+sudo systemctl mask systemd-rfkill.service
+sudo systemctl mask systemd-rfkill.socket
+
+# laptop mode tools
+# laptop-mode-tools-git hdparm acpid
+# sudo systemctl enable laptop-mode.service
+# sudo systemctl enable acpid.service
+
+# timezone update utility
+tzupdate
+
+#########################################
+## kube
+#########################################
+
+kubectl kubectx
+# then without the dry
+kubernetes-setup-credentials --with-login --credentials --nicknames --dry
+
+#########################################
+## OPTIONAL
+#########################################
+
+# texlive fonts (needed for pandoc pdf conversion)
+# texlive-latexextra needed for etoolbox.sty
+texlive-core texlive-fontsextra texlive-latexextra
+sudo ln -s /etc/fonts/conf.avail/09-texlive-fonts.conf /etc/fonts/conf.d/09-texlive-fonts.conf
+sudo fc-cache && sudo mkfontscale && sudo mkfontdir && sudo rm -f fonts.dir fonts.scale
+
+############################
+# Dropbox
+############################
+# install dropbox
+dropbox dropbox-cli
+# If you have gpg import errors, you'll probably need to do this:
+curl https://linux.dropbox.com/fedora/rpm-public-key.asc
+gpg --import rpm-public-key.asc
+
+# enable dnsmasq to shorten dns lookup
+sudo pacman -S dnsmasq
+sudo systemctl enable dnsmasq.service
+sudo systemctl start dnsmasq.service
+# then change uncomment and add this line to /etc/dnsmasq.conf
+listen-address=::1,127.0.0.1
+
+# wine (wine_gecko and wine-mono avoids reinstalls of those for each prefix)
+wine-staging wine_gecko wine-mono
+winecfg # --> go to staging tab and click Enable_CSMT for better graphic performance
+# for gaming in wine (necessary fonts already installed)
+lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-alsa-oss lib32-openal lib32-libxml2 lib32-mpg123 lib32-lcms2 lib32-giflib lib32-libpng lib32-gnutls lib32-virtualgl lib32-libldap

@@ -15,7 +15,7 @@ appearance_special: |
   gaps inner 0
   border_radius 7
   smart_borders on
-  smart_borders no_gaps
+  # smart_borders no_gaps
 
 appearance_output: ""
 appearance_notes: ""

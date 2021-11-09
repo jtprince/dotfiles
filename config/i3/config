@@ -61,7 +61,8 @@ font pango:Droid Sans Mono $globalfontsize
 for_window [class=".*"] border pixel 0
 gaps inner 0
 border_radius 7
-smart_borders no_gaps
+smart_borders on
+# smart_borders no_gaps
 
 
 set $subgreen #60a471
