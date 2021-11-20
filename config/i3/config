@@ -58,7 +58,8 @@ set $globalfontsize 8
 font pango:Droid Sans Mono $globalfontsize
 
 # i3 gaps rounded
-for_window [class=".*"] border pixel 0
+# for_window [class=".*"] border pixel 0
+for_window [class=".*"] border pixel 1
 gaps inner 0
 border_radius 7
 smart_borders on

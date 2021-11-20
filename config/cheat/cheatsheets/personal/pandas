@@ -4,3 +4,6 @@ pd.set_option('max_columns', None)
 
 # show all rows
 pd.set_option('max_rows', None)
+
+# stack data frames on top of one another
+pd.concat([df1, df2, ...], ignore_index=True)

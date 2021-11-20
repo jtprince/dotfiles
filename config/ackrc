@@ -467,3 +467,7 @@
 # YAML
 # https://yaml.org/
 --type-add=yaml:ext:yaml,yml
+
+# Snapshot
+--ignore-directory=is:tests/snapshots
+

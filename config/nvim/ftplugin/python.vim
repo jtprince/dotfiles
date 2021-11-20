@@ -33,7 +33,7 @@ noremap <leader>o <Esc>:Isort<CR>
 " The movement down one line (with left hand navigation) assumes that an import line was added
 " noremap <leader>i <Esc>mw:PymodeRopeAutoImport<Enter>1<Enter><Esc>:Isort<Enter>`wf
 
-noremap <leader>b <Esc>:Black<Enter>
+noremap <leader>b <Esc>:Black<CR>
 
 " insert breakpoint above the current line and position cursor at start of
 " breakpoint
