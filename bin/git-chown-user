@@ -1,47 +1,68 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
+
+import subprocess
+import argparse
 
 EMAIL_EXTENSION = "@gmail.com"
-GITHUB_PREFIX = 'git@github.com:'
+GITHUB_PREFIX = 'git@github.com'
+GITHUB_PREFIX_WITH_COLON = GITHUB_PREFIX + ":"
 
-def run(cmd)
-  `#{cmd}`.chomp
-end
+parser = argparse.ArgumentParser(
+    description=str(
+        "changes user.email, user.name, "
+        "and appends -<name> to git@github.com in remote.origin.url"
+    )
+)
+parser.add_argument( "name", help="the new owner/name to use")
+parser.add_argument(
+    "--email",
+    help=str(
+        "use this email "
+        f"(appends a '{EMAIL_EXTENSION}' to <name> if no email supplied)"
+    )
+)
+parser.add_argument("--dry", action='store_true', help="do not actually do anything")
+args = parser.parse_args()
 
-def add_to_remote_origin(name, remote_origin)
-  trailer = remote_origin.split(GITHUB_PREFIX).last
-  if trailer == remote_origin
-    puts "**note: remote origin not changed.**"
-    remote_origin
-  else
-    git_prefix_with_name = GITHUB_PREFIX.dup
-    git_prefix_with_name.insert(-2, "-#{name}")
-    git_prefix_with_name + trailer
-  end
-end
 
-def alter_remote_origin(name)
-  remote_origin = run "git config --get remote.origin.url"
-  new_remote_origin = add_to_remote_origin(name, remote_origin)
-  run "git config remote.origin.url #{new_remote_origin}"
-end
+def run(cmd):
+    print("Running:", cmd)
+    if not args.dry or ("--get" in cmd):
+        return subprocess.check_output(cmd, shell=True, text=True).rstrip()
+    else:
+        print("Skipping (because --dry)")
 
-if ARGV.size == 0
-  puts "usage: #{File.basename(__FILE__)} <name> [email]"
-  puts "(should be performed within the git repo)"
-  puts "appends a '#{EMAIL_EXTENSION}' to <name> if no email supplied"
-  puts "also appends remote origin url '#{GITHUB_PREFIX[0...-1]}' with '-<name>'"
-  exit
-end
 
-name = ARGV.shift
-email = ARGV.shift || name + EMAIL_EXTENSION
+def add_to_remote_origin(name, remote_origin):
+    trailer = remote_origin.split(GITHUB_PREFIX_WITH_COLON)[-1]
+    if trailer == remote_origin:
+        print("**note: remote origin not changed.**")
+        return remote_origin
+    else:
+        # git@github.com-work:xxxxxx/xxxx.git
+        # git@github.com-personal:xxxxxx/xxxx.git
+        git_prefix_with_name = GITHUB_PREFIX + "-" + name + ":"
+        return git_prefix_with_name + trailer
 
-alter_remote_origin(name)
 
-{name: name, email: email}.each do |key, val|
-  run "git config user.#{key} #{val}"
-end
+def alter_remote_origin(name):
+    remote_origin = run("git config --get remote.origin.url")
+    new_remote_origin = add_to_remote_origin(name, remote_origin)
+    run(f"git config remote.origin.url {new_remote_origin}")
 
-%w(user.name user.email remote.origin.url).each do |key|
-  puts "#{key}: " + run("git config --get #{key}")
-end
+
+
+if not args.email:
+    args.email = args.name + EMAIL_EXTENSION
+
+breakpoint()
+alter_remote_origin(args.name)
+
+
+asdict = vars(args)
+for key in ["name", "email"]:
+    run(f"git config user.{key} {asdict[key]}")
+
+
+for key in ["user.name", "user.email", "remote.origin.url"]:
+    print(f"{key}: " + run(f"git config --get {key}"))
