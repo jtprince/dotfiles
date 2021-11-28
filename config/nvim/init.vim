@@ -364,8 +364,6 @@ autocmd Filetype tex setlocal foldmethod=syntax
 function PrePythonCleanup()
     execute 'Isort'
     execute 'Black'
-    " call CocAction('format')
-    " CocCommand python.sortImports
     sleep 50m
 endfunction
 autocmd BufWritePre *.py call PrePythonCleanup()

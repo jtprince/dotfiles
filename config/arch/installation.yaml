@@ -315,7 +315,7 @@ user:
     - python-pytesseract
     - tesseract-data-eng
   dotfiles:
-    - commands:
+    - _commands:
       - "cd $HOME"
       - "git clone git@github.com:jtprince/dotfiles.git"
       - "ln -s ~/dotfiles/bin"
@@ -384,7 +384,7 @@ user:
     - gnome-power-manager
     - libstatgrab
     - pystatgrab
-  cheat sheets:
+  cheat-sheets:
     - cheat-bin
     - _post_commands:
       - "mkdir ~/src ; cd ~/src ; git clone git@github.com:cheat/cheatsheets.git ; cd"
