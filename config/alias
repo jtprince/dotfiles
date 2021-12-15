@@ -120,7 +120,7 @@ alias mdkir="mkdir"
 alias eixt="exit"
 
 # edit arch installation file
-alias archup="gvim $HOME/dotfiles/config/arch/installation.sh"
+alias archup="gvim $HOME/dotfiles/config/arch/installation.yaml"
 alias archenvdir="pushd $HOME/Dropbox/env/os/arch"
 
 # edit zshrc

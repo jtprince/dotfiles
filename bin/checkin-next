@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import re
+import arrow
+from pathlib import Path
+import argparse
+
+CHECKIN_DIR = Path.home() / "work" / "CHECKINS"
+
+iso_date_re = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--checkin-dir", default=CHECKIN_DIR)
+parser.add_argument("--suffix", default="-checkin.md")
+parser.add_argument("--force", action='store_true', help="create even if way in the future")
+args = parser.parse_args()
+
+possible_checkins = sorted(args.checkin_dir.glob("*.md"))
+
+checkins = [path for path in possible_checkins if iso_date_re.search(str(path.name))]
+
+last_checkin = checkins[-1]
+match = iso_date_re.search(str(last_checkin.name))
+isodate_str = match.group()
+
+old_datetime = arrow.get(isodate_str)
+
+the_next_week = old_datetime.shift(weeks=+1)
+
+now = arrow.utcnow()
+if the_next_week > now.dehumanize("in 4 days"):
+    print(f"New checkin is for {the_next_week.date().isoformat()} which is > 4 days from now")
+    print("[quitting for now]")
+    exit(1)
+
+
+filename = the_next_week.date().isoformat() + args.suffix
+new_checkin = last_checkin.parent / filename
+
+old_checkin_text = last_checkin.read_text()
+
+preamble = f"""----------------------------------------------
+LAST WEEK'S CHECKIN ({old_datetime.date().isoformat()}) BELOW
+----------------------------------------------"""
+
+new_checkin.write_text("\n\n" + preamble + "\n\n" + old_checkin_text)

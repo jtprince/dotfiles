@@ -1,0 +1,10 @@
+#!/bin/bash
+
+docker run -it \
+    --rm \
+    -e WINEDEBUG=-all \
+    -v $(pwd):/data \
+    chambm/pwiz-skyline-i-agree-to-the-vendor-licenses \
+    wine msconvert \
+    --32 --mz64 --zlib \
+    "$@"

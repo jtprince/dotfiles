@@ -4,6 +4,8 @@ import argparse
 import re
 import subprocess
 
+DEFAULT_SCALE = 1
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "monitor",
@@ -52,7 +54,7 @@ NON_EDP_NAME = next(
 )
 
 input_off_str = "--output {} --off"
-input_on_str = "--output {} --mode {} --pos 0x0 --rotate normal"
+input_on_str = "--output {} --mode {} --pos 0x0 --rotate normal --scale {}"
 
 
 def others_off(name):
@@ -66,16 +68,23 @@ def others_off(name):
 
 def make_edp_opts():
     return " ".join(
-        [input_on_str.format(EDP_NAME, DISPLAYS[EDP_NAME]["resolution"])]
+        [
+            input_on_str.format(
+                EDP_NAME, DISPLAYS[EDP_NAME]["resolution"], DEFAULT_SCALE
+            )
+        ]
         + others_off(EDP_NAME)
     )
 
+def determine_scaling(resolution_high, resolution_low):
+    return int(resolution_high.split("x")[0]) / int(resolution_low.split("x")[0])
 
 def make_first_non_edp_opts():
+    scale = determine_scaling(DISPLAYS[EDP_NAME]['resolution'], DISPLAYS[NON_EDP_NAME]['resolution'])
     return " ".join(
         [
             input_on_str.format(
-                NON_EDP_NAME, DISPLAYS[NON_EDP_NAME]["resolution"]
+                NON_EDP_NAME, DISPLAYS[NON_EDP_NAME]["resolution"], scale
             )
         ]
         + others_off(NON_EDP_NAME)
