@@ -47,7 +47,7 @@ exit_cmd: >-
 special_sleep: |
 
   # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
-  bindsym $mod+Ctrl+Shift+D exec sleep 1 ; xset dpms force off
+  bindsym $mod+Ctrl+Shift+D exec monitors-all-off.sh
   bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
 scratchpad: ""
 misc_editing: |

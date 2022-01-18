@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import os
+from pathlib import Path
+import shutil
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("virtualenv_name", nargs="?", help="name of virtualenv to delete")
+parser.add_argument("-l", "--list", action='store_true', help="show virtualenvs and exit")
+args = parser.parse_args()
+
+pyenv_root = Path(os.environ["PYENV_ROOT"])
+
+if args.list:
+    files = (pyenv_root / "versions").glob("*")
+    virtual_envs = [file for file in files if file.is_symlink()]
+    for dir in virtual_envs:
+        print(dir.name)
+    exit(0)
+
+
+virtualenv_link = pyenv_root / "versions" / args.virtualenv_name
+print(f"virtualenv symlink: {virtualenv_link}")
+
+directory = virtualenv_link.resolve()
+print(f"virtualenv dir: {directory}")
+
+if directory.exists():
+    print(f"Removing {str(directory)}")
+    shutil.rmtree(directory, ignore_errors=True)
+
+print(f"Force removing symlink {str(virtualenv_link)}")
+virtualenv_link.unlink(missing_ok=True)

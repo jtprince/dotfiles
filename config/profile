@@ -131,9 +131,9 @@ if [ -d ~/.poetry ]; then
     export PATH="$HOME/.poetry/bin:$PATH"
 fi
 
-if [ -d ~/.cargo ]; then
-    source $HOME/.cargo/env
-fi
+#if [ -d ~/.cargo ]; then
+#    source $HOME/.cargo/env
+#fi
 
 # https://github.com/cheat/cheat use FZF (fuzzy finder) `yay -S fzf`
 export CHEAT_USE_FZF=true

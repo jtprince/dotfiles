@@ -78,6 +78,12 @@ let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_auto_insert_bullets = 0
 let g:vim_markdown_new_list_item_indent = 0
 
+" Note: this is not necessary for github because it will auto-generate toc
+" markdown table of contents
+Plug 'mzlogin/vim-markdown-toc'
+" :GenTocGFM (for gitubflavored toc)
+" :GenTocRedcarpet (for redcarpet toc)
+
 " Glow [path-to-md-file] (q to close)
 Plug 'npxbr/glow.nvim', {'do': ':GlowInstall', 'branch': 'main'}
 

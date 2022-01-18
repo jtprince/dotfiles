@@ -28,7 +28,7 @@ endfunction
 
 function! MarkdownToHTMLAndOpenInFirefox()
     silent !markdown_to_html %
-    silent !firefox "%:r.html"
+    silent !firefox "%:r.html" &
 endfunction
 
 map <leader>mh <Esc>:call MarkdownToHTMLAndOpenInFirefox()<CR>
