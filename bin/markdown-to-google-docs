@@ -1,0 +1,3 @@
+#!/bin/bash
+
+markdown-to-html-github-style "$@"

@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+from pathlib import Path
+import argparse
+import subprocess
+
+DEFAULT_SUFFIX = ".html"
+PANDOC_CMD = "pandoc"
+
+parser = argparse.ArgumentParser()
+parser.add_argument("markdown_files", nargs="+", type=Path, help="the markdown file to be transformed")
+parser.add_argument("--suffix", default=DEFAULT_SUFFIX)
+parser.add_argument("--dry", action='store_true', help="just talk about it")
+args = parser.parse_args()
+
+# --smart gets me proper curly quotes and apostrophes!
+# but they will not look right unless --standalone and/or --to html5 are also used
+default_options = [
+  "-fmarkdown+implicit_figures+smart",
+  "--standalone",
+  "--to", "html5",
+  # This requires that you already have the template in your datadir
+  # Should already be set up between config/pandoc/data_dir and
+  # dotfiles-configure
+  # Can confirm by looking in data dir specified in pandoc --version
+  "--template", "GitHub.html5",
+]
+# --number-sections
+
+
+for path in args.markdown_files:
+    outpath = path.with_suffix(".html") 
+    cmd = [PANDOC_CMD, (path), *default_options, "--output", str(outpath)]
+    if args.dry:
+        print(" ".join(map(str, cmd)))
+    else:
+        subprocess.run(cmd)

@@ -159,7 +159,7 @@ RESOLUTION_INDEPENDENT_LINKS = [
         link=DOT_LOCAL / "share/applications/google-chrome.desktop",
     ),
     Symlink(
-        REPO_CONFIG / "pandoc/reference",
+        REPO_CONFIG / "pandoc/data_dir",
         link=DOT_LOCAL / "share/pandoc",
     ),
     Symlink(REPO_CONFIG / "zsh/zshenv", link=HOME / ".zshenv"),
