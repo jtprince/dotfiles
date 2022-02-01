@@ -32,9 +32,10 @@ else
         dunst &
     fi
 
-    if cmd_exists picom ; then
-        picom-toggle start
-    fi
+    # Xorg slowdown is from picom :(
+    # if cmd_exists picom ; then
+    #     picom-toggle start
+    # fi
 
     if cmd_exists autoxrandr ; then
         autoxrandr --change
