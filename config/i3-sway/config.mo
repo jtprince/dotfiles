@@ -356,7 +356,8 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow up 10 px or 10 ppt
 # Preferred applications
 #########################
 
-set $browser1 google-chrome-stable {{chrome_environment_opts}} --user-data-dir=/home/jtprince/.config/chrome-personal
+# set $browser1 google-chrome-stable {{chrome_environment_opts}} --user-data-dir=/home/jtprince/.config/chrome-personal
+set $browser1 firefox
 set $browser2 google-chrome-stable {{chrome_environment_opts}}
 set $newwindow --new-window
 

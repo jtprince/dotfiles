@@ -386,7 +386,8 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow up 10 px or 10 ppt
 # Preferred applications
 #########################
 
-set $browser1 google-chrome-stable  --user-data-dir=/home/jtprince/.config/chrome-personal
+# set $browser1 google-chrome-stable  --user-data-dir=/home/jtprince/.config/chrome-personal
+set $browser1 firefox
 set $browser2 google-chrome-stable 
 set $newwindow --new-window
 
@@ -501,7 +502,7 @@ bindsym XF86Sleep exec $noid suspend-with-screenlock
 
 
 # turn off display (called as a shortcut it immediately wakes up w/o sleep added)
-bindsym $mod+Ctrl+Shift+D exec sleep 1 && xset dpms force off
+bindsym $mod+Ctrl+Shift+D exec monitors-all-off.sh
 bindsym $mod+Ctrl+Shift+O exec fuzzy_lock
 
 
