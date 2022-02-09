@@ -343,6 +343,8 @@ let g:netrw_home=$XDG_CACHE_HOME.'/nvim'
 augroup mkd
   autocmd BufRead *.mkd *.md set ai formatoptions+=l lbr formatoptions=tcroqn2 comments=n:>
 augroup END
+autocmd FileType markdown setlocal spell
+
 " yaml
 autocmd BufRead *.yml set ts=2 sw=2 sts=2
 autocmd BufRead *.yaml set ts=2 sw=2 sts=2
