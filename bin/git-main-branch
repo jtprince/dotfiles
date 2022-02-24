@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# determine whether the main branch is master or main
+git branch | cut -c 3- | grep -E '^master$|^main$' | head -n 1

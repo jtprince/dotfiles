@@ -51,7 +51,7 @@ def get_available_pyenv_python_versions(args):
 
 available = get_available_pyenv_python_versions(args)
 
-if args.best:
+if args.best and available:
     print(available[-1])
 else:
     for version in available:

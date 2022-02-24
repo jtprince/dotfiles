@@ -171,6 +171,7 @@ Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'jupyter-vim/jupyter-vim'
 " Edit jupyter files directly (requires pip install jupytext)
 Plug 'goerz/jupytext.vim'
+let g:jupytext_enable = 1
 
 " Distraction free editing (:Goyo to toggle)
 Plug 'junegunn/goyo.vim'

@@ -71,7 +71,11 @@ if args.refresh:
         stated_venv = VERSION_FILE_PATH.read_text().strip()
         if stated_venv:
             venv_path = pathlib.Path.home() / f".pyenv/versions/{stated_venv}"
-            subprocess.run(f"pyenv-virtualenv-delete {stated_venv}", shell=True, capture_output=True)
+            subprocess.run(
+                f"pyenv-virtualenv-delete {stated_venv}",
+                shell=True,
+                capture_output=True,
+            )
             shutil.rmtree(venv_path, ignore_errors=True)
             VERSION_FILE_PATH.unlink(missing_ok=True)
 
@@ -83,11 +87,27 @@ if not args.version:
         # TODO: if --best could use best possible version compatible with
         # pyproject.toml.  For now, just use whatever
         # pyproject-get-best-pyenv-python-version returns
-        print(PYPROJECT_PYENV_CMD)
-        version = subprocess.check_output(PYPROJECT_PYENV_CMD, text=True).strip()
+        # print(PYPROJECT_PYENV_CMD)
+        version = subprocess.check_output(
+            PYPROJECT_PYENV_CMD, text=True
+        ).strip()
     else:
         if args.best or args.miniconda:
             version = get_best_pyenv_python_version(miniconda=args.miniconda)
+            if not version:
+                print("-" * 79)
+                print("ERROR: A compatible python version was not found!")
+                if args.miniconda:
+                    latest_miniconda_version = subprocess.check_output(
+                        "pyenv install --list | grep miniconda | tail -n 1",
+                        shell=True,
+                        text=True,
+                    ).strip()
+                    print("\nTo rectify, install latest miniconda:")
+                    print(f"pyenv install {latest_miniconda_version}")
+
+                print("-" * 79)
+                exit(1)
         else:
             # current version
             version = sys.version.split()[0]
@@ -103,7 +123,7 @@ else:
     VENV_NAME = "-".join([str(pathlib.Path.cwd().name), version])
 
 cmd = ["pyenv", "virtualenv", version, VENV_NAME]
-print(cmd)
+# print(cmd)
 subprocess.run(cmd, check=False)
 
 if not args.no_python_version:
