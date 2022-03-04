@@ -6,6 +6,8 @@ map <leader>ml <Esc>i[<Esc>"*pa<Esc>0i<BS><Esc>$a](<Esc>"+pa)
 " if the link has no extra lines in it
 map <leader>mp <Esc>i[<Esc>"*pa](<Esc>"+pa)
 
+map <leader>mq i`<Esc>ea`<Esc>
+
 " means that 'my-link' will be interpreted as single keyword 'my-link' instead
 " of two words
 setlocal iskeyword+=-
