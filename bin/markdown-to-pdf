@@ -1,9 +1,13 @@
 #!/usr/bin/env ruby
 
 require 'shellwords'
+
+templates_dir = "#{Dir.home}/.local/share/pandoc/templates"
+tex_header = "#{templates_dir}/head.tex"
+
 # --smart gets me proper curly quotes and apostrophes!
 # but they will not look right unless --standalone is also used
-default_options = "-f markdown+smart --standalone -V geometry:margin=1.25in --variable urlcolor=Blue --pdf-engine=xelatex"
+default_options = "-f markdown+smart --standalone -H #{tex_header}  -V geometry:margin=1.25in --variable urlcolor=NavyBlue --pdf-engine=xelatex "
 # default_options = "-f markdown+smart --standalone -V geometry:margin=1.00in --variable urlcolor=Blue --pdf-engine=xelatex"
 
 # default_options = "-f markdown+smart --standalone -V geometry:margin=0.4in -V fontsize=9pt --variable urlcolor=Blue --pdf-engine=xelatex"

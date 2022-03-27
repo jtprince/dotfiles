@@ -33,4 +33,10 @@ function! MarkdownToHTMLAndOpenInFirefox()
     silent !firefox "%:r.html" &
 endfunction
 
+function! MarkdownToPDFAndOpenInEvince()
+    silent !markdown-to-pdf %
+    silent !evince "%:r.pdf" &
+endfunction
+
 map <leader>mh <Esc>:call MarkdownToHTMLAndOpenInFirefox()<CR>
+map <leader>mp <Esc>:call MarkdownToPDFAndOpenInEvince()<CR>

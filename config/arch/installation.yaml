@@ -449,7 +449,7 @@ user-optional:
       - "winecfg"
   texlive-fonts:
     # texlive fonts (needed for pandoc pdf conversion)
-    # texlive-latexextra needed for etoolbox.sty
+    # texlive-latexextra needed for etoolbox.sty, and other md->pdf goodies
     - texlive-core
     - texlive-fontsextra
     - texlive-latexextra

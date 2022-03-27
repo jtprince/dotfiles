@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-pull_into = ARGV.shift || 'master'
+pull_into = ARGV.shift || `git-main-branch`.chomp
 
 branch = `git rev-parse --abbrev-ref HEAD`.chomp
 

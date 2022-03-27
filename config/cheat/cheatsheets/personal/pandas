@@ -1,9 +1,17 @@
 
 # show all columns
-pd.set_option('max_columns', None)
+pd.set_option('display.max_columns', None)
 
 # show all rows
-pd.set_option('max_rows', None)
+pd.set_option('display.max_rows', None)
 
 # stack data frames on top of one another
 pd.concat([df1, df2, ...], ignore_index=True)
+
+# groupby
+
+## group by 'X' column
+groups = df.groupby("X")
+
+for name, group in groups:
+    ...
