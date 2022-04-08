@@ -91,6 +91,7 @@ ENSURE_DIRS = [
 # These are softlinked in ~/.config
 SOFTLINK_INTO_CONFIG = [
     "sway",
+    "black",
     "mako",
     "alias",
     "xmodmap",

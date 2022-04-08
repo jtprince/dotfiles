@@ -33,6 +33,12 @@ function! MarkdownToHTMLAndOpenInFirefox()
     silent !firefox "%:r.html" &
 endfunction
 
+function! MarkdownToClipboard()
+    silent !cat % | xclip -selection clipboard
+    silent !cat % | xclip -selection primary
+    silent !cat % | xclip -selection secondary
+endfunction
+
 function! MarkdownToPDFAndOpenInEvince()
     silent !markdown-to-pdf %
     silent !evince "%:r.pdf" &
@@ -40,3 +46,4 @@ endfunction
 
 map <leader>mh <Esc>:call MarkdownToHTMLAndOpenInFirefox()<CR>
 map <leader>mp <Esc>:call MarkdownToPDFAndOpenInEvince()<CR>
+map <leader>mc <Esc>:call MarkdownToClipboard()<CR>

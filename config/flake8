@@ -4,6 +4,6 @@ ignore = E226,
     E41,
     E402,
     W503
-max-line-length = 80
+max-line-length = 79
 # exclude = tests/*
 # max-complexity = 10

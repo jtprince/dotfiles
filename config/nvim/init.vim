@@ -33,6 +33,9 @@ let g:NERDDefaultAlign = 'left'
 let g:NERDCommentEmptyLines = 1
 let g:NERDTrimTrailingWhitespace = 1
 
+" file explorer
+Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
+
 " testing --------------------------------------------------------------------
 Plug 'vim-test/vim-test'
 
@@ -83,6 +86,10 @@ let g:vim_markdown_new_list_item_indent = 0
 Plug 'mzlogin/vim-markdown-toc'
 " :GenTocGFM (for gitubflavored toc)
 " :GenTocRedcarpet (for redcarpet toc)
+"
+Plug 'masukomi/vim-markdown-folding'
+
+
 
 " Glow [path-to-md-file] (q to close)
 Plug 'npxbr/glow.nvim', {'do': ':GlowInstall', 'branch': 'main'}
@@ -116,7 +123,7 @@ Plug 'nvie/vim-flake8'
 " <F7> runs flake8
 
 Plug 'psf/black', { 'branch': 'stable' }
-let g:black_linelength=80
+let g:black_linelength=79
 
 Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
 let g:isort_command = 'isort'
@@ -244,6 +251,12 @@ set shada=!,'100,<50,s10,h
 
 " GENERAL CONFIG =============================================================
 
+" required by vim-markdown-folding
+set nocompatible
+if has("autocmd")
+    filetype plugin indent on
+endif
+
 set mousehide                   " hide the mouse when typing text
 set mouse=a                     " use your mouse in a terminal
 set cmdheight=1                 " make command line one line high (default)
@@ -347,7 +360,7 @@ let g:netrw_home=$XDG_CACHE_HOME.'/nvim'
 " SIMPLE LANGUAGE EXTENSIONS =================================================
 " markdown
 augroup mkd
-  autocmd BufRead *.mkd *.md set ai formatoptions+=l lbr formatoptions=tcroqn2 comments=n:>
+  autocmd BufRead *.mkd *.md set ai formatoptions+=l lbr formatoptions=tcroqn2 comments=n:> foldexpr=NestedMarkdownFolds()
 augroup END
 autocmd FileType markdown setlocal spell
 
@@ -569,6 +582,10 @@ lua <<EOF
     vim.api.nvim_set_keymap('n', '<leader>gB', '<cmd>lua require"gitlinker".get_repo_url({action_callback = require"gitlinker.actions".open_in_browser})<cr>', {silent = true})
 EOF
 
+" =======================================================================
+" File explorer
+" =======================================================================
+nnoremap <leader>fw <cmd>CHADopen<cr>
 
 " =======================================================================
 " ColorSchemeSwitcher

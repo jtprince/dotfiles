@@ -201,6 +201,10 @@ user:
       - "mkdir -p $HOME/virtualenvs"
       - "curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py > get-poetry.py"
       - "python ./get-poetry.py"
+  jupyter:
+    - jupyterlab
+    # currently failing to install, might need to pip install
+    - jupyterlab_code_formatter
   mime:
     - handlr-bin
   ruby:
