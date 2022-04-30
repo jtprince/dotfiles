@@ -19,6 +19,7 @@ BLESSED_DESCRIPTIONS = [
     "Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones",
     "TOZO-T10",
     "Pixel earbuds Analog Stereo",
+    "KT_USB_AUDIO Analog Stereo",
 ]
 
 def get_and_display_current_state(list_all=False):

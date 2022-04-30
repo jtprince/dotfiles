@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sudo systemctl stop ntpd.service
+sudo ntpd -q -g
+sudo systemctl start ntpd.service

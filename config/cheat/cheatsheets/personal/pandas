@@ -10,8 +10,26 @@ pd.concat([df1, df2, ...], ignore_index=True)
 
 # groupby
 
+Make a new, temporary index column.
+
 ## group by 'X' column
 groups = df.groupby("X")
 
 for name, group in groups:
     ...
+
+# value_counts
+df['foo'].value_counts(dropna=False)
+
+
+# Fill in missing values from other columns
+
+## with boolean selection
+
+df.loc[df["foo"].isna()==True, "foo"] = df["bar"]
+
+## with fillna
+
+df["foo"].fillna(df["Player"], inplace=True)
+
+

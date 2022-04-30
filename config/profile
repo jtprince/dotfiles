@@ -174,3 +174,6 @@ export ACKRC="$HOME/.config/ackrc"
 
 # java windows don't work well with tiling wm's and I always use one
 export _JAVA_AWT_WM_NONREPARENTING=1
+
+# for awsvpnclient
+export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1

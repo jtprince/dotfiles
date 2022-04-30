@@ -1,0 +1,75 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+from pathlib import Path
+
+DEFAULT_MS1_TYPE = "centroid"
+
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
+parser.add_argument(
+    "dot_d_dirs",
+    nargs="+",
+    type=Path,
+    help="a list of .d directories (assumes cwd is directly above them)",
+)
+parser.add_argument(
+    "--ms1_type",
+    choices=["raw", "profile", "centroid"],
+    default=DEFAULT_MS1_TYPE,
+)
+parser.add_argument(
+    "--ms1_threshold",
+    type=float,
+    default=100.0,
+)
+
+parser.add_argument(
+    "--ms2_threshold",
+    type=float,
+    default=10,
+)
+
+def get_output(cmd):
+    return subprocess.check_output(cmd.split(), text=True).strip()
+
+args = parser.parse_args()
+
+cwd = Path.cwd()
+user_id = get_output("id -u")
+group_id = get_output("id -g")
+
+base_cmd = [
+    "docker",
+    "run",
+    "--rm",
+    "-it",
+    "-v",
+    f"{cwd}:/data",
+    "--user",
+    f"{user_id}:{group_id}",
+    "mfreitas/tdf2mzml",
+    "tdf2mzml.py",
+    "--compression",
+    "zlib",
+    "--ms1_threshold",
+    str(args.ms1_threshold),
+    "--ms2_threshold",
+    str(args.ms2_threshold),
+    "--ms1_type",
+    args.ms1_type,
+    "-i",
+]
+
+for dot_d_dir in args.dot_d_dirs:
+    outpath = f"/data/{str(dot_d_dir)}"
+    cmd = base_cmd + [outpath]
+    print(" ".join(cmd))
+    subprocess.run(cmd)
+    mzml_path = dot_d_dir.with_suffix(".mzml")
+    mzml_path.chmod(0o644)
+    renamed = mzml_path.with_suffix(f".ms1{args.ms1_type}.mzML")
+    mzml_path.rename(renamed)
+    print(f"renaming {str(renamed)}")
