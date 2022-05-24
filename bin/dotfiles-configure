@@ -99,6 +99,7 @@ SOFTLINK_INTO_CONFIG = [
     "gtk-3.0",
     "zsh",
     "fontconfig",
+    "ipython",
     "texlive",
     "dunst",
     "xava",
