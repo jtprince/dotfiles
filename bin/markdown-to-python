@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+if [ "$#" -eq 0 ]
+then
+    echo "markdown-to-python <file>.md ..."
+    exit 1
+fi
+
+jupytext "$@" --to py

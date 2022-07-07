@@ -90,6 +90,8 @@ alias owlet_pylint_tests="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_tests.to
 alias owlet_test_all="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
 alias owlet_test_unit="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests/unit"
 
+alias ipythonr="ipython --profile=autoreload"
+
 # ruby
 alias bundlei="bundle install --jobs=$NUM_CPU_CORES"
 alias be="bundle exec"

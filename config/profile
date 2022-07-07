@@ -177,3 +177,7 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 
 # for awsvpnclient
 export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+
+## Change the timezone, like this, then log out and log back in
+# sudo ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+# ls -alh /etc/localtime

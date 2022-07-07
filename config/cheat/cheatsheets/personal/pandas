@@ -33,3 +33,39 @@ df.loc[df["foo"].isna()==True, "foo"] = df["bar"]
 df["foo"].fillna(df["Player"], inplace=True)
 
 
+## explode some arrays into the columns
+
+df.explode(['col2', 'col3'], ignore_index=True)
+```
+# initial
+col0      col1        col2        col3
+1       aa          [1,2,3]     [1.1,2.2,3.3]
+2       bb          [4,5,6]     [4.4,5.5,6.6]
+3       cc          [7,8,9]     [7.7,8.8,9.9]
+3       cc          [7,8,9]     [7.7,8.8,9.9]
+
+# desired
+id      col1        col2        col3
+1       aa          1           1.1
+1       aa          2           2.2
+1       aa          3           3.3
+2       bb          4           4.4
+2       bb          5           5.5
+2       bb          6           6.6
+3       cc          ...         ...
+```
+
+# aggregate into a named column
+
+df_filtered.groupby("whatever").agg(<NEW_COLUMN_NAME>=('<col_to_agg_on>', '<the_func>'))
+
+#### example
+df_filtered.groupby(["msrun_id", "msms_id"]).agg(filtered_spec_len=('mz', 'size'))
+
+# implode data into numpy arrays
+
+Imagine data where each m/z and intensity is a separate row
+
+greater_than_5_peaks.groupby(
+    ["msrun_id", "msms_id"]
+).agg({'mz': lambda x: x.to_numpy(), 'intensity': lambda x: x.to_numpy()})
