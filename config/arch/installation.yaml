@@ -35,9 +35,9 @@ root:
     - sudo
     - unzip
     - p7zip
-  # for uefi support in fwupdmgr
+    # for uefi support in fwupdmgr
     - udisks2
-    - npm
+    # - npm
   core-editors:
     - vi
     - vim
@@ -54,7 +54,7 @@ root:
   core-sway:
     - sway
     - swaylock
-    - xorg-xwayland
+    # - xorg-xwayland
   core-video:
     - mesa
   video:
@@ -123,17 +123,19 @@ user:
     - vim-plug
     - git-delta
     - sheldon-bin
+    - _post_commands:
+      - "<TODO INSERT THE CURL COMMAND!>"
   language-servers:
     # see https://wiki.archlinux.org/title/Neovim#Tips_and_tricks
     - pyright
     - rust-analyzer
     - gopls
-    - yaml-language-server-bin
+    - yaml-language-server
     # would like to do solargraph, but giving errors:
     # - ruby-solargraph
   dmenu-like:
     - bemenu
-    - bemenu-x11
+    - bemenu-wayland
     - bemenu-dmenu-wayland
   package-managers:
     - paru-bin
@@ -143,12 +145,14 @@ user:
   browsers:
     # google-chrome-stable --user-data-dir=$HOME/.config/chrome-personal
     - google-chrome
-    - vieb-bin
+    # - vieb-bin
   clipboard:
     - xclip
   more-wayland:
+    # TODO: need to swap out xclip and wl-clipboard-x11
+    # for wl-clipboard, wl-clip, using wl-clipboard-rs (probably)
     # wayland
-    # - wl-clipboard-x11
+    - wl-clipboard-x11
     - wl-clipboard
     - wdisplays
     - azote
@@ -189,7 +193,7 @@ user:
     - python-black
     - python-pynvim
     - python-poetry
-    - python-pudb
+    # - python-pudb
     # for matplotlib (tk to avoid 'No module name '_tkinter')
     - tk
     # not sure if I really need tcl and python-pmw ??
@@ -197,9 +201,9 @@ user:
     # for numpy / scipy
     - gcc-fortran
     - python-pmw
-    - _post_commands:
-      - "mkdir -p $HOME/virtualenvs"
-      - "curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py > get-poetry.py"
+    # - _post_commands:
+    #   - "mkdir -p $HOME/virtualenvs"
+    #   - "curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py > get-poetry.py"
       - "python ./get-poetry.py"
   jupyter:
     - jupyterlab
