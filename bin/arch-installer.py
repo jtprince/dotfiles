@@ -4,7 +4,7 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from ruamel.yaml import YAML
+from ruyaml import YAML
 
 YAML_PATH = Path.home() / "dotfiles/config/arch/installation.yaml"
 
@@ -53,6 +53,10 @@ if args.install_subsections:
         section, subsections_str = args.install_subsections.split(".", 1)
         subsections = subsections_str.split(",")
         section_data = doc[section]
+        section_keys = list(section_data.keys())
+        section_keys_display = "\n".join(section_keys)
         for subsection in subsections:
+            if subsection not in section_data:
+                print(f"AVAILABLE KEYS: {section_keys_display}")
             subsection_data = section_data[subsection]
             install_subsection(subsection_data)
