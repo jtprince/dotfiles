@@ -388,7 +388,7 @@ user:
     - audacity
   office:
     - slack-desktop
-    - zoom-system-qt
+    - zoom
   libre-office:
     - libreoffice
     - libmythes
@@ -402,7 +402,9 @@ user:
   cheat-sheets:
     - cheat-bin
     - _post_commands:
-      - "mkdir ~/src ; cd ~/src ; git clone git@github.com:cheat/cheatsheets.git ; cd"
+      - "mkdir ~/src && cd ~/src"
+      - "git clone git@github.com:cheat/cheatsheets.git"
+      - "cd"
   printing:
     - cups cups-pdf
     - system-config-printer
@@ -421,7 +423,8 @@ user:
     - aws-cli
     # - google-cloud-sdk
   docker:
-    - docker docker-compose
+    - docker
+    - docker-compose
     - _post_commands:
       - "sudo gpasswd -a jtprince docker"
       - "sudo systemctl enable docker.service"
@@ -488,7 +491,7 @@ user-optional:
     # then run this to know which other packages to install for the system
     # sudo tlp-stat -b
     # e.g., `acpi_call`
-    # sudo systemctl {start,enable} tlp.service
-    # sudo systemctl enable NetworkManager-dispatcher.service
+    # sudo systemctl enable --now tlp.service
+    # sudo systemctl enable --now NetworkManager-dispatcher.service
     # sudo systemctl mask systemd-rfkill.service
     # sudo systemctl mask systemd-rfkill.socket
