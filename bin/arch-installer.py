@@ -21,9 +21,19 @@ def partition(condition, iterable):
 
 
 def install_subsection(data):
-    special, packages = partition(lambda item: isinstance(item, dict), data)
+    special, packages_to_install = partition(
+        lambda item: isinstance(item, dict), data
+    )
     cmd = ["yay", "-S", "--noconfirm"]
-    subprocess.run(cmd + packages)
+    subprocess.run(cmd + packages_to_install)
+    for item in special:
+        if post_commands := item.get("_post_commands"):
+            print()
+            print("-" * 70)
+            print("Now run the following commands:")
+            print("-" * 70)
+            for command in post_commands:
+                print(command)
 
 
 parser = argparse.ArgumentParser()

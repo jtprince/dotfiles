@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec dbus-launch sway --exit-with-session

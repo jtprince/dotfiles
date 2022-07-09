@@ -374,7 +374,7 @@ autocmd BufRead *.txt set formatoptions+=l lbr
 autocmd BufRead *.log set formatoptions+=l lbr
 
 " make
-autocmd FileType make setlocal noexpandtab   " turn off et for makefiles
+autocmd FileType make setlocal noexpandtab
 autocmd Filetype html setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype ruby setlocal ts=2 sw=2 sts=2 expandtab
 autocmd Filetype javascript setlocal ts=4 sw=4 sts=4 expandtab

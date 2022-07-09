@@ -12,7 +12,7 @@ max-icon-size=64
 # in milliseconds
 default-timeout=5000
 ignore-timeout=1
-max-visible=4
+max-visible=20
 anchor=top-right
 
 [urgency=low]

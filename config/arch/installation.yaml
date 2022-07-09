@@ -37,6 +37,8 @@ root:
     - p7zip
     # for uefi support in fwupdmgr
     - udisks2
+    # for lsusb etc
+    - usbutils
     # - npm
   core-editors:
     - vi
@@ -204,7 +206,6 @@ user:
     # - _post_commands:
     #   - "mkdir -p $HOME/virtualenvs"
     #   - "curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py > get-poetry.py"
-      - "python ./get-poetry.py"
   jupyter:
     - jupyterlab
     # currently failing to install, might need to pip install
@@ -226,30 +227,36 @@ user:
       - "rbenv global <SOME_VERSION>"
       - "gem install pry clipboard solargraph"
   notifications:
-    - dunst
+    - mako
+    - python-mako
   sound:
-    - pulseaudio
-    - pulseaudio-alsa
-    - pulseaudio-ctl
+    - pipewire-pulse
+    # maybe?
+    # - pulseaudio-alsa
     # sound tray
     - pasystray-git
     - pavucontrol
     - paprefs
     - pavumeter
+    - _post_commands:
+      - "systemctl --user enable --now pipewire-pulse.service"
+      - "# check with: systemctl --user status pipewire-pulse.service"
+      - "# and: pactl info"
   bluetooth:
     - bluez
     - bluez-utils
-    - pulseaudio-bluetooth
+    # - pulseaudio-bluetooth
   monitor:
     - arandr
   files:
-    - pcmanfm
+    - thunar
     - gvfs
     - gvfs-mtp
     - udisks
     - tree
     # common file system stuff
-    - ntfs-3g trash-cli
+    - ntfs-3g
+    - trash-cli
     # extraction, search, backups
     - dtrx
     - zip
@@ -315,9 +322,9 @@ user:
     - cbatticon
   media:
     # essential media players and control (xava is for fun visualizer)
-    - youtube-music-bin
+    - spotify
     - playerctl
-    - xava
+    # - xava
   screenshots:
     # for screenshot OCR
     - python-pytesseract
@@ -406,6 +413,8 @@ user:
   android:
     - jmtpfs
     # mkdir ~/mnt
+    # Once you have connected the phone by USB, then
+    # select 'Use USB for' -> 'File transfer / Android Auto'
     # to mount phone once you've plugged it into usb:
     # jmtpfs ~/mnt
   cloud-cli:
@@ -427,8 +436,6 @@ user:
     - words
     # torrents
     - deluge-gtk
-    # timezone update utility
-    - tzupdate
 user-post:
   informant:
     # informant (ensure arch news is read)
