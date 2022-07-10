@@ -69,12 +69,19 @@ def main():
         print(required_min_version)
         sys.exit(0)
 
-    best_version = next(
-        version
-        for version in reversed(available)
-        if version.startswith(required_min_version)
-    )
-    print(best_version)
+    # TODO: fix this mess.  Bad alphabetization. Bad selection when min
+    # version is lower patch version.
+    try:
+        best_version = next(
+            version
+            for version in reversed(available)
+            if version.startswith(required_min_version)
+        )
+    except StopIteration:
+        print(f"Looking for min version like: {required_min_version}", file=sys.stderr)
+        print(f"But only available versions: {available}", file=sys.stderr)
+        print(f"Hint: install a version similar to min version")
+        exit(1)
 
 
 if __name__ == "__main__":
