@@ -184,7 +184,7 @@ parser.add_argument(
     "-d",
     "--display-server",
     choices=["x11", "wayland"],
-    default="x11",
+    default="wayland",
     help="display server for which to configure",
 )
 
