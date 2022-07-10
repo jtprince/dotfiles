@@ -128,26 +128,20 @@ bindsym XF86KbdBrightnessUp exec $noid kbd-backlight up
 #     pacmd set-default-sink 3
 # Get the indexes being used:
 #     pacmd list-sinks | egrep '(index|used by)'
-set $volup exec $noid /usr/bin/pulseaudio-ctl up
-set $voldown exec $noid /usr/bin/pulseaudio-ctl down
-set $mute exec $noid /usr/bin/pulseaudio-ctl mute
-set $mutefor exec $noid mute-for
-
-bindsym $mod+0 $volup 2
-bindsym $mod+9 $voldown 2
-bindsym $mod+Shift+0 $volup 5
-bindsym $mod+Shift+9 $voldown 5
-bindsym $mod+Ctrl+Shift+0 $volup 20
-bindsym $mod+Ctrl+Shift+9 $voldown 20
-bindsym $mod+minus $mute
-bindsym $mod+Shift minus $mutefor 25
-
+bindsym $mod+0 exec volumectl +2%
+bindsym $mod+9 exec volumectl -2%
+bindsym $mod+Shift+0 exec volumectl +5%
+bindsym $mod+Shift+9 exec volumectl -5%
+bindsym $mod+Ctrl+Shift+0 exec volumectl +20%
+bindsym $mod+Ctrl+Shift+9 exec volumectl -20%
+bindsym $mod+minus exec volumectl toggle-mute
 
 bindsym XF86AudioRaiseVolume exec volumectl -u up
 bindsym XF86AudioLowerVolume exec volumectl -u down
 bindsym XF86AudioMute exec volumectl toggle-mute
 bindsym XF86AudioMicMute exec volumectl -m toggle-mute
 
+# display the volume changes
 exec "avizo-service"
 
 # bindsym $locked XF86AudioRaiseVolume $volup 2

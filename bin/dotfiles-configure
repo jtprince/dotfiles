@@ -125,6 +125,7 @@ SOFTLINK_INTO_CONFIG = [
     "mimeapps.list",
     "Xresources.d",
     "goofys",
+    "avizo",
 ]
 
 # Softlink into home dotfile as "$HOME/.{name}"
