@@ -24,8 +24,8 @@ CALENDAR = "https://calendar.google.com"
 cmds = [
     PERSONAL_BROWSER + [GMAIL],
     WORK_BROWSER + [GMAIL],
-    PERSONAL_BROWSER + [CALENDAR],
     WORK_BROWSER + [CALENDAR],
+    PERSONAL_BROWSER + [CALENDAR],
 ]
 if os.environ.get("XDG_SESSION_DESKTOP") != 'sway':
     cmds = cmds + [cmds.pop(), cmds.pop()]

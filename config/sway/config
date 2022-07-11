@@ -484,7 +484,7 @@ bindsym $mod+Shift+C kill
 # --sf Selected foreground.
 # --scb Scrollbar background.
 # --scf Scrollbar foreground.
-bindsym $mod+Shift+P exec bemenu-run --prompt '🪄 ' --list 30 --tb="#458588CC" --tf='#EBDBB2' --fb='#282828CC' --ff="#EBDBB2" --nb='#282828CC' --nf='#EBDBB2' --hb='#458588CC' --hf='#EBDBB2' --sb='#282828CC' --sf='#50FA7B' --prefix '⫸' --ignorecase --scrollbar autohide --no-overlap --ifne --wrap
+bindsym $mod+Shift+P exec bemenu-run --prompt '🪄 ' --list 30 --tb="#458588CC" --tf='#EBDBB2' --fb='#282828CC' --ff="#EBDBB2" --nb='#282828CC' --nf='#EBDBB2' --hb='#458588CC' --hf='#EBDBB2' --sb='#282828CC' --sf='#50FA7B' --prefix '⫸' --ignorecase --scrollbar autohide --no-overlap --ifne --wrap --fn 'monospace 32'
 
 # restart sway/i3 inplace (preserves layout/session, for upgrading i3)
 # bindsym $mod+Shift+R restart

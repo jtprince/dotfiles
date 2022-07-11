@@ -387,7 +387,7 @@ user:
     - mp3splt
     - audacity
   office:
-    - slack-desktop
+    - slack-wayland
     - zoom
   libre-office:
     - libreoffice
