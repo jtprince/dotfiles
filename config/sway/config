@@ -156,7 +156,7 @@ exec "avizo-service"
 # bindsym $locked Shift+XF86AudioMute exec $noid pactl-speakers toggle
 # bindsym $locked Shift+XF86AudioPlay exec music-player
 
-# bindsym $mod+backslash exec pavucontrol --tab 5
+bindsym $mod+backslash exec pavucontrol --tab 5
 
 #########################
 # Music player

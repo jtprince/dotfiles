@@ -9,14 +9,14 @@ from time import sleep
 DELAY = 0.5
 
 home = Path.home()
-BROWSER = "google-chrome-stable"
+CHROME = "google-chrome-stable"
+FIREFOX = "firefox"
 DATA_DIR_KEY = "--user-data-dir"
 
 NEW_WINDOW = "--new-window"
-PERSONAL_DATA_DIR = home / ".config" / "chrome-personal"
 
-PERSONAL_BROWSER = [BROWSER, f"{DATA_DIR_KEY}={str(PERSONAL_DATA_DIR)}", NEW_WINDOW]
-WORK_BROWSER = [BROWSER, NEW_WINDOW]
+PERSONAL_BROWSER = [FIREFOX, NEW_WINDOW]
+WORK_BROWSER = [CHROME, NEW_WINDOW]
 
 GMAIL = "https://gmail.com"
 CALENDAR = "https://calendar.google.com"
@@ -24,11 +24,9 @@ CALENDAR = "https://calendar.google.com"
 cmds = [
     PERSONAL_BROWSER + [GMAIL],
     WORK_BROWSER + [GMAIL],
-    WORK_BROWSER + [CALENDAR],
     PERSONAL_BROWSER + [CALENDAR],
+    WORK_BROWSER + [CALENDAR],
 ]
-if os.environ.get("XDG_SESSION_DESKTOP") != 'sway':
-    cmds = cmds + [cmds.pop(), cmds.pop()]
 
 for cmd in cmds:
     print(cmd)
