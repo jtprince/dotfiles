@@ -470,8 +470,8 @@ call wilder#set_option('renderer', wilder#popupmenu_renderer({'winblend': 17, 'h
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
   -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ensure_installed = "maintained",
-  -- ignore_install = { "javascript" }, -- List of parsers to ignore installing
+  -- ensure_installed = "maintained",
+  ensure_installed = "all",
   highlight = {
     enable = true,              -- false will disable the whole extension
     -- disable = { "c", "rust" },  -- list of language that will be disabled

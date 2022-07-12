@@ -144,17 +144,8 @@ bindsym XF86AudioMicMute exec volumectl -m toggle-mute
 # display the volume changes
 exec "avizo-service"
 
-# bindsym $locked XF86AudioRaiseVolume $volup 2
-# bindsym $locked XF86AudioLowerVolume $voldown 2
-# bindsym Shift+XF86AudioRaiseVolume $volup 5
-# bindsym Shift+XF86AudioLowerVolume $voldown 5
-# bindsym $mod+Ctrl+Shift+XF86AudioRaiseVolume $volup 20
-# bindsym $mod+Ctrl+Shift+XF86AudioLowerVolume $voldown 20
-
-# bindsym $locked XF86AudioMute $mute
-
 # bindsym $locked Shift+XF86AudioMute exec $noid pactl-speakers toggle
-# bindsym $locked Shift+XF86AudioPlay exec music-player
+bindsym $locked Shift+XF86AudioPlay exec music-player
 
 bindsym $mod+backslash exec pavucontrol --tab 5
 

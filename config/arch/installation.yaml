@@ -39,7 +39,8 @@ root:
     - udisks2
     # for lsusb etc
     - usbutils
-    # - npm
+    # npm for some treesitter languages
+    - npm
   core-editors:
     - vi
     - vim
@@ -185,8 +186,6 @@ user:
   keychain:
     - keychain
     - docker-credential-secretservice-bin
-  compositing:
-    - picom
   python:
     - pyenv
     - pyenv-virtualenv
@@ -319,10 +318,9 @@ user:
       - "ls -alh  /etc/fonts/conf.d/10-hinting-slight.conf"
   laptop:
     - acpi
-    - cbatticon
   media:
     # essential media players and control (xava is for fun visualizer)
-    - spotify
+    - psst-git-bin
     - playerctl
     # - xava
   screenshots:
@@ -349,6 +347,8 @@ user:
       # sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
   configure-neovim:
     # nvim -> :PlugInstall
+    # (need to add the list of languages):
+    # :TSInstall markdown markdown_line ...
   install-python-versions:
     # pyenv install --list
     # # update these to latest patch version for each minor

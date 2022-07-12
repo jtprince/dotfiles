@@ -55,7 +55,6 @@ def alter_remote_origin(name):
 if not args.email:
     args.email = args.name + EMAIL_EXTENSION
 
-breakpoint()
 alter_remote_origin(args.name)
 
 

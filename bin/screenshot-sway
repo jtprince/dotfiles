@@ -10,16 +10,11 @@ If you are using a different python env:
 """
 
 import time
-import shlex
-import os
 import re
 import datetime
 import subprocess
 import argparse
 from pathlib import Path
-from subprocess import Popen, PIPE
-
-from itertools import islice, tee
 
 
 class Screenshot:
@@ -113,6 +108,7 @@ class Screenshot:
         print(self.args)
         self.noext_path = self.create_path_noext()
         self.image_path = self.noext_path.with_suffix(".png")
+        self.image_path.parent.mkdir(parents=True, exist_ok=True)
         self.annotated_path = self.noext_path.with_suffix(
             ".annotated" + self.image_path.suffix
         )

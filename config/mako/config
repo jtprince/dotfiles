@@ -1,9 +1,8 @@
-
 sort=-time
 layer=overlay
 background-color=#2e3440CC
 width=300
-height=110
+height=210
 border-size=4
 border-color=#88c0d0
 border-radius=4
@@ -12,7 +11,7 @@ max-icon-size=64
 # in milliseconds
 default-timeout=5000
 ignore-timeout=1
-max-visible=20
+max-visible=30
 anchor=top-right
 
 [urgency=low]
