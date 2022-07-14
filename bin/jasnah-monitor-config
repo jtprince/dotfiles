@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from typing import List
 import argparse
 import subprocess
 import re
@@ -8,7 +9,13 @@ import json
 monitor_keys = ["make", "model", "serial"]
 
 
-def get_monitor_make_model_serial():
+def get_monitor_make_model_serial() -> List[str]:
+    """Returns a list of make model serial strings.
+
+    For example:
+
+        ['Dell Inc. DELL S2721QS CB64M43', 'Unknown 0x1401 0x00000000']
+    """
     monitors = json.loads(
         subprocess.check_output(["swaymsg", "-t", "get_outputs"], text=True)
     )
@@ -16,12 +23,12 @@ def get_monitor_make_model_serial():
     for monitor in monitors:
         monitor_labels.append(" ".join([monitor[key] for key in monitor_keys]))
 
+    breakpoint()
     return monitor_labels
 
 
 # LAPTOP = "Chimei Innolux Corporation 0x1409 0x00000000"
 LAPTOP = "Unknown 0x1401 0x00000000"
-
 DELL_UHD = "Dell Inc. DELL U2722D 122BS83"
 DELL_4K = "Dell Inc. DELL S2721QS CB64M43"
 
@@ -46,7 +53,6 @@ desk = next(
 MONITORS = dict(
     laptop=LAPTOP,
     desk=desk,
-    # treadmill=TREADMILL,
 )
 
 config = dict(

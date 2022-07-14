@@ -389,7 +389,7 @@ autocmd Filetype tex setlocal foldmethod=syntax
 
 " This is not working right now :/, need to debug more
 function PrePythonCleanup()
-    execute 'Isort'
+    " execute 'Isort'
     execute 'Black'
     sleep 50m
 endfunction
