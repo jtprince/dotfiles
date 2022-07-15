@@ -122,21 +122,25 @@ alias mdkir="mkdir"
 alias eixt="exit"
 
 # edit arch installation file
-alias archup="gvim $HOME/dotfiles/config/arch/installation.yaml"
+CONFIG_DIR="$HOME/dotfiles/config"
+
+alias archup="gvim $CONFIG_DIR/arch/installation.yaml"
 alias archenvdir="pushd $HOME/Dropbox/env/os/arch"
 
 # edit zshrc
-alias zshup="gvim $HOME/dotfiles/config/zsh/.zshrc"
-alias zshdir="pushd $HOME/dotfiles/config/zsh/"
+alias zshup="gvim $CONFIG_DIR/zsh/.zshrc"
+alias zshdir="pushd $CONFIG_DIR/zsh/"
 
 # edit init.vim installation file
-alias nvimup="gvim $HOME/dotfiles/config/nvim/init.vim"
+alias nvimup="gvim $CONFIG_DIR/nvim/init.vim"
 alias vimup="nvimup"
-alias nvimdir="pushd $HOME/dotfiles/config/nvim/"
+alias nvimdir="pushd $CONFIG_DIR/nvim/"
 alias vimdir="nvimdir"
 
-alias swayup="gvim $HOME/dotfiles/config/sway/config"
-alias swaydir="pushd $HOME/dotfiles/config/sway/"
+alias ncspotup="gvim $CONFIG_DIR/ncspot/config.toml"
+
+alias swayup="gvim $CONFIG_DIR/sway/config"
+alias swaydir="pushd $CONFIG_DIR/sway/"
 
 # latex
 alias latexmk="latexmk -pdf -xelatex"

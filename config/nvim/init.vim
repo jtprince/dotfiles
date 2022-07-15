@@ -90,9 +90,8 @@ Plug 'mzlogin/vim-markdown-toc'
 Plug 'masukomi/vim-markdown-folding'
 
 
-
 " Glow [path-to-md-file] (q to close)
-Plug 'npxbr/glow.nvim', {'do': ':GlowInstall', 'branch': 'main'}
+" Plug 'npxbr/glow.nvim', {'do': ':GlowInstall', 'branch': 'main'}
 
 " lsp and autocomplete ------------------------------------------------------
 " Required for LSP support for coq:
@@ -176,7 +175,7 @@ Plug 'christoomey/vim-titlecase'
 " crs coerce to snake_case; crc coerce to camelCase
 Plug 'tpope/vim-abolish'
 
-Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
 
 " For communication with qtconsole
 Plug 'jupyter-vim/jupyter-vim'
@@ -455,14 +454,14 @@ nnoremap <leader>mg <cmd>Glow<cr>
 " =======================================================================
 "
 " Until wilder is installed with PlugInstall, cmdline suggestions will be broken
-call wilder#enable_cmdline_enter()
-set wildcharm=<Tab>
-cmap <expr> <Tab> wilder#in_context() ? wilder#next() : "\<Tab>"
-cmap <expr> <S-Tab> wilder#in_context() ? wilder#previous() : "\<S-Tab>"
+" call wilder#enable_cmdline_enter()
+" set wildcharm=<Tab>
+" cmap <expr> <Tab> wilder#in_context() ? wilder#next() : "\<Tab>"
+" cmap <expr> <S-Tab> wilder#in_context() ? wilder#previous() : "\<S-Tab>"
 
 " only / and ? are enabled by default
-call wilder#set_option('modes', ['/', '?', ':'])
-call wilder#set_option('renderer', wilder#popupmenu_renderer({'winblend': 17, 'highlighter': wilder#basic_highlighter()}))
+" call wilder#set_option('modes', ['/', '?', ':'])
+" call wilder#set_option('renderer', wilder#popupmenu_renderer({'winblend': 17, 'highlighter': wilder#basic_highlighter()}))
 
 " =======================================================================
 " Treesitter config
