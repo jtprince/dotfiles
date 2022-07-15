@@ -146,9 +146,10 @@ user:
     - i3-gaps-rounded-git
     - i3lock
   browsers:
-    # google-chrome-stable --user-data-dir=$HOME/.config/chrome-personal
-    - google-chrome
-    # - vieb-bin
+    # With these profiles (also in sway bindings and launch email):
+    # -P personal
+    # -P work
+    - firefox
   clipboard:
     - xclip
   more-wayland:
@@ -373,9 +374,12 @@ user:
       # zooming is restricted by page cache size, increase to get zoom into large docs
       - "gsettings set org.gnome.Evince page-cache-size 2014"
   media-software:
+    # ncurses spotify player with cover art enabled
+    - ncspot-cover
     - archey3
     - feh
-    - mplayer
+    # mplayer that works with wayland
+    - mpv
     - inkscape
     - gimp
     - eog
@@ -430,7 +434,6 @@ user:
       - "sudo systemctl enable docker.service"
   secondary-browser:
     - midori
-    - firefox
   github:
     #  gh
     - github-cli
