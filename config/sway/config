@@ -31,6 +31,8 @@ exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --foc
 exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec --no-startup-id exec mako
 exec --no-startup-id systemctl --user import-environment
+# shouldn't have to, but it seems to be needed for not:
+exec --no-startup-id systemctl --user status pipewire-pulse.service
 
 #########################
 # APPEARANCE
@@ -387,15 +389,16 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow up 10 px or 10 ppt
 # Preferred applications
 #########################
 
-set $browser1 firefox
-set $browser2 google-chrome-stable --enable-features=UseOzonePlatform --ozone-platform=wayland
+set $browser1 firefox -P personal
+# set $browser2 google-chrome-stable --enable-features=UseOzonePlatform --ozone-platform=wayland
+set $browser2 firefox -P work
 set $newwindow --new-window
 
 bindsym $mod+x exec terminal-emulator
 
 bindsym $mod+i exec $browser1
 bindsym $mod+Shift+I exec $browser2
-bindsym $mod+Ctrl+Shift+I exec firefox -P personal
+bindsym $mod+Ctrl+Shift+I exec firefox -P fresh
 
 bindsym XF86Mail exec $browser1 $newwindow https://mail.google.com
 bindsym $mod+e exec $browser1 $newwindow http://mail.google.com

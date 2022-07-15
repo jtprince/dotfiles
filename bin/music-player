@@ -1,3 +1,4 @@
 #!/bin/bash
 
-spotify &
+# alacritty -e $HOME/bin/sleep-and-start-nvim "$@" &
+alacritty -e ncspot "$@" &

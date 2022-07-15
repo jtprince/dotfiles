@@ -126,6 +126,7 @@ SOFTLINK_INTO_CONFIG = [
     "Xresources.d",
     "goofys",
     "avizo",
+    "ncspot",
 ]
 
 # Softlink into home dotfile as "$HOME/.{name}"

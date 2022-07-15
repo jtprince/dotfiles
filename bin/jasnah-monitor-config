@@ -23,7 +23,6 @@ def get_monitor_make_model_serial() -> List[str]:
     for monitor in monitors:
         monitor_labels.append(" ".join([monitor[key] for key in monitor_keys]))
 
-    breakpoint()
     return monitor_labels
 
 

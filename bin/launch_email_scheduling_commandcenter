@@ -9,14 +9,13 @@ from time import sleep
 DELAY = 0.5
 
 home = Path.home()
-CHROME = "google-chrome-stable"
-FIREFOX = "firefox"
-DATA_DIR_KEY = "--user-data-dir"
+PERSONAL_BROWSER_CMD = ["firefox", "-P", "personal"]
+WORK_BROWSER_CMD = ["firefox", "-P", "work"]
 
 NEW_WINDOW = "--new-window"
 
-PERSONAL_BROWSER = [FIREFOX, NEW_WINDOW]
-WORK_BROWSER = [CHROME, NEW_WINDOW]
+PERSONAL_BROWSER = [*PERSONAL_BROWSER_CMD, NEW_WINDOW]
+WORK_BROWSER = [*WORK_BROWSER_CMD, NEW_WINDOW]
 
 GMAIL = "https://gmail.com"
 CALENDAR = "https://calendar.google.com"
