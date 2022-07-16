@@ -1,6 +1,19 @@
-# See installation-initial.md for initial steps
-
-core-packages:
+########################################
+# pacstrap /mnt base linux linux-firmware base-devel python python-ruamel-yaml
+# genfstab -U /mnt >> /mnt/etc/fstab
+# arch-chroot /mnt
+########################################
+root:
+  # packages must all be installable with pacman
+  setup:
+    - _commands:
+      - "ln -sf /usr/share/zoneinfo/America/Denver /etc/localtime"
+      - "hwclock --systohc"
+      - "sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen"
+      - "locale-gen"
+      - "echo -n 'LANG=en_US.UTF-8' > /etc/locale.conf"
+      - "sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf"
+      # script should also do hostname insertions at end of setup
   documentation:
     - man-db
     - man-pages
@@ -20,7 +33,6 @@ core-packages:
     - zsh
     - git
     - sudo
-    - sheldon
     - unzip
     - p7zip
     # for uefi support in fwupdmgr
@@ -28,7 +40,6 @@ core-packages:
     # for lsusb etc
     - usbutils
     # npm for some treesitter languages
-    - keychain
     - npm
   core-editors:
     - vi
@@ -39,33 +50,62 @@ core-packages:
   core-terminals:
     - xterm
     - alacritty
+  core-sway:
+    - sway
+    - swaylock
   core-video:
-    # necessary since doing sway?
     - mesa
-  core-browser:
-    - firefox
-
-post-reboot:
-  yay:
+  video:
+    intel:
+      # WIP
+      - xf86-video-intel
+      - intel-media-driver
+      - vulkan-intel
+    nvidia:
+      # WIP
+      - xf86-video-nouveau
+      - _post_commands:
+        - systemctl enable nvidia-persistenced
+    amd:
+      # 2D xorg acceleration
+      - xf86-video-amdgpu
+      # vulkan
+      - amdvlk
+      # vidoe acceleration
+      - libva-mesa-driver
+      - mesa-vdpau
+  sudo:
     - _commands:
-      - "git clone https://aur.archlinux.org/yay.git"
-      - "cd yay && makepkg -si && cd $HOME"
+      # those in wheel group can sudo with password
+      - "echo '%wheel ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo"
+  alacritty-bash:
+    - _commands:
+      - "sed -i 's/Eterm/Eterm|alacritty/' /etc/bash.bashrc"
   reflector:
     - reflector
     - rsync
     - _post_commands:
       - "reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist"
-
-# change shell to /bin/zsh
-# chsh
-# exit and re-login
-#
-#################################
-# sway
-# [windows]-Enter for terminal
-#################################
-
-user:
+  add-users:
+    - _commands:
+      # Change the gid of the users to 1221
+      # That's a universal gid I use so that I can copy stuff as my own user to ext4
+      # backup disks and I don't have to mess with gid's at that point since all
+      # consistent.
+      - "groupmod -g 1221 users"
+      - "useradd -m -g users -G wheel -s /bin/zsh jtprince"
+      - "passwd jtprince"
+      - "id jtprince"
+  # lightdm:
+  # - lightdm
+  # - lightdm-gtk-greeter
+  # - accountsservice
+  # then login to i3, start browser, sign-in your user, and get this file!
+  yay:
+    - _commands:
+      - "git clone https://aur.archlinux.org/yay.git"
+      - "cd yay && makepkg -si && cd $HOME"
+user-init:
   dropbox:
     - dropbox
     - dropbox-cli
@@ -75,10 +115,12 @@ user:
       - sleep 300
       - "chmod +x ~/Dropbox/env/passwds_logins/INSTALL.sh"
       - "~/Dropbox/env/passwds_logins/INSTALL.sh"
+user:
   nvim-related:
-    # - xclip
+    - xclip
     - vim-plug
     - git-delta
+    - sheldon-bin
     - _post_commands:
       - "<TODO INSERT THE CURL COMMAND!>"
   language-servers:
@@ -98,10 +140,11 @@ user:
   i3:
     - i3-gaps-rounded-git
     - i3lock
-  firefox-config:
+  browsers:
     # With these profiles (also in sway bindings and launch email):
     # -P personal
     # -P work
+    - firefox
     # about:config
     # mousewheel.default.delta_multiplier_y 66
     # privacy.webrtc.legacyGlobalIndicator false
@@ -140,6 +183,7 @@ user:
     - _post_commands:
       - "sudo systemctl enable awsvpnclient"
   keychain:
+    - keychain
     - docker-credential-secretservice-bin
   python:
     - pyenv
@@ -452,4 +496,3 @@ user-optional:
     # sudo systemctl enable --now NetworkManager-dispatcher.service
     # sudo systemctl mask systemd-rfkill.service
     # sudo systemctl mask systemd-rfkill.socket
-
