@@ -40,25 +40,26 @@ core-packages:
     - xterm
     - alacritty
   core-video:
-    # necessary since doing sway?
+    # is this necessary anymore since isntalling sway?
     - mesa
   core-browser:
     - firefox
 
 user:
+  bemenu:
+    - bemenu
+    - bemenu-wayland
+    - bemenu-dmenu-wayland
   dropbox:
     - dropbox
     - dropbox-cli
     - _post_commands:
-      # roughly
       - dropbox
-      - sleep 300
-      - "chmod +x ~/Dropbox/env/passwds_logins/INSTALL.sh"
-      - "~/Dropbox/env/passwds_logins/INSTALL.sh"
+      - "[and follow instructions in browser]"
+      - "[dropbox-cli status to see where things are at]"
+      - "[be patient after inital linkage]"
   nvim-related:
     - git-delta
-    - _post_commands:
-      - "<TODO INSERT THE CURL COMMAND!>"
   language-servers:
     # see https://wiki.archlinux.org/title/Neovim#Tips_and_tricks
     - pyright
@@ -67,15 +68,8 @@ user:
     - yaml-language-server
     # would like to do solargraph, but giving errors:
     # - ruby-solargraph
-  dmenu-like:
-    - bemenu
-    - bemenu-wayland
-    - bemenu-dmenu-wayland
   package-managers:
     - paru-bin
-  i3:
-    - i3-gaps-rounded-git
-    - i3lock
   firefox-config:
     # With these profiles (also in sway bindings and launch email):
     # -P personal
@@ -83,8 +77,6 @@ user:
     # about:config
     # mousewheel.default.delta_multiplier_y 66
     # privacy.webrtc.legacyGlobalIndicator false
-  clipboard:
-    - xclip
   more-wayland:
     # TODO: need to swap out xclip and wl-clipboard-x11
     # for wl-clipboard, wl-clip, using wl-clipboard-rs (probably)
