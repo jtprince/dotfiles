@@ -74,6 +74,16 @@ iwctl station wlan0 connect PrinceNest
  cd yay && makepkg -si && cd $HOME
  ```
 
+### Early yay dependencies
+
+`ruyaml` is needed for `arch-installer.py` and better to install early before
+`PIP_REQUIRE_VIRTUALENV` is activated. neovim-plug is useful for initial
+neovim `PlugInstall`.
+
+```bash
+yay -S python-ruyaml neovim-plug
+```
+
 ### Reflector
 
 ```bash
@@ -113,3 +123,14 @@ ln -s dotfiles/bin
 ```
 
 Then logout and log back in.
+
+## neovim
+
+Will need to give treesitter time to download all the language syntaxes.
+
+```
+nvim
+:PlugInstall
+:COQdeps
+:CHADdeps
+```

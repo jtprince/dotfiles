@@ -45,26 +45,6 @@ core-packages:
   core-browser:
     - firefox
 
-post-reboot:
-  yay:
-    - _commands:
-      - "git clone https://aur.archlinux.org/yay.git"
-      - "cd yay && makepkg -si && cd $HOME"
-  reflector:
-    - reflector
-    - rsync
-    - _post_commands:
-      - "reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist"
-
-# change shell to /bin/zsh
-# chsh
-# exit and re-login
-#
-#################################
-# sway
-# [windows]-Enter for terminal
-#################################
-
 user:
   dropbox:
     - dropbox
@@ -76,8 +56,6 @@ user:
       - "chmod +x ~/Dropbox/env/passwds_logins/INSTALL.sh"
       - "~/Dropbox/env/passwds_logins/INSTALL.sh"
   nvim-related:
-    # - xclip
-    - vim-plug
     - git-delta
     - _post_commands:
       - "<TODO INSERT THE CURL COMMAND!>"
