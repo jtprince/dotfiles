@@ -3,10 +3,14 @@
 import argparse
 import subprocess
 from pathlib import Path
+import os
 
 from ruyaml import YAML
 
 YAML_PATH = Path.home() / "dotfiles/config/arch/installation.yaml"
+
+# Sometimes a python package needs to be installed
+os.environ['PIP_REQUIRE_VIRTUALENV'] = 'false'
 
 
 def partition(condition, iterable):

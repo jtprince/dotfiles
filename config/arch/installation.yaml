@@ -77,10 +77,7 @@ user:
     # about:config
     # mousewheel.default.delta_multiplier_y 66
     # privacy.webrtc.legacyGlobalIndicator false
-  more-wayland:
-    # TODO: need to swap out xclip and wl-clipboard-x11
-    # for wl-clipboard, wl-clip, using wl-clipboard-rs (probably)
-    # wayland
+  wayland-more:
     - wl-clipboard-x11
     - wl-clipboard
     - wdisplays
@@ -91,87 +88,21 @@ user:
     - python-i3ipc
     # screen recording
     - wf-recorder
-  pipewire:
-    - pipewire
+  pipewire-screenshare:
     - xdg-desktop-portal
     - xdg-desktop-portal-wlr
   ntp:
+    # archinstall says it does ntp, but it's not installed
     - ntp
     - _post_commands:
-      - "sudo systemctl enable ntpd.service"
-  network-manager:
-    - networkmanager
-    - network-manager-applet
-    - _post_commands:
-      - "sudo systemctl enable NetworkManager"
+      - "sudo systemctl enable --now ntpd.service"
   aws:
     # /opt/awsvpnclient/AWS\ VPN\ Client
     - awsvpnclient
     - _post_commands:
       - "sudo systemctl enable awsvpnclient"
-  keychain:
+  keychain-more:
     - docker-credential-secretservice-bin
-  python:
-    - pyenv
-    - pyenv-virtualenv
-    - python-pip
-    - ipython
-    - python-black
-    - python-pynvim
-    - python-poetry
-    # - python-pudb
-    # for matplotlib (tk to avoid 'No module name '_tkinter')
-    - tk
-    # not sure if I really need tcl and python-pmw ??
-    - tcl
-    # for numpy / scipy
-    - gcc-fortran
-    - python-pmw
-    # - _post_commands:
-    #   - "mkdir -p $HOME/virtualenvs"
-    #   - "curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py > get-poetry.py"
-  jupyter:
-    - jupyterlab
-    # currently failing to install, might need to pip install
-    - jupyterlab_code_formatter
-  mime:
-    - handlr-bin
-  ruby:
-    # probably already installed
-    - openssl
-    # pry likes readline
-    - readline
-    - zlib
-    - ruby
-    - rbenv
-    - ruby-build
-    - _post_commands:
-      - "rbenv install --list"
-      - "CONFIGURE_OPTS=\"--with-readline-dir=/usr/include/readline\" rbenv install <SOME_VERSION>"
-      - "rbenv global <SOME_VERSION>"
-      - "gem install pry clipboard solargraph"
-  notifications:
-    - mako
-    - python-mako
-  sound:
-    - pipewire-pulse
-    # maybe?
-    # - pulseaudio-alsa
-    # sound tray
-    - pasystray-git
-    - pavucontrol
-    - paprefs
-    - pavumeter
-    - _post_commands:
-      - "systemctl --user enable --now pipewire-pulse.service"
-      - "# check with: systemctl --user status pipewire-pulse.service"
-      - "# and: pactl info"
-  bluetooth:
-    - bluez
-    - bluez-utils
-    # - pulseaudio-bluetooth
-  monitor:
-    - arandr
   files:
     - thunar
     - gvfs
@@ -200,12 +131,80 @@ user:
     - transmission-cli
     - w3m
     - libcaca
+  python:
+    - pyenv
+    - pyenv-virtualenv
+    - python-pip
+    - ipython
+    - python-black
+    - python-pynvim
+    - python-poetry
+    # - python-pudb
+    # for matplotlib (tk to avoid 'No module name '_tkinter')
+    - tk
+    # not sure if I really need tcl and python-pmw ??
+    - tcl
+    # for numpy / scipy
+    - gcc-fortran
+    - python-pmw
+    - python-markdown
+    - python-pygithub
+    - _post_commands:
+      - "mkdir ~/.pyenv"
+      - "[THEN LOGIN OUT AND BACK IN!]"
+  install-python-versions:
+    - _post_commands:
+      - "pyenv install --list"
+      - "[UPDATE YOUR VERSIONS!!!]"
+      - 'CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"'
+      - "pyenv install 3.7.13"
+      - "pyenv install 3.8.13"
+      - "pyenv install 3.9.13"
+      - "pyenv install 3.10.5"
+  jupyter:
+    - jupyterlab
+    - jupytext
+    # currently failing to install, might need to pip install
+    - jupyterlab_code_formatter
+  mime:
+    - handlr-bin
+  ruby:
+    # probably already installed
+    - openssl
+    # pry likes readline
+    - readline
+    - zlib
+    - ruby
+    - rbenv
+    - ruby-build
+    - _post_commands:
+      - "rbenv install --list"
+      - "CONFIGURE_OPTS=\"--with-readline-dir=/usr/include/readline\""
+      - "rbenv install <SOME_VERSION>"
+      - "rbenv global <SOME_VERSION>"
+      - "gem install pry clipboard solargraph"
+  notifications:
+    - mako
+    - python-mako
+  sound:
+    - pipewire-pulse
+    # maybe?
+    # - pulseaudio-alsa
+    # sound tray
+    - pasystray-git
+    - pavucontrol
+    - paprefs
+    - pavumeter
+    - _post_commands:
+      - "systemctl --user enable --now pipewire-pulse.service"
+      - "# check with: systemctl --user status pipewire-pulse.service"
+      - "# and: pactl info"
+  bluetooth:
+    - bluez
+    - bluez-utils
+    # - pulseaudio-bluetooth
   theme:
-    - xcursor-vanilla-dmz
     - gnome-themes-standard
-  backup-x-environment:
-    # install lxde as a backup X desktop environment
-    - sudo pacman -S lxde
   font:
     # core fonts
     - ttf-dejavu
@@ -243,45 +242,16 @@ user:
       - "ls -alh  /etc/fonts/conf.d/10-hinting-slight.conf"
   laptop:
     - acpi
-  media:
-    # essential media players and control (xava is for fun visualizer)
-    - psst-git-bin
-    - playerctl
-    # - xava
   screenshots:
     # for screenshot OCR
     - python-pytesseract
     - tesseract-data-eng
-  dotfiles:
-    - _commands:
-      - "cd $HOME"
-      - "git clone git@github.com:jtprince/dotfiles.git"
-      - "ln -s ~/dotfiles/bin"
-      - "./bin/dotfiles-configure --dry"
-      - "./bin/dotfiles-configure"
-  check-gpu-xorg-rendering:
-    - mesa-demos
-    - _post_commands:
-      # Should report "direct rendering: Yes"
-      - "glxinfo | grep rendering"
   configure-backlight:
     - _commands:
       # See your options for backlight:
       - "ls /sys/class/backlight"
       # the commenting escaping is hard to get right here, so leaving as # comment:
       # sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
-  configure-neovim:
-    # nvim -> :PlugInstall
-    # (need to add the list of languages):
-    # :TSInstall markdown markdown_line ...
-  install-python-versions:
-    # pyenv install --list
-    # # update these to latest patch version for each minor
-    # CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"
-    # pyenv install 3.7.11; pyenv install 3.8.11; pyenv install 3.9.6
-    # pyenv global 3.9.6
-    # pip install neovim jupytext
-    # pip install PyMarkdown PyGithub
   sad:
     - sad
   pkgfile-and-mlocate:
@@ -297,8 +267,10 @@ user:
     - _post_commands:
       # zooming is restricted by page cache size, increase to get zoom into large docs
       - "gsettings set org.gnome.Evince page-cache-size 2014"
-  media-software:
-    # ncurses spotify player with cover art enabled
+  media:
+    - ncspot-cover
+    - playerctl
+    # - xava
     - ncspot-cover
     - archey3
     - feh
@@ -315,8 +287,8 @@ user:
     - mp3splt
     - audacity
   office:
-    - slack-wayland
-    - zoom
+    # - slack-wayland
+    # - zoom
   libre-office:
     - libreoffice
     - libmythes
@@ -334,7 +306,8 @@ user:
       - "git clone git@github.com:cheat/cheatsheets.git"
       - "cd"
   printing:
-    - cups cups-pdf
+    - cups
+    - cups-pdf
     - system-config-printer
     # - hplip
     # sudo systemctl enable cups.service
@@ -419,7 +392,8 @@ user-optional:
     # sudo tlp-stat -b
     # e.g., `acpi_call`
     # sudo systemctl enable --now tlp.service
-    # sudo systemctl enable --now NetworkManager-dispatcher.service
+    # ### The below were problematic ---->> [maybe don't do the below??]
+    # ### sudo systemctl enable --now NetworkManager-dispatcher.service
     # sudo systemctl mask systemd-rfkill.service
     # sudo systemctl mask systemd-rfkill.socket
 

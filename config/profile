@@ -108,8 +108,8 @@ export XDG_SCREENSHOTS_DIR="$HOME/screenshots"
 
 # would like to do something like this, but this doesn't work!:
 # if [ command -v virtualenvwrapper.sh >/dev/null 2>&1 ]; then
-export WORKON_HOME=$HOME/virtualenvs
-export PROJECT_HOME=$HOME/dev
+# export WORKON_HOME=$HOME/virtualenvs
+# export PROJECT_HOME=$HOME/dev
 
 if [ -d ~/.rbenv ]; then
     export PATH="$HOME/.rbenv/bin:$PATH"
