@@ -37,10 +37,25 @@ if the_next_week > now.dehumanize("in 4 days"):
 filename = the_next_week.date().isoformat() + args.suffix
 new_checkin = last_checkin.parent / filename
 
+monday = the_next_week.shift(days=3)
+
+template = f"""
+*Standup {monday.date().isoformat()}*
+
+*Last week:*
+
+* <stuff>
+
+*Priorities:*
+
+* <stuff>
+
+"""
+
 old_checkin_text = last_checkin.read_text()
 
 preamble = f"""----------------------------------------------
 LAST WEEK'S CHECKIN ({old_datetime.date().isoformat()}) BELOW
 ----------------------------------------------"""
 
-new_checkin.write_text("\n\n" + preamble + "\n\n" + old_checkin_text)
+new_checkin.write_text(template + "\n\n" + preamble + "\n\n" + old_checkin_text)

@@ -142,6 +142,8 @@ alias ncspotup="gvim $CONFIG_DIR/ncspot/config.toml"
 alias swayup="gvim $CONFIG_DIR/sway/config"
 alias swaydir="pushd $CONFIG_DIR/sway/"
 
+alias passup="gvim $HOME/Dropbox/env/passwds_logins/login_info.txt"
+
 # latex
 alias latexmk="latexmk -pdf -xelatex"
 
@@ -193,7 +195,7 @@ alias kubeon="export ZSH_KUBECTL_DISPLAY=true"
 alias kubeoff="export ZSH_KUBECTL_DISPLAY=false"
 
 ## proxy to datascience instance
-alias socksproxy="ssh-proxy chaz 8080"
+alias socksproxy="ssh-proxy alex-ec2-medium 8080"
 
 alias condaenvs="conda info --env"
 
