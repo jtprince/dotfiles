@@ -230,6 +230,13 @@ def create_chrome_flag_links(display_server: str):
                 link=HOME_CONFIG / f"{app}-flags.conf",
             )
         )
+    # also make specific electron17 flags, just in case:
+    links.append(
+        Symlink(
+            REPO_CONFIG / "chrome" / f"electron-flags.conf-{display_server}",
+            link=HOME_CONFIG / f"electron17-flags.conf",
+        )
+    )
     return links
 
 

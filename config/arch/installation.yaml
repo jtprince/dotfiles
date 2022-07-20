@@ -288,6 +288,7 @@ user:
     - pandoc-bin
     - mp3splt
     - audacity
+    - swappy
   office:
     # - slack-wayland
     # - zoom
