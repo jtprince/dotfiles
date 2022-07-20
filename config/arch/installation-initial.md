@@ -45,11 +45,12 @@ Then reboot (`shutdown now`, remove drive, reboot)
 
 ## Post-reboot
 
-### Change to zsh
+### Change to zsh and add to users group
 
 ```bash
 chsh
 # -> /usr/zsh
+sudo gpasswd -a jtprince users
 ```
 
 Then logout and log back in.
