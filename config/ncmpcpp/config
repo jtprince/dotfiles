@@ -38,7 +38,7 @@ mpd_music_dir = "~/Music"
 #
 visualizer_in_stereo = "no"
 #
-visualizer_fifo_path = "/tmp/mpd.fifo"
+visualizer_data_source = "/tmp/mpd.fifo"
 #
 ##
 ## Note: Below parameter is needed for ncmpcpp
@@ -442,9 +442,9 @@ display_bitrate = "yes"
 ## ncmpcpp's browser screen.
 ##
 #
-allow_physical_files_deletion = "no"
+# allow_physical_files_deletion = "no"
 #
-allow_physical_directories_deletion = "no"
+# allow_physical_directories_deletion = "no"
 #
 external_editor = "vim"
 #

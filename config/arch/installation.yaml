@@ -207,7 +207,8 @@ user:
     - gnome-themes-standard
   font:
     # core fonts
-    - ttf-dejavu
+    # patched dejavu to include tons of nerd icons
+    - nerd-fonts-dejavu-complete
     - ttf-roboto
     - ttf-ubuntu-font-family
     # standard fonts

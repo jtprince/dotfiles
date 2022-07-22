@@ -1,4 +1,9 @@
 
+font:
+  normal:
+    family: DejaVuSansMono Nerd Font Mono
+    # family: FiraCode Nerd Font Mono
+    # family: Liberation Mono
 
 draw_bold_text_with_bright_colors: true
 

@@ -127,6 +127,7 @@ SOFTLINK_INTO_CONFIG = [
     "goofys",
     "avizo",
     "ncspot",
+    "ncmpcpp",
 ]
 
 # Softlink into home dotfile as "$HOME/.{name}"
