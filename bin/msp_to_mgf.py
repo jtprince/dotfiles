@@ -3,24 +3,15 @@
 import re
 import argparse
 from pathlib import Path
-from collections import defaultdict
-
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "msp_paths", type=Path, nargs="+", help="one or more .msp files"
-)
-args = parser.parse_args()
+from typing import List, Tuple, Optional
 
 
-def _passthrough(val):
-    return val
+def _convert_charge(val: str) -> str:
+    """Convert the charge to MGF valid charge.
 
-
-def __passthrough():
-    return _passthrough
-
-
-def _convert_charge(val):
+    -1 -> -1 (no change)
+    1 -> +1
+    """
     try:
         int_val = int(val)
         # negative value will take care of itself
@@ -30,33 +21,31 @@ def _convert_charge(val):
         return val
 
 
-CONVERT_HEADER_KEY = defaultdict(
-    __passthrough,
-    {
-        "PRECURSORMZ": "PRECURSOR",
-        "PRECURSOR_CHARGE": "CHARGE",
-    },
-)
+MSP_KEYVAL_DELIMITER_RE = re.compile(r":\s?")
 
-# Given in terms of the MSP key, not the MGF key
-CONVERT_HEADER_VALUE = defaultdict(
-    __passthrough,
-    {
-        "PRECURSOR_CHARGE": _convert_charge,
-    },
-)
+# MSP -> MGF
+# If not specified, will just uses the existing msp header.
+CONVERT_HEADER_KEY = {
+    "PRECURSORMZ": "PRECURSOR",
+    "PRECURSOR_CHARGE": "CHARGE",
+}
 
-KEYVAL_DELIMITER = re.compile(r":\s?")
+# Key is the **MSP** header NOT the MGF header.
+# If no conversion function is given, will passe the value through as is.
+CONVERT_HEADER_VALUE = {
+    "PRECURSOR_CHARGE": _convert_charge,
+}
 
 
-def convert_msp_spectrum_to_mgf_lines(lines):
+def convert_msp_to_mgf_block(lines: List[str]) -> List[str]:
+    """Converts msp lines for ONE spectrum into new set of mgf lines."""
     peak_index = None
     header_data = {}
     for index, line in enumerate(lines):
         if line.startswith("NUM PEAKS:"):
             peak_index = index + 1
             break
-        key, value = re.split(KEYVAL_DELIMITER, line, maxsplit=1)
+        key, value = re.split(MSP_KEYVAL_DELIMITER_RE, line, maxsplit=1)
         header_data[key] = value
 
     peak_lines = lines[peak_index:]
@@ -66,14 +55,10 @@ def convert_msp_spectrum_to_mgf_lines(lines):
     return header_lines + ["BEGIN IONS"] + peak_lines + ["END IONS"]
 
 
-def convert_key_val(key, val):
-    callable_or_string = CONVERT_HEADER_KEY[key]
-    if isinstance(callable_or_string, str):
-        new_key = callable_or_string
-    else:
-        new_key = callable_or_string(key)
-
-    new_val = CONVERT_HEADER_VALUE[key](val)
+def convert_key_val(key: str, val: str) -> Tuple[str, str]:
+    new_key = CONVERT_HEADER_KEY.get(key, key)
+    callable = CONVERT_HEADER_VALUE.get(key, None)
+    new_val = callable(val) if callable else val
     return (new_key, new_val)
 
 
@@ -85,22 +70,43 @@ def convert_msp_header_to_mgf_header(header_data):
     return mgf_header
 
 
-for path in args.msp_paths:
-    mgf_path = path.with_suffix(".mgf")
+def print_lines(lines, **kwargs):
+    print("\n".join(lines), **kwargs)
+
+
+def convert_msp_path(msp_path, mgf_path: Optional[Path] = None):
+    """Converts an entire msp file into an mgf file.
+
+    Only processes a single spectrum at a time to ensure that very little
+    memory is consumed.
+    """
+    if mgf_path is None:
+        mgf_path = msp_path.with_suffix(".mgf")
+
     with mgf_path.open("w") as outfile:
-        with path.open() as infile:
+        with msp_path.open() as infile:
             spectrum_lines = []
             for line in infile:
                 stripped = line.rstrip()
                 if stripped:
                     spectrum_lines.append(stripped)
                 else:
-                    mgf_lines = convert_msp_spectrum_to_mgf_lines(
-                        spectrum_lines
-                    )
-                    print("\n".join(mgf_lines), file=outfile)
-                    print("", file=outfile)
+                    mgf_lines = convert_msp_to_mgf_block(spectrum_lines)
+                    print_lines(mgf_lines, file=outfile, end="\n\n")
                     spectrum_lines = []
 
-        mgf_lines = convert_msp_spectrum_to_mgf_lines(spectrum_lines)
-        print("\n".join(mgf_lines), file=outfile)
+        # And print the last one since not triggered by extra newline
+        mgf_lines = convert_msp_to_mgf_block(spectrum_lines)
+        print_lines(mgf_lines, file=outfile)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="convert msp into mgf with little memory use"
+    )
+    parser.add_argument(
+        "msp_paths", type=Path, nargs="+", help="one or more .msp files"
+    )
+    args = parser.parse_args()
+    for path in args.msp_paths:
+        convert_msp_path(path)
