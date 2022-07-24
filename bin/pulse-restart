@@ -1,0 +1,8 @@
+#!/bin/bash
+
+systemctl --user restart pipewire-pulse.service
+
+sleep 1.0
+
+pactl_info=`pactl info`
+notify-send -t 10 -u low "$pactl_info"
