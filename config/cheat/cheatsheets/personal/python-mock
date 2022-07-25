@@ -1,5 +1,5 @@
 
-# to mock a chained attribute, add simply add the name of the attribute
+# to mock a chained attribute, simply add the name of the attribute
 # to mock a *call*, use `return_value` (in all its variety) or side_effect.
 
     obj.color.shade()
@@ -38,9 +38,9 @@ Then, the call made to that method will also include `self` and that's awkward :
 Instead of splitting out the call_args or mocking self or something like that,
 just mock the class and the process of creating the object, like this:
 
-    mock_cls = mocker.patch("my.path.SomeClass"
+    mock_cls = mocker.patch("my.path.SomeClass")
     method_mock = mock_cls.return_value.some_method
-    method_mock.side_effect = KeyError("some msg"))
+    method_mock.side_effect = KeyError("some msg")
 
 [Note to self: Is this the optimal way of circumventing the self issue??]
 
