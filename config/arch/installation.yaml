@@ -282,6 +282,7 @@ user:
     - inkscape
     - gimp
     - eog
+    - imv
     - geeqie
     - gthumb
     - nomacs

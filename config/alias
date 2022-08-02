@@ -166,10 +166,10 @@ alias mpv="mpv --gpu-context=wayland"
 
 # applications
 GOOGLE_CHROME="google-chrome-stable"
-VIEB="vieb"
-alias viebwork="$VIEB"
+# VIEB="vieb"
+# alias viebwork="$VIEB"
 alias chromepersonal="$GOOGLE_CHROME --user-data-dir=$HOME/.config/chrome-personal"
-alias viebpersonal="$VIEB --user-data-dir=$HOME/.config/vieb-personal"
+# alias viebpersonal="$VIEB --user-data-dir=$HOME/.config/vieb-personal"
 alias chromefaenrandir="$GOOGLE_CHROME --user-data-dir=$HOME/.config/chrome-faenrandir"
 alias chromefaenrandir="$GOOGLE_CHROME --user-data-dir=$HOME/.config/chrome-faenrandir"
 alias chromemelissa="$GOOGLE_CHROME --user-data-dir=$HOME/.config/chrome-melissa"
