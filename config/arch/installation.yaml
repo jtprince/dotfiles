@@ -88,6 +88,7 @@ user:
     - python-i3ipc
     # screen recording
     - wf-recorder
+    - waybar
   pipewire-screenshare:
     - xdg-desktop-portal
     - xdg-desktop-portal-wlr
@@ -225,7 +226,7 @@ user:
     - ttf-font-icons
     # font for fim (see FBFONT in profile)
     - terminus-font
-    # font with great icon support
+    # font with great icon support (essential for waybar)
     - otf-font-awesome
     # misc
     - otf-ipafont

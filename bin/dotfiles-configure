@@ -108,7 +108,6 @@ SOFTLINK_INTO_CONFIG = [
     "blockify",
     "mypy",
     "ranger",
-    "picom",
     "alacritty",
     "kitty",
     "isort.cfg",
@@ -117,7 +116,6 @@ SOFTLINK_INTO_CONFIG = [
     "ackrc",
     "pylintrc",
     "pulse",
-    "i3",
     "npmrc",
     "pulseaudio-ctl",
     "nvim",
@@ -128,6 +126,8 @@ SOFTLINK_INTO_CONFIG = [
     "avizo",
     "ncspot",
     "ncmpcpp",
+    "slack-term",
+    "waybar",
 ]
 
 # Softlink into home dotfile as "$HOME/.{name}"
@@ -145,10 +145,6 @@ SOFTLINK_INTO_HOME = [
 # full path on the left to full path on the right
 RESOLUTION_INDEPENDENT_LINKS = [
     Symlink(CLOUD_ENV / "gpg/dot-gnupg", link=HOME / ".gnupg"),
-    Symlink(
-        CLOUD_ENV / "cloud-and-apis/slack-term",
-        link=HOME_CONFIG / "slack-term",
-    ),
     Symlink(
         REPO_CONFIG / "mimeapps.list",
         link=DOT_LOCAL / "share/applications/mimeapps.list",

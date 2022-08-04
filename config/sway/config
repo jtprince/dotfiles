@@ -519,34 +519,34 @@ bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
 # bindsym $mod+minus scratchpad show
 
 
-
-
 #######################
 # BAR
 #######################
 
-bar {
-  mode dock
-  position bottom
-  font pango:Droid Sans Mono $globalfontsize, Icons $globalfontsize
-  status_command status.rb
+bar swaybar_command waybar
 
-  # Seems like we want tray on any monitor, so comment out
-  # tray_output primary
-
-  colors {
-    background $ddblue
-    statusline $white
-    separator  $ddblue
-
-    # class            border     bground    text
-    focused_workspace  $subgreen  $subgreen  $white
-    active_workspace   $ddblue    $dblue     $white
-    inactive_workspace $ddblue    $ddblue    $lgray
-    urgent_workspace   $red       $red       $white
-    binding_mode       $red       $red       $white
-  }
-}
+# bar {
+#   mode dock
+#   position bottom
+#   font pango:Droid Sans Mono $globalfontsize, Icons $globalfontsize
+#   status_command status.rb
+#
+#   # Seems like we want tray on any monitor, so comment out
+#   # tray_output primary
+#
+#   colors {
+#     background $ddblue
+#     statusline $white
+#     separator  $ddblue
+#
+#     # class            border     bground    text
+#     focused_workspace  $subgreen  $subgreen  $white
+#     active_workspace   $ddblue    $dblue     $white
+#     inactive_workspace $ddblue    $ddblue    $lgray
+#     urgent_workspace   $red       $red       $white
+#     binding_mode       $red       $red       $white
+#   }
+# }
 
 include /etc/sway/config.d/*
 

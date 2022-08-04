@@ -142,6 +142,8 @@ alias ncspotup="gvim $CONFIG_DIR/ncspot/config.toml"
 alias swayup="gvim $CONFIG_DIR/sway/config"
 alias swaydir="pushd $CONFIG_DIR/sway/"
 
+alias waybarup="gvim $CONFIG_DIR/waybar/config"
+
 alias passup="gvim $HOME/Dropbox/env/passwds_logins/login_info.txt"
 
 # latex
