@@ -89,6 +89,13 @@ user:
     # screen recording
     - wf-recorder
     - waybar
+    # for waybar-media (MPRIS compatible)
+    - python-pydbus
+    # for waybar-media (MPRIS compatible)
+    - python-psutil
+    - _post_commands:
+      - "wget https://raw.githubusercontent.com/yurihs/waybar-media/master/waybar-media.py --directory-prefix ~/.local/bin"
+      - "chmod +x ~/.local/bin/waybar-media.py"
   pipewire-screenshare:
     - xdg-desktop-portal
     - xdg-desktop-portal-wlr

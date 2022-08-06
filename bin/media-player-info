@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 =begin
-Returns the current spotify info as yaml
+Returns the current media info as yaml
 ---
 mpris:trackid: spotify:track:3GqoSwOYAHt83rx4FYP7e2
 mpris:length: 107000000
