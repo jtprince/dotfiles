@@ -29,6 +29,7 @@ default_keybindings = false
 # Play / pause
 ##################
 "p" = "playpause"
+" " = "playpause"
 "Enter" = "play"
 "s" = "stop"
 
@@ -51,7 +52,7 @@ default_keybindings = false
 # Queue
 ##################
 # Add to queue
-" " = "queue"
+"x" = "queue"
 "Ctrl+s" = "save queue"
 # Move selected song up/down in the queue
 "J" = "shift down 1"
