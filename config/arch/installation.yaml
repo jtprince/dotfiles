@@ -157,6 +157,7 @@ user:
     - python-pmw
     - python-markdown
     - python-pygithub
+    - python-ruyaml
     - _post_commands:
       - "mkdir ~/.pyenv"
       - "[THEN LOGIN OUT AND BACK IN!]"

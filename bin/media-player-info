@@ -1,7 +1,6 @@
-#!/usr/bin/env ruby
-
-=begin
-Returns the current media info as yaml
+#!/usr/bin/env python
+"""
+Returns media info as yaml
 ---
 mpris:trackid: spotify:track:3GqoSwOYAHt83rx4FYP7e2
 mpris:length: 107000000
@@ -14,70 +13,53 @@ xesam:discNumber: 1
 xesam:title: Intro
 xesam:trackNumber: 1
 xesam:url: https://open.spotify.com/track/3GqoSwOYAHt83rx4FYP7e2
-=end
+"""
 
-require 'yaml'
+import argparse
+import subprocess
+import sys
+from ruyaml import YAML
 
-def get_track_info
-  response = `dbus-send --print-reply --session --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'`
-  $? == 256 ? nil : response
-end
 
-def extract_string_value(line)
-  unless line.nil?
-    line[/ "(.*)"/, 1]
-  end
-end
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "player", help="the player to get info from (hint: `playerctl -l`)"
+)
+args = parser.parse_args()
 
-def load_variant(lines)
-  if lines[0] =~ /array \[/
-    extract_string_value(lines[1])
-  else
-    _, type, value = lines[0].split(/\s+/, 3)
-    if type =~ /int/
-      value.to_i
-    elsif type == 'double'
-      value.to_f
-    else
-      value[/\"(.*)\"/, 1]
-    end
-  end
-end
+cmd = [
+    "playerctl",
+    "-p",
+    args.player,
+    "metadata"
+]
 
-def split_into_dicts(lines)
-  dicts = []
-  in_dict = false
-  lines.each do |line|
-    line.strip!
-    if line == ")"
-      in_dict = false
-      next
-    end
 
-    if line =~ /dict entry\(/
-      in_dict = true
-      dicts << []
-      next
-    end
+def isfloat(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
 
-    if in_dict
-      dicts.last.push(line)
-    end
-  end
 
-  dicts.map do |lines|
-    key = extract_string_value(lines[0])
-    value = load_variant(lines[1..-1])
-    [key, value]
-  end.to_h
-end
+def cast(value):
+    if value.isdigit():
+        return int(value)
+    if isfloat(value):
+        return float(value)
+    else:
+        return value.strip("'")
 
-track_info = get_track_info
-info =
-  if track_info
-    split_into_dicts(track_info.split("\n"))
-  else
-    {}
-  end
 
-puts info.to_yaml
+output = subprocess.check_output(cmd, text=True)
+
+def key_val(line):
+    player, key, value = line.split(maxsplit=2)
+    casted_value = cast(value)
+    return key, casted_value
+
+data = dict(key_val(line) for line in output.split("\n") if line)
+
+yaml=YAML()
+yaml.dump(data, sys.stdout)
