@@ -181,8 +181,18 @@ Plug 'tpope/vim-abolish'
 Plug 'jupyter-vim/jupyter-vim'
 " Edit jupyter files directly (requires pip install jupytext)
 Plug 'goerz/jupytext.vim'
-let g:jupytext_enable = 1
-let g:jupytext_print_debug_msgs = 1
+" sus:
+if exists("g:jupytext_enable")
+    let g:jupytext_enable = 1
+endif
+" sus:
+if exists("g:jupytext_print_debug_msgs")
+    let g:jupytext_print_debug_msgs = 1
+endif
+" sus:
+let g:jupyter_highlight_cells = 1
+" sus:
+let g:jupyter_cell_separators = "\n"
 
 " Distraction free editing (:Goyo to toggle)
 Plug 'junegunn/goyo.vim'

@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+from urllib.parse import unquote
+import sys
+import subprocess
+import argparse
+
+# EXAMPLE
+# <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fjtprince549%2Fposts%2Fpfbid02hScQUfLTBS7dekNLmS5uXo2T4imMA9o3NVHfH1SakmhZsK1D5FBzBoTAEuWdrDbSl&show_text=true&width=500" width="500" height="493" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+# https%3A%2F%2Fwww.facebook.com%2Fjtprince549%2Fposts%2Fpfbid02hScQUfLTBS7dekNLmS5uXo2T4imMA9o3NVHfH1SakmhZsK1D5FBzBoTAEuWdrDbSl
+# https://www.facebook.com/jtprince549/posts/pfbid02hScQUfLTBS7dekNLmS5uXo2T4imMA9o3NVHfH1SakmhZsK1D5FBzBoTAEuWdrDbSl
+
+parser = argparse.ArgumentParser()
+parser.add_argument("embed_link", help="the embed link from a facebook post")
+args = parser.parse_args()
+
+encoded_url = args.embed_link.split("href=")[1].split("&")[0]
+unquoted_url = unquote(encoded_url)
+print(unquoted_url)
+
+subprocess.run(f"echo \"{unquoted_url}\" | clip", shell=True)
+
+
+
