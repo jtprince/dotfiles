@@ -158,6 +158,9 @@ user:
     - python-markdown
     - python-pygithub
     - python-ruyaml
+    - python-pre-commit
+    - python-nox
+    - cruft
     - _post_commands:
       - "mkdir ~/.pyenv"
       - "[THEN LOGIN OUT AND BACK IN!]"
