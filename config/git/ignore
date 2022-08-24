@@ -16,3 +16,4 @@ __pycache__
 .google-creds
 .google-*creds*
 .python-version
+pyrightconfig.json

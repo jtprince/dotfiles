@@ -1,5 +1,9 @@
 # Some programs do not understand the XDG spec and put things in config when
-# they should go in .cache.  Ignore their junk.
+# they should go in .cache.  Ignore the junk.
+
+.tags
+.vim
+.python-version
 
 /config/moc/cache
 /config/moc/pid
@@ -12,17 +16,11 @@
 /config/pulse/*-default-sink
 /config/pulse/*-default-source
 
-.tags
-.vim
-.python-version
 /config/git/gitk
 
-config/gtkrc-2.0-local
-
-
-/pyrightconfig.json
+/config/gtkrc-2.0-local
 
 /config/ipython/profile_default/history.sqlite
+/config/ipython/profile_autoreload/history.sqlite
 
 /config/ncspot/userstate.cbor
-

@@ -147,6 +147,7 @@ user:
     - python-black
     - python-pynvim
     - python-poetry
+    - python-nox-poetry
     # - python-pudb
     # for matplotlib (tk to avoid 'No module name '_tkinter')
     - tk
