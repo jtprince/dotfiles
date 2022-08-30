@@ -122,7 +122,6 @@ Plug 'nvie/vim-flake8'
 " <F7> runs flake8
 
 Plug 'psf/black', { 'branch': 'stable' }
-let g:black_linelength=79
 
 Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
 let g:isort_command = 'isort'
