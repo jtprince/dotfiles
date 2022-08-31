@@ -30,11 +30,13 @@ def get_monitor_make_model_serial() -> List[str]:
 LAPTOP = "Unknown 0x1401 0x00000000"
 DELL_UHD = "Dell Inc. DELL U2722D 122BS83"
 DELL_4K = "Dell Inc. DELL S2721QS CB64M43"
+HP_TREADMILL = "Unknown HP VH240a 6CM83029MD"
 
 # For reference, my work and home monitors are:
 MONITOR_SCALE = {
     LAPTOP: 1.6,
     DELL_UHD: 1,
+    HP_TREADMILL: 1,
     DELL_4K: 1.6,
 }
 
@@ -43,7 +45,7 @@ desk = next(
     (
         monitor_id
         for monitor_id in monitor_ids
-        if monitor_id.startswith("Dell Inc.")
+        if monitor_id != LAPTOP
     ),
     None,
 )
