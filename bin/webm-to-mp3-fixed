@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+
+from pathlib import Path
+import argparse
+
+DEFAULT_BITRATE = 320
+
+parser = argparse.ArgumentParser()
+parser.add_argument("paths", nargs="+", type=Path, help="path to the file")
+parser.add_argument(
+    "-b",
+    "--bit-rate",
+    default=DEFAULT_BITRATE,
+    help=f"bitrate in k bits (default {DEFAULT_BITRATE})",
+)
+args = parser.parse_args()
+
+
+for path in args.paths:
+    outpath = path.with_suffix(".mp3")
+    cmd = [
+        "ffmpeg",
+        "-i",
+        str(path),
+        "-ab",
+        f"{args.bit_rate}k",
+        "-map_metadata",
+        "0",
+        "-id3v2_version",
+        "3",
+        str(outpath),
+    ]
+    print(" ".join(cmd))

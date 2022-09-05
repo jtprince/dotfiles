@@ -292,6 +292,8 @@ user:
     - feh
     # mplayer that works with wayland
     - mpv
+    # dbus interface to control with playerctl
+    - mpv-mpris
     - inkscape
     - gimp
     - eog

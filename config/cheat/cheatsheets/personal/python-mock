@@ -35,14 +35,19 @@ If you patch a method directly, like this:
 
 Then, the call made to that method will also include `self` and that's awkward :/
 
-Instead of splitting out the call_args or mocking self or something like that,
-just mock the class and the process of creating the object, like this:
+If you only need to mock a subset of methods, then
+
+    mocker.patch.object(instance, "method_to_patch", return_value="some val")
+
+If you can mock out the entire object, then do this:
 
     mock_cls = mocker.patch("my.path.SomeClass")
+    # set a method return value:
+    mock_instance = mock_cls.return_value
+    mock_instance.some_method.return_value = 'foo'
+    # or raise an error:
     method_mock = mock_cls.return_value.some_method
     method_mock.side_effect = KeyError("some msg")
-
-[Note to self: Is this the optimal way of circumventing the self issue??]
 
 # The 3 levels of mocking
 
