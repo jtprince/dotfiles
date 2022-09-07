@@ -26,14 +26,14 @@ set $noid --no-startup-id
 ######################################
 
 # https://www.reddit.com/r/archlinux/comments/w41eu4/firefox_thunar_bitwarden_slow_on_startup/ih08pkq/
-exec --no-startup-id dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
+# exec --no-startup-id dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
 exec $noid autostart
-
-exec --no-startup-id sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty
-exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
-exec --no-startup-id exec mako
-exec --no-startup-id systemctl --user import-environment
+exec $noid sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty
+exec $noid dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+exec $noid mako
+exec $noid systemctl --user import-environment
+exec $noid gnome-keyring-daemon --start --components=secrets
 # shouldn't have to, but it seems to be needed for not:
 # exec --no-startup-id systemctl --user status pipewire-pulse.service
 
