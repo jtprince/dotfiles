@@ -45,20 +45,21 @@ desk = next(
     (
         monitor_id
         for monitor_id in monitor_ids
-        if monitor_id != LAPTOP
+        if monitor_id not in (LAPTOP, HP_TREADMILL)
     ),
     None,
 )
 
-
 MONITORS = dict(
     laptop=LAPTOP,
     desk=desk,
+    treadmill=HP_TREADMILL,
 )
 
 config = dict(
     laptop="enable scale {scale} pos 0 0",
     desk="enable scale {scale} pos 0 0",
+    treadmill="enable scale {scale} pos 0 0",
     disable="disable",
 )
 
@@ -67,8 +68,8 @@ parser.add_argument(
     "monitor",
     nargs="?",
     default="laptop",
-    # choices=["laptop", "desk", "treadmill"],
-    choices=["laptop", "desk"],
+    choices=["laptop", "desk", "treadmill"],
+    # choices=["laptop", "desk"],
 )
 parser.add_argument("--force-integer", action="store_true", help="ensure scaled by integer value")
 parser.add_argument("--dry", action="store_true", help="dry run")
@@ -95,8 +96,6 @@ def create_single_monitor_commands(value, force_integer: bool = False):
         MONITORS[value], config[value].format(scale=scale)
     )
     all_cmds = disable_cmds + [enable_cmd]
-    for cmd in all_cmds:
-        print(cmd)
     return all_cmds
 
 
@@ -104,6 +103,6 @@ all_cmds = create_single_monitor_commands(args.monitor, args.force_integer)
 
 for cmd in all_cmds:
     if args.dry:
-        print(cmd)
+        print(" ".join(cmd))
     else:
         subprocess.run(cmd)

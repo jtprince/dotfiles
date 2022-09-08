@@ -64,8 +64,34 @@ df_filtered.groupby(["msrun_id", "msms_id"]).agg(filtered_spec_len=('mz', 'size'
 
 # implode data into numpy arrays
 
-Imagine data where each m/z and intensity is a separate row
+def _to_list(vals):
+    # Would be ideal to use `to_numpy()` here, but this fails
+    # with "Must produce aggregated value" error.
+    # https://github.com/pandas-dev/pandas/issues/24016
+    return vals.to_list()
 
-greater_than_5_peaks.groupby(
-    ["msrun_id", "msms_id"]
-).agg({'mz': lambda x: x.to_numpy(), 'intensity': lambda x: x.to_numpy()})
+def aggregate_spectra(
+    df,
+    mz_column="mz",
+    new_mz_column="mzs",
+    mz_dtype=np.float32,
+    intensity_column="intensity",
+    new_intensity_column="intensities",
+    intensity_dtype=np.int32,
+    groupby=("msrun_id", "msms_id"),
+):
+    """Returns a new dataframe with numpy arrays for mzs and intensities."""
+    one_per_row = df.groupby(list(groupby)).agg(
+        **{
+            new_mz_column: (mz_column, _to_list),
+            new_intensity_column: (intensity_column, _to_list),
+        }
+    )
+    one_per_row[new_mz_column] = one_per_row[new_mz_column].apply(
+        np.array, dtype=mz_dtype
+    )
+    one_per_row[new_intensity_column] = one_per_row[new_intensity_column].apply(
+        np.array, dtype=intensity_dtype
+    )
+    return one_per_row
+
