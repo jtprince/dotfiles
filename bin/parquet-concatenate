@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import pandas as pd
+
+parser = argparse.ArgumentParser(
+    description="concatenates parquet files with pd.concat"
+)
+parser.add_argument("parquet_files", type=Path, nargs="+")
+parser.add_argument(
+    "--ignore_index",
+    action="store_true",
+    help=str(
+        "If True, do not use the index values along the concatenation axis. "
+        "The resulting axis will be labeled 0, …, n - 1.",
+    ),
+)
+parser.add_argument(
+    "--out", required=True, type=Path, help="path of the output parquet"
+)
+args = parser.parse_args()
+
+final = pd.concat(
+    [pd.read_parquet(path) for path in args.parquet_files],
+    ignore_index=args.ignore_index,
+)
+final.to_parquet(args.out)
