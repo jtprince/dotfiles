@@ -9,9 +9,10 @@ nmcli d wifi connect <SSID> password <your password>
 nmcli connection show
 
 # Connect to a wireless access point - Parameters:
-# 	<wiface> -- the name of your wireless interface
+# 	<wiface> -- [optional] the name of your wireless interface (wlan0 ?)
 #	<ssid> -- the SSID of the access point
 #	<pass> -- the WiFi password
+nmcli d wifi connect <ssid> password <pass>
 nmcli d wifi connect <ssid> password <pass> iface <wiface>
 
 # signal strength
