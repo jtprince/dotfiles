@@ -122,9 +122,8 @@ Plug 'nvie/vim-flake8'
 " <F7> runs flake8
 
 Plug 'psf/black', { 'branch': 'stable' }
-
-Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
-let g:isort_command = 'isort'
+" :Isort
+Plug 'brentyi/isort.vim'
 
 "" python mode is the only reliable way to get at rope functionality
 "Plug 'python-mode/python-mode', { 'branch': 'develop' }
@@ -397,7 +396,8 @@ autocmd Filetype tex setlocal foldmethod=syntax
 
 " This is not working right now :/, need to debug more
 function PrePythonCleanup()
-    " execute 'Isort'
+    " call isort and disable async so no weirdness
+    call isort#Isort(0, line('$'), v:null, v:false)
     execute 'Black'
     sleep 50m
 endfunction
