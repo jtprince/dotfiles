@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument("parquet_files", nargs="+", type=Path, help="parquet files")
+args = parser.parse_args()
+
+
+import pandas as pd
+
+
+for path in args.parquet_files:
+    df = pd.read_parquet(path)
+    df.to_csv(path.with_suffix(".csv"))
