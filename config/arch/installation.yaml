@@ -254,6 +254,10 @@ user:
       # ensure that hinting-slight is already linked (should already be set)
       # should output /etc/fonts/conf.avail/10-hinting-slight.conf
       - "ls -alh  /etc/fonts/conf.d/10-hinting-slight.conf"
+  apparmor:
+      # !! Add kernel params to boot: lsm=landlock,lockdown,yama,integrity,apparmor,bpf
+      - _post_commands:
+        - "systemctl enable --now apparmor.service"
   laptop:
     - acpi
   screenshots:

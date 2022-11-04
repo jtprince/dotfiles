@@ -37,6 +37,7 @@ exec $noid systemctl --user import-environment
 # exec $noid gnome-keyring-daemon --start --components=secrets
 # shouldn't have to, but it seems to be needed for not:
 # exec --no-startup-id systemctl --user status pipewire-pulse.service
+exec $noid pulse-restart 30
 
 #########################
 # APPEARANCE
@@ -462,7 +463,7 @@ bindsym $locked XF86HomePage exec $noid $monitor_primary1_cmd
 # PRIMARY MONITOR integer scaling
 # bindsym $locked Ctrl+Shift+XF86HomePage exec $noid $monitor_primary1_cmd_integer
 bindsym $locked $mod+Ctrl+XF86HomePage exec $noid $monitor_primary2_cmd_integer
-
+bindsym $locked $mod+Shift+XF86HomePage exec $noid $monitor_primary2_cmd_integer
 
 ###########################
 # LIFE, DEATH, and SLEEPING

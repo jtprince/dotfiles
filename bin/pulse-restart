@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+init_sleep=${1:-0}
+
+sleep $init_sleep
+
 systemctl --user restart pipewire-pulse.service
 
 sleep 1.0

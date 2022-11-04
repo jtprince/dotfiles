@@ -4,70 +4,15 @@ function cmd_exists {
     command -v "$1" >/dev/null 2>&1
 }
 
-session_type=${XDG_SESSION_TYPE:-x11}
-
 # gnome keyring
-eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+# eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
 
-pulseaudio --start
+# full applet does not currently work
+# use nmtui{,-connect,-edit,-hostname} instead
+nm-applet --indicator &
 
-if [[ "$session_type" == "wayland" ]]; then
-    ################################################
-    # Sway/wayland specific
-    ################################################
-
-    # full applet does not currently work
-    # use nmtui{,-connect,-edit,-hostname} instead
-    nm-applet --indicator &
-
-else
-
-    ################################################
-    # X11 specific config
-    ################################################
-    # Xresources
-    xrdb -merge ~/.Xresources
-
-    if cmd_exists dunst; then
-        dunst &
-    fi
-
-    # Xorg slowdown is from picom :(
-    # if cmd_exists picom ; then
-    #     picom-toggle start
-    # fi
-
-    if cmd_exists autoxrandr ; then
-        autoxrandr --change
-    fi
-
-    notify-send -u low 'Configuring keyboard.'
-    keyboard-setup
-
-    # clipboard
-    xclip -silent &
-
-    # nm-applet
-    nm-applet &
-
-    # sound tray
-    pasystray &
-
-    randomise-bkg
-fi
-
-# dropbox
 if cmd_exists dropbox-cli ; then
     dropbox-cli start
 fi
-
-if cmd_exists megasync ; then
-    megasync &
-fi
-
-
-
-# example of launching specific app on a workspace
-# i3-msg 'workspace 8:w8; exec sleep 3 && music-player'
 
 notify-send -u low 'initialized!'
