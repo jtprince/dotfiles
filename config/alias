@@ -204,4 +204,4 @@ alias condaenvs="conda info --env"
 
 alias icat="kitty +kitten icat"
 
-scocr="sc -b --dir /home/jtprince/screenshots --timestamp box --ocr"
+alias scocr="sc -b --dir /home/jtprince/screenshots --timestamp box --ocr"

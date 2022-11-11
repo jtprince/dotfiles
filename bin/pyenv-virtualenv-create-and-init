@@ -53,6 +53,7 @@ parser.add_argument(
         f"delete the existing virtualenv from {VERSION_FILE} and recreate"
     ),
 )
+
 args = parser.parse_args()
 
 

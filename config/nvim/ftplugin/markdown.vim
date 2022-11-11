@@ -47,3 +47,6 @@ endfunction
 map <leader>mh <Esc>:call MarkdownToHTMLAndOpenInFirefox()<CR>
 map <leader>mp <Esc>:call MarkdownToPDFAndOpenInEvince()<CR>
 map <leader>mc <Esc>:call MarkdownToClipboard()<CR>
+
+map <leader>mn <Esc>:set conceallevel=0<CR>
+map <leader>mo <Esc>:set conceallevel=2<CR>
