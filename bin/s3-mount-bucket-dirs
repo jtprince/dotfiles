@@ -13,7 +13,7 @@ make a cache dir for goofys.  For example:
 ```
 mkdir -p ~/.local/bin
 cd ~/.local.bin
-wget https://github.com/kahing/catfs/releases/download/v0.8.0/catfs
+wget https://github.com/kahing/catfs/releases/download/v0.9.0/catfs
 chmod +x catfs
 # check that <$HOME>.local/bin is in your $PATH (if not, add it)
 echo $PATH | grep '.local/bin'

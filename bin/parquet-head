@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import pandas as pd
+
+
+pd.set_option('display.max_columns', None)
+# pd.set_option('display.max_rows', None)
+
+parser = argparse.ArgumentParser(
+    description="prints headers and first rows of each dataframe"
+)
+parser.add_argument("parquet_files", type=Path, nargs="+")
+parser.add_argument("--no-shape", action='store_true', help="don't print shape at the end")
+args = parser.parse_args()
+
+for path in args.parquet_files:
+    df = pd.read_parquet(path)
+    print(df.head())
+    if not args.no_shape:
+        print("\nshape:", df.shape)
