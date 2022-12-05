@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import argparse
+import re
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument("markdown_docs", type=Path, nargs="+")
+args = parser.parse_args()
+
+# Substitute links like this '[here](http://ab.com)'
+# for 'here (http://ab.com)'
+size_limit = 150
+
+link_re = re.compile(r"\[([^\]]+)\]\s?\(([^\)]+)\)")
+
+class Comment:
+    def __init__(self, words=None, comment_num=1):
+        self.words = words or []
+        self.comment_num = comment_num
+
+    def joined_size(self):
+        return len(str(self))
+
+    def __str__(self, with_suffix=True):
+        paragraph = " ".join(self.words)
+        return paragraph + f" /{self.comment_num}"
+
+    def append(self, word):
+        return self.words.append(word)
+
+    def remove_last_word(self):
+        return self.words.pop()
+
+    __repr__ = __str__
+
+
+for path in args.markdown_docs:
+    text = path.read_text()
+    one_paragraph = " ".join(text.split())
+    properly_linked = link_re.sub(r"\g<1> (\g<2>)", one_paragraph)
+    words = properly_linked.split()
+
+    first_comment = Comment(comment_num=1)
+    all_comments = [first_comment]
+    for word in words:
+        last_comment = all_comments[-1]
+        last_comment.append(word)
+        if last_comment.joined_size() > size_limit:
+            # put the last word onto a new comment
+            word = last_comment.remove_last_word()
+            new_comment = Comment(comment_num=len(all_comments) + 1)
+            new_comment.append(word)
+            all_comments.append(new_comment)
+    for comment in all_comments:
+        # print(comment.joined_size(), str(comment)[0:40] + "..." + str(comment)[-30:])
+        print()
+        print(comment)

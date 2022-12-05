@@ -5,7 +5,7 @@ import arrow
 from pathlib import Path
 import argparse
 
-CHECKIN_DIR = Path.home() / "work" / "CHECKINS"
+CHECKIN_DIR = Path.home() / "work" / "REPORTING"/ "checkins"
 
 iso_date_re = re.compile(r"\d{4}-\d{2}-\d{2}")
 

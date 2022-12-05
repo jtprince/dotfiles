@@ -59,6 +59,9 @@
 # Mypy
 --ignore-directory=is:.mypy_cache
 
+# .venv
+--ignore-directory=is:.venv
+
 # Quilt
 # https://directory.fsf.org/wiki/Quilt
 --ignore-directory=is:.pc

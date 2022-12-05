@@ -4,6 +4,8 @@ tags: [ networking ]
 
 # TYPICAL usage:
 nmcli d wifi connect <SSID> password <your password>
+# I have a convenience script for this!:
+#     wifi-connect <ssid> <password>
 
 # show your connections
 nmcli connection show

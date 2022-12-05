@@ -1,0 +1,11 @@
+#!/bin/bash
+
+usage="wifi-connect <ssid> <password>"
+
+if [ "$#" -ne 2 ]
+then
+    echo "$usage" >&2
+    exit 1
+fi
+
+nmcli d wifi connect "$1" password "$2"
