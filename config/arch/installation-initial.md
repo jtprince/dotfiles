@@ -21,6 +21,8 @@ archinstall
 
 ## archinstall
 
+If you get a keyring issue [like this](https://github.com/archlinux/archinstall/issues/1389) when running archinstall, just [wait a minute](https://github.com/archlinux/archinstall/issues/1389#issuecomment-1235597526) and re-run the command and it should work.
+
 Basic install using archinstall:
 
 ```script
@@ -35,7 +37,7 @@ User account -> password -> yes superuser -> 'Confirm and exit'
 Profile -> desktop -> sway; graphics driver -> [whatever]
 Audio -> pipewire
 Kernels -> maybe linux-lts for now?
-Additional packages -> See installation.yaml `core-packages`
+Additional packages -> See installation.yaml `core-packages` (??? trying nothing extra this time ??)
 Network Configuration -> Use Network Manager
 Timezone -> America/Denver
 Install

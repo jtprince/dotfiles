@@ -30,8 +30,12 @@ args = parser.parse_args()
 def get_number_pages(path):
     response = subprocess.check_output(["file", str(path)], text=True)
     parts = response.split()
-    assert parts[-1] == 'pages'
-    return int(parts[-2])
+    if parts[-1] == 'pages':
+        return int(parts[-2])
+    else:
+        # Hack to get a reasonable doc size if not returned
+        # Just an order of magnitude
+        return 99
 
 
 num_pages = get_number_pages(args.infile)
