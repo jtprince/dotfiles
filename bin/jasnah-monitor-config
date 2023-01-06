@@ -27,7 +27,7 @@ def get_monitor_make_model_serial() -> List[str]:
 
 
 # LAPTOP = "Chimei Innolux Corporation 0x1409 0x00000000"
-LAPTOP = "Unknown 0x1401 0x00000000"
+LAPTOP = "California Institute of Technology 0x1401 Unknown"
 DELL_4K = "Dell Inc. DELL S2721QS CB64M43"
 DELL_UHD = "Dell Inc. DELL U2722D 122BS83"
 HP_TREADMILL = "Unknown HP VH240a 6CM83029MD"

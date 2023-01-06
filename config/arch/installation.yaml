@@ -46,10 +46,8 @@ core-packages:
     - firefox
 
 user:
-  bemenu:
-    - bemenu
-    - bemenu-wayland
-    - bemenu-dmenu-wayland
+  application-launcher:
+    - tofi
   dropbox:
     - dropbox
     - dropbox-cli
