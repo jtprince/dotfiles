@@ -4,25 +4,25 @@ core-packages:
   documentation:
     - man-db
     - man-pages
-    - texinfo
+    # - texinfo # installed with archinstall
   core-firmware:
   ## (e.g., upd72020x-fw for Thinkpad webcam)
     - sof-firmware
   core-networking-and-communication:
-    - iwd
-    - wpa_supplicant
-    - gnome-keyring
-    - dhcpcd
-    - openssh
-    - wget
+    # - iwd # obsolete by archinstall with NetworkManager
+    # - wpa_supplicant # obsolete by archinstall with NetworkManager
+    # - gnome-keyring # should have installed very early
+    # - dhcpcd # obsolete by archinstall with NetworkManager
+    # - openssh # installed by archinstall
+    # - wget # installed by archinstall
     - httpie
   core-utils:
-    - zsh
-    - git
-    - sudo
-    - sheldon
-    - unzip
-    - p7zip
+    # - zsh  # installed very early
+    # - git  # installed very early
+    # - sudo # obsolete by archinstall
+    # - sheldon # installed very early
+    - unzip  # installed very early
+    # - p7zip # installed very early
     # for uefi support in fwupdmgr
     - udisks2
     # for lsusb etc
@@ -33,7 +33,7 @@ core-packages:
   core-editors:
     - vi
     - vim
-    - neovim
+      # - neovim  # installed early
     - fzf
     - ctags
   core-terminals:
@@ -41,9 +41,9 @@ core-packages:
     - alacritty
   core-video:
     # is this necessary anymore since isntalling sway?
-    - mesa
+    # - mesa # installed by archinstall
   core-browser:
-    - firefox
+    # - firefox # installed early
 
 user:
   application-launcher:
@@ -168,17 +168,18 @@ user:
       - "pyenv install --list"
       - "[UPDATE YOUR VERSIONS!!!]"
       - 'CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"'
-      - "pyenv install 3.7.13"
-      - "pyenv install 3.8.13"
-      - "pyenv install 3.9.13"
-      - "pyenv install 3.10.5"
+      - "pyenv install 3.7.16"
+      - "pyenv install 3.8.16"
+      - "pyenv install 3.9.16"
+      - "pyenv install 3.10.9"
+      - "pyenv install 3.11.1"
   jupyter:
     - jupyterlab
     - jupytext
     # currently failing to install, might need to pip install
     - jupyterlab_code_formatter
   mime:
-    - handlr-bin
+    # - handlr-bin ## couldn't find :/ 
   ruby:
     # probably already installed
     - openssl
@@ -198,7 +199,7 @@ user:
     - mako
     - python-mako
   sound:
-    - pipewire-pulse
+    # - pipewire-pulse # installed by archinstall
     # maybe?
     # - pulseaudio-alsa
     # sound tray
@@ -355,7 +356,7 @@ user:
     - midori
   github:
     #  gh
-    - github-cli
+    # - github-cli ## install early now
   misc:
     # for password generation
     - words
