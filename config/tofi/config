@@ -113,7 +113,8 @@
 	# Style of the optional text cursor.
 	#
 	# Supported values: bar, block, underscore
-	text-cursor-style = bar
+    # giving Unknown option??
+	# text-cursor-style = bar
 
 	# Color of the text cursor
 	#
@@ -126,7 +127,8 @@
 	# text-cursor-background = #000000
 
 	# Corner radius of the text cursor
-	text-cursor-corner-radius = 0
+    # giving Unknown option??
+	# text-cursor-corner-radius = 0
 
 	# Thickness of the bar and underscore text cursors.
 	#
@@ -235,7 +237,8 @@
 	hide-cursor = false
 
 	# Show a text cursor in the input field.
-	text-cursor = false
+    # giving Unknown option??
+	# text-cursor = false
 
 	# Sort results by number of usages in run and drun modes.
 	history = true
