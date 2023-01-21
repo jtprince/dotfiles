@@ -95,3 +95,27 @@ def aggregate_spectra(
     )
     return one_per_row
 
+
+## How to apply without warning (hint: use assign instead)
+
+If you get a copy on slice, try using assign instead of apply:
+
+# wrong: results in a "set on a copy of a slice" warning:
+fractions_with_ms2["active_exclusion"] = fractions_with_ms2.msrun_id.apply(
+    lambda msrun_id: active_exclusion_runs[msrun_id]
+)
+
+```warning
+/tmp/ipykernel_372964/1615522823.py:1: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  fractions_with_ms2["active_exclusion"] = fractions_with_ms2.msrun_id.apply(
+```
+# right: use assign
+fractions_with_ms2 = fractions_with_ms2.assign(
+    active_exclusion=fractions_with_ms2.msrun_id.apply(
+        lambda msrun_id: active_exclusion_runs[msrun_id]
+    )
+)
