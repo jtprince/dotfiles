@@ -43,24 +43,56 @@ Timezone -> America/Denver
 Install
 ```
 
+Either install extra packages or log into root and install with pacman:
+
+```bash
+# sudo pacman -S ...
+man-db        # documentation
+man-pages     # documentation
+sof-firmware  # if applicable
+gnome-keyring
+httpie
+zsh
+git
+sudo
+sheldon
+p7zip
+udisks2        # for uefi support in fwupdmgr
+usbutils       # for lsusb etc
+keychain
+npm
+vi
+vim
+fzf
+ctags
+xterm
+rsync           # for reflector
+alacritty
+firefox
+```
+
 Then reboot (`shutdown now`, remove drive, reboot)
 
 ## Post-reboot
-
-### Change to zsh and add to users group
-
-```bash
-chsh
-# -> /usr/zsh
-sudo gpasswd -a jtprince users
-```
-
-Then logout and log back in.
 
 ### Set up wifi
 ```bash
  nmcli d wifi connect PrinceNest password <password>
 ```
+
+### Change to zsh and add to users group
+
+sudo pacman -S zsh
+
+```bash
+chsh
+# -> /bin/zsh
+sudo gpasswd -a jtprince users
+
+# TODO: change the group id!
+```
+
+Then logout and log back in.
 
 #### Fallback
 
@@ -90,15 +122,17 @@ yay -S python-ruyaml neovim-plug
 ### Reflector
 
 ```bash
-yay -S reflector rsync
+yay -S reflector
 reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
 ```
 
 ### Launch sway
 
 ```
-exec dbus-launch sway --exit-with-session
+exec dbus-launch sway
 ```
+Windows-Enter: terminal
+Windows-Shift: Exit sway
 
 ## Get keys
 
