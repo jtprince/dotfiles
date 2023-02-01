@@ -1,5 +1,5 @@
 # See installation-initial.md for initial steps
-#
+# arch-installer.py --install-subsections user.<whatever>
 user:
   application-launcher:
     - tofi
@@ -11,6 +11,8 @@ user:
       - "[and follow instructions in browser]"
       - "[dropbox-cli status to see where things are at]"
       - "[be patient after inital linkage]"
+  networking:
+    - dnsutils   # for getting wan ip address
   nvim-related:
     - git-delta
   language-servers:
@@ -175,11 +177,11 @@ user:
   font:
     # core fonts
     # patched dejavu to include tons of nerd icons
-    - nerd-fonts-dejavu-complete
+    # - ttf-dejavu-nerd  # installed very early as main terminal font
     - ttf-roboto
     - ttf-ubuntu-font-family
     # standard fonts
-    - noto-fonts
+    # - noto-fonts  # installed very early as viable kitty font
     - noto-fonts-emoji
     - noto-fonts-cjk
     - ttf-ms-fonts
@@ -208,10 +210,10 @@ user:
       # ensure that hinting-slight is already linked (should already be set)
       # should output /etc/fonts/conf.avail/10-hinting-slight.conf
       - "ls -alh  /etc/fonts/conf.d/10-hinting-slight.conf"
-  apparmor:
+  # apparmor:
       # !! Add kernel params to boot: lsm=landlock,lockdown,yama,integrity,apparmor,bpf
-      - _post_commands:
-        - "systemctl enable --now apparmor.service"
+      # - _post_commands:
+        # - "systemctl enable --now apparmor.service"
   laptop:
     - acpi
   screenshots:
@@ -245,7 +247,6 @@ user:
     - ncspot-cover
     - playerctl
     # - xava
-    - ncspot-cover
     - archey3
     - feh
     # mplayer that works with wayland

@@ -68,6 +68,7 @@ ctags
 xterm
 rsync           # for reflector
 alacritty
+kitty
 firefox
 ```
 
@@ -116,7 +117,7 @@ iwctl station wlan0 connect PrinceNest
 neovim `PlugInstall`.
 
 ```bash
-yay -S python-ruyaml neovim-plug
+yay -S python-ruyaml neovim-plug ttf-dejavu-nerd noto-fonts
 ```
 
 ### Reflector

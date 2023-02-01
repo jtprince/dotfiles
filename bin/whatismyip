@@ -1,26 +1,28 @@
-#!/usr/bin/ruby -w
+#!/usr/bin/env python
 
-if ARGV.include?("-h") or ARGV.include?("--help")
-  puts "usage: #{File.basename(__FILE__)} [(l)ocal]]"
-  exit
-end
+import argparse
+import subprocess
+import re
 
-if ARGV[0] && ARGV[0][0] == 'l'
-  # LAN IP
-  if `uname -r` =~ /ARCH/i
-    reply = `ip addr`.split("\n")
-    addr_lines = reply.select do |line|
-      line =~ /inet /
-    end
-    addr_lines.each do |line|
-      puts line.split('/').first.strip.split(' ').last
-    end
-  else
-    puts "can't parse this distro ip addr yet"
-  end
-else
-  puts `curl --silent -4 icanhazip.com`
+parser = argparse.ArgumentParser()
+parser.add_argument("-l", "--local", action='store_true', help="just local")
+parser.add_argument("-w", "-g", "--world", action='store_true', help="just wan")
+args = parser.parse_args()
 
-  # or for ipv6
-  # puts `curl --silent -6 icanhazip.com`
-end
+
+addresses_to_hide = set(["127.0.0.1"])
+
+def run(cmd):
+    return subprocess.check_output(cmd, shell=True, text=True).strip()
+
+
+if not args.world:
+    lan = run("ip -json route get 8.8.8.8 | jq -r '.[].prefsrc'")
+    print("local:", lan)
+
+if not args.local:
+    cmd = """
+        dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | sed 's/"//g'
+    """
+    wan = run(cmd)
+    print("world:", wan)
