@@ -3,12 +3,11 @@
 import argparse
 from pathlib import Path
 
+import pandas as pd
+
 parser = argparse.ArgumentParser()
 parser.add_argument("parquet_files", nargs="+", type=Path, help="parquet files")
 args = parser.parse_args()
-
-
-import pandas as pd
 
 
 for path in args.parquet_files:

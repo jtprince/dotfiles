@@ -14,7 +14,7 @@ parser = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} <file>"
   op.separator "output: the github url of the file"
   op.on("-b", "--blob", "use the blob instead of raw") {|v| opts[:filetype] = "blob"}
-  op.on("-m", "--master", "use the master branch instead of current version") {|v| opts[:branch] = "master" }
+  op.on("-m", "--main", "use the main branch instead of current version") {|v| opts[:branch] = "main" }
   op.on("--branch", "use specific branch instead of current version") {|v| opts[:branch] = v }
   op.on("--pdf-view", "make a raw pdf viewable") {|v| opts[:view_pdf] = v }
   op.on("--html-view", "make a raw html doc viewable") {|v| opts[:view_html] = v; opts[:filetype] = nil }
