@@ -1,5 +1,7 @@
 #!/bin/bash
 
 for nb in $@; do
-    jupyter nbconvert --to html "$nb"
+    # Two options, jupyter nbconvert or ipynb2html
+    ipynb2html "$nb" > "${nb%.ipynb}.html"
+    # jupyter nbconvert --to html "$nb"
 done
