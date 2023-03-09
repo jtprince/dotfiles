@@ -60,6 +60,11 @@ fi
 
 export PATH=$HOME/bin:$HOME/.local/bin:$PATH
 
+# add a global npm path
+export PATH=$HOME/npm/bin:$PATH
+
+
+
 # node package manager
 if [ -d ~/npm ]; then
     export PATH=$PATH:$HOME/npm/bin

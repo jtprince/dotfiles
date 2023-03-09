@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for nb in $@; do
+    jupyter nbconvert --to html "$nb"
+done

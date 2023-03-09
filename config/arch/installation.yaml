@@ -152,6 +152,9 @@ user:
       - "rbenv install <SOME_VERSION>"
       - "rbenv global <SOME_VERSION>"
       - "gem install pry clipboard solargraph"
+  npm:
+    - _post_commands"
+      - "mkdir ~/npm"
   notifications:
     - mako
     - python-mako

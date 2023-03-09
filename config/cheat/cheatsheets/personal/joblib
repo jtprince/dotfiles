@@ -1,0 +1,10 @@
+
+import os
+from joblib import Memory
+
+memory = Memory(os.path.expanduser("~/.python_cache"))
+
+@memory.cache
+def somefunc():
+    ...
+
