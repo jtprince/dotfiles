@@ -48,6 +48,14 @@ Plug 'bluz71/vim-moonfly-colors'
 Plug 'shaunsingh/moonlight.nvim'
 Plug 'Neur1n/neucs.vim'
 
+
+" CodeGPT
+Plug 'nvim-lua/plenary.nvim'
+Plug 'MunifTanjim/nui.nvim'
+Plug 'dpayne/CodeGPT.nvim'
+
+Plug 'github/copilot.vim'
+
 " git -------------------------------------------------------------------------
 Plug 'tpope/vim-fugitive'
 

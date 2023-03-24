@@ -35,7 +35,7 @@ user:
   wayland-more:
     - wl-clipboard-x11
     - wl-clipboard
-    - wdisplays
+    - wlr-randr
     - azote
     # notifications
     - mako

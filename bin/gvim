@@ -5,7 +5,7 @@
 
 # if you change this, you need to change ~/bin/sgvim, too
 
-# alacritty -e $HOME/bin/sleep-and-start-nvim "$@" &
-kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
+alacritty -e $HOME/bin/sleep-and-start-nvim "$@" &
+# kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
 
 # neovide --multiGrid --disowned "$@"

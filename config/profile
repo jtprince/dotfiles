@@ -147,7 +147,7 @@ fi
 export CHEAT_USE_FZF=true
 # export GITHUB_TOKEN="$(cat ~/Dropbox/env/cloud-and-apis/github/access_tokens/owlet_repo_and_read_package.token.txt)"
 
-export MONITOR_IDENTIFIERS_PATH="$HOME/Dropbox/env/monitors/identifiers"
+export OPENAI_API_KEY=`cat $HOME/Dropbox/env/cloud-and-apis/openai/key`
 
 #####################################################
 # Pulse Audio

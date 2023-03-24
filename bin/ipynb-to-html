@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# npm install -g ipynb2html-cli
+
 for nb in $@; do
     # Two options, jupyter nbconvert or ipynb2html
     ipynb2html "$nb" > "${nb%.ipynb}.html"

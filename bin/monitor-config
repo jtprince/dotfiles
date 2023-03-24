@@ -1,35 +1,91 @@
 #!/usr/bin/env python
 
+from typing import Dict, Any
 import argparse
 import subprocess
+import re
 import json
-import os
-from pathlib import Path
 
-IDENTIFIER_KEYS = ["make", "model", "serial"]
+MONITOR_LABEL_KEYS = ["make", "model", "serial"]
+_CONFIG_FMT_STR = "enable scale {scale} pos 0 0"
 
-
-identifiers_path = Path(os.environ["MONITOR_IDENTIFIERS_PATH"])
-
-if not identifiers_path.exists():
-    raise RuntimeError("envar `MONITOR_IDENTIFIERS_PATH` must point to identifiers file")
+LAPTOP = "laptop"
+DELL = "dell"
+HP = "hp"
+THINKPAD = "thinkpad"
 
 
-ACTIVATE = dict(
-    enable="enable pos 0 0",
-    disable="disable",
+MONITORS = {
+    DELL: "Dell Inc. DELL S2721QS CB64M43",
+    HP: "HP Inc. HP VH240a 6CM83029MD",
+    LAPTOP: "California Institute of Technology 0x1401 Unknown",
+    # other
+    THINKPAD: "Chimei Innolux Corporation 0x1409 0x00000000",
+}
+
+WIDTH_TO_SCALE = {
+    3840: "1.6",
+    1920: "1.0",
+}
+
+def _make_label(monitor_data):
+    """The values associated with MONITOR_LABEL_KEYS joined by a space.
+
+    """
+    return " ".join([monitor_data[key] for key in MONITOR_LABEL_KEYS])
+
+
+def get_monitor_infos() -> Dict[str, Dict[str, Any]]:
+    """Returns a list of make model serial strings.
+
+    For example:
+
+        {"Dell Inc. DELL S2721QS CB64M43": {...}, "HP ...": {...}}
+    """
+    monitors = json.loads(
+        subprocess.check_output(["swaymsg", "-t", "get_outputs"], text=True)
+    )
+    return {_make_label(data): data for data in monitors}
+
+
+
+def scale_from_data(data):
+    width = data["modes"][0]["width"]
+    return WIDTH_TO_SCALE.get(width, "1.0")
+
+
+def create_monitor_scales(label_to_info: Dict[str, Dict[str, Any]]) -> Dict[str, str]:
+    return {key: scale_from_data(data) for key, data in label_to_info.items()}
+
+
+label_to_info = get_monitor_infos()
+monitor_ids = list(label_to_info.keys())
+monitor_scale = create_monitor_scales(label_to_info)
+
+preferred_key = next(
+    key for key, monitor_id in MONITORS.items() if monitor_id in monitor_ids
 )
 
-def parse_identifier_line(line):
-    my_id, make_model_serial_together = line.rstrip().split(":", 1)
-    make_model_serial = tuple(make_model_serial_together.strip().split("/"))
-    return my_id, make_model_serial
 
-
-def get_my_ids_to_make_model_serial(content):
-    raw_lines = content.split("\n")
-    lines = [line for line in raw_lines if line.strip() and not line.startswith("#")]
-    return dict(parse_identifier_line(line) for line in lines)
+def get_args():
+    parser = argparse.ArgumentParser(
+        description=str(
+            f"Defaults to {LAPTOP}. "
+            "To add a monitor, "
+            "`swaymsg -t get_outputs` "
+            "or `swaymsg -r -t get_outputs` "
+            "or `--list`"
+        )
+    )
+    parser.add_argument(
+        "monitor",
+        nargs="?",
+        default=LAPTOP,
+        choices=[LAPTOP, DELL, HP],
+    )
+    parser.add_argument("--list", action="store_true", help="list monitor ids")
+    parser.add_argument("--dry", action="store_true", help="dry run")
+    return parser.parse_args()
 
 
 def create_swaymsg_output_command(id, config_str):
@@ -37,50 +93,31 @@ def create_swaymsg_output_command(id, config_str):
 
 
 def create_single_monitor_commands(value):
+    scale = monitor_scale[MONITORS[value]]
     to_disable = [
-        name
-        for monitor_keyword, name in MONITORS.items()
-        if value != monitor_keyword
+        name for monitor_keyword, name in MONITORS.items() if value != monitor_keyword
     ]
     disable_cmds = [
-        create_swaymsg_output_command(name, ACTIVATE["disable"])
-        for name in to_disable
+        create_swaymsg_output_command(name, "disable") for name in to_disable
     ]
     enable_cmd = create_swaymsg_output_command(
-        MONITORS[value], ACTIVATE["enable"]
+        MONITORS[value], _CONFIG_FMT_STR.format(scale=scale)
     )
     all_cmds = disable_cmds + [enable_cmd]
     return all_cmds
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "-l",
-    "--list",
-    action='store_true',
-    help="list available, connected identifiers and exit"
-)
-
-parser.add_argument(
-    "monitor",
-    nargs="*",
-    help="one or more identifiers from monitor identifers file"
-)
-args = parser.parse_args()
-my_ids_to_make_model_serial = get_my_ids_to_make_model_serial(identifiers_path.read_text())
-make_model_serial_to_my_ids = {val: key for key, val in my_ids_to_make_model_serial.items()}
-
-def sway_output_matches(output, make_model_serial):
-   return (list(make_model_serial) == [output[key] for key in IDENTIFIER_KEYS])
-
-
+args = get_args()
 if args.list:
-    cmd = ["swaymsg", "--raw", "--type", "get_outputs"]
-    response = subprocess.check_output(cmd, text=True)
-    for output in json.loads(response):
-        make_model_serial_triplet = tuple(output[key] for key in IDENTIFIER_KEYS)
-        print(make_model_serial_triplet)
-        print(make_model_serial_to_my_ids)
-        if make_model_serial_triplet in make_model_serial_to_my_ids:
-            print(make_model_serial_to_my_ids[make_model_serial_triplet])
+    for key in monitor_scale.keys():
+        print(key)
     exit(0)
+
+
+all_cmds = create_single_monitor_commands(args.monitor)
+
+for cmd in all_cmds:
+    if args.dry:
+        print(" ".join(cmd))
+    else:
+        subprocess.run(cmd)
