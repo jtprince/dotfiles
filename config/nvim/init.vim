@@ -284,7 +284,7 @@ set softtabstop=4               " soft tab stop
 set expandtab                   " use spaces instead of tab (Ctrl-V<Tab> for real tab)
 set ruler                       " shows line and col number
 set formatoptions=l             " autoformating (l=long lines not broken on insert)
-set printoptions=paper:letter   " use letter instead of A4 by default
+" set printoptions=paper:letter   " use letter instead of A4 by default (deprecated)
 set guicursor=a:blinkon0        " disable cursor blink
 set autoread                    " reload files changed outside vim
 " set hidden                      " buffers can exist in bkg w/o window
