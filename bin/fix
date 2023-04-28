@@ -12,6 +12,11 @@ else:
 
 print("LINE!", line)
 
+remove_prefixes = {"FAILED", "ERROR"}
+for prefix in remove_prefixes:
+    if line.startswith(prefix):
+        line = line[len(prefix):].lstrip()
+
 if not line:
     raise ValueError("no reasonable file info to work from")
 
@@ -85,5 +90,6 @@ print(f"forking: {final_cmd_str}")
 # ./doba/settings/common.py:325:1: E265 block comment should start with '# '
 # django_utils.tests.test_utils:34
 # ==django_utils.tests.test_utils:34
+# FAILED tests/feature_finding/test_stepwise_feature_finder.py::TestStepwiseFeatureFinder::test_basic - TypeError: find_features() missing 1 required positional argument: 'ionization_mode'
 
 #  File "/drone/src/blackwidow/libs/utils/tests/test_json.py", line 41, in test_object_with_to_dict
