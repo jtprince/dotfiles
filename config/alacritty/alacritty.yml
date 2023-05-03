@@ -1,14 +1,14 @@
 
 font:
   normal:
-    family: DejaVuSansMono Nerd Font Mono
-    # family: FiraCode Nerd Font Mono
+    # family: DejaVuSansMono Nerd Font Mono
+    family: FiraCode Nerd Font Mono
     # family: Liberation Mono
 
 draw_bold_text_with_bright_colors: true
 
 # Point size of the font
-size: 13.0
+size: 15.0
 
 dpi:
   x: 120

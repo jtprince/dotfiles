@@ -2,4 +2,4 @@
 
 imagefile="$HOME/backgrounds/Braunwald_switzerland.png"
 
-swaylock -f -i "$imagefile" && sleep 1 && systemctl suspend
+swaylock -f -i "$imagefile" && sleep 2 && systemctl suspend
