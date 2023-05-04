@@ -79,7 +79,6 @@ user:
     - dtrx
     - zip
     - ack
-    - rdiff-backup
     - ripgrep
     - ack
     - fd
@@ -125,11 +124,10 @@ user:
       - "pyenv install --list"
       - "[UPDATE YOUR VERSIONS!!!]"
       - 'CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"'
-      - "pyenv install 3.7.16"
       - "pyenv install 3.8.16"
       - "pyenv install 3.9.16"
-      - "pyenv install 3.10.9"
-      - "pyenv install 3.11.1"
+      - "pyenv install 3.10.11"
+      - "pyenv install 3.11.3"
   jupyter:
     - jupyterlab
     - jupytext
@@ -159,10 +157,9 @@ user:
     - mako
     - python-mako
   sound:
-    # - pipewire-pulse # installed by archinstall
-    # maybe?
-    # - pulseaudio-alsa
-    # sound tray
+    # Should have already been installed:
+    # pipewire-pulse
+    # pulseaudio-alsa
     - pasystray-git
     - pavucontrol
     - paprefs
@@ -174,7 +171,6 @@ user:
   bluetooth:
     - bluez
     - bluez-utils
-    # - pulseaudio-bluetooth
   theme:
     - gnome-themes-standard
   font:
@@ -312,10 +308,11 @@ user:
       - "sudo gpasswd -a jtprince docker"
       - "sudo systemctl enable docker.service"
   secondary-browser:
+    - google-chrome
     - midori
   github:
     #  gh
-    # - github-cli ## install early now
+    - github-cli ## install early now
   misc:
     # for password generation
     - words
