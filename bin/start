@@ -1,3 +1,5 @@
 #!/bin/bash
 
-exec dbus-launch sway --exit-with-session
+echo "try just typing `sway` to start sway!"
+# gh auth login worked when typing `sway` on NOT using this!
+# exec dbus-launch sway --exit-with-session

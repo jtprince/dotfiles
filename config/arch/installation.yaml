@@ -171,6 +171,7 @@ user:
   bluetooth:
     - bluez
     - bluez-utils
+    - blueman
   theme:
     - gnome-themes-standard
   font:
@@ -264,6 +265,7 @@ user:
     - mp3splt
     - audacity
     - swappy
+    - imagemagick
   office:
     # - slack-wayland
     # - zoom
@@ -318,6 +320,12 @@ user:
     - words
     # torrents
     - deluge-gtk
+  polkit:
+    # Trying this out
+    - polkit-dumb-agent
+  music:
+    - ncspot
+    - spotify
 user-post:
   informant:
     # informant (ensure arch news is read)
