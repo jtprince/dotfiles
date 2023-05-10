@@ -33,6 +33,7 @@ user:
     # mousewheel.default.delta_multiplier_y 66
     # privacy.webrtc.legacyGlobalIndicator false
   wayland-more:
+    - xorg-xwayland
     - wl-clipboard-x11
     - wl-clipboard
     - wlr-randr
@@ -312,6 +313,8 @@ user:
   secondary-browser:
     - google-chrome
     - midori
+    # for bing chat gpt4
+    - microsoft-edge-stable-bin
   github:
     #  gh
     - github-cli ## install early now

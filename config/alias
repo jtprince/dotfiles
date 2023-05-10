@@ -142,6 +142,9 @@ alias ncspotup="gvim $CONFIG_DIR/ncspot/config.toml"
 alias swayup="gvim $CONFIG_DIR/sway/config"
 alias swaydir="pushd $CONFIG_DIR/sway/"
 
+alias alacrittyup="gvim $CONFIG_DIR/alacritty/alacritty.yml"
+alias alacrittydir="pushd $CONFIG_DIR/alacritty/"
+
 alias waybarup="gvim $CONFIG_DIR/waybar/config"
 alias blueon="sudo systemctl restart bluetooth.service"
 
