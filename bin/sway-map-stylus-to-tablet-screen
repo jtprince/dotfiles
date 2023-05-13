@@ -1,0 +1,3 @@
+#!/bin/bash
+
+swaymsg "input 10429:2058:UGTABLET_11.6_inch_PenDisplay_Stylus map_to_output 'UGD Artist 12     0x00000001'"

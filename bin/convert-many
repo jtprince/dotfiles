@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+import subprocess
+from pathlib import Path
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("images", nargs="+", type=Path, help="the images to convert")
+parser.add_argument(
+    "--extension",
+    "--ext",
+    "-e",
+    required=True,
+    help="the new extension (e.g. png or .png)",
+)
+parser.add_argument(
+    "--delete",
+    "-d",
+    action="store_true",
+    help="delete old file",
+)
+args = parser.parse_args()
+
+suffix = "." + args.extension.lstrip(".")
+
+cmd = ["convert"]
+
+for path in args.images:
+    outpath = path.with_suffix(suffix)
+    to_run = cmd + [str(path), str(outpath)]
+    # print(" ".join(to_run))
+    subprocess.run(to_run)
+    if args.delete:
+        path.unlink(missing_ok=True)

@@ -258,9 +258,8 @@ user:
     - gimp
     - eog
     - imv
-    - geeqie
-    - gthumb
     - nomacs
+    - xnviewmp
     - youtube-dl
     - pandoc-bin
     - mp3splt

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# See https://askubuntu.com/questions/97695/is-there-a-lightweight-tool-to-crop-images-quickly
+
+xnviewmp
+# nomacs
+
+
+# Also can try:
+    # Gwenview  (tons of dependencies)
+    # inbac (only via pip install)
+    # KolourPaint (lots of deps)
+    # firefox browser (only via a browser extension and it wasn't very good?)
