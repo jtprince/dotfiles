@@ -1,10 +1,8 @@
 # Installation
 
-Basic instructions for a quick/clean install using archinstall.
+Basic instructions for a quick/clean install using the arch install guide.
 
-## pre-archinstall
-
-Need network connection:
+## Network connection
 
 ```bash
 iwctl device wlan0 show
@@ -15,35 +13,48 @@ rfkill unblock all
 iwctl station wlan0 connect PrinceNest
 <password>
 ```
+
+## arch install
+
+Follow the [arch installation
+guide](https://wiki.archlinux.org/title/installation_guide), typically:
+
+1. Two partitions (an EFI partition /boot and root, ext4). Add swapfile later.
+    * `cgdisk /dev/sda2`
+        * EFI: ef00
+        * Linux LUKS: 8309
+2. Encrypting an entire system -> LUKS on a partition
+
+```
+# before pacstrap
+reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
+
+ln -sf /usr/share/zoneinfo/America/Denver /etc/localtime
+hwclock --systohc
+sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+locale-gen
+echo -n 'LANG=en_US.UTF-8' > /etc/locale.conf
+sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+```
+
+Then reboot (`shutdown now`, remove drive, reboot)
+
+## Post-reboot
+
+### Set up wifi
 ```bash
-archinstall
+ nmcli d wifi connect PrinceNest password <password>
 ```
 
-## archinstall
-
-If you get a keyring issue [like this](https://github.com/archlinux/archinstall/issues/1389) when running archinstall, just [wait a minute](https://github.com/archlinux/archinstall/issues/1389#issuecomment-1235597526) and re-run the command and it should work.
-
-Basic install using archinstall:
-
-```script
-Default is fine unless noted
-Mirror region -> United States (space, then Enter)
-Drive(s) -> [nvme0n1 typically]
-Disk Layout -> "Wipe all ..." -> ext4; sep partition for home -> no
-Encryption Password -> [set]
-Hostname -> [set]
-Root password -> [set]
-User account -> password -> yes superuser -> 'Confirm and exit'
-Profile -> desktop -> sway; graphics driver -> [whatever]
-Audio -> pipewire
-Kernels -> maybe linux-lts for now?
-Additional packages -> See installation.yaml `core-packages` (??? trying nothing extra this time ??)
-Network Configuration -> Use Network Manager
-Timezone -> America/Denver
-Install
+If nmcli isn't working can fallback to iwd
+```bash
+sudo systemctl start iwd dhcpcd
+iwctl station wlan0 connect PrinceNest
 ```
 
-Either install extra packages or log into root and install with pacman:
+
+
+## install some initial packages
 
 ```bash
 # sudo pacman -S ...
@@ -57,6 +68,7 @@ git
 sudo
 sheldon
 p7zip
+unzip
 udisks2        # for uefi support in fwupdmgr
 usbutils       # for lsusb etc
 keychain
@@ -69,38 +81,21 @@ xterm
 rsync           # for reflector
 alacritty
 kitty
+foot  # default sway terminal
 firefox
+sway
 ```
 
-Then reboot (`shutdown now`, remove drive, reboot)
+### Add users and groups with specific ids
 
-## Post-reboot
-
-### Set up wifi
-```bash
- nmcli d wifi connect PrinceNest password <password>
 ```
+groupmod -g 1221 users
+useradd -m -u 1000 -g users -G wheel -s /bin/zsh jtprince
+passwd jtprince
+chfn -f "John T. Prince" jtprince
 
-### Change to zsh and add to users group
-
-sudo pacman -S zsh
-
-```bash
-chsh
-# -> /bin/zsh
-sudo gpasswd -a jtprince users
-
-# TODO: change the group id!
-```
-
-Then logout and log back in.
-
-#### Fallback
-
-If nmcli isn't working can fallback to iwd
-```bash
-sudo systemctl start iwd dhcpcd
-iwctl station wlan0 connect PrinceNest
+visudo
+# Uncomment the line %wheel ALL=(ALL:ALL) ALL
 ```
 
 ### Install yay
@@ -119,19 +114,12 @@ neovim `PlugInstall`.
 ```bash
 yay -S python-ruyaml neovim-plug ttf-dejavu-nerd noto-fonts
 ```
-
-### Reflector
-
-```bash
-yay -S reflector
-reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
-```
-
 ### Launch sway
 
 ```
-exec dbus-launch sway
+sway
 ```
+
 Windows-Enter: terminal
 Windows-Shift: Exit sway
 
