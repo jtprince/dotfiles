@@ -10,6 +10,11 @@ home = Path.home()
 
 SAVE_TO = home / "Dropbox/env/passwds_logins/"
 
+SSH_DIR = home / ".ssh"
+AWS_DIR = home / ".aws"
+ALL_DIRS = [SSH_DIR, AWS_DIR]
+_all_dirs_display = " ".join([str(path) for path in ALL_DIRS])
+
 
 @contextmanager
 def cd(newdir):
@@ -21,32 +26,42 @@ def cd(newdir):
         os.chdir(prevdir)
 
 
+def save_path(path):
+    dirname = path.name
+
+    zipname = dirname
+    if zipname.startswith("."):
+        zipname = "dot-" + zipname[1:]
+
+    secure_name = zipname + ".secure.7z"
+
+    parent = path.parent
+    print(parent)
+
+    with cd(parent):
+        cmd = ["7z", "a", "-p", secure_name, str(dirname)]
+        response = subprocess.run(cmd)
+        if not response.returncode == 0:
+            raise RuntimeError("Something wrong with zip creation! Aborting!")
+
+        rename_to = os.path.join(SAVE_TO, secure_name)
+        print("Moving to:", rename_to)
+        Path(secure_name).rename(rename_to)
+
+
 parser = argparse.ArgumentParser()
-parser.add_argument("dirname", help="the path to the directory to be saved")
-parser.add_argument("--save-to", help=f"save to path (default: {str(SAVE_TO)})")
+parser.add_argument("dirname", nargs="?", help="path to the dir to be saved")
+parser.add_argument("--save-to", help=f"save to (default: {str(SAVE_TO)})")
+parser.add_argument("--all", action="store_true", help=f"save: {_all_dirs_display}")
 args = parser.parse_args()
 
-path = Path(args.dirname)
-print(path)
-dirname = path.name
+if args.all:
+    paths = ALL_DIRS
+else:
+    if args.dirname is None:
+        parser.error("Need dirname or --all")
+    path = Path(args.dirname)
+    paths = [path]
 
-zipname = dirname
-if zipname.startswith("."):
-    zipname = "dot-" + zipname[1:]
-
-secure_name = zipname + ".secure.7z"
-
-parent = path.parent
-print(parent)
-
-
-with cd(parent):
-
-    cmd = ["7z", "a", "-p", secure_name, str(dirname)]
-    response = subprocess.run(cmd)
-    if not response.returncode == 0:
-        raise RuntimeError("Something went wrong with zip creation!  Aborting!")
-
-    rename_to = os.path.join(SAVE_TO, secure_name)
-    print("Moving to:", rename_to)
-    Path(secure_name).rename(rename_to)
+for path in paths:
+    save_path(path)

@@ -30,6 +30,10 @@
 --ignore-directory=is:~.dot
 --ignore-directory=is:~.nib
 --ignore-directory=is:~.plst
+--ignore-directory=is:~.plst
+
+# Jekyll
+--ignore-directory=is:.jekyll-cache
 
 # Git
 # https://git-scm.com/

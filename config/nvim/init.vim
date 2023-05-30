@@ -410,7 +410,7 @@ function PrePythonCleanup()
     sleep 50m
 endfunction
 autocmd BufWritePre *.py call PrePythonCleanup()
-autocmd BufWritePost *.py call Flake8()
+" autocmd BufWritePost *.py call Flake8()
 
 " SIMPLE TRANSFORMATIONS =================================================
 " pretty print the json

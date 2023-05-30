@@ -16,11 +16,17 @@ ssh_config_path = Path.home() / ".ssh" / "config"
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "id",
+    nargs="?",
     help=str(
         "ssh host or AWS instance id; "
         "must have commented InstanceID entry in .ssh/config "
         "if using ssh host name",
     ),
+)
+parser.add_argument(
+    "--list",
+    action='store_true',
+    help="list ec2 names and ids and exit"
 )
 parser.add_argument(
     "--ssh_config_path",
@@ -32,7 +38,12 @@ args = parser.parse_args()
 
 
 host_to_instance = get_ssh_host_to_instance_id(args.ssh_config_path)
-print(host_to_instance)
+if args.list:
+    for host, instance in host_to_instance.items():
+        print(host)
+        print(instance)
+        print()
+    exit(0)
 
 if args.id in host_to_instance:
     instance_id = host_to_instance[args.id]

@@ -31,7 +31,6 @@ args = parser.parse_args()
 
 
 host_to_instance = get_ssh_host_to_instance_id(args.ssh_config_path)
-print(host_to_instance)
 
 if args.id in host_to_instance:
     instance_id = host_to_instance[args.id]

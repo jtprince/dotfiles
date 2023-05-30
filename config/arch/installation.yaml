@@ -147,6 +147,7 @@ user:
     - ruby-build
     - _post_commands:
       - "rbenv install --list"
+      - "rbenv install --list-all"
       - "CONFIGURE_OPTS=\"--with-readline-dir=/usr/include/readline\""
       - "rbenv install <SOME_VERSION>"
       - "rbenv global <SOME_VERSION>"
