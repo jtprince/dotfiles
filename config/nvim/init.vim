@@ -133,6 +133,9 @@ Plug 'psf/black', { 'branch': 'stable' }
 " :Isort
 Plug 'brentyi/isort.vim'
 
+" :Precommit
+Plug 'ttibsi/pre-commit.nvim'
+
 "" python mode is the only reliable way to get at rope functionality
 "Plug 'python-mode/python-mode', { 'branch': 'develop' }
 

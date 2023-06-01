@@ -132,8 +132,6 @@ user:
   jupyter:
     - jupyterlab
     - jupytext
-    # currently failing to install, might need to pip install
-    - jupyterlab_code_formatter
   mime:
     # - handlr-bin ## couldn't find :/ 
   ruby:
