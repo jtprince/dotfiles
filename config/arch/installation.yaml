@@ -94,6 +94,11 @@ user:
     - transmission-cli
     - w3m
     - libcaca
+    # clang for compiling mountpoint-s3-git
+    - clang
+    # mountpoint like goofys but written in rust:
+    - mountpoint-s3-git
+    # remember: env -i bash --noprofile --norc
   python:
     - pyenv
     - pyenv-virtualenv
@@ -162,6 +167,7 @@ user:
     # pulseaudio-alsa
     - pasystray-git
     - pavucontrol
+    - python-pulsectl
     - paprefs
     - pavumeter
     - _post_commands:

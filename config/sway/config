@@ -37,7 +37,8 @@ exec $noid systemctl --user import-environment
 # exec $noid gnome-keyring-daemon --start --components=secrets
 # shouldn't have to, but it seems to be needed for not:
 # exec --no-startup-id systemctl --user status pipewire-pulse.service
-exec $noid pulse-restart 30
+# This seems useful on tty starts but not display mgr start:
+# exec $noid pulse-restart 30
 
 #########################
 # APPEARANCE
@@ -400,7 +401,8 @@ set $browser2 firefox -P work
 # set $browser2 chrome-work
 set $newwindow --new-window
 
-bindsym $mod+x exec terminal-emulator
+# bindsym $mod+x exec terminal-emulator
+bindsym $mod+x exec /usr/bin/alacritty
 
 bindsym $mod+i exec $browser1
 bindsym $mod+Shift+I exec $browser2
@@ -438,15 +440,13 @@ bindsym $mod+Ctrl+Shift+Print exec screenshot-sway window --ocr --annotate --eog
 # Keyboard shortcuts
 ###########################
 
-
-
 # ☆ <Favorites> toggles monitor setting
 set $monitor_laptop_cmd monitor-config laptop
 set $monitor_laptop_cmd_integer monitor-config laptop --force-integer
-set $monitor_primary1_cmd monitor-config dell
-set $monitor_primary1_cmd_integer monitor-config dell --force-integer
-set $monitor_primary2_cmd monitor-config hp
-set $monitor_primary2_cmd_integer monitor-config hp --force-integer
+set $monitor_primary1_cmd monitor-config hp
+set $monitor_primary1_cmd_integer monitor-config hp --force-integer
+# set $monitor_primary2_cmd monitor-config hp
+# set $monitor_primary2_cmd_integer monitor-config hp --force-integer
 
 # LAPTOP
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd

@@ -1,53 +1,97 @@
 #!/usr/bin/env python
 
 import argparse
-from pulseaudio_sink import PulseaudioSink
+import pulsectl
+import time
 
 LIST = "list"
 TOGGLE = "toggle"
+SET = "set"
 
 parser = argparse.ArgumentParser()
-parser.add_argument("action", choices=[TOGGLE, LIST], help="do something")
+parser.add_argument("action", choices=[TOGGLE, LIST, SET], help="do something")
+parser.add_argument("set_index", nargs="?", type=int, help="the index to set as default")
 parser.add_argument("--all", action='store_true', help="list all, even not blessed")
 args = parser.parse_args()
 
+
+
 # TODO: pull these from some local file
+# NOTE: the order is very important!
 BLESSED_DESCRIPTIONS = [
+    "KT_USB_AUDIO Analog Stereo",
+    "Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones",
     "USB PnP Audio Device Analog Stereo",
     "Family 17h (Models 10h-1fh) HD Audio Controller Speaker + Headphones",
     # "Family 17h (Models 10h-1fh) HD Audio Controller Analog Stereo"
-    "Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones",
-    "TOZO-T10",
-    "Pixel earbuds Analog Stereo",
-    "KT_USB_AUDIO Analog Stereo",
+    # "TOZO-T10",
+    # "Pixel earbuds Analog Stereo",
+    # The Philips HDMI output (very weak):
+    "Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 3 Output",
+    "Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 2 Output",
+    "Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 1 Output",
 ]
 
-def get_and_display_current_state(list_all=False):
-    for sink in PulseaudioSink.get_sinks():
-        if sink.description in BLESSED_DESCRIPTIONS:
-            description_line = sink.description
-            if sink.is_default():
-                description_line += " <===== DEFAULT"
+def get_pulse():
+    return pulsectl.Pulse('pactl-speakers-script')
 
-            print(description_line)
-        else:
-            if list_all:
-                print("(NOT BLESSED)")
-                print("description: ", sink.description, "\n")
 
+def get_default_sink_name():
+    return get_pulse().server_info().default_sink_name
+
+
+def is_blessed(sink):
+    return sink.description in BLESSED_DESCRIPTIONS
+
+
+def is_default(sink):
+    return sink.name == get_default_sink_name()
+
+
+def make_label(index, sink):
+    label = sink.description
+    if is_default(sink):
+        label += " <======== DEFAULT"
+
+    if not is_blessed(sink):
+        label += " [NOT BLESSED]"
+    return f"[{index}] {label}"
+
+
+def get_sinks():
+    return get_pulse().sink_list()
+
+
+def get_and_display_current_state():
+    for index, sink in enumerate(get_sinks()):
+        print(make_label(index, sink))
 
 
 def get_next_best_sink():
     """Returns the next blessed speaker that's not default."""
-    for sink in PulseaudioSink.get_sinks():
-        if sink.description in BLESSED_DESCRIPTIONS:
-            if not sink.is_default():
-                return sink
+    sinks = get_sinks()
+    for sink_description in BLESSED_DESCRIPTIONS:
+        for sink in sinks:
+            if sink.description == sink_description:
+                if not is_default(sink):
+                    return sink
+
+
+def set_default(sink):
+    get_pulse().default_set(sink)
 
 
 if args.action == LIST:
-    get_and_display_current_state(args.all)
+    get_and_display_current_state()
 elif args.action == TOGGLE:
     sink = get_next_best_sink()
-    sink.set_default()
-
+    print("setting as default:", sink.description)
+    set_default(sink)
+elif args.action == SET:
+    sinks = get_sinks()
+    max_index = len(sinks) - 1
+    if args.set_index > max_index:
+        raise parser.error(f"index cannot be > {max_index}")
+    set_default(sinks[args.set_index])
+    time.sleep(1)
+    get_and_display_current_state()

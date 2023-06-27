@@ -409,7 +409,7 @@ autocmd Filetype tex setlocal foldmethod=syntax
 function PrePythonCleanup()
     " call isort and disable async so no weirdness
     call isort#Isort(0, line('$'), v:null, v:false)
-    execute 'Black'
+    :silent execute 'Black'
     sleep 50m
 endfunction
 autocmd BufWritePre *.py call PrePythonCleanup()
