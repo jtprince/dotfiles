@@ -10,7 +10,7 @@ SET = "set"
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "action", nargs="?", choices=[TOGGLE, LIST, SET], default=LIST, help="do something"
+    "action", nargs="?", choices=[LIST, TOGGLE, SET], default=LIST, help="do something"
 )
 parser.add_argument(
     "set_index", nargs="?", type=int, help="the index to set as default"
