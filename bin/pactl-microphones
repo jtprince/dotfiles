@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+
+import argparse
+import pulsectl
+import time
+
+LIST = "list"
+TOGGLE = "toggle"
+SET = "set"
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "action", nargs="?", choices=[LIST, TOGGLE, SET], default=LIST, help="do something"
+)
+parser.add_argument(
+    "set_index", nargs="?", type=int, help="the index to set as default"
+)
+args = parser.parse_args()
+
+
+# TODO: pull these from some local file
+# NOTE: the order is very important!
+BLESSED_DESCRIPTIONS = [
+    "C922 Pro Stream Webcam Analog Stereo",
+    "Monitor of Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones",
+    "Tiger Lake-LP Smart Sound Technology Audio Controller Headphones Stereo Microphone",
+    "Tiger Lake-LP Smart Sound Technology Audio Controller Digital Microphone",
+    "Monitor of Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 3 Output",
+    "Monitor of Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 2 Output",
+    "Monitor of Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 1 Output",
+]
+
+
+def get_pulse():
+    return pulsectl.Pulse("pactl-speakers-script")
+
+
+def get_default_source_name():
+    return get_pulse().server_info().default_source_name
+
+
+def is_blessed(source):
+    return source.description in BLESSED_DESCRIPTIONS
+
+
+def is_default(source):
+    return source.name == get_default_source_name()
+
+
+def make_label(index, source):
+    label = source.description
+    if is_default(source):
+        label += " <======== DEFAULT"
+
+    if not is_blessed(source):
+        label += " [NOT BLESSED]"
+    return f"[{index}] {label}"
+
+
+def get_sources():
+    return get_pulse().source_list()
+
+
+def get_and_display_current_state():
+    for index, source in enumerate(get_sources()):
+        print(make_label(index, source))
+
+
+def get_next_best_source():
+    """Returns the next blessed speaker that's not default."""
+    sources = get_sources()
+    for source_description in BLESSED_DESCRIPTIONS:
+        for source in sources:
+            if source.description == source_description:
+                if not is_default(source):
+                    return source
+
+
+def set_default(source):
+    get_pulse().default_set(source)
+
+
+if args.action == TOGGLE:
+    source = get_next_best_source()
+    set_default(source)
+elif args.action == SET:
+    sources = get_sources()
+    max_index = len(sources) - 1
+    if args.set_index > max_index:
+        raise parser.error(f"index cannot be > {max_index}")
+    set_default(sources[args.set_index])
+
+get_and_display_current_state()
