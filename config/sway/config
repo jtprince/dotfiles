@@ -395,10 +395,10 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow up 10 px or 10 ppt
 # Preferred applications
 #########################
 
-set $browser1 firefox -P personal
-# set $browser1 chrome-personal
-set $browser2 firefox -P work
-# set $browser2 chrome-work
+# set $browser1 firefox -P personal --allow downgrade
+set $browser1 chrome-personal
+# set $browser2 firefox -P work --allow downgrade
+set $browser2 chrome-work
 set $newwindow --new-window
 
 # bindsym $mod+x exec terminal-emulator
@@ -443,9 +443,9 @@ bindsym $mod+Ctrl+Shift+Print exec screenshot-sway window --ocr --annotate --eog
 # ☆ <Favorites> toggles monitor setting
 set $monitor_laptop_cmd monitor-config laptop
 set $monitor_laptop_cmd_integer monitor-config laptop --force-integer
-set $monitor_primary1_cmd monitor-config hp
-set $monitor_primary1_cmd_integer monitor-config hp --force-integer
-# set $monitor_primary2_cmd monitor-config hp
+set $monitor_primary1_cmd monitor-config philips
+set $monitor_primary1_cmd_integer monitor-config philips --force-integer
+# set $monitor_primary2_cmd monitor-config philips
 # set $monitor_primary2_cmd_integer monitor-config hp --force-integer
 
 # LAPTOP

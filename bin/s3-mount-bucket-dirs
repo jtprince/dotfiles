@@ -4,29 +4,15 @@ import subprocess
 import argparse
 from pathlib import Path
 
-
-setup_instructions = """
-prereq - pull down catfs from https://github.com/kahing/catfs/releases/
-chmod +x and put in ~/.local/bin, which should be on your path.  Also
-make a cache dir for goofys.  For example:
-
-```
-mkdir -p ~/.local/bin
-cd ~/.local.bin
-wget https://github.com/kahing/catfs/releases/download/v0.9.0/catfs
-chmod +x catfs
-# check that <$HOME>.local/bin is in your $PATH (if not, add it)
-echo $PATH | grep '.local/bin'
-mkdir -p ~/.cache/goofys
-```
-
-Also, note that interactive shell prompts can slow down interaction with
+"""
+Note that interactive shell prompts can slow down interaction with
 the underlying s3 filesystem.  Consider starting a bash prompt with a
 clean environment before navigating:
 
     env -i bash --noprofile --norc
 """
-
+MOUNT_TYPE = "/dev/fuse"
+MOUNT_TYPE = "mountpoint-s3"
 
 parser = argparse.ArgumentParser(
     description="mount s3 buckets. Expects dirs to exist and to mirror the bucket names on s3."
@@ -76,7 +62,7 @@ def get_mounted_paths():
             shell=True,
             text=True,
         ).strip()
-        if output == "/dev/fuse":
+        if output == MOUNT_TYPE:
             mounted.append(path)
     return mounted
 
@@ -113,8 +99,7 @@ if args.list:
 for path in args.dirs:
     dir_ = path.name
     print(f"Mounting {dir_}")
-    cache_dir = str(Path.home() / ".cache/goofys")
-    run(f"goofys --cheap --cache '--free:5%:{cache_dir}' {dir_} {dir_}")
+    run(f"mount-s3 {dir_} {dir_}")
 
 
 if args.shell:
