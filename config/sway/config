@@ -395,10 +395,10 @@ bindsym $mod+Ctrl+Shift+$UpShift resize grow up 10 px or 10 ppt
 # Preferred applications
 #########################
 
-# set $browser1 firefox -P personal --allow downgrade
-set $browser1 chrome-personal
-# set $browser2 firefox -P work --allow downgrade
-set $browser2 chrome-work
+set $browser1 firefox -P personal --allow downgrade
+# set $browser1 chrome-personal
+set $browser2 firefox -P work --allow downgrade
+# set $browser2 chrome-work
 set $newwindow --new-window
 
 # bindsym $mod+x exec terminal-emulator
