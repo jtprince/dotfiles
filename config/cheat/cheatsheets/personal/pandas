@@ -119,3 +119,40 @@ fractions_with_ms2 = fractions_with_ms2.assign(
         lambda msrun_id: active_exclusion_runs[msrun_id]
     )
 )
+
+# Aggregation
+
+data = {
+    'Group': ['A', 'A', 'B', 'B', 'C', 'C'],
+    'Value': [10, 15, 20, 25, 30, 35]
+}
+
+df = pd.DataFrame(data)
+
+## Group by and summarize with agg
+summary_metrics = df.groupby('Group').agg(
+    Sum=('Value', sum),
+    Average=('Value', 'mean'),
+    Max=('Value', max),
+    Min=('Value', min)
+).reset_index()
+
+  Group  Sum  Average  Max  Min
+0     A   25     12.5   15   10
+1     B   45     22.5   25   20
+2     C   65     32.5   35   30
+
+## Group by but apply back to original with transform
+value_grouped = df.groupby('Group')['Value']
+df['Sum'] = value_grouped.transform('sum')
+df['Avg'] = value_grouped.transform('mean')
+df['Max'] = value_grouped.transform('max')
+df['Min'] = value_grouped.transform('min')
+
+  Group  Value  Sum  Average  Max  Min
+0     A     10   25     12.5   15   10
+1     A     15   25     12.5   15   10
+2     B     20   45     22.5   25   20
+3     B     25   45     22.5   25   20
+4     C     30   65     32.5   35   30
+5     C     35   65     32.5   35   30
