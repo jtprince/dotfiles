@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm ~/.config/nvim
+ln -s ~/dotfiles/config/nvim-new ~/.config/nvim

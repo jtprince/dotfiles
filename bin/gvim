@@ -1,10 +1,9 @@
 #!/bin/sh
 
-# no header and fork it
-# nvim-gtk -- "$@" &
+rm ~/.config/nvim
+ln -s ~/dotfiles/config/nvim ~/.config/nvim
 
 # if you change this, you need to change ~/bin/sgvim, too
-
 # alacritty -e $HOME/bin/sleep-and-start-nvim "$@" &
 kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
 
