@@ -21,6 +21,7 @@ args = parser.parse_args()
 # TODO: pull these from some local file
 # NOTE: the order is very important!
 BLESSED_DESCRIPTIONS = [
+    "Beats Fit Pro",
     "KT_USB_AUDIO Analog Stereo",
     "Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones",
     "USB PnP Audio Device Analog Stereo",
