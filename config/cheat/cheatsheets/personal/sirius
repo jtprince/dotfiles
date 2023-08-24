@@ -48,7 +48,8 @@ dot <somefile>.dot -Tpng -o tree.png
 sirius \
     --input example.ms \
     --project /path/to/sirius_out \
-    --no-compression sirius \
+    --no-compression \
+    sirius \
     --elements-enforced=CHN[15]OS[4]Cl[2]P[2] \
     --profile=orbitrap \
     --ions-considered=[M+H]+,[M-H2O+H]+,[M+Na]+,[M+NH4]+ \
