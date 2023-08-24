@@ -43,18 +43,16 @@ sirius -o output -i spectra.ms formula -c 10 write-summaries
 sirius -i output ftree-export --json --dot --all --output ftree-output
 dot <somefile>.dot -Tpng -o tree.png
 
-# Another example from Efi Kontou (might be older command)
-# note that the `sirius` *sub*-command is a synonym for "formula"
+# Another example from Efi Kontou
 sirius \
     --input example.ms \
-    --project /path/to/sirius_out \
-    --no-compression \
-    sirius \
-    --elements-enforced=CHN[15]OS[4]Cl[2]P[2] \
-    --profile=orbitrap \
-    --ions-considered=[M+H]+,[M-H2O+H]+,[M+Na]+,[M+NH4]+ \
-    write-summaries
-
+    --project ./sirius_out \
+    formula \
+    -p='qtof' \
+    -i='[M+H]+,[M-H2O+H]+,[M+Na]+,[M+NH4]+' \
+    -E='CHN[15]OS[4]Cl[2]P[2]' \
+    --compound-timeout=100 \
+    -c=10
 
 # Appendix
 
