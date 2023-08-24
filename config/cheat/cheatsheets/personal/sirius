@@ -48,10 +48,11 @@ dot <somefile>.dot -Tpng -o tree.png
 # Appendix
 
 spectra.complete.ms
+[focus is on the formatting not correctness/coherence for this compound]
 ---------
 >compound DEHP
->parentmass: 391.284
->formula C24H38O4
+>parentmass: 390.27703
+>formula C24H37O4
 
 >ms1
 390.27703 100
