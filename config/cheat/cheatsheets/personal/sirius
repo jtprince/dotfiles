@@ -10,7 +10,7 @@ ln -sf ~/src/sirius/bin/sirius ~/.local/bin/
 https://boecker-lab.github.io/docs.sirius.github.io/io/#sirius-ms-format
 
     >compound: The name of the measured compound (or any placeholder). mandatory.
-    >parentmass: the mass of the parent peak
+    >parentmass: the m/z of the parent peak
     >formula: The molecular formula of the compound.
     >ion: the ionization mode. See for the format of ion modes.
     >charge: is redundant if you already provided the ion mode. (1 or -1).
@@ -36,34 +36,13 @@ example
 # Open the gui
 sirius
 
-sirius -o output -i spectra.ms formula -c 50 write-summaries
-sirius -i output ftree-export --json --all --output ftree-output
-sirius -i output ftree-export --dot --all --output ftree-output
+# annotate spectra
+sirius -o output -i spectra.ms formula -c 10 write-summaries
 
+# produce detailed tree output(json and graphviz input)
+sirius -i output ftree-export --json --dot --all --output ftree-output
 
- 3427  ./bin/sirius
- 3429  ./bin/sirius --help
- 3430  ./create-notebook playing-with-sirius
- 3431  cd playing-with-sirius
- 3433  pip install "git+https://github.com/enveda/sirius-api-dev.git"
- 3439  ~/src/sirius/bin/sirius --help
- 3444  gvim sirius-validation.md
- 3456  ~/src/sirius/bin/sirius
- 3457  ~/src/sirius/bin/sirius --help | grep -i count
- 3464  ~/src/sirius/bin/sirius -o sirius_output.srs_out -i example.ms formula -c 50 write-summaries
- 3465  gvim sirius_output.srs_out/canopus_formula_summary.tsv
- 3466  cd sirius_output.srs_out
- 3473  rm -rf sirius_output.srs_out
- 3475  ~/src/sirius/bin/sirius -o output -i example.ms formula -c 50 write-summaries
- 3504  ~/src/sirius/bin/sirius formula --help
- 3505  ~/src/sirius/bin/sirius formula write-summaries --help
- 3774  fd -i sirius
- 3775  cd enveda/johnprince-notebooks/playing-with-sirius/
-~/src/sirius/bin/sirius -o output -i spectra.ms formula -c 50 write-summaries
-~/src/sirius/bin/sirius -i output ftree-export --json --all --output ftree-output
-~/src/sirius/bin/sirius -i output ftree-export --dot --all --output ftree-output
- 3811  cd notebooks/playing-with-sirius
- 3813* cheat -e sirius
+dot <somefile>.dot -Tpng -o tree.png
 
 
 # Appendix
