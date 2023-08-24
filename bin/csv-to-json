@@ -6,12 +6,14 @@ require 'json'
 filename = ARGV.shift
 
 if filename.nil?
-  puts "usage: #{File.basename(__FILE__)} <filename>.csv"
+  puts "usage: #{File.basename(__FILE__)} <filename>.csv|tsv"
   puts "outputs lines of json to stdout"
   exit
 end
 
-table = CSV.table(filename)
+delimiter = File.extname(filename) == '.tsv' ? "\t" : ","
+
+table = CSV.table(filename, col_sep: delimiter)
 table.each do |row|
   puts JSON.dump(row.to_h)
 end
