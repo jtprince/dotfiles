@@ -2,7 +2,6 @@
 from __future__ import print_function
 
 import logging
-import sys
 import threading
 import time
 from array import array
@@ -155,7 +154,7 @@ class IClickerBase(object):
             self._write(cmd)
             try:
                 while True:
-                    response = self._read()
+                    self._read()
             except USBError:
                 pass
 

@@ -14,7 +14,6 @@ LEADERS = ('contact_data=', 'update_request=')
 
 import json
 import sys
-import traceback
 
 if len(sys.argv) == 1:
     print(__doc__)

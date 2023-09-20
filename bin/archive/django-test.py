@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-import fnmatch
 import os
 import re
 import subprocess

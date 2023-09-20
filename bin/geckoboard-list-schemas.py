@@ -20,7 +20,7 @@ else:
 if not api_key:
     parser.error("Must provide --api-key or via GECKOBOARD_API env var")
 
-url = f"https://api.geckoboard.com/datasets/"
+url = "https://api.geckoboard.com/datasets/"
 
 auth_params = dict(auth=(api_key, None))
 response = requests.get(url, **auth_params)

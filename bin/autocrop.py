@@ -86,7 +86,7 @@ def cont(img, gray, user_thresh, crop):
 
     im_h, im_w = img.shape[:2]
     while (
-        found == False
+        found is False
     ):  # repeat to find the right threshold value for finding a rectangle
         if (
             user_thresh >= 255 or user_thresh == 0 or loop
@@ -176,7 +176,7 @@ def autocrop(params):
     )
     im_h, im_w = img.shape[:2]
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    res_gray = cv2.resize(
+    cv2.resize(
         img, (int(im_w / 6), int(im_h / 6)), interpolation=cv2.INTER_CUBIC
     )
     found, img = cont(img, gray, thresh, crop)
@@ -317,7 +317,7 @@ def main():
     if len(files) == 0:
         print(f"No image files found in {in_path}\n Exiting.")
     else:
-        if num_threads == None:
+        if num_threads is None:
             try:
                 num_threads = len(os.sched_getaffinity(0))
                 print(f"Using {num_threads} threads.")
@@ -341,7 +341,7 @@ def main():
             )
 
         with Pool(num_threads) as p:
-            results = p.map(autocrop, params)
+            p.map(autocrop, params)
 
 
 if __name__ == "__main__":
