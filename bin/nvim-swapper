@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "choice",
+    default="show",
+    choices=["old", "new", "show"],
+    help="which nvim to use (or show)",
+)
+args = parser.parse_args()
+
+DIRS = {
+    "old": "nvim",
+    "new": "nvim-new",
+}
+
+nvim_config_symlink = Path.home() / ".config/nvim"
+
+label_to_path = {
+    label: Path.home() / "dotfiles/config" / dir
+    for label, dir in DIRS.items()
+}
+
+LABELS = {v: k for k, v in DIRS.items()}
+
+if args.choice == 'show':
+    label = LABELS[nvim_config_symlink.resolve().name]
+    print(label)
+    exit(0)
+
+real_dir = label_to_path[args.choice]
+
+print("removing existing symlink", str(nvim_config_symlink))
+nvim_config_symlink.unlink(missing_ok=True)
+
+print("creating new symlink to", str(real_dir))
+Path(nvim_config_symlink).symlink_to(real_dir)
+
