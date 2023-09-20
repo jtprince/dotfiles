@@ -148,6 +148,7 @@ user:
     - ruby
     - rbenv
     - ruby-build
+    - ruby-mustache
     - _post_commands:
       - "rbenv install --list"
       - "rbenv install --list-all"
