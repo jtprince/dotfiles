@@ -1,37 +1,104 @@
 #!/usr/bin/env python
 
-# Work in progress
-
 import json
 import argparse
 import subprocess
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "action", nargs="?", default="list", choices=["list", "set", "set-switch"]
+# The ID is made by joining "make", "model", and "serial"
+LAPTOP_ID = "California Institute of Technology 0x1401 Unknown"
+SCALING = dict(
+    laptop=2.0,
+    other=1.6,
 )
-args = parser.parse_args()
+DEFAULT_RESOLUTION = "3840x2160"
+EXTRAS_SETTINGS = ["adaptive_sync", "on"]
 
-monitors = json.loads(subprocess.check_output(["swaymsg", "-t", "get_outputs"], text=True))
 
-identifier = ["make", "model", "serial"]
+_ID_KEYS = ["make", "model", "serial"]
+_SWAYMSG_OUTPUT = ["swaymsg", "output"]
 
-if args.action == "list":
-    for index, monitor in enumerate(monitors):
-        print(f"[{index}]", " ".join([monitor[key] for key in identifier]))
-    exit()
-elif args.action in ('set', 'set-switch'):
-    names = [monitor['name'] for monitor in monitors]
 
-    if args.action == 'set-switch':
+def setup_monitors(params):
+    monitors = _get_monitors()
+    name_to_id = get_name_to_id(monitors)
+
+    names = list(name_to_id.keys())
+    scalings = [SCALING[key] for key in ["laptop", "other"]]
+    position_ys = [params.laptop_y_offset, 0]
+
+    if params.laptop_position == "right":
         names = list(reversed(names))
+        scalings = list(reversed(scalings))
+        position_ys = list(reversed(position_ys))
 
-    assert len(names) >= 2
+    position_xs = [0, int(3840 / float(scalings[0]))]
 
-    cmds = [
-        ["swaymsg", "output", names[0], "pos", "0", "0", "res", "3840x2160"],
-        ["swaymsg", "output", names[1], "pos", "3840", "0", "res", "3840x2160"],
+    for args in zip(names, scalings, position_xs, position_ys):
+        cmds = _get_enable_and_output_cmds(*args)
+        for cmd in cmds:
+            print(" ".join(cmd))
+            subprocess.run(cmd)
+
+
+def _get_args():
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="2 monitor setup; assumes monitor 4K and lenovo laptop",
+    )
+    parser.add_argument(
+        "laptop_position",
+        nargs="?",
+        default="right",
+        choices=["right", "left"],
+        help="the laptop sits in this position relative to the main monitor",
+    )
+    parser.add_argument(
+        "-y",
+        "--laptop-y-offset",
+        default=20,
+        type=int,
+        help="vertical bump up of the laptop",
+    )
+    return parser.parse_args()
+
+
+def _get_monitors():
+    return json.loads(
+        subprocess.check_output(["swaymsg", "-t", "get_outputs"], text=True)
+    )
+
+
+def _get_id(monitor):
+    return " ".join([monitor[key] for key in _ID_KEYS])
+
+
+def get_name_to_id(monitors):
+    """Returns (name, id) for all monitors, laptop first."""
+    name_to_id = [(monitor["name"], _get_id(monitor)) for monitor in monitors]
+    return dict(sorted(name_to_id, key=lambda pair: pair[1] != LAPTOP_ID))
+
+
+def _get_output_cmd(name, scale, position_x, position_y):
+    return [
+        *_SWAYMSG_OUTPUT,
+        name,
+        "pos",
+        str(position_x),
+        str(position_y),
+        "res",
+        DEFAULT_RESOLUTION,
+        "scale",
+        str(scale),
+        *EXTRAS_SETTINGS,
     ]
-    for cmd in cmds:
-        print(" ".join(cmd))
-        subprocess.run(cmd)
+
+
+def _get_enable_and_output_cmds(name, scale, position_x, position_y):
+    enable_cmd = [*_SWAYMSG_OUTPUT, name, "enable"]
+    output_cmd = _get_output_cmd(name, scale, position_x, position_y)
+    return [enable_cmd, output_cmd]
+
+
+if __name__ == "__main__":
+    args = _get_args()
+    setup_monitors(args)
