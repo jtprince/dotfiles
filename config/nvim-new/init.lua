@@ -18,6 +18,7 @@ end
 opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+    "williamboman/mason.nvim",
     -- popup with possible keybindings of what you started to type
     "folke/which-key.nvim",
 
@@ -28,8 +29,18 @@ require("lazy").setup({
     "folke/neodev.nvim",
 
     -- provides vimp
-    'svermeulen/vimpeccable'
+    'svermeulen/vimpeccable',
+
+    -- {
+    --     "stevearc/gkeep.nvim",
+    --     build = "UpdateRemotePlugins",
+    --     -- opts = {}
+    --     -- Optional dependencies
+    --     dependencies = { "nvim-tree/nvim-web-devicons" },
+    -- },
 })
+
+require("mason").setup()
 
 
 -- always show statusline

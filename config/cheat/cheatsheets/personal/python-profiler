@@ -1,0 +1,10 @@
+
+
+# use line profiler
+pip install line_profiler
+
+## Ipython
+# assuming a function `convert_units`
+
+[1]: %load_ext line_profiler
+[2]: %lprun -f convert_units convert_units(arg1, arg2, ...)

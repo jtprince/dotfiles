@@ -1,0 +1,12 @@
+#!/bin/bash
+
+lua_config="$HOME/.config/nvim/init.lua"
+old_config="$HOME/.config/nvim/init.vim"
+
+if test -f "$lua_config"; then
+    echo "$lua_config exists"
+    gvim "$lua_config"
+else
+    echo "$old_config exists"
+    gvim "$old_config"
+fi

@@ -41,6 +41,11 @@ export GPG_TTY=`tty`
 # Did not receive a reply..." errors with GTK3
 export NO_AT_BRIDGE=1
 
+# https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start
+# (I am also doing the dbus-update-activation-environment stuff, but for good
+# measure)
+export GTK_USE_PORTAL=0
+
 # Whether to begin with kubectx shown in prompt by default
 export ZSH_KUBECTL_DISPLAY=false
 

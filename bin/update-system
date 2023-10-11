@@ -1,0 +1,11 @@
+#!/bin/bash
+
+current_python=`pyenv global`
+echo "[Setting python to 'system' for updates]"
+echo ""
+pyenv global system
+paru
+echo ""
+echo "[Setting python back to '$current_python']"
+pyenv global "$current_python"
+

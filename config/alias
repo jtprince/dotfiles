@@ -131,9 +131,6 @@ alias archenvdir="pushd $HOME/Dropbox/env/os/arch"
 alias zshup="gvim $CONFIG_DIR/zsh/.zshrc"
 alias zshdir="pushd $CONFIG_DIR/zsh/"
 
-# edit init.vim installation file
-alias nvimup="gvim $CONFIG_DIR/nvim/init.vim"
-alias vimup="nvimup"
 alias nvimdir="pushd $CONFIG_DIR/nvim/"
 alias vimdir="nvimdir"
 
