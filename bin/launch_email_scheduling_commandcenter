@@ -10,8 +10,8 @@ DELAY = 0.5
 
 home = Path.home()
 PERSONAL_BROWSER_CMD = ["firefox", "-P", "personal"]
-WORK_BROWSER_CMD = ["google-chrome-stable"]
-# WORK_BROWSER_CMD = ["firefox", "-P", "work"]
+# WORK_BROWSER_CMD = ["google-chrome-stable"]
+WORK_BROWSER_CMD = ["firefox", "-P", "work"]
 
 NEW_WINDOW = "--new-window"
 

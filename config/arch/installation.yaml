@@ -298,10 +298,17 @@ user:
   printing:
     - cups
     - cups-pdf
+    # For cups recognition of network printers:
+    - avahi
+    - nss-mdns
+    - brother-hll2350dw
     - system-config-printer
     # - hplip
-    # sudo systemctl enable cups.service
-    # sudo systemctl start cups.service
+    # sudo systemctl enable --now avahi-deamon.service
+    # # Will automatically turn on cups service when applicable ports requested:
+    # sudo systemctl enable --now cups.socket
+    # Edit /etc/nsswitch.conf and change `hosts` line to include `mdns_minimal [NOTFOUND=return]`:
+    #   hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
     # sudo system-config-printer
   android:
     - jmtpfs
