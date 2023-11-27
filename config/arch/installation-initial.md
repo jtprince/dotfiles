@@ -29,12 +29,12 @@ guide](https://wiki.archlinux.org/title/installation_guide), typically:
 # before pacstrap
 reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
 
-ln -sf /usr/share/zoneinfo/America/Denver /etc/localtime
-hwclock --systohc
-sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
-locale-gen
-echo -n 'LANG=en_US.UTF-8' > /etc/locale.conf
-sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim zsh intel-ucode
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+
+curl -O https://github.com/jtprince/dotfiles/config/arch/scripts/time_and_lang.sh
+bash time_and_lang.sh
 ```
 
 Then reboot (`shutdown now`, remove drive, reboot)
@@ -43,7 +43,7 @@ Then reboot (`shutdown now`, remove drive, reboot)
 
 ### Set up wifi
 ```bash
- nmcli d wifi connect PrinceNest password <password>
+nmcli d wifi connect PrinceNest password <password>
 ```
 
 If nmcli isn't working can fallback to iwd
@@ -75,6 +75,7 @@ keychain
 npm
 vi
 vim
+neovim-nvim-treesitter
 fzf
 ctags
 xterm
@@ -120,8 +121,11 @@ yay -S python-ruyaml neovim-plug ttf-dejavu-nerd noto-fonts
 sway
 ```
 
-Windows-Enter: terminal
-Windows-Shift: Exit sway
+Windows-Enter: open terminal
+Windows-Shift-Q: close window
+Windows-Shift-E: exit sway
+
+Exit sway
 
 ## Get keys
 
