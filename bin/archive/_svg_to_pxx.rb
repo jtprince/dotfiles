@@ -19,6 +19,7 @@ opts = OptionParser.new do |op|
   op.on("-d", "--export-dpi <#{opt[:export_dpi]}>", "rasterizes at this dpi") {|v| opt[:export_dpi] = v }
   op.on("-p", "--png", "export as png") {|v| opt[:png] = v }
   op.on("-b", "--bkg <color>", "export bkg color") {|v| opt[:bkg] = v }
+  op.on("--dragon", "open dragon-drop to immediately paste resulting file")
   op.on("--dry", "just print out the command") {|v| opt[:dry] = v }
 end
 

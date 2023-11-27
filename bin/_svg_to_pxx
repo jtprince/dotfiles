@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import subprocess
+
+DEFAULT_EXPORT_DPI = 200
+
+parser = argparse.ArgumentParser(description="Transforms svg to another format")
+parser.add_argument("svg_files", nargs="+", type=Path, help="svg[z] files")
+parser.add_argument(
+    "-t", "--text-to-path", action="store_true", help="convert text to paths"
+)
+parser.add_argument(
+    "-d",
+    "--export-dpi",
+    type=int,
+    default=DEFAULT_EXPORT_DPI,
+    help="rasterizes at this dpi",
+)
+parser.add_argument("-p", "--png", action="store_true", help="export as png")
+parser.add_argument("-b", "--bkg", help="export bkg color")
+parser.add_argument(
+    "--dragon",
+    action="store_true",
+    help="open dragon-drop for dragging file",
+)
+parser.add_argument("--dry", action="store_true", help="just print out the command")
+args = parser.parse_args()
+
+
+def run(cmd, fork: bool = False):
+    print(cmd)
+    if not args.dry:
+        if fork:
+            subprocess.Popen(cmd)
+        else:
+            subprocess.run(cmd)
+
+
+def build_conversion_cmd(file, outfile, params) -> list[str]:
+    bkg = ["-b", params.bkg] if params.bkg else []
+    text_to_path = ["--export-text-to-path"] if params.text_to_path else []
+    export_dpi = ["--export-dpi", str(params.export_dpi)] if params.export_dpi else []
+    return [
+        "inkscape",
+        str(file),
+        *bkg,
+        *text_to_path,
+        *export_dpi,
+        "--export-filename",
+        str(outfile),
+    ]
+
+
+outfiles = []
+for file in args.svg_files:
+    suffix = ".png" if args.png else ".pdf"
+
+    outfile = file.with_suffix(suffix)
+    cmd = build_conversion_cmd(file, outfile, args)
+    run(cmd)
+    outfiles.append(outfile)
+
+run(["dragon-drop", *list(map(str, outfiles))], fork=True)
