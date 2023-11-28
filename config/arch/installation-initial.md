@@ -147,7 +147,6 @@ cd
 git clone git@github.com:jtprince/dotfiles.git
 cd
 ln -s dotfiles/bin
-
 # pick your resolution, 4k or hd
 ./bin/dotfiles-configure -r 4k
 ```
