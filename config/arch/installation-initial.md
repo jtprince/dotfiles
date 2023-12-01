@@ -33,7 +33,7 @@ pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim zsh int
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 
-curl -O https://github.com/jtprince/dotfiles/config/arch/scripts/time_and_lang.sh
+curl -O https://raw.githubusercontent.com/jtprince/dotfiles/main/config/arch/scripts/time_and_lang.sh
 bash time_and_lang.sh
 ```
 
