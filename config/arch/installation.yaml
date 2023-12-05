@@ -164,8 +164,8 @@ user:
     - python-mako
   sound:
     # Should have already been installed:
-    # pipewire-pulse
     # pulseaudio-alsa
+    - pipewire-pulse
     - pasystray-git
     - pavucontrol
     - python-pulsectl
