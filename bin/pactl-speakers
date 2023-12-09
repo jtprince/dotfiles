@@ -1,98 +1,255 @@
 #!/usr/bin/env python
 
 import argparse
+import dataclasses
+import subprocess
+import sys
+from itertools import chain, dropwhile, groupby
+
 import pulsectl
-import time
 
 LIST = "list"
 TOGGLE = "toggle"
 SET = "set"
 
+
+def takewhile_inclusive(predicate, iterable):
+    result = []
+    for item in iterable:
+        if predicate(item):
+            result.append(item)
+        else:
+            result.append(item)  # Include the item that first fails the condition
+            break
+    return result
+
+
+raw_args = [*sys.argv[1:]]
+if len(raw_args) == 1 and raw_args[0].isdigit():
+    raw_args = ["set", raw_args[0]]
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "action", nargs="?", choices=[LIST, TOGGLE, SET], default=LIST, help="do something"
 )
+parser.add_argument("--flat", action="store_true", help="do not nest by device")
+parser.add_argument(
+    "--show-all", action="store_true", help="list all sinks even if not available"
+)
 parser.add_argument(
     "set_index", nargs="?", type=int, help="the index to set as default"
 )
-args = parser.parse_args()
+args = parser.parse_args(raw_args)
 
 
-# TODO: pull these from some local file
-# NOTE: the order is very important!
-BLESSED_DESCRIPTIONS = [
-    "Beats Fit Pro",
-    "KT_USB_AUDIO Analog Stereo",
-    "Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones",
-    "USB PnP Audio Device Analog Stereo",
-    "Family 17h (Models 10h-1fh) HD Audio Controller Speaker + Headphones",
-    # "Family 17h (Models 10h-1fh) HD Audio Controller Analog Stereo"
-    # "TOZO-T10",
-    # "Pixel earbuds Analog Stereo",
-    # The Philips HDMI output (very weak):
-    "Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 3 Output",
-    "Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 2 Output",
-    "Tiger Lake-LP Smart Sound Technology Audio Controller HDMI / DisplayPort 1 Output",
-]
+@dataclasses.dataclass
+class Port:
+    raw_sink_index: int
+    short_name: str
+    description: str
+    # priority: int
+    availability: str
+
+    def is_unavailable(self):
+        return self.availability == "not available"
 
 
-def get_pulse():
-    return pulsectl.Pulse("pactl-speakers-script")
+def get_ports():
+    cmd = ["pactl", "list", "sinks"]
+    response = subprocess.check_output(cmd, text=True)
+    sections = response.split("\n\n")
+    return list(
+        chain.from_iterable(
+            _get_ports_from_sink_section(section) for section in sections
+        )
+    )
 
 
-def get_default_sink_name():
-    return get_pulse().server_info().default_sink_name
+def _get_ports_from_sink_section(section):
+    lines = section.split("\n")
+    sink_line = lines[0]
+    raw_sink_index = int(sink_line.split("#")[-1])
+
+    port_lines = list(
+        dropwhile(lambda line: not line.lstrip().startswith("Ports:"), lines)
+    )
+    subset = list(
+        takewhile_inclusive(
+            lambda line: not line.lstrip().startswith("Active Port:"), port_lines
+        )
+    )
+    subset.pop(0)  # "Ports: " line
+    active_port_line = subset.pop()
+    ports = [parse_port_line(line, raw_sink_index) for line in subset]
+    return ports
 
 
-def is_blessed(sink):
-    return sink.description in BLESSED_DESCRIPTIONS
+def parse_port_line(line, raw_sink_index):
+    # Examples
+    # [Out] Speaker: Speaker (type: Speaker, priority: 100, availability unknown)
+    # [Out] Headphones: Headphones (type: Headphones, priority: 200, availability group: Headphone, not available)
+    # headphone-output: Headphone (type: Headphones, priority: 0, available)
+    rest = line.lstrip().removeprefix("[Out] ")
+    short_name, rest = rest.split(": ", maxsplit=1)
+    description, rest = rest.split(" (", maxsplit=1)
+    availability = rest.rsplit(", ", maxsplit=1)[-1].rstrip(")")
+    return Port(
+        raw_sink_index=raw_sink_index,
+        short_name=short_name,
+        description=description,
+        availability=availability,
+    )
 
 
-def is_default(sink):
-    return sink.name == get_default_sink_name()
+class Sink:
+    def __init__(self, sink, index: int):
+        """
+        index should be based on the order as given by pulse
+        """
+        self._pulse_sink = sink
+        self.index = index
+        _proplist = sink.proplist
+        self.device_name = (
+            _proplist.get("device.product.name") or _proplist["device.alias"]
+        )
+        self.shortname = (
+            _proplist.get("device.profile.description")
+            or _proplist["device.description"]
+        )
+        self.description = sink.description
+        self.ports = []
+
+    @property
+    def pulse_sink(self):
+        return self._pulse_sink
+
+    @property
+    def raw_sink_index(self):
+        return self._pulse_sink.index
+
+    def is_default(self, pulse: "Pulse") -> bool:
+        return self._pulse_sink.name == pulse.get_default_sink_name()
+
+    def row_label(
+        self,
+        pulse: "Pulse",
+        short: bool = False,
+        with_index: bool = True,
+        show_default: bool = True,
+        show_unblessed_status: bool = True,
+    ):
+        label = self.shortname if short else self.description
+        if show_default and self.is_default(pulse):
+            label += " <===== DEFAULT"
+
+        if with_index:
+            label = f"[{self.index}] " + label
+
+        if self.is_unavailable():
+            label = label + " [UNAVAILABLE]"
+
+        return label
+
+    def is_unavailable(self):
+        """If all ports are "not available", then True."""
+        return all(port.is_unavailable() for port in self.ports)
 
 
-def make_label(index, sink):
-    label = sink.description
-    if is_default(sink):
-        label += " <======== DEFAULT"
+class Pulse:
+    # TODO: pull these from some local file
+    # TODO: do we really need this? Can we deduce what is available??
+    # NOTE: the order is very important!
 
-    if not is_blessed(sink):
-        label += " [NOT BLESSED]"
-    return f"[{index}] {label}"
+    def __init__(self):
+        self._pulse = pulsectl.Pulse("pactl-speakers-script")
+        _sinks = self._get_sinks()
+        ports = get_ports()
+        self._add_ports(_sinks, ports)
+        self._sinks = _sinks
+
+    @staticmethod
+    def _add_ports(sinks: list[Sink], ports: list[Port]):
+        raw_index_to_sink = {sink.raw_sink_index: sink for sink in sinks}
+        for port in ports:
+            raw_index_to_sink[port.raw_sink_index].ports.append(port)
+
+    def get_default_sink_name(self):
+        return self._pulse.server_info().default_sink_name
+
+    def get_default_sink(self):
+        for sink in self._sinks:
+            if sink.is_default(self):
+                return sink
+
+    def get_sinks(self, only_available: bool = True):
+        """Get a list of sinks that have one port that is not "not available"."""
+        if only_available:
+            return [sink for sink in self._sinks if not sink.is_unavailable()]
+        else:
+            return [*self._sinks]
+
+    def _get_sinks(self):
+        return [Sink(sink, index) for index, sink in enumerate(self._pulse.sink_list())]
+
+    def print_sinks(
+        self,
+        grouped: bool = True,
+        enumerated: bool = True,
+        show_unblessed_status: bool = True,
+        only_available: bool = True,
+        show_default: bool = True,
+    ):
+        sinks_to_show = self.get_sinks(only_available=only_available)
+
+        kwargs = dict(
+            pulse=self,
+            with_index=enumerated,
+            show_unblessed_status=show_unblessed_status,
+            show_default=show_default,
+        )
+
+        if grouped:
+            device_and_sink = [(sink.device_name, sink) for sink in sinks_to_show]
+            for device, device_and_sink_groups in groupby(
+                device_and_sink, lambda x: x[0]
+            ):
+                print(device)
+                for device_and_sink in device_and_sink_groups:
+                    sink = device_and_sink[1]
+                    print("   " + sink.row_label(short=True, **kwargs))
+
+        else:
+            for sink in sinks_to_show:
+                print(sink.row_label(short=False, **kwargs))
+
+    def set_next_best_sink(self):
+        """Returns the next speaker that's not default."""
+        sinks = self.get_sinks(only_available=True)
+        position_of_default = sinks.index(self.get_default_sink())
+        next_position = position_of_default + 1
+        next_position = next_position if next_position < len(sinks) else 0
+        next_sink = sinks[next_position]
+        self._pulse.default_set(next_sink.pulse_sink)
+
+    def set_default_by_index(self, index: int):
+        indices = [sink.index for sink in self._sinks]
+        if index > max(indices):
+            raise parser.error(f"index cannot be > {max(indices)}")
+        if min(indices) < 0:
+            raise parser.error(f"index cannot be < 0")
+
+        sink = [sink for sink in self._sinks if sink.index == index][0]
+        self._pulse.default_set(sink.pulse_sink)
 
 
-def get_sinks():
-    return get_pulse().sink_list()
-
-
-def get_and_display_current_state():
-    for index, sink in enumerate(get_sinks()):
-        print(make_label(index, sink))
-
-
-def get_next_best_sink():
-    """Returns the next blessed speaker that's not default."""
-    sinks = get_sinks()
-    for sink_description in BLESSED_DESCRIPTIONS:
-        for sink in sinks:
-            if sink.description == sink_description:
-                if not is_default(sink):
-                    return sink
-
-
-def set_default(sink):
-    get_pulse().default_set(sink)
-
+if args.action == SET:
+    pulse = Pulse()
+    pulse.set_default_by_index(args.set_index)
 
 if args.action == TOGGLE:
-    sink = get_next_best_sink()
-    set_default(sink)
-elif args.action == SET:
-    sinks = get_sinks()
-    max_index = len(sinks) - 1
-    if args.set_index > max_index:
-        raise parser.error(f"index cannot be > {max_index}")
-    set_default(sinks[args.set_index])
+    pulse = Pulse()
+    pulse.set_next_best_sink()
 
-get_and_display_current_state()
+pulse = Pulse()
+pulse.print_sinks(grouped=(not args.flat), only_available=(not args.show_all))
