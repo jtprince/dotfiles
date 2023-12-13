@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
 import argparse
+import os
 import subprocess
 from pathlib import Path
-import os
 
 from ruyaml import YAML
 
 YAML_PATH = Path.home() / "dotfiles/config/arch/installation.yaml"
 
 # Sometimes a python package needs to be installed
-os.environ['PIP_REQUIRE_VIRTUALENV'] = 'false'
+os.environ["PIP_REQUIRE_VIRTUALENV"] = "false"
 
 
 def partition(condition, iterable):
@@ -24,12 +24,13 @@ def partition(condition, iterable):
     return trues, falses
 
 
-def install_subsection(data):
-    special, packages_to_install = partition(
-        lambda item: isinstance(item, dict), data
-    )
-    cmd = ["yay", "-S", "--noconfirm"]
-    subprocess.run(cmd + packages_to_install)
+def install_subsection(data, opts):
+    special, packages_to_install = partition(lambda item: isinstance(item, dict), data)
+    base_cmd = ["yay", "-S", "--noconfirm"]
+    cmd = base_cmd + packages_to_install
+    print("running:", " ".join(cmd))
+    if not opts.dry:
+        subprocess.run(cmd)
     for item in special:
         if post_commands := item.get("_post_commands"):
             print()
@@ -41,36 +42,30 @@ def install_subsection(data):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--video",
-    choices=["intel", "amd", "nvidia"],
-    help="which video card",
-)
-parser.add_argument(
-    "--hostname",
-    help="name of the host",
-)
+parser.add_argument("sections", nargs="*", help="install a section")
+parser.add_argument("--list", action="store_true", help="just list sections and exit")
 parser.add_argument(
     "--yaml-path", default=YAML_PATH, help="path to the yaml installation file"
 )
-parser.add_argument(
-    "--install-subsections", help="section.subsection[,subsection]"
-)
+parser.add_argument("--dry", action="store_true", help="just pretend")
 
 args = parser.parse_args()
 
 yaml = YAML(typ="safe")
 doc = yaml.load(args.yaml_path)
 
-if args.install_subsections:
-    if "." in args.install_subsections:
-        section, subsections_str = args.install_subsections.split(".", 1)
-        subsections = subsections_str.split(",")
-        section_data = doc[section]
-        section_keys = list(section_data.keys())
-        section_keys_display = "\n".join(section_keys)
-        for subsection in subsections:
-            if subsection not in section_data:
-                print(f"AVAILABLE KEYS: {section_keys_display}")
-            subsection_data = section_data[subsection]
-            install_subsection(subsection_data)
+
+def list_sections(doc):
+    key_str = "".join(map(lambda key: key + "\n", doc.keys()))
+    print(f"AVAILABLE KEYS:\n{key_str}")
+
+
+if args.list or not args.sections:
+    list_sections(doc)
+
+for section in args.sections:
+    if section not in doc.keys():
+        list_sections(doc)
+        raise parser.error("bad section key")
+    section_data = doc[section]
+    install_subsection(section_data, args)

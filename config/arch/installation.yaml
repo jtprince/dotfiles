@@ -1,405 +1,381 @@
 # See installation-initial.md for initial steps
 # arch-installer.py --install-subsections user.<whatever>
-user:
-  application-launcher:
-    - tofi
-  dropbox:
+application-launcher:
+  - tofi
+dropbox:
+  - dropbox
+  - dropbox-cli
+  - _post_commands:
     - dropbox
-    - dropbox-cli
-    - _post_commands:
-      - dropbox
-      - "[and follow instructions in browser]"
-      - "[dropbox-cli status to see where things are at]"
-      - "[be patient after inital linkage]"
-  networking:
-    - dnsutils   # for getting wan ip address
-  nvim-related:
-    - git-delta
-  language-servers:
-    # see https://wiki.archlinux.org/title/Neovim#Tips_and_tricks
-    - pyright
-    - rust-analyzer
-    - gopls
-    - yaml-language-server
-    # would like to do solargraph, but giving errors:
-    # - ruby-solargraph
-  package-managers:
-    - paru-bin
-  firefox-config:
-    # With these profiles (also in sway bindings and launch email):
-    # -P personal
-    # -P work
-    # about:config
-    # mousewheel.default.delta_multiplier_y 66
-    # privacy.webrtc.legacyGlobalIndicator false
-  wayland-more:
-    - xorg-xwayland
-    - wl-clipboard-x11
-    - wl-clipboard
-    - wlr-randr
-    - azote
-    # notifications
-    - mako
-    - grimshot
-    - python-i3ipc
-    # screen recording
-    - wf-recorder
-    - waybar
-    # for waybar-media (MPRIS compatible)
-    - python-pydbus
-    # for waybar-media (MPRIS compatible)
-    - python-psutil
-    - _post_commands:
-      - "wget https://raw.githubusercontent.com/yurihs/waybar-media/master/waybar-media.py --directory-prefix ~/.local/bin"
-      - "chmod +x ~/.local/bin/waybar-media.py"
-  pipewire-screenshare:
-    - xdg-desktop-portal
-    - xdg-desktop-portal-wlr
-  ntp:
-    # archinstall says it does ntp, but it's not installed
-    - ntp
-    - _post_commands:
-      - "sudo systemctl enable --now ntpd.service"
-  aws:
-    # /opt/awsvpnclient/AWS\ VPN\ Client
-    - awsvpnclient
-    - _post_commands:
-      - "sudo systemctl enable awsvpnclient"
-  keychain-more:
-    - docker-credential-secretservice-bin
-  files:
-    - thunar
-    - gvfs
-    - gvfs-mtp
-    - udisks
-    - tree
-    # common file system stuff
-    - ntfs-3g
-    - trash-cli
-    # extraction, search, backups
-    - dtrx
-    - zip
-    - ack
-    - ripgrep
-    - ack
-    - fd
-    - meld
-    # ranger and deps
-    - ranger
-    - atool
-    - highlight
-    - mediainfo
-    - odt2txt
-    - perl-image-exiftool
-    - transmission-cli
-    - w3m
-    - libcaca
-    # clang for compiling mountpoint-s3-git
-    - clang
-    # mountpoint like goofys but written in rust:
-    - mountpoint-s3-git
-    # remember: env -i bash --noprofile --norc
-  python:
-    - pyenv
-    - pyenv-virtualenv
-    - python-pip
-    - ipython
-    - python-black
-    - python-pynvim
-    - python-poetry
-    - python-nox-poetry
-    # - python-pudb
-    # for matplotlib (tk to avoid 'No module name '_tkinter')
-    - tk
-    # not sure if I really need tcl and python-pmw ??
-    - tcl
-    # for numpy / scipy
-    - gcc-fortran
-    - python-pmw
-    - python-markdown
-    - python-pygithub
-    - python-ruyaml
-    - python-pre-commit
-    - python-nox
-    - cruft
-    - _post_commands:
-      - "mkdir ~/.pyenv"
-      - "[THEN LOGIN OUT AND BACK IN!]"
-  install-python-versions:
-    - _post_commands:
-      - "pyenv install --list"
-      - "[UPDATE YOUR VERSIONS!!!]"
-      - 'CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"'
-      - "pyenv install 3.8.16"
-      - "pyenv install 3.9.16"
-      - "pyenv install 3.10.11"
-      - "pyenv install 3.11.3"
-  jupyter:
-    - jupyterlab
-    - jupytext
-  mime:
-    # - handlr-bin ## couldn't find :/ 
-  ruby:
-    # probably already installed
-    - openssl
-    # pry likes readline
-    - readline
-    - zlib
-    - ruby
-    - rbenv
-    - ruby-build
-    - ruby-mustache
-    - _post_commands:
-      - "rbenv install --list"
-      - "rbenv install --list-all"
-      - "CONFIGURE_OPTS=\"--with-readline-dir=/usr/include/readline\""
-      - "rbenv install <SOME_VERSION>"
-      - "rbenv global <SOME_VERSION>"
-      - "gem install pry clipboard solargraph"
-  npm:
-    - _post_commands"
-      - "mkdir ~/npm"
-  notifications:
-    - mako
-    - python-mako
-  sound:
-    # Should have already been installed:
-    # pulseaudio-alsa
-    - pipewire-pulse
-    - pasystray-git
-    - pavucontrol
-    - python-pulsectl
-    - paprefs
-    - pavumeter
-    - _post_commands:
-      - "systemctl --user enable --now pipewire-pulse.service"
-      - "# check with: systemctl --user status pipewire-pulse.service"
-      - "# and: pactl info"
-  speech:
-    # for discord speech output
-    - speech-dispatcher
-    - espeakup # a voice for speech-dispatcher
-  bluetooth:
-    - bluez
-    - bluez-utils
-    - blueman
-  theme:
-    - gnome-themes-standard
-  font:
-    # core fonts
-    # patched dejavu to include tons of nerd icons
-    # - ttf-dejavu-nerd  # installed very early as main terminal font
-    - ttf-roboto
-    - ttf-ubuntu-font-family
-    # standard fonts
-    # - noto-fonts  # installed very early as viable kitty font
-    - noto-fonts-emoji
-    - noto-fonts-cjk
-    - ttf-ms-fonts
-    - ttf-tahoma
-    - ttf-liberation
-    - ttf-symbola
-    # vim powerline
-    - powerline-fonts-git
-    # font for status bar
-    - ttf-font-icons
-    # font for fim (see FBFONT in profile)
-    - terminus-font
-    # font with great icon support (essential for waybar)
-    - otf-font-awesome
-    # misc
-    - otf-ipafont
-    - culmus
-    - cantarell-fonts
-    - _post_commands:
-      # link my own batch of fonts
-      - "ln -s ~/Dropbox/env/appearance/fonts/dot-fonts ~/.local/share/fonts"
-      - "fc-cache"
-      ## Get good font rendering (looks like infinality)
-      - "sudo ln -s /etc/fonts/conf.avail/11-lcdfilter-default.conf /etc/fonts/conf.d"
-      - "sudo ln -s /etc/fonts/conf.avail/10-sub-pixel-rgb.conf /etc/fonts/conf.d"
-      # ensure that hinting-slight is already linked (should already be set)
-      # should output /etc/fonts/conf.avail/10-hinting-slight.conf
-      - "ls -alh  /etc/fonts/conf.d/10-hinting-slight.conf"
-  # apparmor:
-      # !! Add kernel params to boot: lsm=landlock,lockdown,yama,integrity,apparmor,bpf
-      # - _post_commands:
-        # - "systemctl enable --now apparmor.service"
-  laptop:
-    - acpi
-  screenshots:
-    # for screenshot OCR
-    - python-pytesseract
-    - tesseract-data-eng
-  configure-backlight:
-    - _commands:
-      # See your options for backlight:
-      - "ls /sys/class/backlight"
-      # the commenting escaping is hard to get right here, so leaving as # comment:
-      # sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
-  sad:
-    - sad
-  pkgfile-and-mlocate:
-    - mlocate
-    - pkgfile
-    # for paccache
-    - pacman-contrib
-    - _post_commands:
-      - "sudo updatedb"
-      - "sudo pkgfile --update"
-  pdf-readers:
-    - evince
-    - _post_commands:
-      # zooming is restricted by page cache size, increase to get zoom into large docs
-      - "gsettings set org.gnome.Evince page-cache-size 2014"
-  media:
-    - avizo
-    - pamixer
-    - ncspot-cover
-    - playerctl
-    # - xava
-    - archey3
-    - feh
-    # mplayer that works with wayland
-    - mpv
-    # dbus interface to control with playerctl
-    - mpv-mpris
-    - inkscape
-    - gimp
-    - eog
-    - imv
-    - nomacs
-    - xnviewmp
-    - youtube-dl
-    - pandoc-bin
-    - mp3splt
-    - audacity
-    - swappy
-    - imagemagick
-  office:
-    # - slack-wayland
-    # - zoom
-  libre-office:
-    - libreoffice
-    - libmythes
-    - mythes-en
-
-  system-monitoring:
-    - gnome-system-monitor
-    - gnome-power-manager
-    - libstatgrab
-    - pystatgrab
-  cheat-sheets:
-    - cheat-bin
-    - _post_commands:
-      - "mkdir ~/src && cd ~/src"
-      - "git clone git@github.com:cheat/cheatsheets.git"
-      - "cd"
-  printing:
-    - cups
-    - cups-pdf
-    # For cups recognition of network printers:
-    - avahi
-    - nss-mdns
-    - brother-hll2350dw
-    - system-config-printer
-    # - hplip
-    # sudo systemctl enable --now avahi-deamon.service
-    # # Will automatically turn on cups service when applicable ports requested:
-    # sudo systemctl enable --now cups.socket
-    # Edit /etc/nsswitch.conf and change `hosts` line to include `mdns_minimal [NOTFOUND=return]`:
-    #   hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
-    # sudo system-config-printer
-  android:
-    - jmtpfs
-    # mkdir ~/mnt
-    # Once you have connected the phone by USB, then
-    # select 'Use USB for' -> 'File transfer / Android Auto'
-    # to mount phone once you've plugged it into usb:
-    # jmtpfs ~/mnt
-  cloud-cli:
-    - aws-cli
-    # - google-cloud-sdk
-  docker:
-    - docker
-    - docker-compose
-    - _post_commands:
-      - "sudo gpasswd -a jtprince docker"
-      - "sudo systemctl enable docker.service"
-  secondary-browser:
-    - google-chrome
-    - midori
-    # for bing chat gpt4
-    - microsoft-edge-stable-bin
-  github:
-    #  gh
-    - github-cli ## install early now
-  misc:
-    # for password generation
-    - words
-    # torrents
-    - deluge-gtk
-  polkit:
-    # Trying this out
-    - polkit-dumb-agent
-  music:
-    - ncspot
-    - spotify
-user-post:
-  informant:
-    # informant (ensure arch news is read)
-    - informant
-user-optional:
-  wine:
-    - wine-staging
-    - wine-gecko
-    - wine-mono
-    # for gaming in wine (necessary fonts already installed)
-    - lib32-alsa-lib
-    - lib32-alsa-plugins
-    - lib32-libpulse
-    - lib32-alsa-oss
-    - lib32-openal
-    - lib32-libxml2
-    - lib32-mpg123
-    - lib32-lcms2
-    - lib32-giflib
-    - lib32-libpng
-    - lib32-gnutls
-    - lib32-virtualgl
-    - lib32-libldap
-    - _post_commands:
-      - "[go to staging tab and click Enable_CSMT for better graphic performance]"
-      - "winecfg"
-  texlive-fonts:
-    # texlive fonts (needed for pandoc pdf conversion)
-    # texlive-latexextra needed for etoolbox.sty, and other md->pdf goodies
-    - texlive-core
-    - texlive-fontsextra
-    - texlive-latexextra
-    - _post_commands:
-      - "sudo ln -s /etc/fonts/conf.avail/09-texlive-fonts.conf /etc/fonts/conf.d/09-texlive-fonts.conf"
-      - "sudo fc-cache && sudo mkfontscale && sudo mkfontdir && sudo rm -f fonts.dir fonts.scale"
-  dns-lookup:
-    # enable dnsmasq to shorten dns lookup
-    - dnsmasq
-    - _post_commands:
-      - "sudo systemctl enable dnsmasq.service"
-      - "sudo systemctl start dnsmasq.service"
-      # then change uncomment and add this line to /etc/dnsmasq.conf
-      # listen-address=::1,127.0.0.1
-  laptop:
-    # using tlp for battery optimizations
-    # follow instructions here: https://linrunner.de/tlp/installation/arch.html
-    # Should be roughly
-    - tlp
-    - tlp-rdw
-    # then run this to know which other packages to install for the system
-    # sudo tlp-stat -b
-    # e.g., `acpi_call`
-    # sudo systemctl enable --now tlp.service
-    # ### The below were problematic ---->> [maybe don't do the below??]
-    # ### sudo systemctl enable --now NetworkManager-dispatcher.service
-    # sudo systemctl mask systemd-rfkill.service
-    # sudo systemctl mask systemd-rfkill.socket
+    - "[and follow instructions in browser]"
+    - "[dropbox-cli status to see where things are at]"
+    - "[be patient after inital linkage]"
+networking:
+  - dnsutils   # for getting wan ip address
+nvim-related:
+  - git-delta
+language-servers:
+  # see https://wiki.archlinux.org/title/Neovim#Tips_and_tricks
+  - pyright
+  - rust-analyzer
+  - gopls
+  - yaml-language-server
+  # would like to do solargraph, but giving errors:
+  # - ruby-solargraph
+package-managers:
+  - paru-bin
+firefox-config:
+  # With these profiles (also in sway bindings and launch email):
+  # -P personal
+  # -P work
+  # about:config
+  # mousewheel.default.delta_multiplier_y 66
+wayland-more:
+  - xorg-xwayland
+  - wl-clipboard-x11
+  - wl-clipboard
+  - wlr-randr
+  - azote
+  # notifications
+  - mako
+  - grimshot
+  - python-i3ipc
+  # screen recording
+  - wf-recorder
+  - waybar
+  # for waybar-media (MPRIS compatible)
+  - python-pydbus
+  # for waybar-media (MPRIS compatible)
+  - python-psutil
+  - _post_commands:
+    - "wget https://raw.githubusercontent.com/yurihs/waybar-media/master/waybar-media.py --directory-prefix ~/.local/bin"
+    - "chmod +x ~/.local/bin/waybar-media.py"
+pipewire-screenshare:
+  - xdg-desktop-portal
+  - xdg-desktop-portal-wlr
+ntp:
+  # archinstall says it does ntp, but it's not installed
+  - ntp
+  - _post_commands:
+    - "sudo systemctl enable --now ntpd.service"
+keychain-more:
+  - docker-credential-secretservice-bin
+files:
+  - thunar
+  - gvfs
+  - gvfs-mtp
+  - udisks
+  - tree
+  # common file system stuff
+  - ntfs-3g
+  - trash-cli
+  # extraction, search, backups
+  - dtrx
+  - zip
+  - ack
+  - ripgrep
+  - ack
+  - fd
+  - meld
+  # ranger and deps
+  - ranger
+  - atool
+  - highlight
+  - mediainfo
+  - odt2txt
+  - perl-image-exiftool
+  - transmission-cli
+  - w3m
+  - libcaca
+python:
+  - pyenv
+  - pyenv-virtualenv
+  - python-pip
+  - ipython
+  - python-black
+  - python-pynvim
+  - python-poetry
+  - python-nox-poetry
+  # - python-pudb
+  # for matplotlib (tk to avoid 'No module name '_tkinter')
+  - tk
+  # not sure if I really need tcl and python-pmw ??
+  - tcl
+  # for numpy / scipy
+  - gcc-fortran
+  - python-pmw
+  - python-markdown
+  - python-pygithub
+  - python-ruyaml
+  - python-pre-commit
+  - python-nox
+  - cruft
+  - _post_commands:
+    - "mkdir ~/.pyenv"
+    - "[THEN LOGIN OUT AND BACK IN!]"
+install-python-versions:
+  - _post_commands:
+    - "pyenv install --list"
+    - "[UPDATE YOUR VERSIONS!!!]"
+    - 'CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"'
+    - "pyenv install 3.9.18"
+    - "pyenv install 3.10.13"
+    - "pyenv install 3.11.7"
+    - "pyenv install 3.12.1"
+jupyter:
+  - jupyterlab
+  - jupytext
+ruby:
+  # probably already installed
+  - openssl
+  # pry likes readline
+  - readline
+  - zlib
+  - ruby
+  - rbenv
+  - ruby-build
+  - ruby-mustache
+  - _post_commands:
+    - "rbenv install --list"
+    - "rbenv install --list-all"
+    - "CONFIGURE_OPTS=\"--with-readline-dir=/usr/include/readline\""
+    - "rbenv install <SOME_VERSION>"
+    - "rbenv global <SOME_VERSION>"
+    - "gem install pry clipboard solargraph"
+notifications:
+  - mako
+  - python-mako
+sound:
+  # Should have already been installed:
+  # pulseaudio-alsa
+  - pipewire-pulse
+  - pasystray-git
+  - pavucontrol
+  - python-pulsectl
+  - paprefs
+  - pavumeter
+  - _post_commands:
+    - "systemctl --user enable --now pipewire-pulse.service"
+    - "# check with: systemctl --user status pipewire-pulse.service"
+    - "# and: pactl info"
+speech:
+  # for discord speech output
+  - speech-dispatcher
+  - espeakup # a voice for speech-dispatcher
+bluetooth:
+  - bluez
+  - bluez-utils
+  - blueman
+theme:
+  - gnome-themes-standard
+font:
+  # core fonts
+  # patched dejavu to include tons of nerd icons
+  # - ttf-dejavu-nerd  # installed very early as main terminal font
+  - ttf-roboto
+  - ttf-ubuntu-font-family
+  # standard fonts
+  # - noto-fonts  # installed very early as viable kitty font
+  - noto-fonts-emoji
+  - noto-fonts-cjk
+  - ttf-ms-fonts
+  - ttf-tahoma
+  - ttf-liberation
+  - ttf-symbola
+  # vim powerline
+  - powerline-fonts-git
+  # font for status bar
+  - ttf-font-icons
+  # font for fim (see FBFONT in profile)
+  - terminus-font
+  # font with great icon support (essential for waybar)
+  - otf-font-awesome
+  # misc
+  - otf-ipafont
+  - culmus
+  - cantarell-fonts
+  - _post_commands:
+    # link my own batch of fonts
+    - "ln -s ~/Dropbox/env/appearance/fonts/dot-fonts ~/.local/share/fonts"
+    - "fc-cache"
+    ## Ensure good font settings
+    - "ls -alh /etc/fonts/conf.d/"
+    - "echo 'expecting 10-hinting-slight.conf 10-sub-pixel-rgb.conf 11-lcdfilter-default.conf'"
+# apparmor:
+    # !! Add kernel params to boot: lsm=landlock,lockdown,yama,integrity,apparmor,bpf
+    # - _post_commands:
+      # - "systemctl enable --now apparmor.service"
+screenshots:
+  # for screenshot OCR
+  - python-pytesseract
+  - tesseract-data-eng
+configure-backlight:
+  - _commands:
+    # See your options for backlight:
+    - "ls /sys/class/backlight"
+    # the commenting escaping is hard to get right here, so leaving as # comment:
+    # sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
+sad:
+  - sad
+pkgfile-and-mlocate:
+  - mlocate
+  - pkgfile
+  # for paccache
+  - pacman-contrib
+  - _post_commands:
+    - "sudo updatedb"
+    - "sudo pkgfile --update"
+pdf-readers:
+  - evince
+  - _post_commands:
+    # zooming is restricted by page cache size, increase to get zoom into large docs
+    - "gsettings set org.gnome.Evince page-cache-size 2014"
+media:
+  - avizo
+  - pamixer
+  - ncspot-cover
+  - playerctl
+  # - xava
+  - archey3
+  - feh
+  # mplayer that works with wayland
+  - mpv
+  # dbus interface to control with playerctl
+  - mpv-mpris
+  - inkscape
+  - gimp
+  - eog
+  - imv
+  - nomacs
+  - xnviewmp
+  - youtube-dl
+  - pandoc-bin
+  - mp3splt
+  - audacity
+  - swappy
+  - imagemagick
+office:
+  # - slack-wayland
+  # - zoom
+libre-office:
+  - libreoffice
+  - libmythes
+  - mythes-en
+system-monitoring:
+  - gnome-system-monitor
+  - gnome-power-manager
+  - libstatgrab
+  - pystatgrab
+cheat-sheets:
+  - cheat-bin
+  - _post_commands:
+    - "mkdir ~/src && cd ~/src"
+    - "git clone git@github.com:cheat/cheatsheets.git"
+    - "cd"
+printing:
+  - cups
+  - cups-pdf
+  # For cups recognition of network printers:
+  - avahi
+  - nss-mdns
+  - brother-hll2350dw
+  - system-config-printer
+  # - hplip
+  # sudo systemctl enable --now avahi-deamon.service
+  # # Will automatically turn on cups service when applicable ports requested:
+  # sudo systemctl enable --now cups.socket
+  # Edit /etc/nsswitch.conf and change `hosts` line to include `mdns_minimal [NOTFOUND=return]`:
+  #   hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
+  # sudo system-config-printer
+android:
+  - jmtpfs
+  # mkdir ~/mnt
+  # Once you have connected the phone by USB, then
+  # select 'Use USB for' -> 'File transfer / Android Auto'
+  # to mount phone once you've plugged it into usb:
+  # jmtpfs ~/mnt
+cloud-cli:
+  - aws-cli
+  # - google-cloud-sdk
+docker:
+  - docker
+  - docker-compose
+  - _post_commands:
+    - "sudo gpasswd -a jtprince docker"
+    - "sudo systemctl enable docker.service"
+secondary-browser:
+  - google-chrome
+  - midori
+  # for bing chat gpt4
+  - microsoft-edge-stable-bin
+github:
+  #  gh
+  - github-cli ## install early now
+misc:
+  # for password generation
+  - words
+  # torrents
+  - deluge-gtk
+polkit:
+  # Trying this out
+  - polkit-dumb-agent
+music:
+  - ncspot
+  - spotify
+informant:
+  # informant (ensure arch news is read)
+  - informant
+wine:
+  - wine-staging
+  - wine-gecko
+  - wine-mono
+  # for gaming in wine (necessary fonts already installed)
+  - lib32-alsa-lib
+  - lib32-alsa-plugins
+  - lib32-libpulse
+  - lib32-alsa-oss
+  - lib32-openal
+  - lib32-libxml2
+  - lib32-mpg123
+  - lib32-lcms2
+  - lib32-giflib
+  - lib32-libpng
+  - lib32-gnutls
+  - lib32-virtualgl
+  - lib32-libldap
+  - _post_commands:
+    - "[go to staging tab and click Enable_CSMT for better graphic performance]"
+    - "winecfg"
+texlive-fonts:
+  # texlive fonts (needed for pandoc pdf conversion)
+  # texlive-latexextra needed for etoolbox.sty, and other md->pdf goodies
+  - texlive-core
+  - texlive-fontsextra
+  - texlive-latexextra
+  - _post_commands:
+    - "sudo ln -s /etc/fonts/conf.avail/09-texlive-fonts.conf /etc/fonts/conf.d/09-texlive-fonts.conf"
+    - "sudo fc-cache && sudo mkfontscale && sudo mkfontdir && sudo rm -f fonts.dir fonts.scale"
+dns-lookup:
+  # enable dnsmasq to shorten dns lookup
+  - dnsmasq
+  - _post_commands:
+    - "sudo systemctl enable dnsmasq.service"
+    - "sudo systemctl start dnsmasq.service"
+    # then change uncomment and add this line to /etc/dnsmasq.conf
+    # listen-address=::1,127.0.0.1
+laptop:
+  - acpi
+  # using tlp for battery optimizations
+  # follow instructions here: https://linrunner.de/tlp/installation/arch.html
+  # Should be roughly
+  - tlp
+  - tlp-rdw
+  # then run this to know which other packages to install for the system
+  # sudo tlp-stat -b
+  # e.g., `acpi_call`
+  # sudo systemctl enable --now tlp.service
+  # ### The below were problematic ---->> [maybe don't do the below??]
+  # ### sudo systemctl enable --now NetworkManager-dispatcher.service
+  # sudo systemctl mask systemd-rfkill.service
+  # sudo systemctl mask systemd-rfkill.socket
 

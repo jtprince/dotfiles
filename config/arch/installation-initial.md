@@ -46,18 +46,10 @@ Then reboot (`shutdown now`, remove drive, reboot)
 nmcli d wifi connect PrinceNest password <password>
 ```
 
-If nmcli isn't working can fallback to iwd
-```bash
-sudo systemctl start iwd dhcpcd
-iwctl station wlan0 connect PrinceNest
-```
-
-
-
 ## install some initial packages
 
 ```bash
-# sudo pacman -S ...
+# pacman -S ...
 man-db        # documentation
 man-pages     # documentation
 sof-firmware  # if applicable
@@ -87,6 +79,16 @@ firefox
 sway
 ```
 
+## Make a swap file
+
+```bash
+dd if=/dev/zero of=/swapfile bs=1M count=8k status=progress
+chmod 0600 /swapfile
+mkswap -U clear /swapfile
+swapon /swapfile
+echo "/swapfile none swap defaults 0 0" >> /etc/fstab
+```
+
 ### Add users and groups with specific ids
 
 ```
@@ -110,10 +112,10 @@ visudo
 
 `ruyaml` is needed for `arch-installer.py` and better to install early before
 `PIP_REQUIRE_VIRTUALENV` is activated. neovim-plug is useful for initial
-neovim `PlugInstall`.
+neovim `PlugInstall`. github-cli lets us start with dotfiles and edit it if needed.
 
 ```bash
-yay -S python-ruyaml neovim-plug ttf-dejavu-nerd noto-fonts
+yay -S python-ruyaml neovim-plug ttf-dejavu-nerd noto-fonts github-cli
 ```
 ### Launch sway
 
@@ -124,8 +126,6 @@ sway
 Windows-Enter: open terminal
 Windows-Shift-Q: close window
 Windows-Shift-E: exit sway
-
-Exit sway
 
 ## Get keys
 
