@@ -533,6 +533,8 @@ bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
 
 bar swaybar_command waybar
 
+
+
 # bar {
 #   mode dock
 #   position bottom

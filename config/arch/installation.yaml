@@ -307,7 +307,7 @@ secondary-browser:
   - google-chrome
   - midori
   # for bing chat gpt4
-  - microsoft-edge-stable-bin
+  # - microsoft-edge-stable-bin
 github:
   #  gh
   - github-cli ## install early now
@@ -359,10 +359,8 @@ dns-lookup:
   # enable dnsmasq to shorten dns lookup
   - dnsmasq
   - _post_commands:
-    - "sudo systemctl enable dnsmasq.service"
-    - "sudo systemctl start dnsmasq.service"
-    # then change uncomment and add this line to /etc/dnsmasq.conf
-    # listen-address=::1,127.0.0.1
+    - echo "listen-address=::1,127.0.0.1" | sudo tee --append /etc/dnsmasq.conf
+    - "sudo systemctl enable --now dnsmasq.service"
 laptop:
   - acpi
   # using tlp for battery optimizations
@@ -378,4 +376,12 @@ laptop:
   # ### sudo systemctl enable --now NetworkManager-dispatcher.service
   # sudo systemctl mask systemd-rfkill.service
   # sudo systemctl mask systemd-rfkill.socket
-
+display-manager:
+  - lemurs
+  - _post_commands:
+    - sudo systemctl enable lemurs.service
+    - sudo gpasswd -a jtprince seat
+    - sudo mkdir /etc/lemurs/wayland
+    - echo '#!/bin/sh' | sudo tee -a /etc/lemurs/wayland/sway
+    - echo "exec sway" | sudo tee -a /etc/lemurs/wayland/sway
+    - sudo chmod +x /etc/lemurs/wayland/sway

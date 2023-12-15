@@ -43,6 +43,11 @@ def install_subsection(data, opts):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("sections", nargs="*", help="install a section")
+parser.add_argument(
+    "--show",
+    action="store_true",
+    help="show what will be installed for a key(s) and nothing else",
+)
 parser.add_argument("--list", action="store_true", help="just list sections and exit")
 parser.add_argument(
     "--yaml-path", default=YAML_PATH, help="path to the yaml installation file"
@@ -60,6 +65,20 @@ def list_sections(doc):
     print(f"AVAILABLE KEYS:\n{key_str}")
 
 
+def show_section(section_data):
+    for thing in section_data:
+        if isinstance(thing, dict):
+            for key, val in thing.items():
+                print(key)
+                if isinstance(val, list):
+                    for subthing in val:
+                        print("  ", subthing)
+                else:
+                    print(val)
+        else:
+            print(thing)
+
+
 if args.list or not args.sections:
     list_sections(doc)
 
@@ -67,5 +86,10 @@ for section in args.sections:
     if section not in doc.keys():
         list_sections(doc)
         raise parser.error("bad section key")
+
     section_data = doc[section]
+    if args.show:
+        show_section(section_data)
+        continue
+
     install_subsection(section_data, args)
