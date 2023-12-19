@@ -47,6 +47,7 @@ wayland-more:
   - python-pydbus
   # for waybar-media (MPRIS compatible)
   - python-psutil
+  - swaylock
   - _post_commands:
     - "wget https://raw.githubusercontent.com/yurihs/waybar-media/master/waybar-media.py --directory-prefix ~/.local/bin"
     - "chmod +x ~/.local/bin/waybar-media.py"
@@ -147,8 +148,8 @@ notifications:
   - python-mako
 sound:
   # Should have already been installed:
-  # pulseaudio-alsa
   - pipewire-pulse
+  - pipewire-alsa
   - pasystray-git
   - pavucontrol
   - python-pulsectl

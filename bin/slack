@@ -1,3 +1,3 @@
 #!/bin/bash
 
-google-chrome-stable --new-window https://enveda.slack.com/
+chrome-work --new-window https://enveda.slack.com/
