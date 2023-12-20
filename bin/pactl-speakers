@@ -13,7 +13,7 @@ TOGGLE = "toggle"
 SET = "set"
 
 
-def takewhile_inclusive(predicate, iterable):
+def _takewhile_inclusive(predicate, iterable):
     result = []
     for item in iterable:
         if predicate(item):
@@ -75,7 +75,7 @@ def _get_ports_from_sink_section(section):
         dropwhile(lambda line: not line.lstrip().startswith("Ports:"), lines)
     )
     subset = list(
-        takewhile_inclusive(
+        _takewhile_inclusive(
             lambda line: not line.lstrip().startswith("Active Port:"), port_lines
         )
     )
