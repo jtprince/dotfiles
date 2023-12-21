@@ -25,15 +25,16 @@ MONITORS = {
     THINKPAD: "Chimei Innolux Corporation 0x1409 0x00000000",
 }
 
+# Either a width or a monitor key
 WIDTH_TO_SCALE = {
+    MONITORS[LAPTOP]: "1.85",
     3840: "1.6",
     1920: "1.0",
 }
 
-def _make_label(monitor_data):
-    """The values associated with MONITOR_LABEL_KEYS joined by a space.
 
-    """
+def _make_label(monitor_data):
+    """The values associated with MONITOR_LABEL_KEYS joined by a space."""
     return " ".join([monitor_data[key] for key in MONITOR_LABEL_KEYS])
 
 
@@ -50,10 +51,13 @@ def get_monitor_infos() -> Dict[str, Dict[str, Any]]:
     return {_make_label(data): data for data in monitors}
 
 
-
 def scale_from_data(data):
-    width = data["modes"][0]["width"]
-    return WIDTH_TO_SCALE.get(width, "1.0")
+    label = _make_label(data)
+    scale = WIDTH_TO_SCALE.get(label)
+    if scale is None:
+        width = data["modes"][0]["width"]
+        scale = WIDTH_TO_SCALE.get(width, "1.0")
+    return scale
 
 
 def create_monitor_scales(label_to_info: Dict[str, Dict[str, Any]]) -> Dict[str, str]:

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-chrome-work --new-window https://enveda.slack.com/
+chrome-work --new-window https://app.slack.com/client/

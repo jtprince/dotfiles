@@ -10,4 +10,4 @@ ip=`cat $metaboscape_ec2_dir/$ip_file`
 username=`cat $metaboscape_ec2_dir/$username_file`
 password=`cat $metaboscape_ec2_dir/$password_file`
 
-xfreerdp /v:"$ip" /u:"$username" /p:"${password}"
+xfreerdp /v:"$ip" /u:"$username" /p:"${password}" /f
