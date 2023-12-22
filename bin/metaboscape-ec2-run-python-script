@@ -44,7 +44,7 @@ scp_cmd = [
     str(args.script),
     f"{user_host}:'{remote_run_dir}{remote_script_name}'",
 ]
-ssh_cmd = [sshpass, "ssh", user_host, single_quote(command), *extra_args]
+ssh_cmd = [sshpass, "ssh", user_host, single_quote(command), *map(single_quote, extra_args)]
 
 run_cmd(scp_cmd)
 run_cmd(ssh_cmd)
