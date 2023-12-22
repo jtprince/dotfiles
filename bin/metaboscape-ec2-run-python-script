@@ -2,14 +2,15 @@
 
 import subprocess
 import argparse
+import sys
 import time
 from pathlib import Path
+from itertools import tee
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("script", type=Path, help="the python script to run remotely")
-parser.add_argument(
-    "--no-timestamp", action="store_true", help="will not timestamp file to be run"
-)
+parser.add_argument("extra_args", nargs="*", help="any additional arguments")
 args = parser.parse_args()
 
 
@@ -22,12 +23,10 @@ def single_quote(value: str):
 
 
 def get_remote_script_name(path: Path) -> str:
-    name = path.name
-    if not args.no_timestamp:
-        stem = path.stem
-        extension = path.suffix
-        timestamp = int(str(time.time()).replace(".", ""))
-        name = f"{stem}-{timestamp}{extension}"
+    stem = path.stem
+    extension = path.suffix
+    timestamp = int(str(time.time()).replace(".", ""))
+    name = f"{stem}-{timestamp}{extension}"
     return name
 
 
@@ -44,7 +43,7 @@ scp_cmd = [
     str(args.script),
     f"{user_host}:'{remote_run_dir}{remote_script_name}'",
 ]
-ssh_cmd = [sshpass, "ssh", user_host, single_quote(command)]
+ssh_cmd = [sshpass, "ssh", user_host, single_quote(command), args.extra_args]
 
 run_cmd(scp_cmd)
 run_cmd(ssh_cmd)
