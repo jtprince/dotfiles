@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+import subprocess
+import argparse
+import time
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument("script", type=Path, help="the python script to run remotely")
+parser.add_argument(
+    "--no-timestamp", action="store_true", help="will not timestamp file to be run"
+)
+args = parser.parse_args()
+
+
+def run_cmd(cmd):
+    print(" ".join(cmd))
+    subprocess.run(" ".join(cmd), shell=True)
+
+def single_quote(value: str):
+    return f"'{value}'"
+
+
+def get_remote_script_name(path: Path) -> str:
+    name = path.name
+    if not args.no_timestamp:
+        stem = path.stem
+        extension = path.suffix
+        timestamp = int(str(time.time()).replace(".", ""))
+        name = f"{stem}-{timestamp}{extension}"
+    return name
+
+
+remote_script_name = get_remote_script_name(args.script)
+remote_run_dir = "C:\\Users\\Administrator\\Desktop\\REST-API\\to_run\\"
+
+command = f"cd {remote_run_dir} && python {remote_script_name}"
+
+sshpass = "sshpass -p `cat ~/Dropbox/env/work/enveda/metaboscape-ec2/password.txt`"
+user_host = "Administrator@172.31.101.41"
+scp_cmd = [
+    sshpass,
+    "scp",
+    str(args.script),
+    f"{user_host}:'{remote_run_dir}{remote_script_name}'",
+]
+ssh_cmd = [sshpass, "ssh", user_host, single_quote(command)]
+
+run_cmd(scp_cmd)
+run_cmd(ssh_cmd)
