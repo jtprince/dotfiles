@@ -8,10 +8,11 @@ from pathlib import Path
 from itertools import tee
 
 
-parser = argparse.ArgumentParser()
+extra_args = sys.argv[2:]
+
+parser = argparse.ArgumentParser(description="can also take any extra args")
 parser.add_argument("script", type=Path, help="the python script to run remotely")
-parser.add_argument("extra_args", nargs="*", help="any additional arguments")
-args = parser.parse_args()
+args = parser.parse_args(sys.argv[1:2])
 
 
 def run_cmd(cmd):
@@ -43,7 +44,7 @@ scp_cmd = [
     str(args.script),
     f"{user_host}:'{remote_run_dir}{remote_script_name}'",
 ]
-ssh_cmd = [sshpass, "ssh", user_host, single_quote(command), args.extra_args]
+ssh_cmd = [sshpass, "ssh", user_host, single_quote(command), *extra_args]
 
 run_cmd(scp_cmd)
 run_cmd(ssh_cmd)
