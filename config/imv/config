@@ -1,1 +1,2 @@
-<Shift+del> = exec rm "$imv_current_file"; close
+[binds]
+<Shift+X> = exec rm "$imv_current_file"; close
