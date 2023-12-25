@@ -108,6 +108,8 @@ SOFTLINK_INTO_CONFIG = [
     "blockify",
     "mypy",
     "ranger",
+    "imv",
+    "mpv",
     "alacritty",
     "kitty",
     "isort.cfg",
