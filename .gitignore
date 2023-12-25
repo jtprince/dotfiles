@@ -24,3 +24,5 @@
 /config/ipython/profile_autoreload/history.sqlite
 
 /config/ncspot/userstate.cbor
+
+/config/mpv/watch_later
