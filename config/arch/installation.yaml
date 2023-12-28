@@ -88,6 +88,8 @@ files:
   - transmission-cli
   - w3m
   - libcaca
+  # ncurses disk usage (faster/better filelite)
+  - ncdu
 python:
   - pyenv
   - pyenv-virtualenv
