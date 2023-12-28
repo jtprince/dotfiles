@@ -26,3 +26,5 @@
 /config/ncspot/userstate.cbor
 
 /config/mpv/watch_later
+
+/config/alacritty/themes

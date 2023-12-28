@@ -2,6 +2,10 @@
 # arch-installer.py --install-subsections user.<whatever>
 application-launcher:
   - tofi
+alacritty-themes:
+  - _post_commands:
+    - "mkdir -p ~/.config/alacritty/themes"
+    - "gh repo clone https://github.com/jtprince/alacritty-theme ~/.config/alacritty/themes"
 dropbox:
   - dropbox
   - dropbox-cli
