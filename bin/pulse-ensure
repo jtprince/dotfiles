@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# https://wiki.archlinux.org/title/PipeWire#No_Sound_or_pactl_info_shows_Failure:_Connection_refused
+pactl_info_output="$(pactl info 2>&1)"
+if [[ $pactl_info_output == 'Connection failure: Connection refused'* ]]; then
+    echo "pulse is refusing connections" >&2
+    systemctl --user restart pipewire-pulse.service
+fi
+
+sleep 0.3
+pactl_info=`pactl info`
+notify-send -t 10 -u low "$pactl_info"

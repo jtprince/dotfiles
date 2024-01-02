@@ -15,4 +15,6 @@ if cmd_exists dropbox-cli ; then
     dropbox-cli start
 fi
 
+pulse-ensure
+
 notify-send -u low 'initialized!'
