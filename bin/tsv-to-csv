@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+import argparse
+import csv
+from pathlib import Path
+
+def tsv_to_csv(tsv_filepath, csv_filepath):
+    with tsv_filepath.open() as tsv_file, csv_filepath.open('w') as csv_file:
+        tsv_reader = csv.reader(tsv_file, delimiter='\t')
+        csv_writer = csv.writer(csv_file)
+
+        for row in tsv_reader:
+            csv_writer.writerow(row)
+
+def process_files(files: list[Path]):
+    for tsv_path in files:
+        csv_path = tsv_path.with_suffix(".csv")
+        tsv_to_csv(tsv_path, csv_path)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Convert TSV to CSV")
+    parser.add_argument('files', nargs='+', type=Path, help='TSV file(s) to convert')
+
+    args = parser.parse_args()
+    process_files(args.files)
+
+

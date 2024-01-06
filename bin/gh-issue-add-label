@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+
+parser = argparse.ArgumentParser(description="add labels to github issues")
+parser.add_argument("label", help="the label to add to the issues")
+parser.add_argument("issues", nargs="+", type=int, help="issue numbers to add label")
+args = parser.parse_args()
+
+
+for issue in args.issues:
+    cmd = [
+        "gh",
+        "issue",
+        "edit",
+        str(issue),
+        "--add-label",
+        args.label
+    ]
+    subprocess.run(cmd)

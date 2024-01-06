@@ -1,11 +1,24 @@
 #!/bin/bash
 
+init_pip_require_virtualenv_setting="$PIP_REQUIRE_VIRTUALENV"
+
+sudo echo "[Caching sudo creds now, if needed]"
+
 current_python=`pyenv global`
 echo "[Setting python to 'system' for updates]"
 echo ""
 pyenv global system
-paru
+
+# This will happen at update time, but log it here
+echo "[Setting PIP_REQUIRE_VIRTUALENV to false]"
+
+echo "[UPDATING NOW]"
+PIP_REQUIRE_VIRTUALENV=false /usr/bin/paru
+echo "[UPDATING DONE]"
+
 echo ""
 echo "[Setting python back to '$current_python']"
 pyenv global "$current_python"
 
+PIP_REQUIRE_VIRTUALENV="$init_pip_require_virtualenv_setting"
+echo "[Setting PIP_REQUIRE_VIRTUALENV back to original ($PIP_REQUIRE_VIRTUALENV)]"

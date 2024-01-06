@@ -1,0 +1,8 @@
+#!/bin/bash
+
+session=`loginctl session-status | head -n 1 | awk '{print $1}'`
+
+# This does not work:
+# swaymsg exit && loginctl terminate-session "$session"
+
+loginctl terminate-session "$session"
