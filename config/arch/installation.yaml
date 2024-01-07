@@ -392,3 +392,11 @@ display-manager:
     - echo '#!/bin/sh' | sudo tee -a /etc/lemurs/wayland/sway
     - echo "exec sway" | sudo tee -a /etc/lemurs/wayland/sway
     - sudo chmod +x /etc/lemurs/wayland/sway
+plymouth:
+  - plymouth
+  - plymouth-theme-arch10
+  - _post_commands:
+    - "sudo $HOME/bin/plymouth-add-boot-params /boot/loader/entries/arch.conf"
+    - "sudo $HOME/bin/plymouth-add-mkinitcpio-hook"
+    - "sudo plymouth-set-default-theme arch10"
+    - "sudo mkinitcpio -P"

@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+from pathlib import Path
+import re
+
+path = Path("/etc/mkinitcpio.conf")
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "path", default=path, type=Path, nargs="?", help="the mkinitcpio.conf file path"
+)
+parser.add_argument(
+    "--recompile",
+    action="store_true",
+    help="recompile mkinitcpio.conf after alteration",
+)
+args = parser.parse_args()
+
+_HOOKS_PREFIX = "HOOKS="
+
+hooks_re = re.compile(rf"^{_HOOKS_PREFIX}\((.*)\)")
+
+
+def modify_hooks_line(line):
+    if "plymouth" in line:
+        return line
+
+    if not (match := hooks_re.match(line)):
+        raise RuntimeError(f"Could not match line starting with {_HOOKS_PREFIX}")
+
+    hooks = match.group(1).split()
+    print("Adding `plymouth` to HOOKS")
+    hooks.append("plymouth")
+    return f"{_HOOKS_PREFIX}({' '.join(hooks)})"
+
+
+lines = args.path.read_text().split("\n")
+newlines = [
+    (modify_hooks_line(line) if line.startswith(_HOOKS_PREFIX) else line)
+    for line in lines
+]
+args.path.write_text("\n".join(newlines))
+
+if args.recompile:
+    subprocess.run(["mkinitcpio", "-P"])

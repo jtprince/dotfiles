@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+import argparse
+import re
+from pathlib import Path
+
+_PLYMOUTH_RELATED_KERNEL_CMDS = [
+    "splash",
+    "quiet" "loglevel=3",
+    "systemd.show_status=auto",
+    "rd.udev.log_level=3",
+]
+
+parser = argparse.ArgumentParser(
+    description=(
+        "add plymouth related options to boot conf; "
+        "expects `options` to start the line and all options on one line."
+    ),
+)
+parser.add_argument(
+    "systemd_boot_conf",
+    type=Path,
+    help=(
+        "path to systemd entry .conf file " "(typically /boot/loader/entries/arch.conf"
+    ),
+)
+args = parser.parse_args()
+
+options_re = re.compile(r"(options\s+)(.*)")
+
+lines = args.systemd_boot_conf.read_text().split("\n")
+
+
+def insert_plymouth_options(line) -> str:
+    match = options_re.search(line)
+    if match is None:
+        raise RuntimeError(f"Could not parse options line: {line}")
+    options_prefix, options_str = match.groups()
+    options = options_str.split()
+    options_wo_plymouth_opts = [
+        option for option in options if option not in _PLYMOUTH_RELATED_KERNEL_CMDS
+    ]
+
+    new_options = options_wo_plymouth_opts
+    for option in _PLYMOUTH_RELATED_KERNEL_CMDS:
+        new_options.insert(-1, option)
+
+    return options_prefix + " ".join(new_options)
+
+
+new_lines = [
+    insert_plymouth_options(line) if line.startswith("options") else line
+    for line in lines
+]
+
+args.systemd_boot_conf.write_text("\n".join(new_lines))
+
+intro_line =f"CURRENT TEXT FOR: {str(args.systemd_boot_conf)}"
+len_intro_line = len(intro_line)
+print("-" * len_intro_line)
+print(intro_line)
+print("-" * len_intro_line)
+print(args.systemd_boot_conf.read_text())
