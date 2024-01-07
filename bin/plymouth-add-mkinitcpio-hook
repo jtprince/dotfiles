@@ -7,7 +7,7 @@ import re
 
 path = Path("/etc/mkinitcpio.conf")
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="add plymouth after `block` hook")
 parser.add_argument(
     "path", default=path, type=Path, nargs="?", help="the mkinitcpio.conf file path"
 )
@@ -19,20 +19,23 @@ parser.add_argument(
 args = parser.parse_args()
 
 _HOOKS_PREFIX = "HOOKS="
+_INSERT_AFTER = "block"
+_TO_INSERT = "plymouth"
 
 hooks_re = re.compile(rf"^{_HOOKS_PREFIX}\((.*)\)")
 
 
 def modify_hooks_line(line):
-    if "plymouth" in line:
-        return line
-
     if not (match := hooks_re.match(line)):
         raise RuntimeError(f"Could not match line starting with {_HOOKS_PREFIX}")
 
     hooks = match.group(1).split()
-    print("Adding `plymouth` to HOOKS")
-    hooks.append("plymouth")
+    hooks.remove(_TO_INSERT)
+
+    if _INSERT_AFTER not in hooks:
+        raise RuntimeError(f"Could not find '{_INSERT_AFTER}' in HOOKS")
+
+    hooks.insert(hooks.index(_INSERT_AFTER) + 1, _TO_INSERT)
     return f"{_HOOKS_PREFIX}({' '.join(hooks)})"
 
 

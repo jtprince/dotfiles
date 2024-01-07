@@ -6,7 +6,8 @@ from pathlib import Path
 
 _PLYMOUTH_RELATED_KERNEL_CMDS = [
     "splash",
-    "quiet" "loglevel=3",
+    "quiet",
+    "loglevel=3",
     "systemd.show_status=auto",
     "rd.udev.log_level=3",
 ]
@@ -55,7 +56,7 @@ new_lines = [
 
 args.systemd_boot_conf.write_text("\n".join(new_lines))
 
-intro_line =f"CURRENT TEXT FOR: {str(args.systemd_boot_conf)}"
+intro_line = f"CURRENT TEXT FOR: {str(args.systemd_boot_conf)}"
 len_intro_line = len(intro_line)
 print("-" * len_intro_line)
 print(intro_line)
