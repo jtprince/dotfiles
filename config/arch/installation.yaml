@@ -102,6 +102,7 @@ python:
   - python-black
   - python-pynvim
   - python-poetry
+  - python-ipdb
   - python-nox-poetry
   # - python-pudb
   # for matplotlib (tk to avoid 'No module name '_tkinter')

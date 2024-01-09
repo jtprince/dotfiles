@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+
+import argparse
+from typing import Callable
+import subprocess
+from pathlib import Path
+from datetime import timedelta
+
+
+def trim_video_file(duration, input_file, inplace):
+    # Extract the file name without extension
+    input_file = Path(input_file)
+    output_file = input_file.with_suffix(f".tail-{duration}{input_file.suffix}")
+
+
+    duration_str = str(timedelta(seconds=duration))
+
+    # Use ffmpeg to trim the video
+    cmd =  [
+        "ffmpeg",
+        "-sseof",
+        f"-{duration_str}",
+        "-i",
+        str(input_file),
+        "-c", "copy",
+        str(output_file),
+    ]
+    print(" ".join(cmd))
+    subprocess.run(cmd)
+    if inplace:
+        output_file.rename(input_file)
+
+    print(f"Trimmed video saved as {output_file}")
+
+
+def trim_video_files(duration, input_files, inplace):
+    for input_file in input_files:
+        trim_video_file(duration, input_file, inplace)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Trim one or more MP4 videos and optionally replace the input files."
+    )
+    parser.add_argument(
+        "input_files",
+        type=Path,
+        nargs="+",
+        help="Input video files",
+    )
+    parser.add_argument(
+        "--duration", type=float, default=2, help="Duration to keep in seconds"
+    )
+    parser.add_argument(
+        "-i",
+        "--inplace",
+        action="store_true",
+        help="Replace the input files (optional)",
+    )
+
+    args = parser.parse_args()
+    trim_video_files(args.duration, args.input_files, args.inplace)
+
+
+if __name__ == "__main__":
+    main()

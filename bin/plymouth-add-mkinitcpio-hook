@@ -19,7 +19,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 _HOOKS_PREFIX = "HOOKS="
-_INSERT_AFTER = "base"
+_INSERT_AFTER = "kms"
 _TO_INSERT = "plymouth"
 
 hooks_re = re.compile(rf"^{_HOOKS_PREFIX}\((.*)\)")
