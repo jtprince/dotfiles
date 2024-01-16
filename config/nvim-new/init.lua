@@ -17,31 +17,36 @@ if not vim.loop.fs_stat(lazypath) then
 end
 opt.rtp:prepend(lazypath)
 
-require("lazy").setup({
-    "williamboman/mason.nvim",
-    -- popup with possible keybindings of what you started to type
-    "folke/which-key.nvim",
+require("lazy").setup("plugins")
 
-    -- local and global nvim config in json
-    {"folke/neoconf.nvim", cmd = "Neoconf" },
-
-    -- plugin with signature help, docs, completion for nvim lua API
-    "folke/neodev.nvim",
-
-    -- provides vimp
-    'svermeulen/vimpeccable',
-
-    -- {
-    --     "stevearc/gkeep.nvim",
-    --     build = "UpdateRemotePlugins",
-    --     -- opts = {}
-    --     -- Optional dependencies
-    --     dependencies = { "nvim-tree/nvim-web-devicons" },
-    -- },
-})
+--    "williamboman/mason.nvim",
+--    -- popup with possible keybindings of what you started to type
+--    "folke/which-key.nvim",
+--
+--    -- local and global nvim config in json
+--    {"folke/neoconf.nvim", cmd = "Neoconf" },
+--
+--    -- plugin with signature help, docs, completion for nvim lua API
+--    "folke/neodev.nvim",
+--
+--    -- provides vimp
+--    'svermeulen/vimpeccable',
+--
+--    -- {
+--    --     "stevearc/gkeep.nvim",
+--    --     build = "UpdateRemotePlugins",
+--    --     -- opts = {}
+--    --     -- Optional dependencies
+--    --     dependencies = { "nvim-tree/nvim-web-devicons" },
+--    -- },
 
 require("mason").setup()
 
+-- open a terminal in vim
+-- :term
+-- i (to "insert" into the terminal)
+-- ctrl-c to kill the terminal
+-- todo: map something to open in cwd of file being edited
 
 -- always show statusline
 opt.laststatus = 2

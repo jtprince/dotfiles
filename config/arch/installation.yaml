@@ -162,6 +162,7 @@ sound:
   - python-pulsectl
   - paprefs
   - pavumeter
+  - noise-suppression-for-voice
   - _post_commands:
     - "systemctl --user enable --now pipewire-pulse.service"
     - "# check with: systemctl --user status pipewire-pulse.service"
