@@ -120,7 +120,6 @@ SOFTLINK_INTO_CONFIG = [
     "pulse",
     "npmrc",
     "pulseaudio-ctl",
-    "systemd",
     "pipewire",
     "nvim",
     "sheldon",
