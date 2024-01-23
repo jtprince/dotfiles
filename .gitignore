@@ -28,3 +28,5 @@
 /config/mpv/watch_later
 
 /config/alacritty/themes
+
+lazy-lock.json
