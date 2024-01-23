@@ -125,6 +125,7 @@ alias eixt="exit"
 
 # edit arch installation file
 CONFIG_DIR="$HOME/dotfiles/config"
+DOTCONFIG_DIR="$HOME/.config"
 
 alias archup="gvim $CONFIG_DIR/arch/installation.yaml"
 alias archenvdir="pushd $HOME/Dropbox/env/os/arch"
@@ -133,7 +134,7 @@ alias archenvdir="pushd $HOME/Dropbox/env/os/arch"
 alias zshup="gvim $CONFIG_DIR/zsh/.zshrc"
 alias zshdir="pushd $CONFIG_DIR/zsh/"
 
-alias nvimdir="pushd $CONFIG_DIR/nvim/"
+alias nvimdir="pushd $DOTCONFIG_DIR/nvim/"
 alias vimdir="nvimdir"
 
 alias ncspotup="gvim $CONFIG_DIR/ncspot/config.toml"

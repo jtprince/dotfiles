@@ -1,0 +1,165 @@
+#!/usr/bin/env python
+
+# pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+# Or
+# yay -S python-google-api-python-client \
+#     python-google-auth-httplib2 \
+#     python-google-auth-oauthlib
+
+
+import itertools
+from typing import Any
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+import pickle
+import os.path
+from pathlib import Path
+
+
+# If modifying these SCOPES, delete the file token.pickle.
+SCOPES = ("https://www.googleapis.com/auth/calendar",)
+CREDENTIALS_JSON_PATH = (
+    Path.home()
+    / "Dropbox/env/cloud-and-apis/google/create-calendar-events/credentials.json"
+)
+
+
+def get_service(credentials_json_path: Path, scopes=SCOPES):
+    creds = None
+    # The file token.pickle stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first time.
+    if os.path.exists("token.pickle"):
+        with open("token.pickle", "rb") as token:
+            creds = pickle.load(token)
+
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                str(credentials_json_path), list(SCOPES)
+            )
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open("token.pickle", "wb") as token:
+            pickle.dump(creds, token)
+
+    service = build("calendar", "v3", credentials=creds)
+    return service
+
+
+def set_event(
+    service,
+    title: str,
+    iso_date: str,
+    start_time: str,
+    end_time: str,
+    timezone: str,
+    reminders: list[dict[str, Any]],
+    calendar_id: str,
+    dry: bool = False,
+):
+    event = {
+        "summary": title,
+        "start": {
+            "dateTime": f"{iso_date}T{start_time}",
+            "timeZone": timezone,
+        },
+        "end": {
+            "dateTime": f"{iso_date}T{end_time}",
+            "timeZone": timezone,
+        },
+        "reminders": {
+            "useDefault": False,
+            "overrides": reminders,
+        },
+    }
+
+    print(f"For calendar: {calendar_id}")
+    print(f"Creating event: {event}")
+    if not dry:
+        event = service.events().insert(calendarId=calendar_id, body=event).execute()
+        print(f"Event created: {event.get('htmlLink')}")
+
+
+def create_reminder(method: str, minutes: int) -> dict[str, Any]:
+    return {"method": method, "minutes": minutes}
+
+
+def create_email_reminder_spec(minutes=24 * 60):
+    return {"method": "email", "minutes": minutes}
+
+
+def create_popup_reminder_spec(minutes=10):
+    return ({"method": "popup", "minutes": minutes},)
+
+
+def zip_and_fill_with_last(first, second):
+    first_ = list(first)
+    second_ = list(second)
+    fill = first_[-1] if (len(first_) < len(second_)) else second_[-1]
+    return itertools.zip_longest(first_, second, fillvalue=fill)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--title", required=True, help="the title of the event")
+    parser.add_argument("--dates", nargs="+", help="dates in iso8601 format")
+    parser.add_argument(
+        "--id", required=True, help="the calendar id (get from settings)"
+    )
+    parser.add_argument("--tz", default="America/Denver", help="timezone, default MT")
+    parser.add_argument(
+        "--time-ranges",
+        nargs="+",
+        required=True,
+        help=(
+            "time range as 'HH::MM:SS,HH::MM::SS' "
+            "in 24HR (last one applies to rest of dates)"
+        ),
+    )
+    parser.add_argument(
+        "--email-reminder",
+        action="store_true",
+        help="add an email reminder for the day before",
+    )
+    parser.add_argument(
+        "--popup-reminder", action="store_true", help="add a popup 10 minutes before"
+    )
+    parser.add_argument(
+        "--credentials-json",
+        type=Path,
+        default=CREDENTIALS_JSON_PATH,
+        help="credentials.json file for app",
+    )
+    parser.add_argument(
+        "--dry", action="store_true", help="do not create, just talk about it"
+    )
+    args = parser.parse_args()
+
+    reminders = []
+    if args.email_reminder:
+        reminders.append(create_reminder("email", 24 * 60))
+    if args.popup_reminder:
+        reminders.append(create_reminder("popup", 10))
+
+    time_ranges = [time_range_str.split(",") for time_range_str in args.time_ranges]
+    date_and_time_range = zip_and_fill_with_last(args.dates, time_ranges)
+    service = get_service(args.credentials_json)
+
+    for iso_date, (start_time, end_time) in date_and_time_range:
+        set_event(
+            service,
+            title=args.title,
+            iso_date=iso_date,
+            start_time=start_time,
+            end_time=end_time,
+            timezone=args.tz,
+            reminders=reminders,
+            calendar_id=args.id,
+            dry=args.dry,
+        )
