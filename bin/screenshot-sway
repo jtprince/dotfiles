@@ -2,7 +2,7 @@
 """
 
 Arch:
-    yay -S grimshot tesseract tesseract-data-eng swappy \
+    yay -S grimshot tesseract tesseract-data-eng satty-bin \
         python-pytesseract espeak pico-tts sox
 
 If you are using a different python env:
@@ -15,6 +15,22 @@ import datetime
 import subprocess
 import argparse
 from pathlib import Path
+
+
+# IMAGE_EDITOR_OPTIONS = dict(
+#     name="swappy",
+#     file_option="--file",
+#     outfile_option="--output-file",
+#     extra_opts=[],
+# )
+
+IMAGE_EDITOR_OPTS = dict(
+    name="satty",
+    file_option="--filename",
+    outfile_option="--output-filename",
+    extra_opts=["--early-exit"]
+    # extra_opts=["--early-exit", "--fullscreen"],
+)
 
 
 class Screenshot:
@@ -96,9 +112,7 @@ class Screenshot:
 
     def create_path_noext(self):
         now = datetime.datetime.now(tz=datetime.timezone.utc)
-        now_stamp = (
-            now.isoformat().replace("T", "--").replace(":", "").split(".")[0]
-        )
+        now_stamp = now.isoformat().replace("T", "--").replace(":", "").split(".")[0]
 
         filename_noext = f"{self.args.type}-{now_stamp}"
         return self.DEFAULT_DIR / filename_noext
@@ -121,7 +135,7 @@ class Screenshot:
         self.write_image_to_text()
         print("TEXT to SPEECH!")
         self.text_to_speech()
-        print("ANNOTATING iamge!")
+        print("ANNOTATING image!")
         self.annotate_image()
         print("OPEN WITH EOG!")
         self.open_with_eog()
@@ -133,11 +147,12 @@ class Screenshot:
     def annotate_image(self):
         if self.args.annotate:
             cmd = [
-                "swappy",
-                "--file",
+                IMAGE_EDITOR_OPTS["name"],
+                IMAGE_EDITOR_OPTS["file_option"],
                 str(self.image_path),
-                "--output-file",
+                IMAGE_EDITOR_OPTS["outfile_option"],
                 str(self.annotated_path),
+                *IMAGE_EDITOR_OPTS["extra_opts"]
             ]
             subprocess.run(cmd)
 
@@ -196,9 +211,7 @@ class Screenshot:
     def open_with_eog(self):
         if self.args.eog:
             image_path_to_open = (
-                self.annotated_path
-                if self.annotated_path.exists()
-                else self.image_path
+                self.annotated_path if self.annotated_path.exists() else self.image_path
             )
             subprocess.run(["eog", str(image_path_to_open)])
 

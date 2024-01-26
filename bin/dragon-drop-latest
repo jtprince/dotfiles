@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+import argparse
+
+parser = argparse.ArgumentParser(
+    description="by default, grabs latest downloaded file and puts it on drag and drop."
+)
+parser.add_argument("-d", "--screenshot", action="store_true", help="get latest screenshot image")
+args = parser.parse_args()
+
+

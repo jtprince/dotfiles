@@ -1,0 +1,217 @@
+#!/usr/bin/env python
+
+import dataclasses
+from pathlib import Path
+
+
+def partition(iterable, condition):
+    trues = []
+    falses = []
+    for item in iterable:
+        if condition(item):
+            trues.append(item)
+        else:
+            falses.append(item)
+    return trues, falses
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class Binding:
+    Mod1: bool = False
+    Mod4: bool = False
+    Ctrl: bool = False
+
+@dataclasses.dataclass()
+class SwayConfig:
+    CONFIG = Path.home() / ".config/sway/config"
+    MY_MOD_NAMES = {"Mod4": "Alt"}
+
+    # A dict of sway variables (e.g., "$mod" -> "Mod4"
+    definitions: dict[str, str]
+
+    @classmethod
+    def from_path(cls, path: Path = CONFIG):
+        lines = path.read_text().strip().split("\n")
+        definitions, otherlines = cls.get_definitions(lines)
+        print(definitions)
+
+    @classmethod
+    def get_definitions(cls, lines):
+        setlines, otherlines = partition(lines, lambda line: line.startswith("set "))
+        definitions = dict(
+            line.strip().split(None, 2)[1:3] for line in setlines
+        )
+        return (definitions, otherlines)
+
+    @classmethod
+    def get_bindings(cls, definitions: dict):
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    # parser.add_argument()
+    args = parser.parse_args()
+
+    config = SwayConfig.from_path()
+
+
+# def _get_keybindings_and_commands(self, lines, definitions)
+#   keybindings = []
+#   commands = []
+#   mode = self.DEFAULT_MODE
+#   lines.each do |line|
+#     stripped_line = line.strip
+#     definitions.each do |from, to|
+#       stripped_line.gsub!(from, to)
+#     end
+#     parts = stripped_line.split(/\s+/)
+#     next unless parts.size > 0
+#
+#     if parts.first == 'mode'
+#       mode = parts[1].chomp('"').reverse.chomp('"').reverse
+#     elsif parts[0] == '}'
+#       mode = DEFAULT_MODE
+#     elsif parts.first == 'bindsym'
+#       keybindings << Keybinding.from_parts(parts, mode)
+#     else
+#       commands << Command.from_parts(parts)
+#     end
+#   end
+#   [keybindings, commands]
+# end
+#
+# Command = Struct.new(:command, :flags, :exec) do
+#   def self.from_parts(parts)
+#     flags = [parts.delete("--no-startup-id")].compact
+#     exec =
+#       if parts[0] == 'exec'
+#         parts.shift
+#         true
+#       end
+#     self.new(parts.join(' '), flags, !!exec)
+#   end
+# end
+#
+# Keycombo = Struct.new(:key, :ctrl, :shift, :mod) do
+#   def self.from_string(string)
+#     parts = string.split('+')
+#     (ctrl, parts) = parts.partition {|part| part.downcase == 'ctrl' }
+#     (shift, parts) = parts.partition {|part| part.downcase == 'shift' }
+#     (mod, parts) = parts.partition {|part| part.downcase[0,3] == 'mod' }
+#     self.new(parts.pop, ctrl.size > 0, shift.size > 0, mod.size > 0)
+#   end
+#
+#   def key_properly_cased
+#     if self.shift && self.key&.size == 1 && self.key =~ /[A-Z]/
+#       self.key.upcase
+#     else
+#       self.key
+#     end
+#   end
+# end
+#
+# Keybinding = Struct.new(:keycombo, :command, :mode) do
+#   def self.from_parts(parts, mode=nil)
+#     raise ArgumentError("first part should be 'bindsym'") unless parts[0] == 'bindsym'
+#     keycombo = Keycombo.from_string(parts[1])
+#     command = Command.from_parts(parts[2..-1])
+#     self.new(keycombo, command, mode)
+#   end
+# end
+#
+# if $0 == __FILE__
+#   class Object
+#     def eq_(other, msg='')
+#       if self != other
+#         abort "ERROR: #{self.inspect} not equal to #{other.inspect}"
+#       end
+#     end
+#   end
+#
+#   def test(config)
+#     config.definitions.eq_( {"$globalfontsize"=>"8", "$mod"=>"Mod4", "$l"=>"Tab", "$r"=>"l", "$backlight"=>"intel_backlight", "$majorlightadjust"=>"100", "$volup"=>"/usr/bin/pulseaudio-ctl up"} )
+#     config.keybindings.size.eq_ 6
+#     config.keybindings.select {|keybinding| keybinding.mode == 'musicplayer'}.size.eq_ 3
+#
+#     # keybinding (simple)
+#     keybinding = config.keybindings.first
+#     keybinding.command.exec.eq_ true
+#     keybinding.command.flags.eq_ ["--no-startup-id"]
+#     keybinding.keycombo.key.eq_ 'XF86MonBrightnessDown'
+#     [:ctrl, :shift, :mod].each {|modifier| keybinding.keycombo.send(modifier).eq_ false }
+#
+#     # keybinding complex
+#     keybinding = config.keybindings[2]
+#     keybinding.command.exec.eq_ true
+#     keybinding.command.flags.eq_ ["--no-startup-id"]
+#     keybinding.keycombo.ctrl.eq_ true
+#     keybinding.keycombo.shift.eq_ true
+#     keybinding.keycombo.mod.eq_ true
+#     keybinding.mode.eq_ 'default'
+#     keybinding.keycombo.key.eq_ 'parenright'
+#
+#     config.keybindings[-1].command.exec.eq_ false
+#     config.keybindings[-1].command.command.eq_ "mode \"default\""
+#     config.keybindings[-1].mode.eq_ 'musicplayer'
+#
+#     # todo: better test commands
+#     config.commands.size.eq_ 3
+#   end
+#
+#   if ARGV.size == 0
+#     puts "usage: #{File.basename(__FILE__)} report [config]"
+#     puts "outputs list of used and unused bindings"
+#     puts ""
+#     puts "default config: #{SwayConfig::CONFIG}"
+#     exit
+#   end
+#
+#   if ARGV[0] == 'test'
+#     test SwayConfig.from_file(DATA)
+#   else
+#     config_fn = ARGV[1] || SwayConfig::CONFIG
+#
+#     sway_config = File.open(config_fn) do |io|
+#       SwayConfig.from_file(io)
+#     end
+#     sway_config.keybindings.sort_by {|binding| binding.keycombo.key || '' }. each do |binding|
+#       puts [
+#         binding.keycombo.key_properly_cased,
+#         binding.keycombo.ctrl ? 'ctrl' : nil,
+#         binding.keycombo.shift ? 'shift' : nil,
+#         binding.keycombo.mod ? 'mod' : nil,
+#       ].compact.join("-") + " --> #{binding.command.command}"
+#     end
+#     # puts sway_config.keybindings
+#   end
+#
+# end
+#
+#
+# __END__
+# set $globalfontsize 8
+# exec --no-startup-id autostart
+#
+# set $mod Mod4
+# set $l Tab
+# set $r l
+#
+# font pango:Droid Sans Mono $globalfontsize
+#
+# set $backlight intel_backlight
+# set $majorlightadjust 100
+# bindsym XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness $backlight '-' $majorlightadjust
+#
+# set $volup /usr/bin/pulseaudio-ctl up
+# bindsym $mod+parenright exec --no-startup-id $volup
+# bindsym $mod+Shift+Ctrl+parenright exec --no-startup-id $volup
+#
+# mode "musicplayer" {
+#     bindsym Shift+M exec mpd
+#     bindsym Return exec mpc play
+#     bindsym $mod+m mode "default"
+# }
+#
+# workspace_layout stacking
