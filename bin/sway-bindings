@@ -3,15 +3,14 @@
 import dataclasses
 from pathlib import Path
 
+CONFIG = Path.home() / ".config/sway/config"
 
 def partition(iterable, condition):
     trues = []
     falses = []
     for item in iterable:
-        if condition(item):
-            trues.append(item)
-        else:
-            falses.append(item)
+        list_ = trues if condition(item) else falses
+        list_.append(item)
     return trues, falses
 
 
@@ -23,7 +22,6 @@ class Binding:
 
 @dataclasses.dataclass()
 class SwayConfig:
-    CONFIG = Path.home() / ".config/sway/config"
     MY_MOD_NAMES = {"Mod4": "Alt"}
 
     # A dict of sway variables (e.g., "$mod" -> "Mod4"
@@ -45,6 +43,7 @@ class SwayConfig:
 
     @classmethod
     def get_bindings(cls, definitions: dict):
+        pass
 
 
 if __name__ == "__main__":
@@ -54,7 +53,8 @@ if __name__ == "__main__":
     # parser.add_argument()
     args = parser.parse_args()
 
-    config = SwayConfig.from_path()
+    config = SwayConfig.from_path(CONFIG)
+    print(config)
 
 
 # def _get_keybindings_and_commands(self, lines, definitions)
