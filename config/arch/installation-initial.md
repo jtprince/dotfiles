@@ -10,7 +10,7 @@ iwctl device wlan0 show
 # If not, then:
 rfkill unblock all
 
-iwctl station wlan0 connect PrinceNest
+iwctl station wlan0 connect PrinceTPLink
 <password> # <--this is the next line
 ```
 
@@ -60,7 +60,7 @@ Then reboot (`shutdown now`, remove drive, reboot)
 
 ### Set up wifi
 ```bash
-nmcli d wifi connect PrinceNest password <password>
+nmcli d wifi connect PrinceTPLink password <password>
 ```
 
 ## install some initial packages
@@ -144,25 +144,11 @@ Windows-Enter: open terminal
 Windows-Shift-Q: close window
 Windows-Shift-E: exit sway
 
-## Get keys
-
-* Open firefox and sign-in
-* Navigate to `dropbox.com` -> `env/passwds_logins/`
-* Click and download `dot-aws.secure.7z` and `dot-ssh.secure.7z`
-
-```bash
-# must be in home dir:
-cd
-7z x ~/Downloads/dot-ssh.secure.7z
-7z x ~/Downloads/dot-aws.secure.7z
-```
-
 ## Dotfiles
 
 ```bash
 cd
-git clone git@github.com:jtprince/dotfiles.git
-cd
+gh repo clone jtprince/dotfiles
 ln -s dotfiles/bin
 # pick your resolution, 4k or hd
 ./bin/dotfiles-configure -r 4k
@@ -177,6 +163,20 @@ Will need to give treesitter time to download all the language syntaxes.
 ```
 nvim
 :PlugInstall
+# exit and then:
 :COQdeps
 :CHADdeps
+```
+
+## Optional, get keys
+
+* Open firefox and sign-in
+* Navigate to `dropbox.com` -> `env/passwds_logins/`
+* Click and download `dot-aws.secure.7z` and `dot-ssh.secure.7z`
+
+```bash
+# must be in home dir:
+cd
+7z x ~/Downloads/dot-ssh.secure.7z
+7z x ~/Downloads/dot-aws.secure.7z
 ```
