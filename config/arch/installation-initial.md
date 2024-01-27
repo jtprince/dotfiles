@@ -29,13 +29,17 @@ guide](https://wiki.archlinux.org/title/installation_guide), typically:
 # before pacstrap
 reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
 
-pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim zsh intel-ucode
+pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim zsh intel-ucode wget
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 
 export MYARCHBASE="https://raw.githubusercontent.com/jtprince/dotfiles/main/config/arch"
 curl -O "$MYARCHBASE/scripts/time_and_lang.sh"
 bash time_and_lang.sh
+
+passwd
+
+bootctl install
 
 cd /boot/loader
 curl -O "$MYARCHBASE/files/boot/loader.conf"
@@ -44,6 +48,10 @@ curl -O "$MYARCHBASE/files/boot/arch.conf"
 
 # Now, follow instructions in the arch file to get the uuid in there
 vim /boot/loader/entries/arch.conf
+
+exit
+umount -R /mnt
+sudo shutdown now
 ```
 
 Then reboot (`shutdown now`, remove drive, reboot)
