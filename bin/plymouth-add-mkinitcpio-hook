@@ -30,7 +30,8 @@ def modify_hooks_line(line):
         raise RuntimeError(f"Could not match line starting with {_HOOKS_PREFIX}")
 
     hooks = match.group(1).split()
-    hooks.remove(_TO_INSERT)
+    if _TO_INSERT in hooks:
+        hooks.remove(_TO_INSERT)
 
     if _INSERT_AFTER not in hooks:
         raise RuntimeError(f"Could not find '{_INSERT_AFTER}' in HOOKS")
