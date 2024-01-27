@@ -11,9 +11,10 @@ dropbox:
   - dropbox-cli
   - _post_commands:
     - dropbox
-    - "[and follow instructions in browser]"
-    - "[dropbox-cli status to see where things are at]"
-    - "[be patient after inital linkage]"
+  - _post_notes:
+    - "and follow instructions in browser"
+    - "dropbox-cli status to see where things are at"
+    - "be patient after inital linkage"
 networking:
   - dnsutils   # for getting wan ip address
 nvim-related:
@@ -32,8 +33,9 @@ firefox-config:
   # With these profiles (also in sway bindings and launch email):
   # -P personal
   # -P work
-  # about:config
-  # mousewheel.default.delta_multiplier_y 66
+  - _post_notes:
+    - "Goto: about:config"
+    - "mousewheel.default.delta_multiplier_y 66"
 wayland-more:
   - xorg-xwayland
   - wl-clipboard-x11
@@ -120,9 +122,10 @@ python:
   - cruft
   - _post_commands:
     - "mkdir ~/.pyenv"
+  - _post_notes:
     - "[THEN LOGIN OUT AND BACK IN!]"
 install-python-versions:
-  - _post_commands:
+  - _post_notes:
     - "pyenv install --list"
     - "[UPDATE YOUR VERSIONS!!!]"
     - 'CONFIGURE_OPTS="--enable-shared --enable-loadable-sqlite-extensions --with-system-ffi --with-ensurepip=upgrade --enable-optimizations"'
@@ -143,7 +146,7 @@ ruby:
   - rbenv
   - ruby-build
   - ruby-mustache
-  - _post_commands:
+  - _post_notes:
     - "rbenv install --list"
     - "rbenv install --list-all"
     - "CONFIGURE_OPTS=\"--with-readline-dir=/usr/include/readline\""
@@ -165,12 +168,16 @@ sound:
   - noise-suppression-for-voice
   - _post_commands:
     - "systemctl --user enable --now pipewire-pulse.service"
-    - "# check with: systemctl --user status pipewire-pulse.service"
-    - "# and: pactl info"
+  - _post_notes:
+    - "check with: "
+    - "systemctl --user status pipewire-pulse.service"
+    - "and: "
+    - "pactl info"
 speech:
   # for discord speech output
   - speech-dispatcher
-  - espeakup # a voice for speech-dispatcher
+  # a voice for speech-dispatcher
+  - espeakup
 bluetooth:
   - bluez
   - bluez-utils
@@ -207,8 +214,8 @@ font:
     # link my own batch of fonts
     - "ln -s ~/Dropbox/env/appearance/fonts/dot-fonts ~/.local/share/fonts"
     - "fc-cache"
-    ## Ensure good font settings
     - "ls -alh /etc/fonts/conf.d/"
+    ## Ensure good font settings
     - "echo 'expecting 10-hinting-slight.conf 10-sub-pixel-rgb.conf 11-lcdfilter-default.conf'"
 # apparmor:
     # !! Add kernel params to boot: lsm=landlock,lockdown,yama,integrity,apparmor,bpf
@@ -219,11 +226,13 @@ screenshots:
   - python-pytesseract
   - tesseract-data-eng
 configure-backlight:
-  - _commands:
+  - _post_commands:
     # See your options for backlight:
     - "ls /sys/class/backlight"
-    # the commenting escaping is hard to get right here, so leaving as # comment:
-    # sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
+  - _post_notes:
+    - "the commenting escaping is hard to get right here, so leaving as # comment:"
+    - >
+      sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
 sad:
   - sad
 pkgfile-and-mlocate:
@@ -255,17 +264,17 @@ media:
   - gimp
   - eog
   - imv
-  - nomacs
+  # - nomacs  ## < - takes forever to install, install on demand
   - xnviewmp
   - youtube-dl
   - pandoc-bin
   - mp3splt
   - audacity
-  - swappy
+  - satty
   - imagemagick
 office:
   # - slack-wayland
-  # - zoom
+  - zoom
 libre-office:
   - libreoffice
   - libmythes
@@ -278,8 +287,8 @@ system-monitoring:
 cheat-sheets:
   - cheat-bin
   - _post_commands:
-    - "mkdir ~/src && cd ~/src"
-    - "git clone git@github.com:cheat/cheatsheets.git"
+    - "mkdir -p ~/src && cd ~/src"
+    - "gh repo clone cheat/cheatsheets"
     - "cd"
 printing:
   - cups
@@ -319,16 +328,19 @@ secondary-browser:
   # - microsoft-edge-stable-bin
 github:
   #  gh
-  - github-cli ## install early now
+  - github-cli ## installed very early now
 misc:
   # for password generation
   - words
   # torrents
   - deluge-gtk
 polkit:
-  # Trying this out
+  # Did not install this on acer this last time? Did pip install work
+  # properly??
   - polkit-dumb-agent
 music:
+  - _pre_commands:
+    - "curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg  | gpg --import -"
   - ncspot
   - spotify
 informant:
@@ -353,8 +365,9 @@ wine:
   - lib32-virtualgl
   - lib32-libldap
   - _post_commands:
-    - "[go to staging tab and click Enable_CSMT for better graphic performance]"
     - "winecfg"
+  - _post_notes:
+    - "go to staging tab and click Enable_CSMT for better graphic performance"
 texlive-fonts:
   # texlive fonts (needed for pandoc pdf conversion)
   # texlive-latexextra needed for etoolbox.sty, and other md->pdf goodies

@@ -11,7 +11,7 @@ iwctl device wlan0 show
 rfkill unblock all
 
 iwctl station wlan0 connect PrinceNest
-<password>
+<password> # <--this is the next line
 ```
 
 ## arch install
@@ -33,8 +33,17 @@ pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim zsh int
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 
-curl -O https://raw.githubusercontent.com/jtprince/dotfiles/main/config/arch/scripts/time_and_lang.sh
+export MYARCHBASE="https://raw.githubusercontent.com/jtprince/dotfiles/main/config/arch"
+curl -O "$MYARCHBASE/scripts/time_and_lang.sh"
 bash time_and_lang.sh
+
+cd /boot/loader
+curl -O "$MYARCHBASE/files/boot/loader.conf"
+cd /boot/loader/entries
+curl -O "$MYARCHBASE/files/boot/arch.conf"
+
+# Now, follow instructions in the arch file to get the uuid in there
+vim /boot/loader/entries/arch.conf
 ```
 
 Then reboot (`shutdown now`, remove drive, reboot)

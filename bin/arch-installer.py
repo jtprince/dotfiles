@@ -24,8 +24,27 @@ def partition(condition, iterable):
     return trues, falses
 
 
+def run_commands(commands, opts):
+    print()
+    print("-" * 70)
+    print("Going to attempt to run the following:")
+    print("-" * 70)
+    for command in commands:
+        print(command)
+    print("-" * 70, " [Now RUNNING]")
+
+    if not opts.dry:
+        for command in commands:
+            subprocess.run(command, shell=True)
+
+
 def install_subsection(data, opts):
     special, packages_to_install = partition(lambda item: isinstance(item, dict), data)
+
+    for item in special:
+        if pre_commands := item.get("_pre_commands"):
+            run_commands(pre_commands, opts)
+
     base_cmd = ["yay", "-S", "--noconfirm"]
     cmd = base_cmd + packages_to_install
     print("running:", " ".join(cmd))
@@ -33,12 +52,15 @@ def install_subsection(data, opts):
         subprocess.run(cmd)
     for item in special:
         if post_commands := item.get("_post_commands"):
+            run_commands(post_commands, opts)
+
+        if post_notes := item.get("_post_notes"):
             print()
             print("-" * 70)
-            print("Now run the following commands:")
+            print("Post install notes:")
             print("-" * 70)
-            for command in post_commands:
-                print(command)
+            for note in post_notes:
+                print(note)
 
 
 parser = argparse.ArgumentParser()
