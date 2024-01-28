@@ -16,6 +16,7 @@ dropbox:
     - "dropbox-cli status to see where things are at"
     - "be patient after inital linkage"
 networking:
+  - network-manager-applet
   - dnsutils   # for getting wan ip address
 nvim-related:
   - git-delta

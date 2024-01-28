@@ -9,7 +9,9 @@ function cmd_exists {
 
 # full applet does not currently work
 # use nmtui{,-connect,-edit,-hostname} instead
-nm-applet --indicator &
+if cmd_exists nm-applet ; then
+    nm-applet --indicator &
+fi
 
 if cmd_exists dropbox-cli ; then
     dropbox-cli start
