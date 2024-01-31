@@ -1,11 +1,27 @@
 #!/usr/bin/env python
 
 import argparse
+import subprocess
+from pathlib import Path
+import os
+
+DOWNLOADS_DIR = Path.home() / "Downloads"
+SCREENSHOTS_DIR = Path.home() / "screenshots"
+
+def _get_latest_created_file(dir: Path) -> Path:
+    files = [file for file in dir.iterdir() if file.is_file()]
+    return max(files, key=lambda file: file.stat().st_ctime)
 
 parser = argparse.ArgumentParser(
     description="by default, grabs latest downloaded file and puts it on drag and drop."
 )
 parser.add_argument("-d", "--screenshot", action="store_true", help="get latest screenshot image")
+# TODO: add ranges and stuff
 args = parser.parse_args()
 
 
+dir = SCREENSHOTS_DIR if args.screenshot else DOWNLOADS_DIR
+
+latest_file = _get_latest_created_file(dir)
+
+subprocess.run(["dragon-drop", str(latest_file.resolve())])
