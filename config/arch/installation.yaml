@@ -332,6 +332,8 @@ laptop:
 ##############
 dns-lookup:
   # enable dnsmasq to shorten dns lookup
+  # WARNING!!! BE AWARE that this can interfere with cloudflare warp
+  # So, turn it off if you are getting a can't connect on port 53 error
   - dnsmasq
   - _post_commands:
     - echo "listen-address=::1,127.0.0.1" | sudo tee --append /etc/dnsmasq.conf
