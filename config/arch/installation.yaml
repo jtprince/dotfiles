@@ -1,42 +1,6 @@
 # See installation-initial.md for initial steps
 # arch-installer.py --install-subsections user.<whatever>
-application-launcher:
-  - tofi
-alacritty-themes:
-  - _post_commands:
-    - "mkdir -p ~/.config/alacritty/themes"
-    - "gh repo clone https://github.com/jtprince/alacritty-theme ~/.config/alacritty/themes"
-dropbox:
-  - dropbox
-  - dropbox-cli
-  - _post_commands:
-    - dropbox
-  - _post_notes:
-    - "and follow instructions in browser"
-    - "dropbox-cli status to see where things are at"
-    - "be patient after inital linkage"
-networking:
-  - network-manager-applet
-  - dnsutils   # for getting wan ip address
-nvim-related:
-  - git-delta
-language-servers:
-  # see https://wiki.archlinux.org/title/Neovim#Tips_and_tricks
-  - pyright
-  - rust-analyzer
-  - gopls
-  - yaml-language-server
-  # would like to do solargraph, but giving errors:
-  # - ruby-solargraph
-package-managers:
-  - paru-bin
-firefox-config:
-  # With these profiles (also in sway bindings and launch email):
-  # -P personal
-  # -P work
-  - _post_notes:
-    - "Goto: about:config"
-    - "mousewheel.default.delta_multiplier_y 66"
+#
 wayland-more:
   - xorg-xwayland
   - wl-clipboard-x11
@@ -58,9 +22,82 @@ wayland-more:
   - _post_commands:
     - "wget https://raw.githubusercontent.com/yurihs/waybar-media/master/waybar-media.py --directory-prefix ~/.local/bin"
     - "chmod +x ~/.local/bin/waybar-media.py"
+plymouth:
+  - plymouth
+  - plymouth-theme-arch10
+  - _post_commands:
+    - "sudo $HOME/bin/plymouth-add-boot-params /boot/loader/entries/arch.conf"
+    - "sudo $HOME/bin/plymouth-add-mkinitcpio-hook"
+    - "sudo plymouth-set-default-theme arch10"
+    - "sudo mkinitcpio -P"
+python:
+  - pyenv
+  - pyenv-virtualenv
+  - python-pip
+  - ipython
+  - python-black
+  - python-pynvim
+  - python-poetry
+  - python-ipdb
+  - python-nox-poetry
+  # - python-pudb
+  # for matplotlib (tk to avoid 'No module name '_tkinter')
+  - tk
+  # not sure if I really need tcl and python-pmw ??
+  - tcl
+  # for numpy / scipy
+  - gcc-fortran
+  - python-pmw
+  - python-markdown
+  - python-pygithub
+  - python-ruyaml
+  - python-pre-commit
+  - python-nox
+  - cruft
+  - _post_commands:
+    - "mkdir ~/.pyenv"
+  - _post_notes:
+    - "[THEN LOGIN OUT AND BACK IN!]"
+language-servers:
+  # see https://wiki.archlinux.org/title/Neovim#Tips_and_tricks
+  - pyright
+  - rust-analyzer
+  - gopls
+  - yaml-language-server
+  # would like to do solargraph, but giving errors:
+  # - ruby-solargraph
+application-launcher:
+  - tofi
+alacritty-themes:
+  - _post_commands:
+    - "mkdir -p ~/.config/alacritty/themes"
+    - "gh repo clone https://github.com/jtprince/alacritty-theme ~/.config/alacritty/themes"
+dropbox:
+  - dropbox
+  - dropbox-cli
+  - _post_commands:
+    - dropbox
+  - _post_notes:
+    - "and follow instructions in browser"
+    - "dropbox-cli status to see where things are at"
+    - "be patient after inital linkage"
 pipewire-screenshare:
   - xdg-desktop-portal
   - xdg-desktop-portal-wlr
+networking:
+  - network-manager-applet
+  - dnsutils   # for getting wan ip address
+nvim-related:
+  - git-delta
+package-managers:
+  - paru-bin
+firefox-config:
+  # With these profiles (also in sway bindings and launch email):
+  # -P personal
+  # -P work
+  - _post_notes:
+    - "Goto: about:config"
+    - "mousewheel.default.delta_multiplier_y 66"
 ntp:
   # archinstall says it does ntp, but it's not installed
   - ntp
@@ -99,34 +136,6 @@ files:
   - libcaca
   # ncurses disk usage (faster/better filelite)
   - ncdu
-python:
-  - pyenv
-  - pyenv-virtualenv
-  - python-pip
-  - ipython
-  - python-black
-  - python-pynvim
-  - python-poetry
-  - python-ipdb
-  - python-nox-poetry
-  # - python-pudb
-  # for matplotlib (tk to avoid 'No module name '_tkinter')
-  - tk
-  # not sure if I really need tcl and python-pmw ??
-  - tcl
-  # for numpy / scipy
-  - gcc-fortran
-  - python-pmw
-  - python-markdown
-  - python-pygithub
-  - python-ruyaml
-  - python-pre-commit
-  - python-nox
-  - cruft
-  - _post_commands:
-    - "mkdir ~/.pyenv"
-  - _post_notes:
-    - "[THEN LOGIN OUT AND BACK IN!]"
 install-python-versions:
   - _post_notes:
     - "pyenv install --list"
@@ -138,7 +147,7 @@ install-python-versions:
     - "pyenv install 3.12.1"
 jupyter:
   - jupyterlab
-  - jupytext
+  - python-jupytext
 ruby:
   # probably already installed
   - openssl
@@ -238,7 +247,7 @@ configure-backlight:
       sudo sh -c 'echo "export BACKLIGHT=\"<GET THIS RIGHT>\"" > /etc/profile.d/backlight.sh'
 sad:
   - sad
-pkgfile-and-mlocate:
+file-utils:
   - mlocate
   - pkgfile
   # for paccache
@@ -300,14 +309,6 @@ display-manager:
     - echo '#!/bin/sh' | sudo tee -a /etc/lemurs/wayland/sway
     - echo "exec sway" | sudo tee -a /etc/lemurs/wayland/sway
     - sudo chmod +x /etc/lemurs/wayland/sway
-plymouth:
-  - plymouth
-  - plymouth-theme-arch10
-  - _post_commands:
-    - "sudo $HOME/bin/plymouth-add-boot-params /boot/loader/entries/arch.conf"
-    - "sudo $HOME/bin/plymouth-add-mkinitcpio-hook"
-    - "sudo plymouth-set-default-theme arch10"
-    - "sudo mkinitcpio -P"
 laptop:
   - acpi
   # using tlp for battery optimizations
@@ -329,6 +330,12 @@ laptop:
 ##############
 ## OPTIONAL ##
 ##############
+dns-lookup:
+  # enable dnsmasq to shorten dns lookup
+  - dnsmasq
+  - _post_commands:
+    - echo "listen-address=::1,127.0.0.1" | sudo tee --append /etc/dnsmasq.conf
+    - "sudo systemctl enable --now dnsmasq.service"
 printing:
   - cups
   - cups-pdf
@@ -338,12 +345,16 @@ printing:
   - brother-hll2350dw
   - system-config-printer
   # - hplip
-  # sudo systemctl enable --now avahi-deamon.service
-  # # Will automatically turn on cups service when applicable ports requested:
-  # sudo systemctl enable --now cups.socket
-  # Edit /etc/nsswitch.conf and change `hosts` line to include `mdns_minimal [NOTFOUND=return]`:
-  #   hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
-  # sudo system-config-printer
+  - _post_commands:
+    - sudo systemctl enable --now avahi-deamon.service
+    # Will automatically turn on cups service when applicable ports requested:
+    -  sudo systemctl enable --now cups.socket
+  - _post_notes:
+    #   hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
+    - Edit /etc/nsswitch.conf and change `hosts` line to include `mdns_minimal [NOTFOUND=return]`
+    - Then
+    - sudo systemctl start cups.service
+    - system-config-printer
 android:
   - jmtpfs
   # mkdir ~/mnt
@@ -363,16 +374,15 @@ docker:
 secondary-browser:
   - google-chrome
   - midori
-  # for bing chat gpt4
-  # - microsoft-edge-stable-bin
 github:
-  #  gh
   - github-cli ## installed very early now
 misc:
   # for password generation
   - words
   # torrents
   - deluge-gtk
+  # read your bios version (sudo dmidecode -s bios-version)
+  - dmidecode
 polkit:
   # Did not install this on acer this last time? Did pip install work
   # properly??
@@ -382,9 +392,9 @@ music:
     - "curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg  | gpg --import -"
   - ncspot
   - spotify
-informant:
-  # informant (ensure arch news is read)
-  - informant
+# informant:
+  # ensure arch news is read
+  # - informant
 wine:
   - wine-staging
   - wine-gecko
@@ -416,10 +426,4 @@ texlive-fonts:
   - _post_commands:
     - "sudo ln -s /etc/fonts/conf.avail/09-texlive-fonts.conf /etc/fonts/conf.d/09-texlive-fonts.conf"
     - "sudo fc-cache && sudo mkfontscale && sudo mkfontdir && sudo rm -f fonts.dir fonts.scale"
-dns-lookup:
-  # enable dnsmasq to shorten dns lookup
-  - dnsmasq
-  - _post_commands:
-    - echo "listen-address=::1,127.0.0.1" | sudo tee --append /etc/dnsmasq.conf
-    - "sudo systemctl enable --now dnsmasq.service"
 

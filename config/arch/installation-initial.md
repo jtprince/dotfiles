@@ -16,26 +16,58 @@ iwctl station wlan0 connect PrinceTPLink
 
 ## arch install
 
-Follow the [arch installation
-guide](https://wiki.archlinux.org/title/installation_guide), typically:
+See the [arch installation guide](https://wiki.archlinux.org/title/installation_guide) for details.
 
-1. Two partitions (an EFI partition /boot and root, ext4). Add swapfile later.
-    * `cgdisk /dev/sda2`
-        * EFI: ef00
-        * Linux LUKS: 8309
-2. Encrypting an entire system -> LUKS on a partition
-
+```bash
+# Older disks
+export DISKDEV="/dev/sda"
+export BOOTDEV="${DISKDEV}1"
+export ROOTDEV="${DISKDEV}2"
+# Newer disks
+export DISKDEV="/dev/nvme0n1"
+export BOOTDEV="${DISKDEV}p1"
+export ROOTDEV="${DISKDEV}p2"
 ```
+
+### Format partitions
+
+(An EFI partition /boot and root, ext4). Add swapfile later.
+* `cgdisk /dev/sda2`
+    * EFI: ef00
+    * Linux LUKS: 8309
+
+### Encrypt, format, and mount
+```bash
+cryptsetup -y -v luksFormat $ROOTDEV
+cryptsetup open $ROOTDEV root
+mkfs.ext4 /dev/mapper/root
+mount /dev/mapper/root /mnt
+mkfs.fat -F32 $BOOTDEV
+mount --mkdir $BOOTDEV /mnt/boot
+```
+### Install base packages
+
+```bash
 # before pacstrap
 reflector --country US --fastest 10 --age 6 --save /etc/pacman.d/mirrorlist
 
 pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim zsh intel-ucode wget
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
+```
 
+### Basic Setup
+
+```bash
 export MYARCHBASE="https://raw.githubusercontent.com/jtprince/dotfiles/main/config/arch"
-curl -O "$MYARCHBASE/scripts/time_and_lang.sh"
-bash time_and_lang.sh
+curl -O "$MYARCHBASE/scripts/setup.sh"
+bash setup.sh
+
+# edit mkinitcpio
+vim /etc/mkinitcpio.conf
+# Put `encrypt` between block and filesystems
+# HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block encrypt filesystems fsck)
+mkinitcpio -P
 
 passwd
 
@@ -108,7 +140,7 @@ echo "/swapfile none swap defaults 0 0" >> /etc/fstab
 
 ### Add users and groups with specific ids
 
-```
+```bash
 groupmod -g 1221 users
 useradd -m -u 1000 -g users -G wheel -s /bin/zsh jtprince
 passwd jtprince
@@ -129,14 +161,15 @@ visudo
 
 `ruyaml` is needed for `arch-installer.py` and better to install early before
 `PIP_REQUIRE_VIRTUALENV` is activated. neovim-plug is useful for initial
-neovim `PlugInstall`. github-cli lets us start with dotfiles and edit it if needed.
+neovim `PlugInstall`. github-cli lets us start with dotfiles and edit it if
+needed.
 
 ```bash
 yay -S python-ruyaml neovim-plug ttf-dejavu-nerd noto-fonts github-cli
 ```
 ### Launch sway
 
-```
+```bash
 sway
 ```
 
@@ -168,15 +201,7 @@ nvim
 :CHADdeps
 ```
 
-## Optional, get keys
+## Setup keys
 
-* Open firefox and sign-in
-* Navigate to `dropbox.com` -> `env/passwds_logins/`
-* Click and download `dot-aws.secure.7z` and `dot-ssh.secure.7z`
-
-```bash
-# must be in home dir:
-cd
-7z x ~/Downloads/dot-ssh.secure.7z
-7z x ~/Downloads/dot-aws.secure.7z
-```
+Setup .ssh and .aws keys after installing Dropbox; see:
+`~/Dropbox/env/passwds_logins/INSTALL.sh`

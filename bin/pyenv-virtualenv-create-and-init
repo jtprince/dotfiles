@@ -3,129 +3,60 @@
 import shutil
 import argparse
 import subprocess
-import pathlib
-import sys
+from pathlib import Path
 
-current_python_version = sys.version.split(" ")[0]
 VERSION_FILE = ".python-version"
-VERSION_FILE_PATH = pathlib.Path(VERSION_FILE)
-PYPROJECT = pathlib.Path("pyproject.toml")
-PYENV_GET_VERSIONS_CMD = "pyenv-get-versions"
-PYPROJECT_PYENV_CMD = "pyproject-get-best-pyenv-python-version"
-
-parser = argparse.ArgumentParser(
-    description="Creates and sets the virtualenv. If pyproject.toml, uses that."
-)
-parser.add_argument(
-    "--best",
-    action="store_true",
-    help=str(
-        "if no pyproject.toml, use best available pyenv version "
-        "instead of current python version"
-    ),
-)
-parser.add_argument(
-    "--miniconda",
-    action="store_true",
-    help="install latest miniconda",
-)
-parser.add_argument(
-    "--version",
-    help=str(
-        "the python version to use. Defaults to best pyproject version or "
-        f"current python {current_python_version}",
-    ),
-)
-parser.add_argument(
-    "--name", help="name of the virtualenv to use (default {cwd}-{version})"
-)
-parser.add_argument(
-    "--no-python-version",
-    action="store_true",
-    help=str(
-        "do not automatically create and populate " f"the {VERSION_FILE} file"
-    ),
-)
-parser.add_argument(
-    "--refresh",
-    action="store_true",
-    help=str(
-        f"delete the existing virtualenv from {VERSION_FILE} and recreate"
-    ),
-)
-
-args = parser.parse_args()
+VERSION_FILE_PATH = Path(VERSION_FILE)
+CWD_NAME = Path.cwd().name
+DELETE_PYENV_CMD = "pyenv-virtualenv-delete"
 
 
-def get_best_pyenv_python_version(miniconda: bool = False) -> str:
-    cmd = [PYENV_GET_VERSIONS_CMD, "--best"]
-    if miniconda:
-        cmd += ["--miniconda"]
-    return subprocess.check_output(
-        cmd,
-        text=True,
-    ).strip()
+def configure(version: str, args: argparse.Namespace):
+    if args.refresh:
+        if VERSION_FILE_PATH.exists():
+            stated_venv = VERSION_FILE_PATH.read_text().strip()
+            if stated_venv:
+                venv_path = Path.home() / f".pyenv/versions/{stated_venv}"
+                subprocess.run(
+                    f"{DELETE_PYENV_CMD} {stated_venv}",
+                    shell=True,
+                    capture_output=True,
+                )
+                shutil.rmtree(venv_path, ignore_errors=True)
+                VERSION_FILE_PATH.unlink(missing_ok=True)
+
+    VENV_NAME = args.name if args.name else "-".join([CWD_NAME, version])
+    cmd = ["pyenv", "virtualenv", version, VENV_NAME]
+    subprocess.run(cmd, check=False)
+
+    if not args.no_python_version:
+        Path(VERSION_FILE).write_text(VENV_NAME)
 
 
-if args.refresh:
-    if VERSION_FILE_PATH.exists():
-        stated_venv = VERSION_FILE_PATH.read_text().strip()
-        if stated_venv:
-            venv_path = pathlib.Path.home() / f".pyenv/versions/{stated_venv}"
-            subprocess.run(
-                f"pyenv-virtualenv-delete {stated_venv}",
-                shell=True,
-                capture_output=True,
-            )
-            shutil.rmtree(venv_path, ignore_errors=True)
-            VERSION_FILE_PATH.unlink(missing_ok=True)
+def get_args():
+    parser = argparse.ArgumentParser(description="Creates and sets the virtualenv")
+    parser.add_argument(
+        "version",
+        help="the python version to use (e.g., 3.9.18)",
+    )
+    parser.add_argument(
+        "--name", help=f"name of the virtualenv to use (default {CWD_NAME}-{{version}})"
+    )
+    parser.add_argument(
+        "--no-python-version",
+        action="store_true",
+        help=str(
+            "do not automatically create and populate " f"the {VERSION_FILE} file"
+        ),
+    )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help=str(f"delete the existing virtualenv from {VERSION_FILE} and recreate"),
+    )
+    return parser.parse_args()
 
 
-if args.version:
-    version = args.version
-if not args.version:
-    if PYPROJECT.exists():
-        # TODO: if --best could use best possible version compatible with
-        # pyproject.toml.  For now, just use whatever
-        # pyproject-get-best-pyenv-python-version returns
-        # print(PYPROJECT_PYENV_CMD)
-        version = subprocess.check_output(
-            PYPROJECT_PYENV_CMD, text=True
-        ).strip()
-    else:
-        if args.best or args.miniconda:
-            version = get_best_pyenv_python_version(miniconda=args.miniconda)
-            if not version:
-                print("-" * 79)
-                print("ERROR: A compatible python version was not found!")
-                if args.miniconda:
-                    latest_miniconda_version = subprocess.check_output(
-                        "pyenv install --list | grep miniconda | tail -n 1",
-                        shell=True,
-                        text=True,
-                    ).strip()
-                    print("\nTo rectify, install latest miniconda:")
-                    print(f"pyenv install {latest_miniconda_version}")
-
-                print("-" * 79)
-                exit(1)
-        else:
-            # current version
-            version = sys.version.split()[0]
-
-
-if args.name:
-    VENV_NAME = args.name
-elif args.miniconda:
-    # conda will create its own virtual environments, use current best, don't
-    # make a specific sub env
-    VENV_NAME = version
-else:
-    VENV_NAME = "-".join([str(pathlib.Path.cwd().name), version])
-
-cmd = ["pyenv", "virtualenv", version, VENV_NAME]
-# print(cmd)
-subprocess.run(cmd, check=False)
-
-if not args.no_python_version:
-    pathlib.Path(VERSION_FILE).write_text(VENV_NAME)
+if __name__ == "__main__":
+    args = get_args()
+    configure(args.version, args)

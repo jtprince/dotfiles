@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <hostname>"
+    exit 1
+fi
+
+hostname="$1"
+
 COUNTRY="America"
 CITY="Denver"
 
@@ -22,3 +29,6 @@ echo -n 'LANG=en_US.UTF-8' > /etc/locale.conf
 
 echo "Allowing parallel downloads in /etc/pacman.conf"
 sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+
+echo "Setting hostname to $hostname"
+echo -n "$hostname" > /etc/hostname
