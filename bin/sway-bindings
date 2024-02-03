@@ -1,9 +1,124 @@
 #!/usr/bin/env python
 
 import dataclasses
+from itertools import chain
 from pathlib import Path
 
 CONFIG = Path.home() / ".config/sway/config"
+
+# MICROSOFT SCULPT TOP ROW REFERENCE
+# In Fn mode it will deliver an FX key (e.g., F1, otherwise as documented)
+"""
+🏠 F1: XF86HomePage
+[[]] F2: Alt_L+Tab
+][] F3: Ctrl_L+Alt_L+Left
+[][ F4: Ctrl_L+Alt_L+Right
+🔍 F5: Shift_L+Meta_L+XF86TouchpadToggle
+🔄 F6: Super_L+Alt_L+XF86TouchpadToggle
+=[] F7: Control_L+Alt_L+XF86TouchpadToggle
+⚙️a F8: Alt_L+XF86TouchpadToggle
+⏯️  F9: XF86AudioPlay
+🔇 F10: XF86AudioMute
+🔈 F11: XF86AudioLowerVolume
+🔊 F12: XF86AudioRaiseVolume
+PrtScn: Print
+ScrLk: Scroll_Lock
+Pause: Pause
+🖩: XF86Calculator
+"""
+
+# MOD1 = "mod1" (Alt Key)
+MOD4 = "mod4"  # (Windows Key)
+CTRL = "ctrl"
+SHIFT = "shift"
+
+MODIFIERS = (CTRL, MOD4, SHIFT)
+
+# Left to Right using my microsoft sculpt keyboard
+# Alternating using blue toggle then Fn toggle
+ALL_UNSHIFTED_PRIMITIVE_KEYS = (
+    *[f"F{num}" for num in range(1, 12 + 1)],
+    *[str(num) for num in range(0, 9 + 1)],
+    *[letter for letter in string.ascii_lowercase],
+    "space",
+    "Insert",
+    "Home",
+    "End",
+    "Prior",  # PgUp
+    "Next",  # PgDn
+    "Up",
+    "Down",
+    "Left",
+    "Right",
+    "Escape",
+    "Tab",
+    "Delete",
+    "XF86HomePage",
+    # WARNING: OVERRIDDEN BY SCULPT KEYBOARD
+    "XF86TouchpadToggle",
+    "XF86AudioPlay",
+    "XF86AudioMute",
+    "XF86AudioLowerVolume",
+    "XF86AudioRaiseVolume",
+    "XF86AudioMicMute",
+    "XF86AudioNext",
+    "XF86AudioPrev",
+    "Print",
+    "Scroll_Lock",
+    # WARNING: Ctrl turned Pause into Break
+    "Pause",
+    "XF86Calculator",
+    "Menu",
+    "XF86MonBrightnessDown",
+    "XF86MonBrightnessUp",
+    "XF86KbdBrightnessDown" "XF86KbdBrightnessUp" "`",
+    "minus",  # "-"
+    "=",
+    "bracketleft",  # "[",
+    "bracketright",  # "]"
+    "backslash",
+    ";",
+    "'",
+    "comma",  # ","
+    "period",  # "."
+    "/",
+)
+
+
+def get_shifted_key(key):
+    shifted_keys = {
+        "1": "!",
+        "2": "@",
+        "3": "#",
+        "4": "$",
+        "5": "%",
+        "6": "^",
+        "7": "&",
+        "8": "*",
+        "9": "(",
+        "0": ")",
+        "[": "{",
+        "]": "}",
+        ";": ":",
+        "'": '"',
+        ",": "<",
+        ".": ">",
+        "/": "?",
+        "\\": "|",
+        "`": "~",
+        "-": "_",
+        "=": "+",
+    }
+
+    if key.isalpha():
+        return key.upper()
+    elif key in shifted_keys:
+        return shifted_keys[key]
+    else:
+        return key
+
+    dict(zip(string.ascii_lowercase, string.ascii_uppercase))
+
 
 def partition(iterable, condition):
     trues = []
@@ -16,9 +131,39 @@ def partition(iterable, condition):
 
 @dataclasses.dataclass(frozen=True, slots=True)
 class Binding:
-    Mod1: bool = False
-    Mod4: bool = False
-    Ctrl: bool = False
+    key: str
+    command: str
+    ctrl: bool = False
+    mod1: bool = False
+    mod4: bool = False
+    shift: bool = False
+    locked: bool = False
+
+    ALL_MODS = (MOD4, MOD1, CTRL, SHIFT)
+
+    @classmethod
+    def from_line_parts(cls, line: list[str]):
+        line = line[1:]
+        locked = False
+        if line[0] == "--locked":
+            line = line[1:]
+            locked = True
+        keybinding = line.pop(0)
+        keys = keybinding.split("+")
+        key_related = dict(
+            ((key.lower(), True) if key.lower() in cls.ALL_MODS else ("key", key))
+            for key in keys
+        )
+        command = " ".join(line)
+        return cls(command=command, **key_related, locked=locked)
+
+    def command_type(self):
+        """Something like 'exec', 'move', 'workspace', etc."""
+        return self.command[0]
+
+    def is_executable(self):
+        return self.command_type == "exec"
+
 
 @dataclasses.dataclass()
 class SwayConfig:
@@ -31,19 +176,31 @@ class SwayConfig:
     def from_path(cls, path: Path = CONFIG):
         lines = path.read_text().strip().split("\n")
         definitions, otherlines = cls.get_definitions(lines)
-        print(definitions)
+        bindings = cls.get_bindings(otherlines, definitions)
 
     @classmethod
     def get_definitions(cls, lines):
         setlines, otherlines = partition(lines, lambda line: line.startswith("set "))
-        definitions = dict(
-            line.strip().split(None, 2)[1:3] for line in setlines
-        )
+        definitions = dict(line.strip().split(None, 2)[1:3] for line in setlines)
         return (definitions, otherlines)
 
     @classmethod
-    def get_bindings(cls, definitions: dict):
-        pass
+    def get_bindings(cls, lines: list[str], definitions: dict):
+        bindings = []
+        for line in lines:
+            parts = line.strip().split()
+            if not parts or (parts[0] != "bindsym"):
+                continue
+            for key, val in definitions.items():
+                parts = list(
+                    chain.from_iterable(
+                        part.replace(key, val).split() for part in parts
+                    )
+                )
+            binding = Binding.from_line_parts(parts)
+            bindings.append(binding)
+
+        print(bindings)
 
 
 if __name__ == "__main__":
