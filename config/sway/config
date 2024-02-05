@@ -149,6 +149,7 @@ bindsym XF86AudioLowerVolume exec volumectl -u down
 bindsym XF86AudioMute exec volumectl toggle-mute
 bindsym XF86AudioMicMute exec volumectl -m toggle-mute
 
+
 # display the volume changes
 exec "avizo-service"
 
@@ -565,6 +566,7 @@ include /etc/sway/config.d/*
 # Keybindings
 #######################
 input type:keyboard {
+    # xkb_file "/home/jtprince/dotfiles/config/xkb_specs/jtp_layout.xkb"
     xkb_options "caps:escape,altwin:swap_lalt_lwin"
     repeat_delay 300
     repeat_rate 30

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 import dataclasses
-from itertools import chain
+import itertools
+from collections import defaultdict
 from pathlib import Path
+import string
 
 CONFIG = Path.home() / ".config/sway/config"
+
 
 # MICROSOFT SCULPT TOP ROW REFERENCE
 # In Fn mode it will deliver an FX key (e.g., F1, otherwise as documented)
@@ -27,19 +30,49 @@ Pause: Pause
 🖩: XF86Calculator
 """
 
-# MOD1 = "mod1" (Alt Key)
+MOD1 = "mod1"  # (Alt Key)
 MOD4 = "mod4"  # (Windows Key)
+META = "meta"
 CTRL = "ctrl"
 SHIFT = "shift"
 
 MODIFIERS = (CTRL, MOD4, SHIFT)
 
+# Keys that pressing alone can be used to trigger a special cmd
+MAPPABLE_KEYS = (
+    "XF86HomePage",
+    "XF86TouchpadToggle",
+    "XF86AudioPlay",
+    "XF86AudioMute",
+    "XF86AudioLowerVolume",
+    "XF86AudioRaiseVolume",
+    "XF86AudioMicMute",
+    "XF86AudioNext",
+    "XF86AudioPrev",
+    "XF86Mail",
+    "XF86Documents",
+    "XF86Phone",
+    "XF86Display",
+    "XF86Calculator",
+    "XF86Sleep",
+    "XF86MonBrightnessDown",
+    "XF86MonBrightnessUp",
+    "XF86KbdBrightnessDown",
+    "XF86KbdBrightnessUp",
+    "Print",
+    "Scroll_Lock",
+    # WARNING: Ctrl turned Pause into Break
+    "Pause",
+    "Menu",
+)
+
 # Left to Right using my microsoft sculpt keyboard
 # Alternating using blue toggle then Fn toggle
-ALL_UNSHIFTED_PRIMITIVE_KEYS = (
-    *[f"F{num}" for num in range(1, 12 + 1)],
-    *[str(num) for num in range(0, 9 + 1)],
-    *[letter for letter in string.ascii_lowercase],
+# These are all UNSHIFTED keys (if a shift version exists)!
+ALL_PRIMITIVE_KEYS = (
+    *[f"F{num}" for num in range(1, 12 + 1)],  # Function Keys (e.g., F1)
+    *[str(num) for num in range(0, 9 + 1)],  # numbers
+    *[letter for letter in string.ascii_lowercase],  # letters
     "space",
     "Insert",
     "Home",
@@ -53,71 +86,92 @@ ALL_UNSHIFTED_PRIMITIVE_KEYS = (
     "Escape",
     "Tab",
     "Delete",
-    "XF86HomePage",
-    # WARNING: OVERRIDDEN BY SCULPT KEYBOARD
-    "XF86TouchpadToggle",
-    "XF86AudioPlay",
-    "XF86AudioMute",
-    "XF86AudioLowerVolume",
-    "XF86AudioRaiseVolume",
-    "XF86AudioMicMute",
-    "XF86AudioNext",
-    "XF86AudioPrev",
-    "Print",
-    "Scroll_Lock",
-    # WARNING: Ctrl turned Pause into Break
-    "Pause",
-    "XF86Calculator",
-    "Menu",
-    "XF86MonBrightnessDown",
-    "XF86MonBrightnessUp",
-    "XF86KbdBrightnessDown" "XF86KbdBrightnessUp" "`",
-    "minus",  # "-"
-    "=",
-    "bracketleft",  # "[",
-    "bracketright",  # "]"
+    *MAPPABLE_KEYS,
+    "grave",  # aka backtick
+    "minus",
+    "equal",
+    "bracketleft",
+    "bracketright",
     "backslash",
-    ";",
-    "'",
-    "comma",  # ","
-    "period",  # "."
-    "/",
+    "semicolon",
+    "apostrophe",
+    "comma",
+    "period",
+    "slash",
+)
+
+# Expect sway config to use all english words, not the short symbol
+ALIASES = {
+    "`": "grave",
+    "-": "minus",
+    "=": "equal",
+    "[": "bracketleft",
+    "]": "bracketright",
+    "\\": "backslash",
+    ";": "semicolon",
+    "'": "apostrophe",
+    ",": "comma",
+    ".": "period",
+    "/": "slash",
+}
+ALIAS_TO_KEY = {val: key for key, val in ALIASES.items()}
+
+LOWER_TO_UPPER_KEYS = {
+    "1": "!",
+    "2": "@",
+    "3": "#",
+    "4": "$",
+    "5": "%",
+    "6": "^",
+    "7": "&",
+    "8": "*",
+    "9": "(",
+    "0": ")",
+    "[": "{",
+    "]": "}",
+    ";": ":",
+    "'": '"',
+    ",": "<",
+    ".": ">",
+    "/": "?",
+    "\\": "|",
+    "`": "~",
+    "-": "_",
+    "=": "+",
+    **dict(zip(string.ascii_lowercase, string.ascii_uppercase)),
+}
+UPPER_TO_LOWER_KEYS = {val: key for key, val in LOWER_TO_UPPER_KEYS.items()}
+
+
+def all_combinations(any_list):
+    return itertools.chain.from_iterable(
+        itertools.combinations(any_list, i + 1) for i in range(len(any_list))
+    )
+
+
+ALL_UP_DOWN_SHIFTABLE_KEYS = set(LOWER_TO_UPPER_KEYS.keys()).union(
+    set(LOWER_TO_UPPER_KEYS.values())
 )
 
 
 def get_shifted_key(key):
-    shifted_keys = {
-        "1": "!",
-        "2": "@",
-        "3": "#",
-        "4": "$",
-        "5": "%",
-        "6": "^",
-        "7": "&",
-        "8": "*",
-        "9": "(",
-        "0": ")",
-        "[": "{",
-        "]": "}",
-        ";": ":",
-        "'": '"',
-        ",": "<",
-        ".": ">",
-        "/": "?",
-        "\\": "|",
-        "`": "~",
-        "-": "_",
-        "=": "+",
-    }
+    if key in LOWER_TO_UPPER_KEYS:
+        return LOWER_TO_UPPER_KEYS[key]
+    return key
 
-    if key.isalpha():
-        return key.upper()
-    elif key in shifted_keys:
-        return shifted_keys[key]
-    else:
-        return key
 
-    dict(zip(string.ascii_lowercase, string.ascii_uppercase))
+def is_shiftable(key):
+    return key in LOWER_TO_UPPER_KEYS
+
+
+def get_lower_key(key):
+    if key in UPPER_TO_LOWER_KEYS:
+        return UPPER_TO_LOWER_KEYS[key]
+    return key
+
+
+def compact(lst):
+    return [x for x in lst if x is not None]
 
 
 def partition(iterable, condition):
@@ -129,17 +183,49 @@ def partition(iterable, condition):
     return trues, falses
 
 
-@dataclasses.dataclass(frozen=True, slots=True)
-class Binding:
+@dataclasses.dataclass(frozen=True, slots=True, order=True)
+class KeyCombo:
+    """One or more keys pressed together."""
+
     key: str
-    command: str
     ctrl: bool = False
     mod1: bool = False
     mod4: bool = False
     shift: bool = False
-    locked: bool = False
+    meta: bool = False
 
-    ALL_MODS = (MOD4, MOD1, CTRL, SHIFT)
+    ALL_MODS = (MOD4, MOD1, META, CTRL, SHIFT)
+
+    @classmethod
+    def from_chars(cls, chars: str):
+        """Takes a set of keys joined with '+'."""
+        keys = chars.split("+")
+        kwargs = dict(
+            (
+                (key.lower(), True)
+                if key.lower() in cls.ALL_MODS
+                else ("key", cls._down_shift_key(key))
+            )
+            for key in keys
+        )
+        return cls(**kwargs)
+
+    @staticmethod
+    def _down_shift_key(key):
+        return get_lower_key(key)
+
+    def __str__(self):
+        mods = [mod.capitalize() for mod in self.ALL_MODS if getattr(self, mod)]
+        return "+".join([*mods, self.key])
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class KeyBinding:
+    key_combo: KeyCombo
+    command: str
+    locked: bool = False
+    exec: bool = False
+    no_startup_id: bool = False
 
     @classmethod
     def from_line_parts(cls, line: list[str]):
@@ -148,14 +234,27 @@ class Binding:
         if line[0] == "--locked":
             line = line[1:]
             locked = True
-        keybinding = line.pop(0)
-        keys = keybinding.split("+")
-        key_related = dict(
-            ((key.lower(), True) if key.lower() in cls.ALL_MODS else ("key", key))
-            for key in keys
-        )
+        key_combo = KeyCombo.from_chars(line.pop(0))
+
+        exec = False
+        if line[0] == "exec":
+            line.pop(0)
+            exec = True
+
+        no_startup_id = False
+        if line[0] == "--no-startup-id":
+            line.pop(0)
+            no_startup_id = True
+
         command = " ".join(line)
-        return cls(command=command, **key_related, locked=locked)
+
+        return cls(
+            key_combo=key_combo,
+            command=command,
+            locked=locked,
+            exec=exec,
+            no_startup_id=no_startup_id,
+        )
 
     def command_type(self):
         """Something like 'exec', 'move', 'workspace', etc."""
@@ -164,19 +263,58 @@ class Binding:
     def is_executable(self):
         return self.command_type == "exec"
 
+    def __str__(self):
+        return f'<{str(self.key_combo)}, "{self.command}">'
+
+    __repr__ = __str__
+
+
+# Bindings that already exist on sculpt keyboard but not set in sway
+PRESET_KEY_COMBOS = {
+    "AltTab": KeyCombo(key="Tab", mod1=True),
+    "WorkSpaceLeft": KeyCombo(key="Left", ctrl=True, mod1=True),
+    "WorkSpaceRight": KeyCombo(key="Right", ctrl=True, mod1=True),
+    "Search": KeyCombo(key="XF86TouchpadToggle", mod1=True, shift=True),
+    "Reload": KeyCombo(key="XF86TouchpadToggle", mod1=True, mod4=True),
+    "CtrlAltTouchpadToggle": KeyCombo(key="XF86TouchpadToggle", mod1=True, ctrl=True),
+    "Settings": KeyCombo(key="XF86TouchpadToggle", mod1=True),
+    # At some point, should add in a Super R (i.e., "Meta") key to my keyboard
+    # Could either use keyd https://github.com/rvaiya/keyd
+    # Or https://www.reddit.com/r/swaywm/comments/156wsoe/remap_the_right_alt_key_to_behave_like_a_second/
+    # This would let me access a whole other set of bindings
+    # For now, let's just egnore the F5 key
+    # 🔍 F5: Shift_L+Meta_L+XF86TouchpadToggle
+}
+
+
+def mod_combo_includes_shift_and_no_mod4(mod: tuple[str]) -> bool:
+    has_shift = any(modifier for modifier in mod if modifier == SHIFT)
+    has_alt = any(modifier for modifier in mod if modifier == MOD4)
+    return has_shift and not has_alt
+
 
 @dataclasses.dataclass()
 class SwayConfig:
     MY_MOD_NAMES = {"Mod4": "Alt"}
+    VALID_MOD_COMBOS = (
+        (MOD4,),
+        (SHIFT,),
+        (SHIFT, CTRL),
+        (CTRL, MOD4),
+        (SHIFT, MOD4),
+        (CTRL, SHIFT, MOD4),
+    )
 
     # A dict of sway variables (e.g., "$mod" -> "Mod4"
     definitions: dict[str, str]
+    key_bindings: list[KeyBinding]
 
     @classmethod
     def from_path(cls, path: Path = CONFIG):
         lines = path.read_text().strip().split("\n")
         definitions, otherlines = cls.get_definitions(lines)
-        bindings = cls.get_bindings(otherlines, definitions)
+        key_bindings = cls.get_key_bindings(otherlines, definitions)
+        return cls(definitions=definitions, key_bindings=key_bindings)
 
     @classmethod
     def get_definitions(cls, lines):
@@ -184,23 +322,65 @@ class SwayConfig:
         definitions = dict(line.strip().split(None, 2)[1:3] for line in setlines)
         return (definitions, otherlines)
 
-    @classmethod
-    def get_bindings(cls, lines: list[str], definitions: dict):
-        bindings = []
-        for line in lines:
-            parts = line.strip().split()
-            if not parts or (parts[0] != "bindsym"):
-                continue
-            for key, val in definitions.items():
-                parts = list(
-                    chain.from_iterable(
-                        part.replace(key, val).split() for part in parts
-                    )
+    @staticmethod
+    def _binding_from_line(line: str, definitions: dict[str, str]) -> KeyBinding | None:
+        parts = line.strip().split()
+        if not parts or (parts[0] != "bindsym"):
+            return None
+        for key, val in definitions.items():
+            parts = list(
+                itertools.chain.from_iterable(
+                    part.replace(key, val).split() for part in parts
                 )
-            binding = Binding.from_line_parts(parts)
-            bindings.append(binding)
+            )
+        return KeyBinding.from_line_parts(parts)
 
-        print(bindings)
+    @classmethod
+    def get_key_bindings(cls, lines: list[str], definitions: dict):
+        return compact([cls._binding_from_line(line, definitions) for line in lines])
+
+    @classmethod
+    def get_all_possible_key_combos(cls):
+        """At least the combos I want to consider."""
+        all_key_combos = []
+
+        for key in ALL_PRIMITIVE_KEYS:
+
+            if key in MAPPABLE_KEYS:
+                all_key_combos.append(KeyCombo.from_chars(key))
+
+            for mod_combo in cls.VALID_MOD_COMBOS:
+                if is_shiftable(key):
+                    if mod_combo_includes_shift_and_no_mod4(mod_combo):
+                        continue
+                all_key_combos.append(KeyCombo.from_chars("+".join([*mod_combo, key])))
+
+        return all_key_combos
+
+    def display_annotated_bindings(self):
+        all_possible_key_combos = self.get_all_possible_key_combos()
+        key_bindings_by_key_combo = {
+            binding.key_combo: binding for binding in self.key_bindings
+        }
+        for combo, binding in key_bindings_by_key_combo.items():
+            if combo not in all_possible_key_combos:
+                raise RuntimeError(
+                    f"Bad config since {str(combo)} not found in all_possible_key_combos!"
+                )
+
+        key_combos_by_key = defaultdict(list)
+        for key_combo in all_possible_key_combos:
+            key_combos_by_key[key_combo.key].append(key_combo)
+
+        for key, key_combos in key_combos_by_key.items():
+            print(f"{key} ==========================")
+            for possible_key_combo in key_combos:
+                prefix = "[ ]"
+                command = ""
+                if possible_key_combo in key_bindings_by_key_combo:
+                    prefix = "[*]"
+                    command = key_bindings_by_key_combo[possible_key_combo].command
+                print(" ".join([prefix, str(possible_key_combo), command]))
 
 
 if __name__ == "__main__":
@@ -211,164 +391,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     config = SwayConfig.from_path(CONFIG)
-    print(config)
-
-
-# def _get_keybindings_and_commands(self, lines, definitions)
-#   keybindings = []
-#   commands = []
-#   mode = self.DEFAULT_MODE
-#   lines.each do |line|
-#     stripped_line = line.strip
-#     definitions.each do |from, to|
-#       stripped_line.gsub!(from, to)
-#     end
-#     parts = stripped_line.split(/\s+/)
-#     next unless parts.size > 0
-#
-#     if parts.first == 'mode'
-#       mode = parts[1].chomp('"').reverse.chomp('"').reverse
-#     elsif parts[0] == '}'
-#       mode = DEFAULT_MODE
-#     elsif parts.first == 'bindsym'
-#       keybindings << Keybinding.from_parts(parts, mode)
-#     else
-#       commands << Command.from_parts(parts)
-#     end
-#   end
-#   [keybindings, commands]
-# end
-#
-# Command = Struct.new(:command, :flags, :exec) do
-#   def self.from_parts(parts)
-#     flags = [parts.delete("--no-startup-id")].compact
-#     exec =
-#       if parts[0] == 'exec'
-#         parts.shift
-#         true
-#       end
-#     self.new(parts.join(' '), flags, !!exec)
-#   end
-# end
-#
-# Keycombo = Struct.new(:key, :ctrl, :shift, :mod) do
-#   def self.from_string(string)
-#     parts = string.split('+')
-#     (ctrl, parts) = parts.partition {|part| part.downcase == 'ctrl' }
-#     (shift, parts) = parts.partition {|part| part.downcase == 'shift' }
-#     (mod, parts) = parts.partition {|part| part.downcase[0,3] == 'mod' }
-#     self.new(parts.pop, ctrl.size > 0, shift.size > 0, mod.size > 0)
-#   end
-#
-#   def key_properly_cased
-#     if self.shift && self.key&.size == 1 && self.key =~ /[A-Z]/
-#       self.key.upcase
-#     else
-#       self.key
-#     end
-#   end
-# end
-#
-# Keybinding = Struct.new(:keycombo, :command, :mode) do
-#   def self.from_parts(parts, mode=nil)
-#     raise ArgumentError("first part should be 'bindsym'") unless parts[0] == 'bindsym'
-#     keycombo = Keycombo.from_string(parts[1])
-#     command = Command.from_parts(parts[2..-1])
-#     self.new(keycombo, command, mode)
-#   end
-# end
-#
-# if $0 == __FILE__
-#   class Object
-#     def eq_(other, msg='')
-#       if self != other
-#         abort "ERROR: #{self.inspect} not equal to #{other.inspect}"
-#       end
-#     end
-#   end
-#
-#   def test(config)
-#     config.definitions.eq_( {"$globalfontsize"=>"8", "$mod"=>"Mod4", "$l"=>"Tab", "$r"=>"l", "$backlight"=>"intel_backlight", "$majorlightadjust"=>"100", "$volup"=>"/usr/bin/pulseaudio-ctl up"} )
-#     config.keybindings.size.eq_ 6
-#     config.keybindings.select {|keybinding| keybinding.mode == 'musicplayer'}.size.eq_ 3
-#
-#     # keybinding (simple)
-#     keybinding = config.keybindings.first
-#     keybinding.command.exec.eq_ true
-#     keybinding.command.flags.eq_ ["--no-startup-id"]
-#     keybinding.keycombo.key.eq_ 'XF86MonBrightnessDown'
-#     [:ctrl, :shift, :mod].each {|modifier| keybinding.keycombo.send(modifier).eq_ false }
-#
-#     # keybinding complex
-#     keybinding = config.keybindings[2]
-#     keybinding.command.exec.eq_ true
-#     keybinding.command.flags.eq_ ["--no-startup-id"]
-#     keybinding.keycombo.ctrl.eq_ true
-#     keybinding.keycombo.shift.eq_ true
-#     keybinding.keycombo.mod.eq_ true
-#     keybinding.mode.eq_ 'default'
-#     keybinding.keycombo.key.eq_ 'parenright'
-#
-#     config.keybindings[-1].command.exec.eq_ false
-#     config.keybindings[-1].command.command.eq_ "mode \"default\""
-#     config.keybindings[-1].mode.eq_ 'musicplayer'
-#
-#     # todo: better test commands
-#     config.commands.size.eq_ 3
-#   end
-#
-#   if ARGV.size == 0
-#     puts "usage: #{File.basename(__FILE__)} report [config]"
-#     puts "outputs list of used and unused bindings"
-#     puts ""
-#     puts "default config: #{SwayConfig::CONFIG}"
-#     exit
-#   end
-#
-#   if ARGV[0] == 'test'
-#     test SwayConfig.from_file(DATA)
-#   else
-#     config_fn = ARGV[1] || SwayConfig::CONFIG
-#
-#     sway_config = File.open(config_fn) do |io|
-#       SwayConfig.from_file(io)
-#     end
-#     sway_config.keybindings.sort_by {|binding| binding.keycombo.key || '' }. each do |binding|
-#       puts [
-#         binding.keycombo.key_properly_cased,
-#         binding.keycombo.ctrl ? 'ctrl' : nil,
-#         binding.keycombo.shift ? 'shift' : nil,
-#         binding.keycombo.mod ? 'mod' : nil,
-#       ].compact.join("-") + " --> #{binding.command.command}"
-#     end
-#     # puts sway_config.keybindings
-#   end
-#
-# end
-#
-#
-# __END__
-# set $globalfontsize 8
-# exec --no-startup-id autostart
-#
-# set $mod Mod4
-# set $l Tab
-# set $r l
-#
-# font pango:Droid Sans Mono $globalfontsize
-#
-# set $backlight intel_backlight
-# set $majorlightadjust 100
-# bindsym XF86MonBrightnessDown exec --no-startup-id laptop_monitor_brightness $backlight '-' $majorlightadjust
-#
-# set $volup /usr/bin/pulseaudio-ctl up
-# bindsym $mod+parenright exec --no-startup-id $volup
-# bindsym $mod+Shift+Ctrl+parenright exec --no-startup-id $volup
-#
-# mode "musicplayer" {
-#     bindsym Shift+M exec mpd
-#     bindsym Return exec mpc play
-#     bindsym $mod+m mode "default"
-# }
-#
-# workspace_layout stacking
+    config.display_annotated_bindings()
