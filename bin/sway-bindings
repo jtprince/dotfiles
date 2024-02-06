@@ -9,27 +9,6 @@ import string
 CONFIG = Path.home() / ".config/sway/config"
 
 
-# MICROSOFT SCULPT TOP ROW REFERENCE
-# In Fn mode it will deliver an FX key (e.g., F1, otherwise as documented)
-"""
-🏠 F1: XF86HomePage
-[[]] F2: Alt_L+Tab
-][] F3: Ctrl_L+Alt_L+Left
-[][ F4: Ctrl_L+Alt_L+Right
-🔍 F5: Shift_L+Meta_L+XF86TouchpadToggle
-🔄 F6: Super_L+Alt_L+XF86TouchpadToggle
-=[] F7: Control_L+Alt_L+XF86TouchpadToggle
-⚙️a F8: Alt_L+XF86TouchpadToggle
-⏯️  F9: XF86AudioPlay
-🔇 F10: XF86AudioMute
-🔈 F11: XF86AudioLowerVolume
-🔊 F12: XF86AudioRaiseVolume
-PrtScn: Print
-ScrLk: Scroll_Lock
-Pause: Pause
-🖩: XF86Calculator
-"""
-
 MOD1 = "mod1"  # (Alt Key)
 MOD4 = "mod4"  # (Windows Key)
 META = "meta"
@@ -37,6 +16,8 @@ CTRL = "ctrl"
 SHIFT = "shift"
 
 MODIFIERS = (CTRL, MOD4, SHIFT)
+
+# /usr/include/x11/keysymdef.h is the source of truth on key symbols
 
 # Keys that pressing alone can be used to trigger a special cmd
 MAPPABLE_KEYS = (
@@ -99,22 +80,6 @@ ALL_PRIMITIVE_KEYS = (
     "period",
     "slash",
 )
-
-# Expect sway config to use all english words, not the short symbol
-ALIASES = {
-    "`": "grave",
-    "-": "minus",
-    "=": "equal",
-    "[": "bracketleft",
-    "]": "bracketright",
-    "\\": "backslash",
-    ";": "semicolon",
-    "'": "apostrophe",
-    ",": "comma",
-    ".": "period",
-    "/": "slash",
-}
-ALIAS_TO_KEY = {val: key for key, val in ALIASES.items()}
 
 LOWER_TO_UPPER_KEYS = {
     "1": "!",

@@ -1,5 +1,43 @@
 # See `man 5 sway` for reference.
 
+# =============================================================
+# # MICROSOFT SCULPT TOP ROW REFERENCE
+# # In Fn mode it will deliver an FX key (e.g., F1, otherwise as documented)
+# """
+# 🏠 F1: XF86HomePage
+# [[]] F2: Alt_L+Tab
+# ][] F3: Ctrl_L+Alt_L+Left
+# [][ F4: Ctrl_L+Alt_L+Right
+# 🔍 F5: Shift_L+Meta_L+XF86TouchpadToggle
+# 🔄 F6: Super_L+Alt_L+XF86TouchpadToggle
+# =[] F7: Control_L+Alt_L+XF86TouchpadToggle
+# ⚙️a F8: Alt_L+XF86TouchpadToggle
+# ⏯️  F9: XF86AudioPlay
+# 🔇 F10: XF86AudioMute
+# 🔈 F11: XF86AudioLowerVolume
+# 🔊 F12: XF86AudioRaiseVolume
+# PrtScn: Print
+# ScrLk: Scroll_Lock
+# Pause: Pause
+# 🖩: XF86Calculator
+# =============================================================
+
+# =================RULES=======================================
+# to help other scrips parsing this to be sane
+# Should always use the english word for the character
+# "`" => "grave",
+# "-" => "minus",
+# "=" => "equal",
+# "[" => "bracketleft",
+# "]" => "bracketright",
+# "\\" => "backslash",
+# ";" => "semicolon",
+# "'" => "apostrophe",
+# "," => "comma",
+# "." => "period",
+# "/" => "slash",
+# =============================================================
+
 #########################
 # VARIABLES
 #########################
