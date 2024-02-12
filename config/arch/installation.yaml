@@ -19,6 +19,7 @@ wayland-more:
   # for waybar-media (MPRIS compatible)
   - python-psutil
   - swaylock
+  - swaybg
   - wev
   - _post_commands:
     - "wget https://raw.githubusercontent.com/yurihs/waybar-media/master/waybar-media.py --directory-prefix ~/.local/bin"
@@ -35,6 +36,7 @@ python:
   - pyenv
   - pyenv-virtualenv
   - python-pip
+  - python-pipx
   - ipython
   - python-black
   - python-pynvim
@@ -53,6 +55,7 @@ python:
   - python-pygithub
   - python-ruyaml
   - python-pre-commit
+  - python-pandas
   - python-nox
   - cruft
   - _post_commands:

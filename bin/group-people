@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+import argparse
+import random
+
+
+def each_slice(size, iterable):
+    """ Chunks the iterable into size elements at a time, each yielded as a list.
+
+    Example:
+      for chunk in each_slice(2, [1,2,3,4,5]):
+          print(chunk)
+
+      # output:
+      [1, 2]
+      [3, 4]
+      [5]
+    """
+    current_slice = []
+    for item in iterable:
+        current_slice.append(item)
+        if len(current_slice) >= size:
+            yield current_slice
+            current_slice = []
+    if current_slice:
+        yield current_slice
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("names", nargs="+", help="names of people to pair up")
+parser.add_argument("--min-size", type=int, default=2, help="the minimum size of the groups")
+args = parser.parse_args()
+
+random.shuffle(args.names)
+
+pairings = list(each_slice(args.min_size, args.names))
+
+
+index_to_add_extra = 0
+for pairing in reversed(pairings):
+    if len(pairing) < args.min_size:
+        pairings.remove(pairing)
+        for person in pairing:
+            pairings[index_to_add_extra].append(person)
+            index_to_add_extra += 1
+
+for pairing in pairings:
+    print(pairing)

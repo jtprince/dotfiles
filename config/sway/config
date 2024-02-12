@@ -337,7 +337,7 @@ bindsym $mod+Ctrl+Shift+F fullscreen global
 # change container layout (stacked, tabbed, default)
 bindsym $mod+s layout stacking
 bindsym $mod+t layout tabbed
-bindsym $mod+d layout default
+# bindsym $mod+d layout default
 
 # --------
 # |      |
@@ -484,6 +484,8 @@ bindsym $mod+Ctrl+Print exec screenshot-sway area --ocr --annotate --eog
 bindsym $mod+Shift+Print exec screenshot-sway window --ocr --eog
 bindsym $mod+Ctrl+Shift+Print exec screenshot-sway window --ocr --annotate --eog
 
+bindsym $mod+Shift+d exec $noid dragon-drop-latest
+bindsym $mod+Ctrl+Shift+d exec $noid dragon-drop-latest --screenshot
 
 ###########################
 # Keyboard shortcuts

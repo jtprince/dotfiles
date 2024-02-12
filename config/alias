@@ -192,6 +192,8 @@ alias tmux="tmux -f $HOME/.config/tmux/config"
 # clear the screen (so no scrollback)
 alias clearscreen="echo -ne '\033c'"
 
+alias icat="kitten icat"
+
 alias open="xdg-open"
 
 alias conky="conky --config $HOME/.config/conky/conky.conf"
