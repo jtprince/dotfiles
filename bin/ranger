@@ -1,0 +1,3 @@
+#!/bin/bash
+
+kitty sh -c /usr/bin/ranger
