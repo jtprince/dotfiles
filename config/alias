@@ -72,6 +72,9 @@ alias ..='cd ..'
 alias pdf-cat='pdfunite'
 alias pdf-combine='pdfunite'
 
+# firejail
+alias notrust="firejail --profile=$HOME/dotfiles/config/firejail/notrust.profile"
+
 ## OWLET
 export OWLET_CONFIGURATION="$HOME/owlet/ci-kit/bin/python/configuration"
 
