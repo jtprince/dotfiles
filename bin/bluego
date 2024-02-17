@@ -1,6 +1,6 @@
 #!/bin/bash
 
 
-systemctl is-active --quiet bluetooth || sudo systemctl start bluetooth
+systemctl is-active --quiet bluetooth || sudo systemctl start bluetooth && sleep 2
 
 blueman-applet

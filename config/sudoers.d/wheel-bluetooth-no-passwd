@@ -1,0 +1,1 @@
+%wheel ALL=NOPASSWD: /bin/systemctl start bluetooth.service, /bin/systemctl stop bluetooth.service, /bin/systemctl status bluetooth.service
