@@ -70,6 +70,8 @@ language-servers:
   - yaml-language-server
   # would like to do solargraph, but giving errors:
   # - ruby-solargraph
+security:
+  - firejail
 application-launcher:
   - tofi
 alacritty-themes:
