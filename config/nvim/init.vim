@@ -408,8 +408,13 @@ autocmd Filetype tex setlocal foldmethod=syntax
 " This is not working right now :/, need to debug more
 function PrePythonCleanup()
     " call isort and disable async so no weirdness
-    call isort#Isort(0, line('$'), v:null, v:false)
-    :silent execute 'Black'
+    " call isort#Isort(0, line('$'), v:null, v:false)
+    " :silent execute 'Black'
+    "
+    let l:save = winsaveview()
+    execute 'silent !ruff format %'
+    execute ':silent edit!'
+    call winrestview(l:save)
     sleep 50m
 endfunction
 autocmd BufWritePre *.py call PrePythonCleanup()

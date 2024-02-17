@@ -14,12 +14,12 @@ class MissingReference(Exception):
     pass
 
 
-CITATION_RE = re.compile(r'\[\^([\w\-_]+)\]')
-FOOTNOTE_RE = re.compile(r'^\[\^([\w\-_]+)\]: ', re.MULTILINE)
+CITATION_RE = re.compile(r"\[\^([\w\-_]+)\]")
+FOOTNOTE_RE = re.compile(r"^\[\^([\w\-_]+)\]: ", re.MULTILINE)
 
 REDDIT_FORMAT_CITATION = "[{}]"
 
-NEW_EXT = '-reddit.md'
+NEW_EXT = "-reddit.md"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("file", help="the markdown file")
@@ -34,9 +34,7 @@ def replace(match):
     # not sure why we get back a tuple of one?
     citation = match.groups(1)[0]
     CITATION_ORDER[citation] = None
-    number_str = str(
-        list(CITATION_ORDER.keys()).index(citation) + 1
-    )
+    number_str = str(list(CITATION_ORDER.keys()).index(citation) + 1)
     return REDDIT_FORMAT_CITATION.format(number_str)
 
 
@@ -59,5 +57,5 @@ if missing_references:
     raise MissingReference(f"Missing one or more references!: {missing_references}")
 
 
-with open(newfile, 'w') as outfile:
+with open(newfile, "w") as outfile:
     outfile.write(new_text)

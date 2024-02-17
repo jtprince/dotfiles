@@ -177,9 +177,7 @@ class Assignment:
     @property
     def score(self):
         return (
-            f"{self.points_scored}/{self.points_possible}"
-            if self.has_score()
-            else None
+            f"{self.points_scored}/{self.points_possible}" if self.has_score() else None
         )
 
     @classmethod
@@ -290,16 +288,12 @@ class PowerschoolParser:
             self.login()
             grades_and_attendance = self.driver.page_source
             if args.write_cache:
-                self._GRADES_AND_ATTENDANCE_PATH.write_text(
-                    grades_and_attendance
-                )
+                self._GRADES_AND_ATTENDANCE_PATH.write_text(grades_and_attendance)
 
         class_overviews = ClassOverview.many_from_html(grades_and_attendance)
 
         if quarter is None:
-            quarter = max(
-                overview.latest_quarter() for overview in class_overviews
-            )
+            quarter = max(overview.latest_quarter() for overview in class_overviews)
 
         quarter_assignment_path = Path(
             self._ASSIGNMENTS_FILENAME_FMT_STR.format(quarter)
@@ -307,9 +301,7 @@ class PowerschoolParser:
         if args.read_cache and quarter_assignment_path.exists():
             quarter_assignment_page = quarter_assignment_path.read_text()
         else:
-            quarter_assignment_page = self._get_quarter_assignments_source(
-                quarter
-            )
+            quarter_assignment_page = self._get_quarter_assignments_source(quarter)
             if args.write_cache:
                 quarter_assignment_path.write_text(quarter_assignment_page)
 
@@ -324,9 +316,7 @@ parser.add_argument(
 parser.add_argument(
     "--read-cache", action="store_true", help="read from any cached files"
 )
-parser.add_argument(
-    "--write-cache", action="store_true", help="write cached files"
-)
+parser.add_argument("--write-cache", action="store_true", help="write cached files")
 parser.add_argument("--format", default="simple", help="tabulate table format")
 
 args = parser.parse_args()

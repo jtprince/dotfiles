@@ -11,7 +11,7 @@ from faker import Faker
 
 
 def random_str(size=16, possible=string.ascii_letters + string.digits):
-    """ Returns a random string from the possible characters. """
+    """Returns a random string from the possible characters."""
     return "".join(random.choice(possible) for _ in range(size))
 
 
@@ -33,7 +33,9 @@ group.add_argument(
 group.add_argument("-s", "--sku_ids", nargs="+", help="list of sku_ids")
 
 
-parser.add_argument("--no-reject-missing-cost", action='store_true', help="will not skip skus w/o cost")
+parser.add_argument(
+    "--no-reject-missing-cost", action="store_true", help="will not skip skus w/o cost"
+)
 parser.add_argument(
     "--auth-token",
     default=DEFAULT_TOKEN,
@@ -72,7 +74,9 @@ class OrderCreator:
     def __init__(self, options):
         self.options = options
         self.skus_endpoint = f"{options.thanos_api}/{API_VERSION}/{SKUS_ENDPOINT}"
-        self.create_orders_endpoint = f"{options.thanos_api}/{API_VERSION}/{CREATE_ORDERS_ENDPOINT}"
+        self.create_orders_endpoint = (
+            f"{options.thanos_api}/{API_VERSION}/{CREATE_ORDERS_ENDPOINT}"
+        )
         self.auth_token_headers = dict(Authorization=f"Token {options.auth_token}")
 
     def _request(self, *args, **kwargs):
@@ -91,10 +95,7 @@ class OrderCreator:
     def create_and_submit(self):
         order_data = self.create_order()
         response_data = self.submit_order(order_data)
-        return dict(
-            po_number=order_data["po_number"],
-            **response_data
-        )
+        return dict(po_number=order_data["po_number"], **response_data)
 
     def create_order(self):
         response = self._request(
@@ -107,7 +108,9 @@ class OrderCreator:
             raise Exception("IMPLEMENT! for specific sku_ids")
 
         if not self.options.no_reject_missing_cost:
-            sku_data = [sku for sku in sku_data if sku["retailer_provided_sku_cost"] is not None]
+            sku_data = [
+                sku for sku in sku_data if sku["retailer_provided_sku_cost"] is not None
+            ]
 
         return dict(
             address=self._generate_address(),
@@ -116,7 +119,9 @@ class OrderCreator:
         )
 
     def submit_order(self, order_data):
-        response = self._request("POST", json=order_data, url=self.create_orders_endpoint)
+        response = self._request(
+            "POST", json=order_data, url=self.create_orders_endpoint
+        )
         return dict(
             response.json(),
             status_code=response.status_code,

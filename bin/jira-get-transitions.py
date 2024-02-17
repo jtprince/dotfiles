@@ -32,9 +32,7 @@ args = parser.parse_args()
 
 DOMAIN_NAME = "https://owletcare.atlassian.net"
 
-PROJECT_STATUSES_FMTSTR = (
-    f"{DOMAIN_NAME}/rest/api/2/project/" + "{project_id}/statuses"
-)
+PROJECT_STATUSES_FMTSTR = f"{DOMAIN_NAME}/rest/api/2/project/" + "{project_id}/statuses"
 
 if not args.api_key:
     parser.error("Must have a valid --api-key (or set $JIRA_API_KEY)")

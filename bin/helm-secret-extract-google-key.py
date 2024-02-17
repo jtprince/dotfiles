@@ -17,9 +17,7 @@ parser.add_argument(
     "-o",
     "--outfile",
     type=Path,
-    help=str(
-        "defaults to stdout " "(safe to capture stdout with redirects instead)"
-    ),
+    help=str("defaults to stdout " "(safe to capture stdout with redirects instead)"),
 )
 parser.add_argument(
     "--no-cleanup", action="store_true", help="don't remove decrypted file"

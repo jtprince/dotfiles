@@ -9,15 +9,15 @@ from itertools import groupby
 
 import yaml
 
-ADVERTISEMENT = ('Advertisement', 'Spotify')
+ADVERTISEMENT = ("Advertisement", "Spotify")
 
-SINK_INPUT_RE = re.compile(r'Sink Input #(\d+)')
+SINK_INPUT_RE = re.compile(r"Sink Input #(\d+)")
 
 _SPOTIFY_REGEXS = [
     r'media\.role = "music"',
     r'media\.name = "Spotify"',
     r'application\.name = "Spotify"',
-    r'application\.process.binary = "spotify"'
+    r'application\.process.binary = "spotify"',
 ]
 SPOTIFY_REGEXS = [re.compile(regex, re.MULTILINE) for regex in _SPOTIFY_REGEXS]
 
@@ -25,7 +25,7 @@ SPOTIFY_REGEXS = [re.compile(regex, re.MULTILINE) for regex in _SPOTIFY_REGEXS]
 def in_advertisement():
     info = subprocess.run("spotify-info", capture_output=True)
     song_data = yaml.safe_load(info.stdout)
-    return song_data.get('xesam:title', '') in ADVERTISEMENT
+    return song_data.get("xesam:title", "") in ADVERTISEMENT
 
 
 def _is_spotify_sink(sink_input):
@@ -33,11 +33,14 @@ def _is_spotify_sink(sink_input):
 
 
 def get_spotify_sink_inputs():
-    """ Returns sink input #'s all spotify instances found. """
-    client_data = subprocess.run("pactl list sink-inputs".split(), capture_output=True, text=True).stdout
+    """Returns sink input #'s all spotify instances found."""
+    client_data = subprocess.run(
+        "pactl list sink-inputs".split(), capture_output=True, text=True
+    ).stdout
     lines = client_data.split("\n")
     sink_inputs = [
-        "\n".join(group) for not_matched, group in groupby(lines, lambda line: not line)
+        "\n".join(group)
+        for not_matched, group in groupby(lines, lambda line: not line)
         if not not_matched
     ]
     return [
@@ -74,7 +77,7 @@ def run():
         time.sleep(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # print(get_spotify_sink_input())
     run()
 

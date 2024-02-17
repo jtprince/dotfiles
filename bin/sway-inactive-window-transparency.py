@@ -38,9 +38,7 @@ def on_window_focus(args, ipc, event):
     focused = event.container
     workspace = ipc.get_tree().find_focused().workspace().num
 
-    if (
-        focused.id != prev_focused.id
-    ):  # https://github.com/swaywm/sway/issues/2859
+    if focused.id != prev_focused.id:  # https://github.com/swaywm/sway/issues/2859
         set_opacity(focused, args.focused, args)
         # focused.command("opacity 1")
         if workspace == prev_workspace:
@@ -92,7 +90,6 @@ if __name__ == "__main__":
         else:
             set_opacity(window, args.unfocused, args)
     for sig in [signal.SIGINT, signal.SIGTERM]:
-
         signal.signal(sig, lambda signal, frame: remove_opacity(ipc))
     ipc.on("window::focus", partial(on_window_focus, args))
 

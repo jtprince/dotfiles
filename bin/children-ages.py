@@ -23,7 +23,7 @@ class Person:
 
 
 def cast_block(block):
-    """ Takes a list of 3 elements and turns it into a Person. """
+    """Takes a list of 3 elements and turns it into a Person."""
     birthday = datetime.strptime(block[-1], "%m/%d/%Y").date()
     return Person(name=block[0], social_security=block[1], birthday=birthday)
 

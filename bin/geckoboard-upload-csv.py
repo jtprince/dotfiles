@@ -16,11 +16,16 @@ CAST = dict(
     string=str,
 )
 
-parser = argparse.ArgumentParser(description="upload csv into dataset; assumes same column names")
+parser = argparse.ArgumentParser(
+    description="upload csv into dataset; assumes same column names"
+)
 parser.add_argument("csvfile", help="csv filename to upload")
 parser.add_argument("--name", help="the dataset id; otherwise uses csvfile basename")
-parser.add_argument("--api-key", help="the geckoboard api-key or path containing it; also checks GECKOBOARD_API")
-parser.add_argument("--append", action='store_true', help="append the data")
+parser.add_argument(
+    "--api-key",
+    help="the geckoboard api-key or path containing it; also checks GECKOBOARD_API",
+)
+parser.add_argument("--append", action="store_true", help="append the data")
 args = parser.parse_args()
 
 dataset_id = args.name if args.name else Path(args.csvfile).stem
@@ -28,20 +33,20 @@ dataset_id = args.name if args.name else Path(args.csvfile).stem
 if args.api_key is not None:
     api_key = args.api_key
 else:
-    api_key = os.environ.get('GECKOBOARD_API')
+    api_key = os.environ.get("GECKOBOARD_API")
 
 if not api_key:
     parser.error("Must provide --api-key or via GECKOBOARD_API env var")
 
-method = 'post' if args.append else 'put'
+method = "post" if args.append else "put"
 
 base_dataset_url = f"https://api.geckoboard.com/datasets/{dataset_id}"
 
 
 def create_caster(schema):
     caster = {}
-    for key, val in schema['fields'].items():
-        caster[key] = CAST[val['type']]
+    for key, val in schema["fields"].items():
+        caster[key] = CAST[val["type"]]
     return caster
 
 

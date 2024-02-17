@@ -38,6 +38,8 @@ plymouth:
     - "sudo $HOME/bin/plymouth-add-mkinitcpio-hook"
     - "sudo plymouth-set-default-theme arch10"
     - "sudo mkinitcpio -P"
+neovim:
+  - ruff
 python:
   - pyenv
   - pyenv-virtualenv

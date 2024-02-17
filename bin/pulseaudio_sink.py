@@ -49,9 +49,7 @@ class PulseaudioSink:
 
     @classmethod
     def get_sinks(cls):
-        output = subprocess.check_output(
-            "pactl list sinks", text=True, shell=True
-        )
+        output = subprocess.check_output("pactl list sinks", text=True, shell=True)
         default_name = cls.get_default_sink_name()
 
         return [
@@ -68,9 +66,7 @@ class PulseaudioSink:
         def is_not_properties_line(line):
             return line != cls.PROPERTIES_HEADER
 
-        header_lines = list(
-            itertools.takewhile(is_not_properties_line, stripped_lines)
-        )
+        header_lines = list(itertools.takewhile(is_not_properties_line, stripped_lines))
         after_property_lines = list(
             itertools.dropwhile(is_not_properties_line, stripped_lines)
         )

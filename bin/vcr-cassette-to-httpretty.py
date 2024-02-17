@@ -38,7 +38,6 @@ template = """
 
 for filename in args.filenames:
     with open(filename) as infile:
-
         print("=" * 60)
         print(filename)
         print("=" * 60)

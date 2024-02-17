@@ -27,11 +27,11 @@ JSONTABLE_EXAMPLE = """
 ```
 """
 
-NUM_KEY = 'num'
+NUM_KEY = "num"
 
-RAW_MD_EXT = '.raw.md'
-DOT_BLOCK = 'dot'
-JSONTABLE_BLOCK = 'jsontable'
+RAW_MD_EXT = ".raw.md"
+DOT_BLOCK = "dot"
+JSONTABLE_BLOCK = "jsontable"
 
 parser = ArgumentParser(
     description=f"converts '{DOT_BLOCK}' and '{JSONTABLE_BLOCK}' codeblocks into ascii graphs and md tables",
@@ -39,12 +39,20 @@ parser = ArgumentParser(
         "for dot blocks, requires `graph-easy` to be callable; "
         f"if file ends with ext `{RAW_MD_EXT}` then writes to new file `.md`; "
         "if not that extension, outputs to STDOUT"
-    )
+    ),
 )
-parser.add_argument("files", nargs='*', help="markdown files with dot or jsontable ")
-parser.add_argument("--examples", action="store_true", help="prints out examples and exits")
-parser.add_argument("--number", action="store_true", help="add a {NUM_KEY} to each table row if not present")
-parser.add_argument("--numberkey", default=NUM_KEY, help="the table header for numbered rows")
+parser.add_argument("files", nargs="*", help="markdown files with dot or jsontable ")
+parser.add_argument(
+    "--examples", action="store_true", help="prints out examples and exits"
+)
+parser.add_argument(
+    "--number",
+    action="store_true",
+    help="add a {NUM_KEY} to each table row if not present",
+)
+parser.add_argument(
+    "--numberkey", default=NUM_KEY, help="the table header for numbered rows"
+)
 
 
 class OptionsMixin:
@@ -60,12 +68,12 @@ class ExampleConverterMixin:
 
 
 class DotConverter(OptionsMixin, ExampleConverterMixin):
-    BLOCK_START = re.compile(r'^```\s*dot$')
+    BLOCK_START = re.compile(r"^```\s*dot$")
 
     def dot_block_to_ascii_block(self, lines):
         lines.pop(0)
         lines.pop(-1)
-        dot_notation = ''.join(lines)
+        dot_notation = "".join(lines)
         ascii_graph = self.graph_notation_to_ascii(dot_notation)
         encased_in_block = f"```\n{ascii_graph}```\n"
         return encased_in_block
@@ -76,7 +84,7 @@ class DotConverter(OptionsMixin, ExampleConverterMixin):
         tempfile = NamedTemporaryFile(delete=False)
         tempfile.write(dot_notation.encode())
         tempfile.close()
-        cmd = ['graph-easy', '--as=ascii', "--from=graphviz", tempfile.name]
+        cmd = ["graph-easy", "--as=ascii", "--from=graphviz", tempfile.name]
         output = subprocess.check_output(cmd).decode()
         os.unlink(tempfile.name)
         return output
@@ -87,19 +95,19 @@ class DotConverter(OptionsMixin, ExampleConverterMixin):
 
 
 class JSONTableConverter(OptionsMixin, ExampleConverterMixin):
-    BLOCK_START = re.compile(r'^```\s*jsontable$')
+    BLOCK_START = re.compile(r"^```\s*jsontable$")
 
     def jsontable_block_to_md_table(self, lines):
         lines.pop(0)
         lines.pop(-1)
-        json_txt = ''.join(lines)
+        json_txt = "".join(lines)
         data = json.loads(json_txt)
         return self.convert_json_rows_to_markdown_table(data)
 
     convert = jsontable_block_to_md_table
 
     def convert_json_rows_to_markdown_table(self, data_rows):
-        """ Converts json into markdown.
+        """Converts json into markdown.
 
         Assumes keys are all the same.  Relies on ordering (so, >= python 3.6)
 
@@ -136,7 +144,9 @@ class JSONTableConverter(OptionsMixin, ExampleConverterMixin):
         if key in data_rows[0]:
             return data_rows
         else:
-            return [{key: cnt, **data_row} for cnt, data_row in enumerate(data_rows, start)]
+            return [
+                {key: cnt, **data_row} for cnt, data_row in enumerate(data_rows, start)
+            ]
 
     @staticmethod
     def example():
@@ -144,7 +154,7 @@ class JSONTableConverter(OptionsMixin, ExampleConverterMixin):
 
 
 class MarkdownBlockReplacer(OptionsMixin):
-    BLOCK_END_RE = re.compile(r'^```$')
+    BLOCK_END_RE = re.compile(r"^```$")
 
     def replace_dot_blocks(self, lines):
         converter = DotConverter(self.options)
@@ -189,11 +199,12 @@ if not (args.examples or args.files):
 
 if args.examples:
     display_example(DotConverter.example()[1:-1], DotConverter.convert_example(args))
-    display_example(JSONTableConverter.example()[1:-1], JSONTableConverter.convert_example(args))
+    display_example(
+        JSONTableConverter.example()[1:-1], JSONTableConverter.convert_example(args)
+    )
     exit()
 
 for filename in args.files:
-
     with open(filename) as infile:
         lines = infile.readlines()
 
@@ -201,11 +212,11 @@ for filename in args.files:
     lines = replacer.replace_dot_blocks(lines)
     lines = replacer.replace_jsontable_blocks(lines)
 
-    output = ''.join(lines)
+    output = "".join(lines)
     if filename.endswith(RAW_MD_EXT):
         base = os.path.splitext(os.path.splitext(filename)[0])[0]
         outfile = base + ".md"
-        with open(outfile, 'w') as out:
+        with open(outfile, "w") as out:
             print(output, file=out)
     else:
         print(output)

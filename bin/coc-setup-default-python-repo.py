@@ -16,9 +16,7 @@ _OWLET_PYPROJECT_FILE = Path(os.environ["OWLET_PYPROJECT_FILE"]).resolve()
 project_root = str(Path.cwd())
 
 ISORT_ARGS = dict(
-    owlet=(
-        f"--src {project_root} --settings-path {_OWLET_PYPROJECT_FILE}".split()
-    ),
+    owlet=(f"--src {project_root} --settings-path {_OWLET_PYPROJECT_FILE}".split()),
     personal=[],
 )
 PYLINT_ARGS = dict(
@@ -105,10 +103,7 @@ def _get_virtualenv_path(python_path, python_major_minor_version):
     venv_base = Path(python_path).parents[1]
 
     extra_path = (
-        venv_base
-        / "lib"
-        / f"python{python_major_minor_version}"
-        / "site-packages"
+        venv_base / "lib" / f"python{python_major_minor_version}" / "site-packages"
     )
     return _ensure_exists(extra_path)
 
@@ -135,9 +130,7 @@ def create_and_write_cocfile():
 
     settings_file = _get_viable_settings_path(PROJECT_ROOT_CONFIG)
 
-    virtualenv_path = _get_virtualenv_path(
-        python_path, python_major_minor_version
-    )
+    virtualenv_path = _get_virtualenv_path(python_path, python_major_minor_version)
 
     # Until coc python loses that stupid 3.9 version warning, let's use a
     # warning-less python

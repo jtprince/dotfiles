@@ -4,13 +4,9 @@ import argparse
 import os
 from pathlib import Path
 
-parser = argparse.ArgumentParser(
-    description="find all missing __init__.py files"
-)
+parser = argparse.ArgumentParser(description="find all missing __init__.py files")
 parser.add_argument("start_dir", help="the root dir for traversing down")
-parser.add_argument(
-    "--create", action="store_true", help="create missing files."
-)
+parser.add_argument("--create", action="store_true", help="create missing files.")
 args = parser.parse_args()
 
 for dir_name, subdirs, file_list in os.walk(args.start_dir):

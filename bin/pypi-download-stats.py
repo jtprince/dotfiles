@@ -24,30 +24,30 @@ class DownloadDataPoint:
         self.upload_time = upload_time
 
     def download_rate(self):
-        """ Returns downloads per day as a float. """
+        """Returns downloads per day as a float."""
         time_diff = datetime.datetime.utcnow() - self.upload_time
         return float(self.downloads) / int(time_diff.days)
 
 
 def to_datetime(datetime_string):
-    """ Converts to a datetime object. """
+    """Converts to a datetime object."""
     return datetime.datetime(*time.strptime(datetime_string, TIME_FORMAT)[:6])
 
 
 def get_download_stats(pkg_name):
-    """ Returns a list of DownloadDataPoint objects. """
+    """Returns a list of DownloadDataPoint objects."""
     url = PYPI_BASE_URL + pkg_name + PYPI_JSON_EXT
     data_points = []
     with urlopen(url) as infile:
         data = json.loads(infile.read())
-        for release, release_data_list in data['releases'].items():
+        for release, release_data_list in data["releases"].items():
             if release_data_list:
                 release_data = release_data_list[0]
                 data_points.append(
                     DownloadDataPoint(
-                        release_data['downloads'],
+                        release_data["downloads"],
                         release,
-                        to_datetime(release_data['upload_time']),
+                        to_datetime(release_data["upload_time"]),
                     ),
                 )
 
@@ -55,7 +55,6 @@ def get_download_stats(pkg_name):
 
 
 def compare_packages(packages):
-
     indent = INDENT if (len(packages) > 1) else ""
 
     print(indent + HEADER)
@@ -63,15 +62,11 @@ def compare_packages(packages):
 
     for pkg in packages:
         data_points = get_download_stats(pkg)
-        total_downloads = sum(
-            data_point.downloads for data_point in data_points
-        )
+        total_downloads = sum(data_point.downloads for data_point in data_points)
 
         print(PACKAGE_DISPLAY.format(pkgname=pkg, downloads=total_downloads))
 
-        longest_version = max(
-            len(data_point.version) for data_point in data_points
-        )
+        longest_version = max(len(data_point.version) for data_point in data_points)
 
         data_points.sort(key=lambda data_point: data_point.upload_time)
 
@@ -82,7 +77,7 @@ def compare_packages(packages):
                 padded_version,
                 data_point.upload_time.date(),
                 data_point.downloads,
-                round(data_point.download_rate(), DOWNLOAD_RATE_PRECISION)
+                round(data_point.download_rate(), DOWNLOAD_RATE_PRECISION),
             ]
 
             line = DOWNLOAD_POINT_DELIMITER.join(map(str, download_point_row))

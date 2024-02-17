@@ -6,88 +6,95 @@ import subprocess
 from os.path import abspath
 from pprint import pprint
 
+
 def shell(command):
-    return subprocess.run(command.split(' '), stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+    return (
+        subprocess.run(command.split(" "), stdout=subprocess.PIPE)
+        .stdout.decode("utf-8")
+        .rstrip()
+    )
+
 
 def camel_to_snake(string):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', string)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", string)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
 
 def mark(text, args, Mark, extra_cli_args, *a):
     # This function is responsible for finding all
     # matching text.
     # We mark all individual word for potential selection
 
-    send_to = 'boss' if len(extra_cli_args) == 0 else extra_cli_args[0]
+    send_to = "boss" if len(extra_cli_args) == 0 else extra_cli_args[0]
 
     path_prefix = os.getcwd()
 
-    if send_to == 'tmux':
-        path_prefix = shell('tmux display-message -p -F #{pane_current_path} -t0')
+    if send_to == "tmux":
+        path_prefix = shell("tmux display-message -p -F #{pane_current_path} -t0")
 
     regexp = re.compile(
-        '(?P<rails_log_controller>(?:[A-Z]\\w*::)*[A-Z]\\w*Controller#\\w+)|'
-        'Render(?:ed|ing) (?P<rails_log_partial>[-a-zA-Z0-9_+-,./]+)|'
-        '(?P<url>(https?|tcp)://[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\b([-a-zA-Z0-9@:%_\\+.~#?&/=]*))|'
-        '\\+\\+\\+ b/?(?P<diff_path>([~./]?[-a-zA-Z0-9_+-,./]+(?::\\d+)?))|'
-        '(?P<path>([~./]?[-a-zA-Z0-9_+-,./]+(?::\\d+)?))'
-        )
+        "(?P<rails_log_controller>(?:[A-Z]\\w*::)*[A-Z]\\w*Controller#\\w+)|"
+        "Render(?:ed|ing) (?P<rails_log_partial>[-a-zA-Z0-9_+-,./]+)|"
+        "(?P<url>(https?|tcp)://[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\b([-a-zA-Z0-9@:%_\\+.~#?&/=]*))|"
+        "\\+\\+\\+ b/?(?P<diff_path>([~./]?[-a-zA-Z0-9_+-,./]+(?::\\d+)?))|"
+        "(?P<path>([~./]?[-a-zA-Z0-9_+-,./]+(?::\\d+)?))"
+    )
 
     mark_idx = 0
     for _idx, m in enumerate(re.finditer(regexp, text)):
         start, end = m.span()
-        mark_text = text[start:end].replace('\n', '').replace('\0', '')
+        mark_text = text[start:end].replace("\n", "").replace("\0", "")
 
-        path_match = m.groupdict()['path']
-        diff_path_match = m.groupdict()['diff_path']
-        url_match = m.groupdict()['url']
-        rails_controller_match = m.groupdict()['rails_log_controller']
-        rails_partial_match = m.groupdict()['rails_log_partial']
+        path_match = m.groupdict()["path"]
+        diff_path_match = m.groupdict()["diff_path"]
+        url_match = m.groupdict()["url"]
+        rails_controller_match = m.groupdict()["rails_log_controller"]
+        rails_partial_match = m.groupdict()["rails_log_partial"]
 
         mark_data = {}
 
         if path_match or diff_path_match:
             if diff_path_match:
-                start, end = m.span('diff_path')
-                mark_text = text[start:end].replace('\n', '').replace('\0', '')
+                start, end = m.span("diff_path")
+                mark_text = text[start:end].replace("\n", "").replace("\0", "")
 
-            parts = mark_text.rsplit(':', 1)
+            parts = mark_text.rsplit(":", 1)
             file_path = parts[0]
 
-            if file_path != '.' and file_path != '..' and file_path != '/':
+            if file_path != "." and file_path != ".." and file_path != "/":
                 # file_path = os.path.join(path_prefix, file_path)
-                file_path = abspath(os.path.join(path_prefix, os.path.expanduser(file_path)))
+                file_path = abspath(
+                    os.path.join(path_prefix, os.path.expanduser(file_path))
+                )
                 if os.path.isfile(file_path):
-                    mark_data = {'file_path': file_path}
+                    mark_data = {"file_path": file_path}
                     if len(parts) > 1:
-                        mark_data['line_number'] = parts[1]
+                        mark_data["line_number"] = parts[1]
 
         elif rails_partial_match:
-            start, end = m.span('rails_log_partial')
-            mark_text = text[start:end].replace('\n', '').replace('\0', '')
-            file_path = os.path.join(path_prefix, 'app/views/' + mark_text)
+            start, end = m.span("rails_log_partial")
+            mark_text = text[start:end].replace("\n", "").replace("\0", "")
+            file_path = os.path.join(path_prefix, "app/views/" + mark_text)
 
             if os.path.exists(file_path):
-                mark_data = {
-                    'file_path': file_path
-                    }
+                mark_data = {"file_path": file_path}
 
         elif url_match:
-            mark_data = {
-                'url': mark_text.replace('tcp', 'http')
-                }
+            mark_data = {"url": mark_text.replace("tcp", "http")}
 
         elif rails_controller_match:
-            controller_class, action = mark_text.split('#')
-            controller_path = './app/controllers/' + '/'.join(
-                map(camel_to_snake, controller_class.split('::'))
-                ) + '.rb'
+            controller_class, action = mark_text.split("#")
+            controller_path = (
+                "./app/controllers/"
+                + "/".join(map(camel_to_snake, controller_class.split("::")))
+                + ".rb"
+            )
             controller_path = os.path.join(path_prefix, controller_path)
 
-            method_def_regex = re.compile('^\\s*def\\s+%s' % (action))
+            method_def_regex = re.compile("^\\s*def\\s+%s" % (action))
 
             if os.path.exists(controller_path):
-                mark_data = {'file_path': controller_path}
+                mark_data = {"file_path": controller_path}
 
                 with open(controller_path) as ruby_file:
                     line_number = 0
@@ -95,53 +102,67 @@ def mark(text, args, Mark, extra_cli_args, *a):
                         line_number += 1
 
                         if method_def_regex.match(line):
-                            mark_data['line_number'] = line_number
+                            mark_data["line_number"] = line_number
 
         # mark_data will be available in data['groupdicts']
         if mark_data:
             yield Mark(mark_idx, start, end, mark_text, mark_data)
             mark_idx += 1
 
+
 def handle_result(args, data, target_window_id, boss, extra_cli_args, *a):
     # This function is responsible for performing some
     # action on the selected text.
     # matches is a list of the selected entries and groupdicts contains
     # the arbitrary data associated with each entry in mark() above
-    send_to = 'boss' if len(extra_cli_args) == 0 else extra_cli_args[0]
+    send_to = "boss" if len(extra_cli_args) == 0 else extra_cli_args[0]
 
     matches, groupdicts = [], []
-    for m, g in zip(data['match'], data['groupdicts']):
+    for m, g in zip(data["match"], data["groupdicts"]):
         if m:
             matches.append(m), groupdicts.append(g)
 
     for word, data in zip(matches, groupdicts):
-        if 'url' in data:
-            boss.open_url(data['url'])
+        if "url" in data:
+            boss.open_url(data["url"])
 
-        if 'file_path' in data:
-            if send_to == 'tmux':
-                window_names = shell('tmux list-windows -F #{window_name}').split('\n')
-                vim_window_names = list(filter(lambda x: x == 'vim' or x == 'nvim', window_names))
+        if "file_path" in data:
+            if send_to == "tmux":
+                window_names = shell("tmux list-windows -F #{window_name}").split("\n")
+                vim_window_names = list(
+                    filter(lambda x: x == "vim" or x == "nvim", window_names)
+                )
 
                 if len(vim_window_names):
-                    os.system('tmux select-window -t %s' %(vim_window_names[0]))
-                    vim_pane_id = shell('tmux list-panes -F "#{pane_id}" -t %s' %(vim_window_names[0])).split('\n')[0]
-                    os.system('tmux send-keys -t %s Escape' %(vim_pane_id))
+                    os.system("tmux select-window -t %s" % (vim_window_names[0]))
+                    vim_pane_id = shell(
+                        'tmux list-panes -F "#{pane_id}" -t %s' % (vim_window_names[0])
+                    ).split("\n")[0]
+                    os.system("tmux send-keys -t %s Escape" % (vim_pane_id))
 
-                    if 'line_number' in data:
-                        os.system('tmux send-keys -t %s ":e +%s %s" Enter zz' %(vim_pane_id, data['line_number'], data['file_path']))
+                    if "line_number" in data:
+                        os.system(
+                            'tmux send-keys -t %s ":e +%s %s" Enter zz'
+                            % (vim_pane_id, data["line_number"], data["file_path"])
+                        )
                     else:
-                        os.system('tmux send-keys -t %s ":e %s" Enter zz' %(vim_pane_id, data['file_path']))
+                        os.system(
+                            'tmux send-keys -t %s ":e %s" Enter zz'
+                            % (vim_pane_id, data["file_path"])
+                        )
                 else:
-                    raise Exception('Could not find "vim" or "nvim" window in the current session')
+                    raise Exception(
+                        'Could not find "vim" or "nvim" window in the current session'
+                    )
 
             else:
-                file_url = data['file_path']
+                file_url = data["file_path"]
 
-                if 'line_number' in data:
-                    file_url += ':%d' %(data['line_number'])
+                if "line_number" in data:
+                    file_url += ":%d" % (data["line_number"])
 
-                os.system('%s %s' %(' '.join(extra_cli_args), file_url))
+                os.system("%s %s" % (" ".join(extra_cli_args), file_url))
+
 
 # if __name__ == "__main__":
 #     from kittens.tui.loop import debug
@@ -149,7 +170,6 @@ def handle_result(args, data, target_window_id, boss, extra_cli_args, *a):
 #     debug({'cwd': cwd})
 
 if __name__ == "change to __main__ when running this directly":
-
     text = """
 Rendered layouts/_base.html.erb (Duration: 32.9ms | Allocations: 2204)
 Completed 200 OK in 367ms (Views: 316.5ms | ActiveRecord: 23.2ms | Allocations: 40554)
@@ -215,14 +235,16 @@ Completed 200 OK in 307ms (Views: 256.6ms | ActiveRecord: 17.5ms | Allocations: 
     """
 
     def ap(idx, start, end, mark_text, groupdicts):
-        pprint({
-            'idx': idx,
-            'start': start,
-            'end': end,
-            'mark_text': mark_text,
-            'groupdicts': groupdicts
-            })
+        pprint(
+            {
+                "idx": idx,
+                "start": start,
+                "end": end,
+                "mark_text": mark_text,
+                "groupdicts": groupdicts,
+            }
+        )
 
     marks = mark(text, None, ap, [])
     for mark in marks:
-        print('new mark')
+        print("new mark")

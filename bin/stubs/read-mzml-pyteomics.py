@@ -26,7 +26,6 @@ def get_spectrum_summaries(mzml_path: str):
     """Read an mzml file."""
 
     with mzml.read(mzml_path) as msrun:
-
         return [
             get_spectrum_summary(spectrum)
             for spectrum in msrun

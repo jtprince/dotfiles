@@ -4,10 +4,12 @@ import argparse
 import re
 import sqlite3
 
-parser = argparse.ArgumentParser(description='deletes tables matching some regular expression')
-parser.add_argument('database', help='the database file')
-parser.add_argument('regexp', help='the regexp you are matching')
-parser.add_argument('--dry', action='store_true', help='just list the matching tables')
+parser = argparse.ArgumentParser(
+    description="deletes tables matching some regular expression"
+)
+parser.add_argument("database", help="the database file")
+parser.add_argument("regexp", help="the regexp you are matching")
+parser.add_argument("--dry", action="store_true", help="just list the matching tables")
 args = parser.parse_args()
 
 conn = sqlite3.connect(args.database)

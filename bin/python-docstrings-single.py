@@ -53,8 +53,6 @@ for part in parts:
         filename, linenum_str, func = file_linenum_re.match(func_line).groups()
         func_linenum = int(linenum_str)
         docstring_linenum = func_linenum + 1
-        docstring = docstring_line.removeprefix(
-            f"{filename}-{docstring_linenum}-"
-        )
+        docstring = docstring_line.removeprefix(f"{filename}-{docstring_linenum}-")
 
         display(filename, docstring_linenum, func, docstring, args)

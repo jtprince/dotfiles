@@ -10,7 +10,7 @@ other lines that will work (contact_data and update_request):
 
 output: writes a line of json for each to stdout
 """
-LEADERS = ('contact_data=', 'update_request=')
+LEADERS = ("contact_data=", "update_request=")
 
 import json
 import sys

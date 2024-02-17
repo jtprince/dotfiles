@@ -18,9 +18,7 @@ parser.add_argument("--id", help="an optional id for the node of interest")
 args = parser.parse_args()
 
 
-firebase_admin.initialize_app(
-    options={"databaseURL": os.environ["FIREBASE_DB_URL"]}
-)
+firebase_admin.initialize_app(options={"databaseURL": os.environ["FIREBASE_DB_URL"]})
 
 indent = "  "
 

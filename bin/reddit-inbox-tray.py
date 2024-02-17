@@ -9,8 +9,8 @@ import praw
 import yaml
 
 # these must come after import gi and before other imports
-gi.require_version('Gtk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
+gi.require_version("Gtk", "3.0")
+gi.require_version("AppIndicator3", "0.1")
 
 from gi.repository import AppIndicator3  # noqa: E402
 from gi.repository import GLib  # noqa: E402
@@ -18,14 +18,14 @@ from gi.repository import Gtk  # noqa: E402
 
 username = sys.argv[1]
 
-user_agent = ("User-Agent: linux.reddit-inbox-tray:v0.0.1 (by /u/bwv549)")
+user_agent = "User-Agent: linux.reddit-inbox-tray:v0.0.1 (by /u/bwv549)"
 
 REDDIT_ENV_PATH = "/home/jtprince/Dropbox/env/reddit"
 # ICON_PATH = "
 # ICON_PATH = "/home/jtprince/Dropbox/env/reddit/icons"
 client_data = "dev_client.yml"
-MESSAGES_ICON = 'gtk3-demo'
-NO_MESSAGES_ICON = 'gtk-3-demo-symbolic.symbolic'
+MESSAGES_ICON = "gtk3-demo"
+NO_MESSAGES_ICON = "gtk-3-demo-symbolic.symbolic"
 
 with open(f"{REDDIT_ENV_PATH}/{client_data}") as infile:
     client_data = yaml.load(infile)
@@ -44,12 +44,12 @@ class MessageIndicator:
     UPDATE_SECONDS = 5
 
     def __init__(self):
-        self.app = 'reddit-messages-tray'
+        self.app = "reddit-messages-tray"
 
         self.indicator = AppIndicator3.Indicator.new(
             self.app,
-            icon_name='reddit messages',
-            category=AppIndicator3.IndicatorCategory.OTHER
+            icon_name="reddit messages",
+            category=AppIndicator3.IndicatorCategory.OTHER,
         )
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
 
@@ -69,15 +69,15 @@ class MessageIndicator:
     def create_menu(self):
         menu = Gtk.Menu()
         # menu item 1
-        item_1 = Gtk.MenuItem(label='Menu item')
+        item_1 = Gtk.MenuItem(label="Menu item")
         # item_about.connect('activate', self.about)
         menu.append(item_1)
         # separator
         menu_sep = Gtk.SeparatorMenuItem()
         menu.append(menu_sep)
         # quit
-        item_quit = Gtk.MenuItem(label='Quit')
-        item_quit.connect('activate', self.stop)
+        item_quit = Gtk.MenuItem(label="Quit")
+        item_quit.connect("activate", self.stop)
         menu.append(item_quit)
 
         menu.show_all()
@@ -106,7 +106,7 @@ class MessageIndicator:
                 self.indicator.set_icon_full,
                 icon,
                 messages,
-                priority=GLib.PRIORITY_DEFAULT
+                priority=GLib.PRIORITY_DEFAULT,
             )
 
     def stop(self, source):

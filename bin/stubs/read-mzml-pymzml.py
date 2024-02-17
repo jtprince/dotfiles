@@ -26,9 +26,7 @@ def get_spectrum_summaries(mzml_path: str):
     """Read an mzml file."""
     msrun = pymzml.run.Reader(mzml_path)
     return [
-        get_spectrum_summary(spectrum)
-        for spectrum in msrun
-        if spectrum.ms_level == 1
+        get_spectrum_summary(spectrum) for spectrum in msrun if spectrum.ms_level == 1
     ]
 
 

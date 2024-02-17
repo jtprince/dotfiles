@@ -5,9 +5,7 @@ import re
 import subprocess
 import time
 
-parser = argparse.ArgumentParser(
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
-)
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument(
     "--start", type=int, default=0, help="continue starting at that page"
 )

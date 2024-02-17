@@ -18,9 +18,7 @@ parser.add_argument("images", nargs="+", type=Path, help="paths to image files")
 parser.add_argument("-l", "--left", default=LEFT, type=int, help="crop left")
 parser.add_argument("-r", "--right", default=RIGHT, type=int, help="crop right")
 parser.add_argument("-t", "--top", default=TOP, type=int, help="crop top")
-parser.add_argument(
-    "-b", "--bottom", default=BOTTOM, type=int, help="crop bottom"
-)
+parser.add_argument("-b", "--bottom", default=BOTTOM, type=int, help="crop bottom")
 args = parser.parse_args()
 
 for image_path in args.images:
