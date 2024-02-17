@@ -1,4 +1,5 @@
 #!/bin/bash
 
 sudo systemctl stop dnsmasq.service
-warp-cli connect
+output=`warp-cli connect`
+notify-send -u low "warp-cli connect: $output"
