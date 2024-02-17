@@ -90,6 +90,7 @@ pipewire-screenshare:
   - xdg-desktop-portal-wlr
 networking:
   - network-manager-applet
+  - networkmanager-openvpn
   - dnsutils   # for getting wan ip address
 nvim-related:
   - git-delta

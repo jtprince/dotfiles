@@ -1,3 +1,4 @@
 #!/bin/bash
 
 warp-cli disconnect
+sudo systemctl start dnsmasq.service

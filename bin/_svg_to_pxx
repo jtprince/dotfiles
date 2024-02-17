@@ -62,4 +62,5 @@ for file in args.svg_files:
     run(cmd)
     outfiles.append(outfile)
 
-run(["dragon-drop", *list(map(str, outfiles))], fork=True)
+if args.dragon:
+    run(["dragon-drop", *list(map(str, outfiles))], fork=True)

@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+import subprocess
+from pathlib import Path
+import random
+from itertools import groupby
+
+DROPBOX = Path.home() / "Dropbox"
+PRIVADO = DROPBOX / "env/cloud-and-apis/privado"
+OVPN_DIR = PRIVADO / "ovpn_configs"
+
+preferred_prefixe_file = PRIVADO / "preferred_prefixes.txt"
+
+lines = preferred_prefixe_file.read_text().strip().split("\n")
+prefixes = [line.split()[0] for line in lines]
+
+prefix_to_rank = {prefix: prefixes.index(prefix) for prefix in prefixes}
+
+config_files = [file for file in OVPN_DIR.glob("*") if file.is_file()]
+
+
+def _prefix(file: Path) -> str:
+    return file.name.split("-")[0]
+
+
+config_files = [file for file in config_files if _prefix(file) in prefix_to_rank]
+
+
+sorted_configs = sorted(config_files, key=lambda file: prefix_to_rank[_prefix(file)])
+
+sorted_configs = [file for file in sorted_configs if "default" in file.name.split(".")]
+
+final_list = []
+for prefix, group in groupby(sorted_configs, key=lambda file: _prefix(file)):
+    group = list(group)
+    random.shuffle(group)
+    final_list.extend(group)
+
+cmd = ["sudo", "openvpn", "--config", str(final_list[0])]
+
+print(cmd)
+subprocess.run(cmd)
