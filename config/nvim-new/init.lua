@@ -39,6 +39,12 @@ require("lazy").setup("plugins")
 --    --     -- Optional dependencies
 --    --     dependencies = { "nvim-tree/nvim-web-devicons" },
 --    -- },
+--
+--
+
+
+-- plugins to try/consider
+-- vim-pencil
 
 require("mason").setup()
 

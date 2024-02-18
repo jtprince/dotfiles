@@ -1,9 +1,13 @@
-#!/usr/bin/env python
+#!/bin/bash
 
-import argparse
-print("TODO!")
+start_dir="."
 
-# parser = argparse.ArgumentParser(description="removes all lone `breakpoint()` lines in codebase")
-# args = parser.parse_args()
+remove_breakpoints() {
+    local file=$1
+    sed -i '/^[[:space:]]*breakpoint()[[:space:]]*$/d' "$file"
+}
 
-# https://linuxhint.com/remove-lines-file-sed-command/
+export -f remove_breakpoints
+
+# Find all .py files and apply the remove_breakpoints function to each
+find "$start_dir" -name '*.py' -type f -exec bash -c 'remove_breakpoints "$0"' {} \;

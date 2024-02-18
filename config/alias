@@ -68,6 +68,9 @@ alias ....='cd ../../..'
 alias ...='cd ../..'
 alias ..='cd ..'
 
+# calendar
+alias calendar="python -m calendar"
+
 # pdf
 alias pdf-cat='pdfunite'
 alias pdf-combine='pdfunite'

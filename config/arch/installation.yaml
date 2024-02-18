@@ -49,6 +49,7 @@ python:
   - python-black
   - python-pynvim
   - python-poetry
+  - python-poetry-plugin-up
   - python-ipdb
   - python-nox-poetry
   # - python-pudb
