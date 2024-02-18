@@ -404,20 +404,20 @@ autocmd Filetype tex setlocal foldmethod=syntax
 
 " pretty format json:
 "%!python -m json.tool
+"
+let g:buffer_modified = 0
 
-" This is not working right now :/, need to debug more
 function PrePythonCleanup()
     " call isort and disable async so no weirdness
     " call isort#Isort(0, line('$'), v:null, v:false)
     " :silent execute 'Black'
-    "
-    let l:save = winsaveview()
-    execute 'silent !ruff format %'
-    execute ':silent edit!'
-    call winrestview(l:save)
+
+    " Still needs work!
+    execute '!ruff format %'
+    execute 'e!'
     sleep 50m
 endfunction
-autocmd BufWritePre *.py call PrePythonCleanup()
+autocmd BufWritePost *.py call PrePythonCleanup()
 " autocmd BufWritePost *.py call Flake8()
 
 " SIMPLE TRANSFORMATIONS =================================================
