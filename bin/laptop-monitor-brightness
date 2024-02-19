@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+# TODO:
+# * rewrite in python
+# * follow same interface as keyboard-light
+# * remove necessity of env var
+
 # ENV variables required:
 # $BACKLIGHT (one of: acpi_video0 acpi_video1 intel_backlight gmux_backlight)
 # If no BACKLIGHT env variable then uses acpi_video0 if exists, else intel_backlight

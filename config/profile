@@ -63,15 +63,18 @@ if [ -f ~/.config/texlive/profile ]; then
     export BSTINPUTS=$HOME/.config/latex/bst
 fi
 
-export PATH=$HOME/bin:$HOME/.local/bin:$PATH
+
+# bin subfolders
 export PATH=$HOME/bin/aliases:$PATH
 export PATH=$HOME/bin/work:$PATH
 export PATH=$HOME/bin/git:$PATH
+export PATH=$HOME/bin/markdown:$PATH
+
+# final precedence is whatever is in the $HOME/bin folder
+export PATH=$HOME/bin:$HOME/.local/bin:$PATH
 
 # add a global npm path
 export PATH=$HOME/npm/bin:$PATH
-
-
 
 # node package manager
 if [ -d ~/npm ]; then
