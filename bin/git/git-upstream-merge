@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Merges the upstream branch (defaults to main) into this repo's main
+
+branch=${1:-main}
+
+git fetch -p
+git checkout "main"
+git merge "upstream/$branch"

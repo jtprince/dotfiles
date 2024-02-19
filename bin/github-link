@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+# TODO: rewrite in python and fix this up (currently broken)
+
 require 'pathname'
 require 'optparse'
 

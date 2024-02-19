@@ -34,9 +34,7 @@ old_name_action = parser.add_argument(
 args = parser.parse_args()
 
 if args.old_name == "master":
-    raise argparse.ArgumentError(
-        old_name_action, "--old-name cannot be 'master'"
-    )
+    raise argparse.ArgumentError(old_name_action, "--old-name cannot be 'master'")
 
 
 current_branch = get_output("git rev-parse --abbrev-ref HEAD")

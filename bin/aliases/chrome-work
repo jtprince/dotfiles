@@ -1,3 +1,5 @@
 #!/bin/zsh
 
+source ~/.config/alias
+
 chromework "$@"

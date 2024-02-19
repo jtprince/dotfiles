@@ -5,7 +5,9 @@ import argparse
 import pytesseract
 from PIL import Image
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    description="extract text from image and print to stdout"
+)
 parser.add_argument("filename", help="the name of the image file")
 
 args = parser.parse_args()

@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby 
+#!/usr/bin/env ruby
 
 if ARGV.size == 0
   puts "usage: #{File.basename($0)} tagname [-m 'some message']"
@@ -15,7 +15,7 @@ args = ARGV.map.to_a
 
 tagname = nil
 was_switch = false
-tagname = 
+tagname =
   if args.size == 1
     args[0]
     args << "-m" << 'none'

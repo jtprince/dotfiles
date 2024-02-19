@@ -43,6 +43,9 @@
         xdg-open $url; \
     }; f"
 
+    add-modified = add -u
+    add-untracked = add $(git ls-files -o --exclude-standard)
+
 [color]
     ui = auto
     diff = auto

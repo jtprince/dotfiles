@@ -66,6 +66,7 @@ fi
 export PATH=$HOME/bin:$HOME/.local/bin:$PATH
 export PATH=$HOME/bin/aliases:$PATH
 export PATH=$HOME/bin/work:$PATH
+export PATH=$HOME/bin/git:$PATH
 
 # add a global npm path
 export PATH=$HOME/npm/bin:$PATH

@@ -18,7 +18,7 @@ def display(tag, tags_to_show, as_yaml=false)
   if as_yaml
     hash = OrderedHash.new
     tags_to_show.each do |field|
-      hash[field] = tag.send(field.to_sym) 
+      hash[field] = tag.send(field.to_sym)
     end
     puts hash.to_yaml
   else
@@ -58,10 +58,10 @@ opts = OptionParser.new do |op|
   op.on("-a", "--album <album>", "set album") {|v| opt[:album] = v }
   op.on("-r", "--artist <artist>", "set artist") {|v| opt[:artist] = v }
   op.on("-y", "--year <year>", "set year") {|v| opt[:year] = v }
-  op.on("-n", "--track <Int>", "set track number; AUTO|ALPHA") {|v| 
+  op.on("-n", "--track <Int>", "set track number; AUTO|ALPHA") {|v|
     case v
     when /%|AUTO|ALPHA/
-      opt[:track] = v 
+      opt[:track] = v
     else
       opt[:track] = v.to_i
     end
@@ -80,7 +80,7 @@ opts = OptionParser.new do |op|
       opt[:order] = v
     end
   }
-                                              
+
   op.on("--delete", "deletes tags") {|v| opt[:delete] = v }
   op.on("--v2-to-v1", "transfers applicable v2 tags to v1") {|v| opt[:v2_to_v1] = v }
   op.on("--v1-to-v2", "transfers applicable v1 tags to v2") {|v| opt[:v1_to_v2] = v }
@@ -88,7 +88,7 @@ opts = OptionParser.new do |op|
   op.on("--mesh <index,length>", Array, "start and length of parts to merge") {|v| opt[:mesh] = v.map{|num| num.to_i} }
   op.on("--view", "see id3 tags and exit") {|v| opt[:view] = v }
   op.on("--view-yaml", "outputs the id3 tags as yaml and exits") {|v| opt[:view_yaml] = v }
-  op.on("--check [N]", "warns if file has less than N tags") do |v| 
+  op.on("--check [N]", "warns if file has less than N tags") do |v|
     if v.is_a?(String)
       opt[:check] = v.to_i
     else
@@ -110,7 +110,7 @@ if opt[:genre_codes]
 end
 
 if ARGV.size == 0
-  puts opts.to_s 
+  puts opts.to_s
   exit
 end
 
@@ -190,7 +190,7 @@ files.each do |path|
   if opt[:replacements].size > 0
     opt[:replacements].each do |pair|
       (from, to) = pair
-      basename.gsub!(Regexp.new(Regexp.escape(from)), to)   
+      basename.gsub!(Regexp.new(Regexp.escape(from)), to)
     end
   end
   parts_sizes[basename.gsub('_', ' ').sub(/\.mp3/i, '').split(Regexp.new(opt[:delimiter])).size].push( path )
@@ -199,7 +199,7 @@ end
 if parts_sizes.size > 1
   #keys = parts_sizes.keys.sort.reverse
   keys = parts_sizes.keys.sort
-  #keys.shift  
+  #keys.shift
   keys.each do |key|
     parts_sizes[key].each do |guy|
       puts "#{key}: #{guy}"
@@ -214,7 +214,7 @@ files.each_with_index do |path, index|
   if opt[:replacements].size > 0
     opt[:replacements].each do |pair|
       (from, to) = pair
-      basename.gsub!(Regexp.new(Regexp.escape(from)), to)   
+      basename.gsub!(Regexp.new(Regexp.escape(from)), to)
     end
   end
   parts = basename.gsub('_', ' ').sub(/\.mp3/i, '').split(Regexp.new(opt[:delimiter]))
@@ -222,10 +222,10 @@ files.each_with_index do |path, index|
     (start,length) = opt[:mesh]
     parts[start] = parts[start,length].join(opt[:string_delimiter])
     (start+length-1).downto(start+1) do |i|
-      parts.delete_at(i) 
+      parts.delete_at(i)
     end
   end
-  
+
   default_vals = {}
   opt[:order].zip(parts) do |order,part|
     if part && order
@@ -256,16 +256,16 @@ files.each_with_index do |path, index|
     %w(track album artist title genre year comment).each do |guy|
       guy_sym = guy.to_sym
       if opt.key? guy_sym
-        to_set = 
+        to_set =
           if opt[guy_sym] == '%'
             default_vals[guy]
           elsif guy_sym == :track && opt[:track][0,1] == 'A'
             index + 1
           else
-            opt[guy_sym] 
+            opt[guy_sym]
           end
         # casting
-        to_set = 
+        to_set =
           case guy
           when 'track'
             to_set.to_i
@@ -281,7 +281,7 @@ files.each_with_index do |path, index|
     end
 
     ## replace the %n %t %r %a %y tags
-    # These use the current values 
+    # These use the current values
     #replace_special_chars(tag, tag)
 
     ## replace the %%n %%t %%r %%a %%y tags

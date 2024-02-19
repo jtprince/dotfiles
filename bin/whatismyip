@@ -2,15 +2,12 @@
 
 import argparse
 import subprocess
-import re
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-l", "--local", action='store_true', help="just local")
-parser.add_argument("-w", "-g", "--world", action='store_true', help="just wan")
+parser = argparse.ArgumentParser(description="get local/world ip addresses")
+parser.add_argument("-l", "--local", action="store_true", help="just local")
+parser.add_argument("-w", "-g", "--world", action="store_true", help="just wan")
 args = parser.parse_args()
 
-
-addresses_to_hide = set(["127.0.0.1"])
 
 def run(cmd):
     return subprocess.check_output(cmd, shell=True, text=True).strip()
