@@ -547,7 +547,9 @@ bindsym $mod+Ctrl+Shift+P exec $noid before-i3-exit && systemctl poweroff
 bindsym $mod+Ctrl+Shift+R exec $noid before-i3-exit && systemctl reboot
 # suspend (RAM)
 bindsym $mod+Ctrl+Shift+S exec $noid suspend-with-screenlock
-bindsym $mod+Ctrl+Shift+H exec $noid hibernate-with-screenlock
+
+# hibernate must go through the encryption unlock, so don't need screenlock
+bindsym $mod+Ctrl+Shift+H exec $noid systemctl hibernate
 
 bindsym XF86Sleep exec $noid suspend-with-screenlock
 
