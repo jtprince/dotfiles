@@ -1,3 +1,0 @@
-#!/bin/sh
-
-isort --apply -rc -sp "$HOME/owlet/ci-kit/bin/python/configuration/pyproject.toml" -sl

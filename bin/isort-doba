@@ -1,3 +1,0 @@
-#!/bin/sh
-
-isort --force-single-line-imports --lines 160 "$@"

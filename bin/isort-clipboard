@@ -5,8 +5,7 @@ import pyperclip
 import isort
 
 
-parser = argparse.ArgumentParser()
-# parser.add_argument()
+parser = argparse.ArgumentParser(description="sort python imports on the clipboard")
 args = parser.parse_args()
 
 cliptext = pyperclip.paste()

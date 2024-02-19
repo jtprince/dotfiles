@@ -47,6 +47,7 @@ python:
   - python-pipx
   - ipython
   - python-black
+  - python-isort
   - python-pynvim
   - python-poetry
   - python-poetry-plugin-up
@@ -67,6 +68,7 @@ python:
   - python-pandas
   - python-nox
   - python-terminaltables
+  - python-pyperclip
   - cruft
   - _post_commands:
     - "mkdir ~/.pyenv"

@@ -1,0 +1,124 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import subprocess
+from pathlib import Path
+
+LED_DEVICES = Path("/sys/class/leds")
+KEYBOARD_BACKLIGHT_SUFFIX = "kbd_backlight"
+MAX_BRIGHTNESS = "max_brightness"
+HIGH_INT = 1_000_000
+BRIGHTNESS = "brightness"
+
+
+def _is_root():
+    return os.geteuid() == 0
+
+
+def _is_kbd_backlight(dirname: str):
+    return dirname.split("::")[-1] == KEYBOARD_BACKLIGHT_SUFFIX
+
+
+def _find_backlight_resource():
+    return next(
+        (
+            dir
+            for dir in LED_DEVICES.glob("*")
+            if dir.is_dir() and _is_kbd_backlight(dir.name)
+        ),
+        None,
+    )
+
+
+def _display_current_brightness(current_brightness, max_brightness):
+    message = f"keyboard brightness: {current_brightness}/{max_brightness}"
+
+    if _is_root():
+        print(message)
+    else:
+        subprocess.run(["notify-send", message])
+
+
+def _get_max_brightness(resource: Path):
+    return int((resource / MAX_BRIGHTNESS).read_text())
+
+
+def _new_brightness_in_bounds(current_brightness, direction, increment, max_brightness):
+    """Return a brightness that is within min/max bounds."""
+    if direction == "up":
+        proposed_brightness = current_brightness + increment
+        # not strictly necessary since will set to max if given large value
+        new_brightness = min(proposed_brightness, max_brightness)
+    elif direction == "down":
+        proposed_brightness = current_brightness - increment
+        # this *IS* necessary or we'd get an Invalid argument with negative number
+        new_brightness = max(proposed_brightness, 0)
+    else:
+        raise ValueError("direction may only be up or down!")
+
+    return new_brightness
+
+
+def update_keyboard_brightness(
+    brightness: Path, direction: str, increment: int, max_brightness: int
+):
+    """Updates keyboard brightness.
+
+    Values outside min/max will be set to min/max.
+    """
+    current_brightness = int(brightness.read_text())
+
+    new_brightness = _new_brightness_in_bounds(
+        current_brightness=current_brightness,
+        direction=direction,
+        increment=increment,
+        max_brightness=max_brightness,
+    )
+
+    if new_brightness != current_brightness:
+        brightness.write_text(str(new_brightness))
+
+    return current_brightness, max_brightness
+
+
+def run_cli(args):
+    direction, increment = args.direction, args.increment
+
+    kbd_resource = _find_backlight_resource()
+    if not kbd_resource:
+        raise RuntimeError("Cannot find backlight!")
+    brightness = kbd_resource / BRIGHTNESS
+    max_brightness = _get_max_brightness(kbd_resource)
+
+    if direction == "max":
+        direction, increment = "up", HIGH_INT
+    elif direction == "min":
+        direction, increment = "down", HIGH_INT
+
+    if direction in ["up", "down"]:
+        update_keyboard_brightness(
+            brightness=brightness,
+            direction=direction,
+            increment=increment,
+            max_brightness=max_brightness,
+        )
+
+    current_brightness = int(brightness.read_text())
+    _display_current_brightness(current_brightness, max_brightness)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="control keyboard lighting")
+    parser.add_argument(
+        "direction",
+        choices=["up", "down", "max", "min", "same"],
+        nargs="?",
+        default="same",
+        help="more light (up) or less light (down)",
+    )
+    parser.add_argument(
+        "--increment", type=int, default=1, help="how much to increment"
+    )
+    args = parser.parse_args()
+    run_cli(args)

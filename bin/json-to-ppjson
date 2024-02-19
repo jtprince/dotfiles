@@ -31,7 +31,7 @@ def pretty_format_with_jq(in_path, out_path, indent: int = DEFAULT_INDENT):
 
 for path in args.json_files:
     suffixes = path.suffixes
-    if len(suffixes) > 1 and suffixes[-2] == '.pp':
+    if len(suffixes) > 1 and suffixes[-2] == ".pp":
         print(f"skipping: {str(path)}")
         continue
     out_path = path.with_suffix(f".pp{path.suffix}")

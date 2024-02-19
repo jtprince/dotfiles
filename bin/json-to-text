@@ -6,7 +6,11 @@ import argparse
 
 parser = argparse.ArgumentParser(description="converts json into text")
 parser.add_argument(
-        "infile", nargs="?", type=argparse.FileType("r"), default=sys.stdin, help="the infile with valid json; (hint: a lone string needs surrounding double quotes)"
+    "infile",
+    nargs="?",
+    type=argparse.FileType("r"),
+    default=sys.stdin,
+    help="the infile with valid json; (hint: a lone string needs surrounding double quotes)",
 )
 parser.add_argument(
     "outfile", nargs="?", type=argparse.FileType("w"), default=sys.stdout
