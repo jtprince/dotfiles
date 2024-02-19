@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import subprocess
+
+import random
+import string
+
+inbase = "".join(random.choices(string.ascii_lowercase, k=8))
+inpath = Path(inbase + ".txt")
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "image_paths",
+    nargs="*",
+    type=Path,
+    help="the images to concatenate into a movie in order given",
+)
+parser.add_argument("--outpath", type=Path, help="file to write to")
+parser.add_argument("--delay", default=1, type=int)
+parser.add_argument(
+    "-r", "--reverseloop", action="store_true", help="reverse images before looping"
+)
+parser.add_argument(
+    "-t", "--trimloop", action="store_true", help="don't duplicate in reversing"
+)
+parser.add_argument("-g", "--glob", help="give a file glob instead of image paths")
+args = parser.parse_args()
+
+
+if not args.glob and not args.outpath:
+    raise RuntimeError("must specify output unless using --glob")
+
+if args.glob:
+    outpath = Path(args.glob.replace("*", "")).with_suffix(".gif")
+else:
+    outpath = args.outpath
+
+if args.glob and not args.image_paths:
+    filenames = (
+        subprocess.check_output(f"ls -v {args.glob}", shell=True, text=True)
+        .strip()
+        .split()
+    )
+    paths = [Path(name) for name in filenames]
+else:
+    paths = args.image_path
+
+names = list(map(str, paths))
+images = " ".join(names)
+if args.reverseloop:
+    images = images + " " + " ".join(reversed(names[1:-1]))
+
+cmd = f"convert -delay {args.delay} -loop 0 {images} {str(outpath)}"
+subprocess.run(cmd, shell=True)

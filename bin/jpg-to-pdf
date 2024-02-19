@@ -1,5 +1,0 @@
-#!/bin/bash
-
-for file in "$@"; do
-    convert "$file" ${file%.*}.pdf
-done

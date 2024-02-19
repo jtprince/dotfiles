@@ -1,5 +1,0 @@
-#!/bin/bash
-
-for file in "$@"; do
-    dwebp "$file" -o "${file%.webp}.png"
-done

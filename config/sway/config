@@ -474,7 +474,8 @@ bindsym $mod+Shift+T exec todo
 bindsym XF86Documents exec libreoffice --minimized --nologo --writer
 bindsym $mod+g exec gvim
 
-bindsym XF86Calculator exec $noid notifications-toggle
+# Not sure how to implement this in mako
+# bindsym XF86Calculator exec $noid notifications-toggle
 
 bindsym XF86Phone exec $browser1 $newwindow http://voice.google.com
 

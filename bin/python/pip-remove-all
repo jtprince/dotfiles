@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pip list --format freeze | xargs pip uninstall -y

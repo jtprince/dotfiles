@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'shellwords'
+
+background_color = "white"
+border_pixels = 30
+pixel_density = 300
+
+class String
+  def esc
+    return Shellwords.escape(self)
+  end
+end
+
+if ARGV.size == 0
+  puts "usage: #{File.basename(__FILE__)} <file>.ods ..."
+  puts "output: <file>.png ..."
+  puts "[requires unoconv and imagemagick]"
+end
+
+ARGV.each do |file|
+  basename = file.chomp(File.extname(file))
+  pdf_filename = basename + ".pdf"
+  png_filename = basename + ".png"
+
+  puts `odf_to_pdf.rb #{file}`
+  puts `convert -density #{pixel_density} #{pdf_filename.esc} -quality 9 -background #{background_color} -alpha remove -trim +repage -bordercolor #{background_color} -border #{border_pixels}x#{border_pixels} #{png_filename.esc}`
+end

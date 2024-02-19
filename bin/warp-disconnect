@@ -1,5 +1,0 @@
-#!/bin/bash
-
-output=`warp-cli disconnect`
-sudo systemctl start dnsmasq.service
-notify-send -u low "warp-cli disconnect: $output"

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+ip_file="ip.txt"
+username_file="username.txt"
+password_file="password.txt"
+
+metaboscape_ec2_dir="$HOME/Dropbox/env/work/enveda/metaboscape-ec2"
+
+ip=`cat $metaboscape_ec2_dir/$ip_file`
+username=`cat $metaboscape_ec2_dir/$username_file`
+password=`cat $metaboscape_ec2_dir/$password_file`
+
+xfreerdp /v:"$ip" /u:"$username" /p:"${password}" /f

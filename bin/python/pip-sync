@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import subprocess
+
+
+def partition(condition, iterable):
+    trues = [] ; falses = []
+    for item in iterable:
+        if condition(item): trues.append(item)
+        else: falses.append(item)
+    return trues, falses
+
+
+def read_file_requirements(fn):
+    """ Returns file requirements (-r) and normal requirements <x>==<version>. """
+    with open(fn) as infile:
+        lines = [line for line in infile.read().splitlines() if line and line[0] != '#']
+    file_requires, explicit_requires = partition(lambda line: line.startswith("-r"), lines)
+
+    explicit_requires_wo_comments = [line.split(" ", 1)[0] for line in explicit_requires]
+    return file_requires, explicit_requires_wo_comments
+
+
+def read_requirements(fn):
+    """ Returns list of all requirements (recursively retrieves file requirements). """
+    other_file_lines, requirements = read_file_requirements(fn)
+
+    fn_path = os.path.dirname(os.path.abspath(fn))
+
+    for other_file_line in other_file_lines:
+        other_path = other_file_line.split(' ')[1]
+        requirements.extend(read_requirements(os.path.join(fn_path, other_path)))
+    return requirements
+
+
+def get_pip_requirements(pip):
+    """ Returns a list of all pip requirements. """
+    output = subprocess.check_output([pip, "freeze"]).decode('utf-8')
+    return output.strip().splitlines()
+
+
+def display(msg, set_, single_line=False):
+    delimiter = " " if single_line else "\n"
+    print(msg)
+    print(delimiter.join(sorted(list(set_))))
+    print()
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("action", choices=['info'], default='info', nargs="*")
+parser.add_argument("-r", "--requirements", default="requirements.txt", help="the requirements file")
+parser.add_argument("-p", "--pip", default="pip", help="the pip command")
+parser.add_argument("-l", "--single-line", action="store_true")
+args = parser.parse_args()
+
+file_reqs = read_requirements(args.requirements)
+pip_reqs = get_pip_requirements(args.pip)
+
+if args.action == 'info':
+    file_set = set(file_reqs)
+    pip_set = set(pip_reqs)
+
+    display("Only in pip: ", pip_set - file_set)
+
+    display("Only in file: ", file_set - pip_set)
+
+    display("In both: ", file_set & pip_set)
