@@ -2,4 +2,4 @@
 
 source ~/.config/alias
 
-chromefaenrandir
+chromefaenrandir "$@"

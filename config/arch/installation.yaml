@@ -66,6 +66,7 @@ python:
   - python-pre-commit
   - python-pandas
   - python-nox
+  - python-terminaltables
   - cruft
   - _post_commands:
     - "mkdir ~/.pyenv"

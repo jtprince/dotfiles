@@ -1,0 +1,24 @@
+#!/bin/bash
+
+ALIASES="$HOME/.config/alias"
+
+# Extract aliases and format them
+aliases=$(grep '^alias ' "$ALIASES" | sed "s/alias //;s/=.*//")
+
+# Combine aliases with executables in the PATH
+commands=$(echo "$aliases"; compgen -c)
+
+# Use dmenu/rofi/wofi to select a command
+selected=$(echo "$commands" | sort -u | tofi)
+
+# Check if the selected command is an alias
+if grep -q "^alias $selected=" "$ALIASES"; then
+    # Extract the command for the alias
+    command_to_run=$(grep "^alias $selected=" "$ALIASES" | sed "s/^alias $selected=//;s/'//g")
+else
+    # If not an alias, the command is executed directly
+    command_to_run=$selected
+fi
+
+# Execute the command
+bash -i -c "$command_to_run"

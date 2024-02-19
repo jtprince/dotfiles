@@ -9,7 +9,8 @@
 	# characters not in the chosen font will fail to render.
 	#
 	# Otherwise, fonts are interpreted in Pango format.
-	font = "Sans"
+	# font = "Sans"  # <-- was the default, changing to explicit for speed
+    font = "/usr/share/fonts/noto/NotoSansMon-Regular.ttf"
 
 	# Point size of text.
 	font-size = 24
@@ -249,7 +250,7 @@
 	# history-file = /path/to/histfile
 
 	# Use fuzzy matching for searches.
-	fuzzy-match = false
+	fuzzy-match = true
 
 	# If true, require a match to allow a selection to be made. If false,
 	# making a selection with no matches will print input to stdout.
@@ -288,7 +289,7 @@
 	# Assume input is plain ASCII, and disable some Unicode handling
 	# functions. This is faster, but means e.g. a search for "e" will not
 	# match "é".
-	ascii-input = false
+	ascii-input = true
 
 #
 ### Inclusion

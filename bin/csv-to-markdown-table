@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+# pip install terminaltables
+
+import argparse
+from terminaltables import AsciiTable
+from terminaltables import GithubFlavoredMarkdownTable
+import csv
+
+type_to_cls = dict(
+    ascii=AsciiTable,
+    markdown=GithubFlavoredMarkdownTable,
+)
+
+parser = argparse.ArgumentParser(
+    description="assumes first row is header row; converts to pandoc grid table style"
+)
+parser.add_argument("csv_files", nargs="+", help="the csv file")
+parser.add_argument(
+    "--type", default="markdown", choices=["ascii", "markdown"], help="type of table"
+)
+args = parser.parse_args()
+cls = type_to_cls[args.type]
+
+
+for file in args.csv_files:
+    with open(file) as infile:
+        rows = [row for row in csv.reader(infile)]
+    table = cls(rows)
+    print(table.table)

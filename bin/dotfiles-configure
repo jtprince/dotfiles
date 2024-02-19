@@ -14,8 +14,6 @@ DOT_LOCAL = HOME / ".local"
 
 CURRENT_RESOLUTION_MODE = HOME_CONFIG / "current-resolution-mode"
 
-# TODO: rip out config data into separate yaml file
-
 
 @dataclasses.dataclass(frozen=True)
 class Symlink:
@@ -23,64 +21,7 @@ class Symlink:
     link: Path
 
 
-class Symlinker:
-    def __init__(self, dry=False):
-        self.dry = dry
-
-    def ensure_links(self, symlinks: list[Symlink]):
-        """Takes a list of symlinks and ensures the link."""
-        for symlink in symlinks:
-            self.ensure_link(symlink)
-
-    def ensure_link(self, symlink: Symlink):
-        resolved_path = symlink.link.resolve()
-        if symlink.link.is_symlink():
-            if resolved_path == symlink.destination.resolve():
-                # The link already exists! Nothing to do.
-                print(f"Exists: {symlink.link} -> {symlink.destination}")
-                return
-            else:
-                print(f"Removing existing link: {symlink.link}")
-                if not self.dry:
-                    symlink.link.unlink()
-        else:
-            # A resolved path sits where our link should be. Remove it.
-            if symlink.link.exists():
-                print(f"Removing real path: {symlink.link}")
-                if not self.dry:
-                    if symlink.link.is_dir():
-                        shutil.rmtree(symlink.link)
-                    else:
-                        symlink.link.unlink()
-
-        print(f"ln -s {symlink.destination} {symlink.link}")
-        if not self.dry:
-            symlink.link.symlink_to(symlink.destination)
-
-    def ensure_dirs(self, dirs: list[Path]):
-        """Ensure that each home has been made or exists."""
-        for name in dirs:
-            self._make_dir(name)
-
-    def softlink_into_dotconfig(self, filenames: list[str]):
-        for name in filenames:
-            self.ensure_link(
-                Symlink(REPO_CONFIG / name, link=HOME_CONFIG / name)
-            )
-
-    def softlink_into_home(self, filenames):
-        for name in filenames:
-            self.ensure_link(
-                Symlink(REPO_CONFIG / name, link=HOME / ("." + name))
-            )
-
-    def _make_dir(self, name):
-        """Make a directory relative to home dir."""
-        path = HOME / name
-        print(f"mkdir -p {path}")
-        if not self.dry:
-            path.mkdir(parents=True, exist_ok=True)
-
+# TODO: rip out config data into separate yaml file
 
 # relative to ~/
 ENSURE_DIRS = [
@@ -171,6 +112,62 @@ RESOLUTION_INDEPENDENT_LINKS = [
         link=HOME_CONFIG / "cheat/cheatsheets/community",
     ),
 ]
+
+
+class Symlinker:
+    def __init__(self, dry=False):
+        self.dry = dry
+
+    def ensure_links(self, symlinks: list[Symlink]):
+        """Takes a list of symlinks and ensures the link."""
+        for symlink in symlinks:
+            self.ensure_link(symlink)
+
+    def ensure_link(self, symlink: Symlink):
+        resolved_path = symlink.link.resolve()
+        if symlink.link.is_symlink():
+            if resolved_path == symlink.destination.resolve():
+                # The link already exists! Nothing to do.
+                print(f"Exists: {symlink.link} -> {symlink.destination}")
+                return
+            else:
+                print(f"Removing existing link: {symlink.link}")
+                if not self.dry:
+                    symlink.link.unlink()
+        else:
+            # A resolved path sits where our link should be. Remove it.
+            if symlink.link.exists():
+                print(f"Removing real path: {symlink.link}")
+                if not self.dry:
+                    if symlink.link.is_dir():
+                        shutil.rmtree(symlink.link)
+                    else:
+                        symlink.link.unlink()
+
+        print(f"ln -s {symlink.destination} {symlink.link}")
+        if not self.dry:
+            symlink.link.symlink_to(symlink.destination)
+
+    def ensure_dirs(self, dirs: list[Path]):
+        """Ensure that each home has been made or exists."""
+        for name in dirs:
+            self._make_dir(name)
+
+    def softlink_into_dotconfig(self, filenames: list[str]):
+        for name in filenames:
+            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME_CONFIG / name))
+
+    def softlink_into_home(self, filenames):
+        for name in filenames:
+            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME / ("." + name)))
+
+    def _make_dir(self, name):
+        """Make a directory relative to home dir."""
+        path = HOME / name
+        print(f"mkdir -p {path}")
+        if not self.dry:
+            path.mkdir(parents=True, exist_ok=True)
+
 
 _RESOLUTIONS = ["4k", "hd", "mid"]
 parser = argparse.ArgumentParser(description="setup all config dotfiles")

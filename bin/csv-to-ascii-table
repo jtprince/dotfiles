@@ -1,0 +1,3 @@
+#!/bin/bash
+
+csv-to-markdown-table --type ascii "$@"

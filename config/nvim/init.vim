@@ -417,7 +417,9 @@ function PrePythonCleanup()
     execute 'e!'
     sleep 50m
 endfunction
-autocmd BufWritePost *.py call PrePythonCleanup()
+" autocmd BufWritePost *.py call PrePythonCleanup()
+autocmd BufWritePost * if &filetype == 'python' | call PrePythonCleanup() | endif
+
 " autocmd BufWritePost *.py call Flake8()
 
 " SIMPLE TRANSFORMATIONS =================================================

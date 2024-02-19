@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Use imagemagick's `convert` to convert many images at once."
 
 import subprocess
 from pathlib import Path
