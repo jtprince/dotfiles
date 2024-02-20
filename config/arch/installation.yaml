@@ -276,7 +276,8 @@ file-utils:
   - _post_commands:
     - "sudo updatedb"
     - "sudo pkgfile --update"
-pdf-readers:
+pdf:
+  - pdftk
   - evince
   - _post_commands:
     # zooming is restricted by page cache size, increase to get zoom into large docs

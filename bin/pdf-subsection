@@ -9,7 +9,7 @@ EXT_FINAL = ".pdf"
 
 opt = OpenStruct.new( ext: EXT_SUB + EXT_FINAL )
 parser = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename($0)}  PDFTK_RANGE <file>.pdf ..."
+  op.banner = "usage: #{File.basename($0)} PDFTK_RANGE <file>.pdf ..."
   op.separator "output: <file>#{opt.ext} ..."
   op.separator "(goes to end of file if no stop provided)"
   op.on("-r", "--range", "include the range in the extension") {|v| opt.range = v }

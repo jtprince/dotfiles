@@ -109,7 +109,7 @@ class PulseaudioSink:
 
 if __name__ == "__main__":
     # print basic info about the sinks:
-    for sink in PASink.get_sinks():
+    for sink in PulseaudioSink.get_sinks():
         print(sink.description)
         print("    " + sink.name)
         state = sink.state

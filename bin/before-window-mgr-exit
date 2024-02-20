@@ -1,0 +1,7 @@
+#!/bin/sh
+
+killall --quiet --signal 15 google-chrome-stable
+killall --quiet --signal 15 firefox
+killall --quiet --signal 15 alacritty
+
+exit 0

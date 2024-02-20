@@ -39,7 +39,7 @@ ARGV.each do |file|
   text = lines.join("\n")
 
   if opt.sentencesplit
-    text.gsub!(/\.(\d+)?\s+/, ".\n") 
+    text.gsub!(/\.(\d+)?\s+/, ".\n")
   end
 
   File.write(textfile, text)

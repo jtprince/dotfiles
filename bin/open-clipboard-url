@@ -3,10 +3,15 @@
 # opens the first url it finds on PRIMARY, then CLIPBOARD
 # if not, inotify's clipboard contents
 
+# TODO: fix
+
 import subprocess
 import os
 
-def run(args): return subprocess.check_output(args).decode('8859').strip()
+
+def run(args):
+    return subprocess.check_output(args).decode("8859").strip()
+
 
 cmd = "xclip -o".split()
 
@@ -25,7 +30,7 @@ else:
         url = clipboard_clip
 
 if url:
-    #subprocess.call(["xdg-open", url])
+    # subprocess.call(["xdg-open", url])
     # less portable, but with better behavior
     cmd = ["google-chrome-stable", "--new-window", url]
     notifycmd = ["notify-send"] + [" ".join(cmd)]
@@ -33,7 +38,9 @@ if url:
     subprocess.call(cmd)
 else:
     progname = os.path.basename(__file__)
-    cmd = ['notify-send']
+    cmd = ["notify-send"]
     # todo: clean this up
-    cmd.append("'%s: not urls \"%s\" || \"%s\"'" % (progname, primary_clip, clipboard_clip))
+    cmd.append(
+        '\'%s: not urls "%s" || "%s"\'' % (progname, primary_clip, clipboard_clip)
+    )
     subprocess.call(cmd)

@@ -544,8 +544,8 @@ bindsym $mod+Shift+Q exec swaymsg exit
 
 # power/on-off management:
 # note, you may need to: sudo chmod u+s /sbin/poweroff
-bindsym $mod+Ctrl+Shift+P exec $noid before-i3-exit && systemctl poweroff
-bindsym $mod+Ctrl+Shift+R exec $noid before-i3-exit && systemctl reboot
+bindsym $mod+Ctrl+Shift+P exec $noid before-window-mgr-exit && systemctl poweroff
+bindsym $mod+Ctrl+Shift+R exec $noid before-window-mgr-exit && systemctl reboot
 # suspend (RAM)
 bindsym $mod+Ctrl+Shift+S exec $noid suspend-with-screenlock
 
