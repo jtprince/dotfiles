@@ -1,3 +1,5 @@
+# DO NOT DELETE, RENAME, or MOVE since relied on by other scripts
+
 require 'shellwords'
 
 unless `which unoconv`.size > 0
@@ -22,7 +24,7 @@ def usage(ext='.pdf')
 end
 
 def convert_cmd(file, ext, opts, verbose=false)
-  # ext = 'pdf' 
+  # ext = 'pdf'
   cmda = []
   cmda << "unoconv"
   cmda << "-f #{ext}"

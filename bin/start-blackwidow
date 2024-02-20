@@ -1,8 +1,0 @@
-#!/bin/zsh
-
-cd ~/dev/blackwidow
-
-docker-compose up
-
-#dk ./manage.py makemigrations
-#dk ./manage.py migrate

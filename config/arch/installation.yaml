@@ -313,6 +313,7 @@ libre-office:
   - libreoffice
   - libmythes
   - mythes-en
+  - unoconv
 system-monitoring:
   - gnome-system-monitor
   - gnome-power-manager
