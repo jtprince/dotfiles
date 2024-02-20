@@ -6,9 +6,13 @@ import shutil
 
 import argparse
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    description="remove virtualenvs forcefully (i.e., rmtree)"
+)
 parser.add_argument("virtualenv_name", nargs="?", help="name of virtualenv to delete")
-parser.add_argument("-l", "--list", action='store_true', help="show virtualenvs and exit")
+parser.add_argument(
+    "-l", "--list", action="store_true", help="show virtualenvs and exit"
+)
 args = parser.parse_args()
 
 pyenv_root = Path(os.environ["PYENV_ROOT"])

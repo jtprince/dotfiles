@@ -20,7 +20,7 @@ ARGV.each do |arg|
     if arg.include?('d')
       deleteflag = true
     end
-    if arg.include?('j') 
+    if arg.include?('j')
       bzipflag = true
     end
   else

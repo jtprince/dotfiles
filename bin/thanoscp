@@ -1,9 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'fileutils'
-
-without_thanos_headers = ARGV.map do |filename|
-  filename.sub(/^\/thanos\//, '') 
-end
-
-FileUtils.cp(*without_thanos_headers)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-
-# Removes leading and trailing whitespace with strip() for each line.
+"""Removes leading and trailing whitespace with strip() for each line."""
 
 import sys
+
 for line in sys.stdin:
     print(line.strip())

@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+# Since we rewrote this, should probably validate again
+
+CELSIUS = "celsius"
+KELVIN = "kelvin"
+FAHRENHEIT = "fahrenheit"
+NEWTON = "newton"
+RANKINE = "rankine"
+# "rømer"
+ROMER = "romer"
+DELISLE = "delisle"
+# "réaumur"
+REAUMUR = "reaumur"
+
+CHOICES = [CELSIUS, KELVIN, FAHRENHEIT, NEWTON, RANKINE, ROMER, DELISLE, REAUMUR]
+
+
+class Temperature:
+    OTHER_TO_CELSIUS = {
+        CELSIUS: lambda num: num,
+        KELVIN: lambda num: num - 273.15,
+        FAHRENHEIT: lambda num: (num - 32) * (5.0 / 9),
+        NEWTON: lambda num: num * (100.0 / 33),
+        RANKINE: lambda num: (num - 491.67) * (5.0 / 9),
+        ROMER: lambda num: (num - 7.5) * 40.0 / 21,
+        DELISLE: lambda num: 100 - (num * (2.0 / 3)),
+        REAUMUR: lambda num: num * (5.0 / 4),
+    }
+
+    CELSIUS_TO_OTHER = {
+        CELSIUS: lambda num: num,
+        KELVIN: lambda num: num + 273.15,
+        FAHRENHEIT: lambda num: (num * (9.0 / 5)) + 32,
+        NEWTON: lambda num: num * (33.0 / 100),
+        RANKINE: lambda num: (num + 274.15) * (9.0 / 5),
+        ROMER: lambda num: num * (21.0 / 40) + 7.5,
+        DELISLE: lambda num: (100 - num) * (3.0 / 2),
+        REAUMUR: lambda num: num * (4.0 / 5),
+    }
+
+    NOTATION = {
+        CELSIUS: "°C",
+        KELVIN: "K",
+        FAHRENHEIT: "°F",
+        NEWTON: "°N",
+        RANKINE: "°R",
+        ROMER: "°Rø",
+        DELISLE: "°De",
+        REAUMUR: "°Ré",
+    }
+
+    def __init__(self, num: float = -273.15, units: str = CELSIUS):
+        self.temperature_in_celsius = self.to_celsius(num, units)
+
+    @staticmethod
+    def to_celsius(num, units: str = CELSIUS) -> float:
+        func = Temperature.OTHER_TO_CELSIUS.get(units)
+        if func is None:
+            raise ValueError("unexpected units")
+        return func(num)
+
+    def to(self, units: str = CELSIUS) -> float:
+        func = Temperature.CELSIUS_TO_OTHER.get(units)
+        if func is None:
+            raise ValueError("unexpected units")
+        return func(self.temperature_in_celsius)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="convert temperatures")
+    parser.add_argument("temperature", type=float, help="the input temperature")
+    parser.add_argument("-u", "--input-units", default=CELSIUS, choices=CHOICES)
+    parser.add_argument("-o", "--output-units", default=CELSIUS, choices=CHOICES)
+    args = parser.parse_args()
+
+    temp = Temperature(args.temperature, units=args.input_units)
+    out = temp.to(args.output_units)
+    print(out, Temperature.NOTATION[args.output_units])

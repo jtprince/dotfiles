@@ -17,8 +17,12 @@ BEEP = "play -q -n synth 0.025 sin 650"
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("minutes", nargs="?", type=float, default=DEFAULT_MINUTES, help="minutes to time")
-parser.add_argument("--no-beep", action='store_true', help='do not speaker beep at the end')
+parser.add_argument(
+    "minutes", nargs="?", type=float, default=DEFAULT_MINUTES, help="minutes to time"
+)
+parser.add_argument(
+    "--no-beep", action="store_true", help="do not speaker beep at the end"
+)
 args = parser.parse_args()
 wanted_seconds = args.minutes * 60
 
@@ -32,7 +36,7 @@ def replace_cmd_line(output):
     """Replace the last command line output with the given output."""
     sys.stdout.write(output)
     sys.stdout.flush()
-    sys.stdout.write('\r')
+    sys.stdout.write("\r")
     sys.stdout.flush()
 
 
@@ -48,7 +52,7 @@ def print_time(mins, secs):
 
 def run_timer_app(wanted_seconds, args):
     mins = None
-    secs  = None
+    secs = None
 
     try:
         _elapsed_time = elapsed_time()

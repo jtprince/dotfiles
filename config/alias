@@ -40,7 +40,7 @@ alias bzip='bzip2'
 # put things into home.  But the shim isn't easy to write, so shortcut.
 alias jra='jira-cli'
 
-alias paru="update-system"
+alias paru="arch-update-system"
 
 # fuzzy find open
 alias ff='fuzzy-file-open'

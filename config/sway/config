@@ -67,7 +67,7 @@ set $noid --no-startup-id
 # exec --no-startup-id dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
 exec $noid autostart
-exec $noid sway-inactive-window-transparency.py --unfocused 0.87 --focused 0.95 --app_ids Alacritty kitty
+exec $noid sway-inactive-window-transparency --unfocused 0.87 --focused 0.95 --app_ids Alacritty kitty
 exec $noid dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
 exec $noid mako
 exec $noid systemctl --user import-environment

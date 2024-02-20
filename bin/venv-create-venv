@@ -1,4 +1,0 @@
-mkdir "$1"
-cd "$1"
-python -m venv .venv
-source .venv/bin/activate

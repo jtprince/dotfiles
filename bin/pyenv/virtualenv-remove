@@ -2,9 +2,10 @@
 
 import subprocess
 import argparse
-from itertools import chain
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+    description="remove virtualenvs (not pythons) using `pyenv uninstall`"
+)
 parser.add_argument(
     "virtualenvs",
     nargs="*",
@@ -43,7 +44,7 @@ if not args.virtualenvs:
 
 base_cmd = ["pyenv", "uninstall"]
 if not args.prompt:
-    base_cmd += ['-f']
+    base_cmd += ["-f"]
 
 for version in args.virtualenvs:
     subprocess.run(base_cmd + [version])

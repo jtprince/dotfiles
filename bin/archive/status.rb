@@ -1,277 +1,539 @@
 #!/usr/bin/env ruby
-# encoding: UTF-8
 
-# replacement for conky or i3status for simple status-bar
-# dependencies:
-# sudo apt-get install sysstat weather-util acpi
-#   then config /etc/default/sysstat, ENABLED="true"
-# find your 4 letter code for weather station here:
-#   http://weather.rap.ucar.edu/surface/stations.txt
-#   KPVU is the Provo Municipal Airport
+######################################################################
+# Monitors
+######################################################################
 
-WEATHER_STATION = 'KPVU'
+require 'open3'
+require 'json'
+require 'time'
+require 'yaml'
 
-require 'ostruct'
+CLOUD_ROOT = ENV['HOME'] + "/Dropbox"
 
-def have_util?(util)
-  `which #{util}`.size > 0
+def get_quotes
+  quotes_file = CLOUD_ROOT + "/quotes/short.txt"
+  if File.exist?(quotes_file)
+    IO.readlines(quotes_file).map(&:chomp).reject {|line| line[0] == '#' }
+  else
+    ['<quotes file not available>']
+  end
 end
 
-unless have_util?('sar')
-  puts "need to install sysstat and configure it!"
-  # need to install sysstat and config /etc/default/sysstat, ENABLED="true"
-  exit
-end
 
-def network_interface(default='eth0') 
-  lines = `ip link show`.split("\n")
-  interface = default
-  lines.each_slice(2) do |info, link|
-    md = info.match(/^\d+: (\w+): .*? state (UP|DOWN|UNKNOWN)/)
-    if md[2] == 'UP'
-      interface = md[1]
-      break
+module SysMonitor
+  SLEEP = 2
+
+  def valid?
+    true
+  end
+
+  class DateTime
+    include SysMonitor
+    def initialize(format="%Y-%m-%d | %a %b %d | %k:%M%P")
+      @format = format
     end
-  end
-  interface
-end
-
-NETWORK_INTERFACE = network_interface
-MAX_KBS = 100
-
-HAVE_ACPI = have_util?('acpi')
-
-class SysMonitor
-  DEFAULT_SLEEP = 2  # seconds
-  DEFAULT_WEATHER_CHECK = 600 # seconds
-
-  BAR = [
-    ' ', 
-    '▁', # U+2581 lower 1/8
-    '▂', # U+2582 lower 1/4
-    '▃', # U+2583 lower 3/8
-    '▄', # U+2584 lower  1/2
-    '▅', # U+2585 lower 5/8
-    '▆', # U+2586 lower 3/4
-    '▇', # U+2587 lower 7/8
-    '█', # U+2588 full block
-  ]
-
-  def initialize(sleep=DEFAULT_SLEEP)
-    @weather_check_sec = DEFAULT_WEATHER_CHECK
-    @last_weather_update = Time.now - @weather_check_sec # start by checking weather!
-    @sleep = sleep
-  end
-
-  # reread all the info
-  def update!
-    @mem, @swp = memory_swap_percents
-    cpu_thread = Thread.new {processor_percents}
-    network_thread = Thread.new {received_transmitted}
-    weather!
-    if HAVE_ACPI
-      battery_thread = Thread.new {battery_status}
-      battery_thread.join
-    end
-    cpu_thread.join
-    network_thread.join
-  end
-
-  def bar(type, div='', bookend='')
-    case type
-    when :cpu
-      bar_monitor(@cpus, div, bookend)
-    when :mem
-      bar_monitor([@mem], div, bookend)
-    when :swp
-      bar_monitor([@swp], div, bookend)
-    when :rkb  # received k/b
-      bar_monitor([@received_transmitted[0]], div, bookend)
-    when :tkb  # transmitted k/b
-      bar_monitor([@received_transmitted[1]], div, bookend)
-    else
-      raise ArgumentError, "unrecognized type: #{type}"
+    def data
+      Time.now.strftime(@format)
     end
   end
 
-  def weather!
-    if (now=Time.now) - @last_weather_update >= @weather_check_sec
-      @last_weather_update = now
-      data = `weather --id=#{WEATHER_STATION}`
-      @temp = data[%r{Temperature: (.*?) F},1]
+  # a mixin that actively sleeps the monitor
+  # requires mixin classes to implement get_data which returns the data
+  module Sleeper
+    def initialize(slp=SysMonitor::SLEEP)
+      @sleep = slp
+    end
+
+    def data
+      sleep(@sleep)
+      get_data
     end
   end
-  attr_accessor :temp
 
-  # sets the @bat_dir ('+', '-', '0') and the @bat_percent as a float.
-  def battery_status
-    (status, percent) = `acpi -b`.split(': ').last.split(', ')
-    status =
-      case status
-      when 'Discharging' then '-'
-      when 'Charging' then '+'
-      else '0'
+  # requires mixin classes to implement get_data which returns the data
+  module LongTimer
+    SLEEP = 600
+
+    def initialize(update_sec=SysMonitor::LongTimer::SLEEP)
+      @update_sec = update_sec
+      @last_update = Time.now - @update_sec # set to immediately update
+    end
+
+    def data
+      if ((now=Time.now) - @last_update) >= @update_sec
+        @last_update = now
+        @data = get_data
       end
-    @bat_dir = status
-    @bat_percent = percent[0...-1].to_f
-    self
-  end
-
-  # a bar that also reports the direction it is moving
-  def moving_bar(type, div='', bookend='')
-    case type
-    when :bat
-      @bat_dir + bar_monitor([@bat_percent])
+      @data
     end
   end
 
-  # returns the memory and swap as a percent
-  def memory_swap_percents
-    lines = `free`.split("\n")
-    # [CAT]        total       used       free     shared    buffers     cached
-    header = lines.shift
-    mem = lines.shift
-    swap = lines.pop
-    [mem, swap].map do |line|
-      data = line.chomp.split(/\s+/)
-      # used / total
-      used = 
-        if data[5]
-          data[2].to_f - data[5].to_f - data[6].to_f
-        else
-          data[2].to_f
+  class Days
+    include SysMonitor
+    include LongTimer
+
+    def initialize
+      super
+      line = IO.read(CLOUD_ROOT + "/env/counter.txt")
+      parts = line.split(", ").map(&:to_i)
+      @start = Time.new(*parts, "-07:00")
+    end
+
+    def data
+      seconds = Time.new - @start
+      (seconds.to_f / 60 / 60 / 24).floor.to_i.to_s
+    end
+  end
+
+  class Weather
+    PROGRAM = 'weather-simple'
+    LOCATION = 'provo'
+    include SysMonitor
+    include LongTimer
+
+    def get_data
+      (temp_s, weather_s, intensity_s) = `#{PROGRAM} #{LOCATION}`.split(' ')
+      [temp_s.to_i, weather_s, intensity_s.to_i]
+    end
+  end
+
+  class Quote
+    include SysMonitor
+    include LongTimer
+    QUOTES = get_quotes()
+
+    def get_data
+      QUOTES.sample
+    end
+  end
+
+  class CPU
+    include SysMonitor
+    include Sleeper
+    IDLE_IDX = 3
+
+    CPUInfo = Struct.new(:idle, :total) do
+      def percent(prev)
+        100 * (1.0 - (self.idle - prev.idle).to_f./(self.total - prev.total))
+      end
+    end
+
+    def initialize(*args)
+      @io = File.open("/proc/stat")
+      @num_cpus = @io.read.scan(/^cpu\d+\s+/).size
+      @io.rewind
+      @prev_cpuinfos = cat_proc
+      super(*args)
+    end
+
+    # returns an array of CPUInfo objects, one for each cpu.
+    # always rewinds the io object
+    def cat_proc
+      # user nice system idle iowait irq softirq
+      @io.readline # cpu_totals
+      cpuinfos = @num_cpus.times.map do
+        pieces = @io.readline.split(' ')
+        data = pieces[1,7].map(&:to_i)
+        CPUInfo.new( data[IDLE_IDX], data.reduce(:+) )
+      end
+      @io.rewind
+      cpuinfos
+    end
+
+    # returns an array of percents
+    def get_data
+      cpuinfos = cat_proc
+      percents = cpuinfos.zip(@prev_cpuinfos).map do |cpui, prev_cpui|
+        cpui.percent(prev_cpui)
+      end
+      @prev_cpuinfos = cpuinfos
+      percents
+    end
+  end
+
+  class Memory
+    include SysMonitor
+    include Sleeper
+    attr_reader :total
+
+    def initialize(*args)
+      @total = get_tot_mem
+      super(*args)
+    end
+
+    # returns % memory used and % total memory used (i.e., w/cache)
+    def get_data
+      (mem, w_cache) = get_mem
+      [100*mem.to_f/@total, 100*w_cache.to_f/@total]
+    end
+
+    def get_tot_mem
+      `free -m`[/Mem:\s+(\d+)\s/m, 1].to_i
+    end
+
+    # returns memory used and total memory used (w/cache)
+    def get_mem
+      lines = `free -m`.split("\n")
+      header = lines[0]
+      w_cache = lines[1].split(/\s+/)[2].to_i
+      mem = lines[2].split(/\s+/)[2].to_i
+      [mem, w_cache]
+    end
+  end
+
+  class Battery
+    include SysMonitor
+    include Sleeper
+
+    def valid?
+      `which acpi`.size.>(0)
+    end
+
+    # returns [direction, percent, time_until] where direction is +/- or 0
+    def get_data
+      all_acpi_info = `acpi -b`.split(': ').last
+      (status, percent_str, time_str) = all_acpi_info.split(', ')
+      direction  =
+        case status
+        when 'Discharging' then '-'
+        when 'Charging' then '+'
+        else '0'
         end
-      ( used / data[1].to_f) * 100
+      percent = percent_str[0...-1].to_f
+      [direction, percent, time_str]
     end
   end
 
-  # returns the percent of the max, but no more than 100.0
-  def percent_no_gt(max=100.0, value)
-    perc = 100 * (value / max)
-    (perc > 100) ? 100 : perc
-  end
+  class SongInfo
+    MAX_FIELD_LENGTH = 30
 
-  # returns percent of max_kbs
-  def received_transmitted(max_kbs=MAX_KBS)
-    lines = `sar -n DEV #{@sleep} 1`.split("\n")
-    relevant_lines = lines[3..-1].take_while {|line| line =~ /\w/ }
-    data_ar = relevant_lines.map do |line|
-      data = line.split(/\s+/)
-      # interface, rxkb, txkb
-      [data[2], percent_no_gt(max_kbs, data[5].to_f), percent_no_gt(max_kbs, data[6].to_f)]
-    end
-    data = data_ar.find {|ar| ar[0] == NETWORK_INTERFACE }
-    @received_transmitted = data[1..-1]
-  end
-
-  # 04:09:43 PM     CPU     %user     %nice   %system   %iowait    %steal     %idle
-  def processor_percents
-    reply = `sar -P ALL #{@sleep} 1`
-    lines = reply.split("\n")
-    header = lines.shift
-    num_cpus = header[/\((\d+) CPU\)$/, 1].to_i
-    # read a cycle
-    3.times { lines.shift }
-    @cpus = num_cpus.times.map do
-      line = lines.shift
-      line.chomp!
-      # the total usage (100% - idle)
-      100.0 - line[/\s+([\d\.]+)$/,1].to_f
+    def shorten(string, max_length=MAX_FIELD_LENGTH)
+      string = "" if string.nil?
+      string_short = string[0..max_length]
+      string_short << "..." if string_short != string
+      string_short
     end
   end
 
-  def percent_bar(percent=0.0)
-    BAR[(percent.to_f / 12.5).floor]
+  class MPD < SongInfo
+    include SysMonitor
+    include Sleeper
+
+    def get_data
+      title = `mpc -f "%title%|%file%" current`.strip
+      title = File.basename(title) if title.include?("/")
+      artist = `mpc -f "%composer%|%artist%" current`.strip
+      "#{shorten(artist)} - #{shorten(title)}"
+    end
   end
 
-  def bar_monitor(data, div='', bookend='')
-    bars = data.map {|p| percent_bar(p) }.join(div)
-    bookend + bars + bookend
+  class Spotify < SongInfo
+    include SysMonitor
+    include Sleeper
+    def initialize(*args)
+      @musical_sequence = %w(♩ ♪ ♬ ♫)
+      super(*args)
+    end
+
+    def get_data
+      data = YAML.load(`spotify-info`)
+      if data.size > 0 && data['xesam:title'].size > 0
+        (artist, album, title) = ['artist', 'album', 'title'].map do |key|
+          shorten(data['xesam:' + key])
+        end
+
+        player_status = `playerctl status`.chomp.downcase.to_sym
+        display_status =
+          case player_status
+          when :playing
+            @musical_sequence.rotate!.join + " "
+          when :paused
+            "▮▮ "
+          else
+            ''
+          end
+        "#{display_status}#{artist} (#{album}) #{data['xesam:trackNumber']}-#{title}"
+      else
+        "NA"
+      end
+    end
   end
+
+  class PlayerCtlSongInfo < SongInfo
+    include SysMonitor
+    include Sleeper
+    XESAM_RE = /(xesam:\w+)\s+(.*)/
+    TOPIC_GARBAGE = " - Topic"
+
+    def initialize(*args)
+      @musical_sequence = %w(♩ ♪ ♬ ♫)
+      super(*args)
+    end
+
+    def get_data
+      stdout, stderr, status = Open3.capture3("playerctl metadata")
+      if stderr.include?("No player could handle this command")
+        return "NA"
+      else
+        raw = stdout.chomp.split("\n")
+      end
+      data = raw.map {|line| XESAM_RE.match(line.chomp)&.captures}.compact.to_h
+      if data.size > 0 && data['xesam:title'].size > 0
+        (artist, album, title) = ['artist', 'album', 'title'].map do |key|
+          shorten(data['xesam:' + key])
+        end
+        artist.sub!(/#{TOPIC_GARBAGE}$/, '')
+
+        player_status = `playerctl status`.chomp.downcase.to_sym
+        display_status =
+          case player_status
+          when :playing
+            @musical_sequence.rotate!.join + " "
+          when :paused
+            "▮▮ "
+          else
+            ''
+          end
+        if album.empty?
+          "#{display_status}#{artist} - #{title}"
+        else
+          "#{display_status}#{artist} (#{album}) #{title}"
+        end
+      else
+        "NA"
+      end
+
+    end
+  end
+
 end
 
+######################################################################
+# I3Bar UI Components
+######################################################################
 
-class StatusBar
+class I3Bar < Array
 
-  class Group < Array
-    def initialize(data=[], sep=" ")
-      super(data)
-      @sep = sep
+  def initialize(*args)
+    puts "{ \"version\": 1 }"
+    puts "["
+    super(*args)
+  end
+
+  # sends to stdout, flushes stdout, clears the array
+  def display!
+    escaped = self.map(&:to_json)
+    puts("[" + escaped.join(",") + "],\n\n") || $stdout.flush
+    self.clear
+  end
+
+  class UI < Hash
+
+    # in case the original needs to be called
+    alias_method :orig_initialize, :initialize
+
+    # will optionally take: name, color, monitor on initialize
+    def initialize(*args)
+      [:name, :color, :monitor].zip(args).each {|pair| store(*pair) }
     end
 
     def to_s
-      self.join(@sep)
+      pairs = self.map do |k,v|
+        if !v.nil?
+          [k, v]
+        end
+      end.compact
+      kv = pairs.map {|pair| %Q|"#{pair[0]}": "#{pair[1]}"| }.join(", ")
+      "{" << kv << "}"
+    end
+
+    class Divider < UI
+      def initialize(text, color="#FFFFFF")
+        self[:name] = 'divider'
+        self[:full_text] = text
+        self[:color] = color
+      end
+    end
+
+    module Bar
+      LEVELS = [
+        ' ', # U+2002 En Space Nut (a normal space not enough!
+        '▁', # U+2581 lower 1/8
+        '▂', # U+2582 lower 1/4
+        '▃', # U+2583 lower 3/8
+        '▄', # U+2584 lower  1/2
+        '▅', # U+2585 lower 5/8
+        '▆', # U+2586 lower 3/4
+        '▇', # U+2587 lower 7/8
+        '█', # U+2588 full block
+      ]
+    end
+
+    # a single *directional* bar (can be up, down, or zero)
+    class UpDownBar < UI
+      def initialize(*args)
+        self[:denom] = 100.0 / (Bar::LEVELS.size - 1)
+        self[:ends] = ' '
+        super(*args)
+      end
+
+      # data is an array of direction and percent. returns self
+      def display!(data)
+        self[:full_text] = (self[:symbol] || self[:name]) + self[:ends] + core_display(data) + self[:ends]
+        self
+      end
+
+      def bar(percentage)
+        bar = Bar::LEVELS[ (percentage.to_f / self[:denom]).floor ]
+      end
+
+      def direction_glyph(sign)
+        case sign
+        when '+' then '⇡'
+        when '-' then '⇣'
+        else '⧫'
+        end
+      end
+
+      def core_display(data)
+        direction_glyph(data[0]) + bar(data[1])
+      end
+    end
+
+    # a single *directional* bar with accompanying text
+    class UpDownInfoBar < UpDownBar
+      def core_display(data)
+        super(data) + " " + data[2]
+      end
+    end
+
+
+
+    # ad hoc for weather.  Expects [temp (int), condition string, intensity (int)]
+    class WeatherDisplay < UI
+      def display!(data)
+        (temp, condition_st, intensity) = data
+        st =
+          if condition_st
+            "#{temp}°C #{condition_st*intensity}"
+          else
+            "[NC]"
+          end
+        self[:full_text] = st
+      end
+    end
+
+    # just text
+    class SimpleText < UI
+      def display!(data)
+        self[:full_text] =  data
+      end
+    end
+
+    # just text
+    class BatteryWarning < SimpleText
+      def initialize(*args)
+        [:name, :color, :background, :monitor].zip(args).each {|pair| store(*pair) }
+      end
+
+      def display!(data)
+        direction, percent, time_str = data
+        amt =
+          if percent <= 5 then 150
+          elsif percent <= 10 then 100
+          elsif percent <= 20 then 50
+          elsif percent <= 30 then 25
+          elsif percent <= 40 then 5
+          else
+            0
+          end
+        space =
+          if direction == '-'
+            ' ' * amt
+          else
+            ''
+          end
+        self[:full_text] = space
+      end
+    end
+
+    class VBars < UI
+      DEFAULTS = {
+        join: '⋮',
+        ends: ' ',
+      }
+
+      attr_accessor :join
+      attr_accessor :ends
+
+      def initialize(*args)
+        DEFAULTS.each {|k,v| self[k] = v }
+        super(*args)
+      end
+
+      # returns self
+      def display!(percents)
+        denom = 100.0 / (Bar::LEVELS.size - 1)
+        bars = percents.map do |percent|
+          Bar::LEVELS[ (percent.to_f / denom).floor ]
+        end.join(self[:join])
+        self[:full_text] = (self[:symbol] || self[:name]) + self[:ends] + bars + self[:ends]
+        self
+      end
+    end
+
+    class BatteryAmount < VBars
+      def display!(data)
+        direction, percent, time_str = data
+        super([percent])
+      end
     end
   end
 
-  GLYPH = OpenStruct.new( {
-    broken_vertical_bar: '¦',
-    vertical_bar: '|',
-    light_vertical_bar: '❘', # not recognized
-    thick_bar: '┃',
-    thin_3_part_bar: '┆',
-    weird: '§',
-    lozenge: '⧫', # not recognized
-    br_triangle: '▶',
-    bl_triangle: '◀',
-    six_per_em_space: ' ',
-    up_arrow: '↑',
-    dn_arrow: '↓',
-    vertical_ellipsis: '⋮',
-    circled_star: '⊛',
-    double_wide_diamond: '◀▶',
-  } )
-
-  DEFAULT_SEP = " #{GLYPH.double_wide_diamond} "
-
-  attr_accessor :sep
-  attr_accessor :sections
-
-  def initialize(sep=DEFAULT_SEP)
-    @sep = sep
-    @sections = []
-  end
-
-  def display(&block)
-    Kernel.loop do  
-      block.call(self)
-      puts self.urp
-    end
-  end
-
-  # gives the status message and clears sections array
-  def urp
-    to_display = to_s
-    @sections.clear
-    to_display
-  end
-
-  def to_s
-    sections.join(sep).concat(sep)
-  end
-
-  # adds the string as a section
-  def <<(section)
-    @sections << section.to_s
-  end
 end
 
+# '𝗖' '𝗕' '𝗠'
+# '⌘'
 
-status_bar = StatusBar.new
-monitor = SysMonitor.new
-G = StatusBar::GLYPH
+# ttf-font-icons
+# need something like this line inside the bar stanza:
+# font pango:DejaVu Sans Mono, Icons 8
+# insert character in vim with: <C-v>uXXXX
+# see https://www.dropbox.com/s/9iysh2i0gadi4ic/icons.pdf
 
-status_bar.display do |status_bar|
-  # sleep duration is pegged to monitor updates right now
-  monitor.update!
-  mons = []
-  mons << "bat" + monitor.moving_bar(:bat, '', '') if HAVE_ACPI
-  mons << "cpu" + monitor.bar(:cpu, G.thin_3_part_bar, G.thin_3_part_bar)
-  mons.push( [:mem, :swp].map {|type| type.to_s + monitor.bar(type, '', '')}.join("  ") )
-  mons.push( NETWORK_INTERFACE + [:rkb, :tkb].zip([G.dn_arrow, G.up_arrow]).map {|type, sym| sym + " " + monitor.bar(type) }.join("  ") )
-  #sys_monitor_bars = [:cpu, :mem, :swp, :rkb, :tkb].map {|type| type.to_s + monitor.bar(type, '', '|') }
 
-  status_bar << StatusBar::Group.new( mons, "  #{G.double_wide_diamond}  " )
-  status_bar << Time.now.strftime( "%a %Y-%m-%d %l:%M %P" )
-  status_bar << (monitor.temp + "°F")
+
+#mpd = I3Bar::UI::SimpleText.new('mpd', '#FFA500', SysMonitor::MPD.new)
+spotify = I3Bar::UI::SimpleText.new('spotifyinfo', '#FFA500', SysMonitor::PlayerCtlSongInfo.new)
+quote = I3Bar::UI::SimpleText.new('quote', '#DDDDDD', SysMonitor::Quote.new(6000))
+battery_warning = I3Bar::UI::BatteryWarning.new('batteryinfo', '#0000FF', '#FF0000', SysMonitor::Battery.new)
+cpu = I3Bar::UI::VBars.new('', '#FF0000', SysMonitor::CPU.new)
+mem = I3Bar::UI::VBars.new('♏', '#00FF00', SysMonitor::Memory.new)
+#weather = I3Bar::UI::WeatherDisplay.new('weather', '#DDDDDD', SysMonitor::Weather.new)
+#days = I3Bar::UI::SimpleText.new('days', '#0404B4', SysMonitor::Days.new)
+datetime = I3Bar::UI::SimpleText.new('datetime', '#DDDDDD', SysMonitor::DateTime.new)
+battery_amount = I3Bar::UI::BatteryAmount.new('🔋', '#9AEDFE', SysMonitor::Battery.new)
+
+#components = [quote, battery_warning, cpu, mem, weather, days, datetime].select {|cell| cell[:monitor].valid? }
+#components = [quote, battery_warning, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+#components = [spotify, battery_warning, cpu, mem, datetime].select {|cell| cell[:monitor].valid? }
+components = [quote, battery_warning, spotify, cpu, mem, battery_amount, datetime].select {|cell| cell[:monitor].valid? }
+
+thin_space = ' '
+div = I3Bar::UI::Divider.new("#{thin_space}◀▶#{thin_space}", "#000000")
+
+i3bar = I3Bar.new
+
+loop do
+  i3bar << div
+  threads = components.map do |ui|
+    thread = Thread.new(ui) {|iui| iui.display!(iui[:monitor].data) }
+    i3bar << ui
+    i3bar << div
+    thread
+  end
+  threads.each(&:join)
+  i3bar.display!
 end
+
