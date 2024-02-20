@@ -27,13 +27,13 @@ ARGV.each do |file|
   File.open(tmpfile, "w") do |out|
     File.open(file) do |infile|
       infile.each_line do |line|
-        out.print( line.gsub(SEARCH, REPLACE) ) 
+        out.print( line.gsub(SEARCH, REPLACE) )
       end
     #out.print( fh.binmode.read.gsub(/\r/, '') )
     end
   end
   File.delete file
   File.rename(tmpfile, file)
-  File.chmod(st.mode, file) 
-  File.chown(st.uid, st.gid, file) 
+  File.chmod(st.mode, file)
+  File.chown(st.uid, st.gid, file)
 end

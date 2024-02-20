@@ -66,12 +66,13 @@ fi
 
 # bin subfolders
 export PATH=$HOME/bin/aliases:$PATH
+export PATH=$HOME/bin/docker:$PATH
 export PATH=$HOME/bin/git:$PATH
-export PATH=$HOME/bin/work:$PATH
 export PATH=$HOME/bin/markdown:$PATH
 export PATH=$HOME/bin/media:$PATH
 export PATH=$HOME/bin/pyenv:$PATH
 export PATH=$HOME/bin/python:$PATH
+export PATH=$HOME/bin/work:$PATH
 
 # final precedence is whatever is in the $HOME/bin folder
 export PATH=$HOME/bin:$HOME/.local/bin:$PATH

@@ -54,13 +54,13 @@ if $just_reverse_names
   reverse_names(ARGV.to_a)
 else
   ARGV.each do |movie_file|
-     
+
     movie_file_dirname = File.dirname(movie_file)
     movie_file_base = File.basename(movie_file)
     movie_file_base_noext = File.basename(movie_file, ".*")
     revtag = $reverse ? '.reverse' : ''
     output_movie_file = File.join(movie_file_dirname, movie_file_base_noext + "#{revtag}.mp4")
-    
+
     tmp_dir = movie_file + '.split'
     #FileUtils.rm_rf tmp_dir if File.exist? tmp_dir
 
@@ -87,6 +87,3 @@ else
   end
 
 end
-
-
-
