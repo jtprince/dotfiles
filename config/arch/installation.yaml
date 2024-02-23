@@ -179,6 +179,7 @@ ruby:
   - rbenv
   - ruby-build
   - ruby-mustache
+  - neovim
   - _post_notes:
     - "rbenv install --list"
     - "rbenv install --list-all"

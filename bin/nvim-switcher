@@ -3,20 +3,24 @@
 import argparse
 from pathlib import Path
 
+DIRS = {
+    "old": "nvim",
+    "new": "nvim-new",
+    "lazy": "nvim-lazyvim",
+    "kickstart": "nvim-kickstart",
+}
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "choice",
     default="show",
     nargs="?",
-    choices=["old", "new", "show"],
+    choices=list(DIRS.keys()),
     help="which nvim to use (or show)",
 )
 args = parser.parse_args()
 
-DIRS = {
-    "old": "nvim",
-    "new": "nvim-new",
-}
+
 
 nvim_config_symlink = Path.home() / ".config/nvim"
 
