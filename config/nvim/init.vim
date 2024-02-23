@@ -413,9 +413,9 @@ function PrePythonCleanup()
     " :silent execute 'Black'
 
     " Still needs work!
-    execute '!ruff format %'
-    execute 'e!'
-    sleep 50m
+    " execute '!ruff format %'
+    " execute 'e!'
+    " sleep 50m
 endfunction
 " autocmd BufWritePost *.py call PrePythonCleanup()
 autocmd BufWritePost * if &filetype == 'python' | call PrePythonCleanup() | endif

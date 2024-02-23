@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-## pip install unrpa
+# yay -S unrpa
 
 for file in "$@"; do
     unrpa -mp "${file%.rpa}" "$file"
