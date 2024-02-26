@@ -231,12 +231,7 @@ require('lazy').setup({
 
   { 'svermeulen/vimpeccable' },
 
-  -- Hop anywhere in the document you can see immediately
-  {
-    'smoka7/hop.nvim',
-    version = "*",
-    opts = {},
-  },
+  -- { 'ggandor/leap.nvim' },
 
   {
     -- Highlight, edit, and navigate code
@@ -261,6 +256,11 @@ require('lazy').setup({
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
   -- { import = 'custom.plugins' },
 }, {})
+
+-- require('leap').create_default_mappings()
+-- require('leap').opts.special_keys.prev_target = '<bs>'
+-- require('leap').opts.special_keys.prev_group = '<bs>'
+-- require('leap.user').set_repeat_keys('<cr>', '<bs>')
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -428,10 +428,6 @@ vimp.nnoremap('<leader>n', function()
 end)
 
 
-
--- vimp.noremap("hh", "gg")
--- vimp.noremap("gg", "<Nop>")
-
 vimp.noremap("s", "h")
 vimp.noremap("g", "l")
 vimp.noremap("d", "k")
@@ -443,11 +439,13 @@ vimp.noremap("j", "f")
 vimp.noremap("F", "<PAGEDOWN>M")
 vimp.noremap("D", "<PAGEUP>M")
 
+-- TODO: make all the keyboard stuff consistent
 vim.keymap.set('n', ',y', '"*y', { noremap = true, silent = true, desc = 'yank to primary clipboard' })
 vim.keymap.set('n', ',Y', '"+y', { noremap = true, silent = true, desc = 'yank to secondary clipboard' })
 vim.api.nvim_set_keymap('n', 'hh', 'gg', { noremap = true, silent = true, desc = 'jump to top of file' })
 vim.api.nvim_set_keymap('n', 'gg', 'G', { noremap = true, silent = true, desc = 'jump to top of file' })
 vim.api.nvim_set_keymap('n', ',m', ':MinimapToggle<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
+vim.api.nvim_set_keymap('n', ',n', ':HopWord<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
 
 vim.g.minimap_auto_start = 1
 vim.g.minimap_auto_start_win_enter = 1
