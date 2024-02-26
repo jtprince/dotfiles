@@ -1,43 +1,3 @@
---[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-
-Kickstart.nvim is *not* a distribution.
-
-Kickstart.nvim is a template for your own configuration.
-  The goal is that you can read every line of code, top-to-bottom, understand
-  what your configuration is doing, and modify it to suit your needs.
-
-  Once you've done that, you should start exploring, configuring and tinkering to
-  explore Neovim!
-
-  If you don't know anything about Lua, I recommend taking some time to read through
-  a guide. One possible example:
-  - https://learnxinyminutes.com/docs/lua/
-
-
-  And then you can explore or search through `:help lua-guide`
-  - https://neovim.io/doc/user/lua-guide.html
-
-
-Kickstart Guide:
-
-I have left several `:help X` comments throughout the init.lua
-You should run that command and read that help section for more information.
-
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now :)
---]]
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
@@ -61,16 +21,19 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure plugins ]]
--- NOTE: Here is where you install your plugins.
---  You can configure plugins using the `config` key.
+--  Can configure plugins using the `config` key.
 --
---  You can also configure plugins after the setup call,
+--  Can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
+--
+-- NOTE: `{<plugin>, opts = {}}` is the same as calling `require('<plugin>').setup({})`
 require('lazy').setup({
+
   -- NOTE: First, some plugins that don't require any configuration
 
-  -- Git related plugins
+  -- Git commands
   'tpope/vim-fugitive',
+  -- Github commands
   'tpope/vim-rhubarb',
 
   -- Detect tabstop and shiftwidth automatically
@@ -87,10 +50,9 @@ require('lazy').setup({
       'williamboman/mason-lspconfig.nvim',
 
       -- Useful status updates for LSP
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
 
-      -- Additional lua configuration, makes nvim stuff amazing!
+      -- help and docs for the nvim lua API
       'folke/neodev.nvim',
     },
   },
@@ -118,12 +80,13 @@ require('lazy').setup({
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
 
-      -- Adds a number of user-friendly snippets
+      -- User-friendly snippets
       'rafamadriz/friendly-snippets',
     },
   },
 
-  -- Useful plugin to show you pending keybinds.
+  -- Useful plugin to show pending keybinds.
+  -- Uses `desc` attribute of your mapping as label
   { 'folke/which-key.nvim', opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
@@ -261,6 +224,20 @@ require('lazy').setup({
     },
   },
 
+  -- Minimap (compact representation of whole doc in the right)
+  -- Requires code-minimap `yay -S code-minimap`
+  -- :Minimap
+  { 'wfxr/minimap.vim' },
+
+  { 'svermeulen/vimpeccable' },
+
+  -- Hop anywhere in the document you can see immediately
+  {
+    'smoka7/hop.nvim',
+    version = "*",
+    opts = {},
+  },
+
   {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -333,8 +310,9 @@ vim.o.termguicolors = true
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- Remap for dealing with word wrap
-vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+-- Disabling for now until figure out compatibility with left-hand navigation
+-- vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+-- vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
@@ -432,6 +410,50 @@ vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc
 vim.keymap.set('n', '<leader>sG', ':LiveGrepGitRoot<cr>', { desc = '[S]earch by [G]rep on Git Root' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
+
+local vimp = require('vimp')
+
+-- use semicolon for all colon commands
+vimp.nnoremap(";", ":")
+
+-- example function
+-- vimp.nnoremap('<leader>hw', function()
+--  print('hello')
+--  print('world')
+-- end)
+
+-- Toggle line numbers
+vimp.nnoremap('<leader>n', function()
+  vim.wo.number = not vim.wo.number
+end)
+
+
+
+-- vimp.noremap("hh", "gg")
+-- vimp.noremap("gg", "<Nop>")
+
+vimp.noremap("s", "h")
+vimp.noremap("g", "l")
+vimp.noremap("d", "k")
+vimp.noremap("f", "j")
+vimp.noremap("h", "g")
+vimp.noremap("l", "s")
+vimp.noremap("k", "d")
+vimp.noremap("j", "f")
+vimp.noremap("F", "<PAGEDOWN>M")
+vimp.noremap("D", "<PAGEUP>M")
+
+vim.keymap.set('n', ',y', '"*y', { noremap = true, silent = true, desc = 'yank to primary clipboard' })
+vim.keymap.set('n', ',Y', '"+y', { noremap = true, silent = true, desc = 'yank to secondary clipboard' })
+vim.api.nvim_set_keymap('n', 'hh', 'gg', { noremap = true, silent = true, desc = 'jump to top of file' })
+vim.api.nvim_set_keymap('n', 'gg', 'G', { noremap = true, silent = true, desc = 'jump to top of file' })
+vim.api.nvim_set_keymap('n', ',m', ':MinimapToggle<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
+
+vim.g.minimap_auto_start = 1
+vim.g.minimap_auto_start_win_enter = 1
+vim.g.minimap_git_colors = 1
+-- vim.g.minimap_width = 2
+
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -537,7 +559,8 @@ local on_attach = function(_, bufnr)
   nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
   -- See `:help K` for why this keymap
-  nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
+  -- Disabling this right now since seems to conflict with my left hand navigation bindings
+  -- nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
   nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality

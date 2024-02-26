@@ -40,6 +40,7 @@ plymouth:
     - "sudo mkinitcpio -P"
 neovim:
   - ruff
+  - code-minimap
 python:
   - pyenv
   - pyenv-virtualenv
