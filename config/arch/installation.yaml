@@ -41,6 +41,11 @@ plymouth:
 neovim:
   - ruff
   - code-minimap
+  # for gp.nvim chatgpt plugin
+  - sox
+  - ollama
+  - _post_commands:
+    - "sudo systemctl enable --now ollama.service"
 python:
   - pyenv
   - pyenv-virtualenv

@@ -1,3 +1,27 @@
+-- TODO:
+-- [ ] integrate chatgpt or copilot
+-- [ ] colorscheme switcher
+-- [ ] faster cursor movement
+-- [x] get telescope functions mapped how I like (e.g., ",fs" ",ff", ",fb" etc)
+-- [ ] break out config into individual files
+-- [ ] get all my ftplugins ported over
+--    [ ] python
+--    [ ] markdown
+-- [ ] get similar markdown functionality ported
+--    [ ] gitlinker.nvim
+--    [ ] godlygeek/tabular
+--    [ ] plasticboy/vim-markdown
+--    [ ] vim-markdown-folding
+-- [ ] vim-json
+-- [ ] pre-commit.nvim
+-- [AND ALL THE OTHER FUNC in init.vim!!!!!]
+-- [[ FILL THIS IN, STILL ]]
+-- [ ] figure out how to call ruff format whole file
+-- [ ] remove ctags from archup since func provided by lsp
+-- [ ] either install nerdcommenter or figure out how to do in lsp
+-- [ ] figure out equivalent of chadtree
+-- [ ] figure out pytest framework, especially something that lets me jump to an error
+--
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
@@ -177,6 +201,9 @@ require('lazy').setup({
     end,
   },
 
+  -- TODO: figure out how to make vertical lines not as heavy
+  -- { 'shaunsingh/moonlight.nvim' },
+
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -257,6 +284,8 @@ require('lazy').setup({
   -- { import = 'custom.plugins' },
 }, {})
 
+-- require('moonlight').set()
+
 -- require('leap').create_default_mappings()
 -- require('leap').opts.special_keys.prev_target = '<bs>'
 -- require('leap').opts.special_keys.prev_group = '<bs>'
@@ -335,6 +364,37 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
   defaults = {
+    layout_config = {
+      bottom_pane = {
+        height = 25,
+        preview_cutoff = 120,
+        prompt_position = "top"
+      },
+      center = {
+        height = 0.4,
+        preview_cutoff = 40,
+        prompt_position = "top",
+        width = 0.5
+      },
+      cursor = {
+        height = 0.9,
+        preview_cutoff = 40,
+        width = 0.8
+      },
+      horizontal = {
+        height = 0.9,
+        preview_cutoff = 120,
+        prompt_position = "bottom",
+        width = 0.9
+      },
+      vertical = {
+        height = 0.9,
+        preview_cutoff = 40,
+        prompt_position = "bottom",
+        width = 0.9
+      }
+    },
+
     mappings = {
       i = {
         ['<C-u>'] = false,
@@ -439,6 +499,13 @@ vimp.noremap("j", "f")
 vimp.noremap("F", "<PAGEDOWN>M")
 vimp.noremap("D", "<PAGEUP>M")
 
+local telescope_builtin = require('telescope.builtin')
+vim.keymap.set('n', ',fs', telescope_builtin.grep_string, {})
+vim.keymap.set('n', ',ff', telescope_builtin.find_files, {})
+vim.keymap.set('n', ',fg', telescope_builtin.live_grep, {})
+vim.keymap.set('n', ',fb', telescope_builtin.buffers, {})
+vim.keymap.set('n', ',fh', telescope_builtin.help_tags, {})
+
 -- TODO: make all the keyboard stuff consistent
 vim.keymap.set('n', ',y', '"*y', { noremap = true, silent = true, desc = 'yank to primary clipboard' })
 vim.keymap.set('n', ',Y', '"+y', { noremap = true, silent = true, desc = 'yank to secondary clipboard' })
@@ -459,7 +526,8 @@ vim.g.minimap_git_colors = 1
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
     -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' },
+    ensure_installed = {
+      'c', 'cpp', 'go', 'lua', 'markdown', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' },
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = false,
@@ -610,6 +678,11 @@ local servers = {
   -- clangd = {},
   -- gopls = {},
   -- pyright = {},
+  -- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/lua/mason-lspconfig/server_configurations/pylsp/README.md
+  -- On install:  :PylspInstall python-lsp-ruff
+  pylsp = {},
+
+  
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
