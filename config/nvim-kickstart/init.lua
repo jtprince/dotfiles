@@ -67,6 +67,13 @@ require 'lazy-plugins'
 -- require('leap').opts.special_keys.prev_group = '<bs>'
 -- require('leap.user').set_repeat_keys('<cr>', '<bs>')
 
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*",
+  callback = function()
+    vim.lsp.buf.format({ async = true })
+  end,
+})
+
 require 'options'
 
 require 'keymaps'
