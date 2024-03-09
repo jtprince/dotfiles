@@ -1,0 +1,3 @@
+#!/bin/bash
+
+chrome-work --new-window "https://chat.openai.com/"

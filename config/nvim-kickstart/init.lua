@@ -1,9 +1,9 @@
 -- TODO:
+-- [ ] break out config into individual files
 -- [ ] integrate chatgpt or copilot
 -- [ ] colorscheme switcher
 -- [ ] faster cursor movement
 -- [x] get telescope functions mapped how I like (e.g., ",fs" ",ff", ",fb" etc)
--- [ ] break out config into individual files
 -- [ ] get all my ftplugins ported over
 --    [ ] python
 --    [ ] markdown
@@ -109,6 +109,30 @@ require('lazy').setup({
     },
   },
 
+  {
+    "David-Kunz/gen.nvim",
+    opts = {
+        model = "mistral", -- The default model to use.
+        host = "localhost", -- The host running the Ollama service.
+        port = "11434", -- The port on which the Ollama service is listening.
+        display_mode = "float", -- The display mode. Can be "float" or "split".
+        show_prompt = false, -- Shows the Prompt submitted to Ollama.
+        show_model = false, -- Displays which model you are using at the beginning of your chat session.
+        no_auto_close = false, -- Never closes the window automatically.
+        init = function(options) pcall(io.popen, "ollama serve > /dev/null 2>&1 &") end,
+        -- Function to initialize Ollama
+        command = function(options)
+            return "curl --silent --no-buffer -X POST http://" .. options.host .. ":" .. options.port .. "/api/chat -d $body"
+        end,
+        -- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
+        -- This can also be a command string.
+        -- The executed command must return a JSON object with { response, context }
+        -- (context property is optional).
+        -- list_models = '<omitted lua function>', -- Retrieves a list of model names
+        debug = false -- Prints errors and the command which is run.
+    }
+  },
+
   -- Useful plugin to show pending keybinds.
   -- Uses `desc` attribute of your mapping as label
   { 'folke/which-key.nvim', opts = {} },
@@ -185,6 +209,26 @@ require('lazy').setup({
         map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = 'select git hunk' })
       end,
     },
+  },
+
+  {
+    'cameron-wags/rainbow_csv.nvim',
+    config = true,
+    ft = {
+        'csv',
+        'tsv',
+        'csv_semicolon',
+        'csv_whitespace',
+        'csv_pipe',
+        'rfc_csv',
+        'rfc_semicolon'
+    },
+    cmd = {
+        'RainbowDelim',
+        'RainbowDelimSimple',
+        'RainbowDelimQuoted',
+        'RainbowMultiDelim'
+    }
   },
 
   {
@@ -305,9 +349,10 @@ vim.wo.number = true
 vim.o.mouse = 'a'
 
 -- Sync clipboard between OS and Neovim.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
-vim.o.clipboard = 'unnamedplus'
+-- sync everything to primary clip (middle click)
+-- vim.o.clipboard = 'unnamed'
+-- sync everything to secondary clip (ctrl-shift-v)
+-- vim.o.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.o.breakindent = true

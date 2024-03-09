@@ -135,6 +135,7 @@ DOTCONFIG_DIR="$HOME/.config"
 
 alias archup="gvim $CONFIG_DIR/arch/installation.yaml"
 alias archenvdir="pushd $HOME/Dropbox/env/os/arch"
+alias aliasup="gvim $DOTCONFIG_DIR/alias"
 
 # edit zshrc
 alias zshup="gvim $CONFIG_DIR/zsh/.zshrc"

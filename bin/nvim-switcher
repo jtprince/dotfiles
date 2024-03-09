@@ -3,12 +3,14 @@
 import argparse
 from pathlib import Path
 
-DIRS = {
-    "old": "nvim",
-    "new": "nvim-new",
-    "lazy": "nvim-lazyvim",
-    "kickstart": "nvim-kickstart",
-}
+config_dir = Path.home() / "dotfiles/config"
+
+nvim_dirs = [
+    d for d in config_dir.iterdir() if d.is_dir() and (d.name.startswith("nvim-"))
+]
+
+
+DIRS = {nvim_dir.name.split("-", 1)[0]: nvim_dir.name for nvim_dir in nvim_dirs}
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -21,17 +23,15 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-
 nvim_config_symlink = Path.home() / ".config/nvim"
 
 label_to_path = {
-    label: Path.home() / "dotfiles/config" / dir
-    for label, dir in DIRS.items()
+    label: Path.home() / "dotfiles/config" / dir for label, dir in DIRS.items()
 }
 
 LABELS = {v: k for k, v in DIRS.items()}
 
-if args.choice == 'show':
+if args.choice == "show":
     label = LABELS[nvim_config_symlink.resolve().name]
     print(label)
     exit(0)
@@ -43,4 +43,3 @@ nvim_config_symlink.unlink(missing_ok=True)
 
 print("creating new symlink to", str(real_dir))
 Path(nvim_config_symlink).symlink_to(real_dir)
-

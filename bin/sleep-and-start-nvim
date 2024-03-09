@@ -5,5 +5,14 @@
 # will take on, so waiting a second before launching nvim means nvim will be
 # properly sized.
 
+
+# If we wanted even more context
+# window_title="$TERM nvim $*"
+emptymessage="[New File]"
+
+window_title="$*"
+window_title=${window_title:-$emptymessage}
+
+echo -en "\033]0;🅽 ${window_title}\007"
 sleep 0.05
 nvim "$@"

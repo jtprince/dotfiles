@@ -43,6 +43,7 @@ neovim:
   - code-minimap
   # for gp.nvim chatgpt plugin
   - sox
+  # still trying to get ollama.cpp working since could be much faster?
   - ollama
   - _post_commands:
     - "sudo systemctl enable --now ollama.service"
