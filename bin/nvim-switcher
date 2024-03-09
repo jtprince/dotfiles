@@ -17,7 +17,7 @@ parser.add_argument(
     "choice",
     default="show",
     nargs="?",
-    choices=list(DIRS.keys()),
+    choices=list(DIRS.keys()) + ["show"],
     help="which nvim to use (or show)",
 )
 args = parser.parse_args()

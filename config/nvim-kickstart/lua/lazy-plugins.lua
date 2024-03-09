@@ -46,7 +46,7 @@ require('lazy').setup({
 
     -- require 'kickstart/plugins/mini',
 
-    -- require 'kickstart/plugins/telescope',
+    require 'kickstart/plugins/telescope',
 
     -- require 'kickstart/plugins/todo-comments',
 

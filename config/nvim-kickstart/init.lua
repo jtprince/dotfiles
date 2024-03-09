@@ -1,4 +1,5 @@
 -- TODO:
+-- [ ] fix telescope breakage
 -- [.] break out config into individual files
 --      [ ] get basic functionality running
 --      [ ] clean and tidy things up
