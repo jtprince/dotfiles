@@ -4,6 +4,7 @@
 -- Adds additional commands as well to manage the behavior
 
 return {
+{
   'neovim/nvim-lspconfig',
   config = function()
     -- Switch for controlling whether you want autoformatting.
@@ -71,4 +72,5 @@ return {
       end,
     })
   end,
+}
 }
