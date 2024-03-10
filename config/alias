@@ -132,8 +132,10 @@ alias eixt="exit"
 # edit arch installation file
 CONFIG_DIR="$HOME/dotfiles/config"
 DOTCONFIG_DIR="$HOME/.config"
+ARCH_DIR="$CONFIG_DIR/arch"
 
-alias archup="gvim $CONFIG_DIR/arch/installation.yaml"
+alias archup="gvim $ARCH_DIR/installation.yaml"
+alias archdir="pushd $ARCH_DIR"
 alias archenvdir="pushd $HOME/Dropbox/env/os/arch"
 alias aliasup="gvim $DOTCONFIG_DIR/alias"
 

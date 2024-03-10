@@ -194,11 +194,16 @@ Then logout and log back in.
 Will need to give treesitter time to download all the language syntaxes.
 
 ```
+nvim-switcher current
 nvim
 :PlugInstall
 # exit and then:
 :COQdeps
 :CHADdeps
+
+nvim-switcher kickstart
+nvim
+:PylspInstall python-lsp-ruff
 ```
 
 ## Setup keys

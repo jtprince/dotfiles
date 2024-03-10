@@ -1,10 +1,13 @@
 -- TODO:
--- [ ] fix telescope breakage
--- [.] break out config into individual files
---      [ ] get basic functionality running
+-- [x] fix telescope breakage
+-- [x] break out config into individual files
+--      [x] get basic functionality running
 --      [ ] clean and tidy things up
+--
+-- [ ] get highlight color right
 -- [ ] integrate chatgpt or copilot
 -- [ ] colorscheme switcher
+--    [ ] make vertical lines much lighter in in moonlight scheme
 -- [ ] faster cursor movement
 -- [x] get telescope functions mapped how I like (e.g., ",fs" ",ff", ",fb" etc)
 -- [ ] get all my ftplugins ported over
