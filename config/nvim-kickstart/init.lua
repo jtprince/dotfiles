@@ -4,7 +4,8 @@
 --      [x] get basic functionality running
 --      [ ] clean and tidy things up
 --
--- [ ] get highlight color right
+-- [x] get highlight color right
+-- [x] bring over preferred options from nvim-new
 -- [ ] integrate chatgpt or copilot
 -- [ ] colorscheme switcher
 --    [ ] make vertical lines much lighter in in moonlight scheme

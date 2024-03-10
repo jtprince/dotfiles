@@ -37,9 +37,6 @@ vimp.nnoremap(";", ":")
 -- end)
 
 -- Toggle line numbers
-vimp.nnoremap('<leader>n', function()
-  vim.wo.number = not vim.wo.number
-end)
 
 
 vimp.noremap("s", "h")
@@ -57,13 +54,15 @@ vimp.noremap("D", "<PAGEUP>M")
 vim.keymap.set('n', ',y', '"*y', { noremap = true, silent = true, desc = 'yank to primary clipboard' })
 vim.keymap.set('n', ',Y', '"+y', { noremap = true, silent = true, desc = 'yank to secondary clipboard' })
 vim.api.nvim_set_keymap('n', 'hh', 'gg', { noremap = true, silent = true, desc = 'jump to top of file' })
-vim.api.nvim_set_keymap('n', 'gg', 'G', { noremap = true, silent = true, desc = 'jump to top of file' })
-vim.api.nvim_set_keymap('n', ',m', ':MinimapToggle<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
-vim.api.nvim_set_keymap('n', ',n', ':HopWord<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
+-- vim.api.nvim_set_keymap('n', 'gg', 'G', { noremap = true, silent = true, desc = 'jump to bottom of file' })
+
+vim.api.nvim_set_keymap('n', ',mm', ':MinimapToggle<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
+vimp.nnoremap(',mn', function()
+  vim.wo.number = not vim.wo.number
+end)
+
 
 vim.g.minimap_auto_start = 1
 vim.g.minimap_auto_start_win_enter = 1
 vim.g.minimap_git_colors = 1
 -- vim.g.minimap_width = 2
-
-
