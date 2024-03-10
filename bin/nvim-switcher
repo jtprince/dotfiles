@@ -32,8 +32,13 @@ label_to_path = {
 LABELS = {v: k for k, v in DIRS.items()}
 
 if args.choice == "show":
-    label = LABELS[nvim_config_symlink.resolve().name]
-    print(label)
+    label = LABELS.get(nvim_config_symlink.resolve().name)
+    label = "[symlink not found]" if label is None else label
+    print(f"Current nvim: {label}")
+    print()
+    print("-- choices --")
+    for key in DIRS.keys():
+        print(f"  {key}")
     exit(0)
 
 real_dir = label_to_path[args.choice]

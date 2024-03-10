@@ -1,11 +1,8 @@
 -- TODO:
--- [x] fix telescope breakage
 -- [x] break out config into individual files
 --      [x] get basic functionality running
 --      [ ] clean and tidy things up
 --
--- [x] get highlight color right
--- [x] bring over preferred options from nvim-new
 -- [ ] integrate chatgpt or copilot
 -- [ ] colorscheme switcher
 --    [ ] make vertical lines much lighter in in moonlight scheme
@@ -31,6 +28,11 @@
 --
 -- Set <space> as the leader key
 -- See `:help mapleader`
+--
+-- =========== DONE ===========
+-- [x] get highlight color right
+-- [x] bring over preferred options from nvim-new
+-- [x] fix telescope breakage
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
