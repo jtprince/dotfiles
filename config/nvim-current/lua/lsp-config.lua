@@ -69,9 +69,9 @@ local servers = {
         -- I've left options commented out below if wanted
         -- executable = "<path-to-ruff-bin>",
         -- config = "<path_to_custom_ruff_toml>",
-        -- extendSelect = { "I" },          -- Rules that are additionally used by ruff
+        extendSelect = { "I" }, -- Rules that are additionally used by ruff
         -- extendIgnore = { "C90" },        -- Rules that are additionally ignored by ruff
-        -- format = { "I" },                -- Rules that are marked as fixable by ruff that should be fixed when running textDocument/formatting
+        -- format = { "I" },       -- Rules that are marked as fixable by ruff that should be fixed when running textDocument/formatting
         -- severities = { ["D212"] = "I" }, -- Optional table of rules where a custom severity is desired
         -- unsafeFixes = false,             -- Whether or not to offer unsafe fixes as code actions. Ignored with the "Fix All" action
 
@@ -82,7 +82,7 @@ local servers = {
         -- ignore = { "D210" },                             -- Rules to be ignored by ruff
         -- perFileIgnores = { ["__init__.py"] = "CPY001" }, -- Rules that should be ignored for specific files
         -- preview = false,                                 -- Whether to enable the preview style linting and formatting.
-        -- targetVersion = "py310",                         -- The minimum python version to target (applies for both linting and formatting).
+        targetVersion = "py39", -- The minimum python version to target (applies for both linting and formatting).
       },
     }
   },
