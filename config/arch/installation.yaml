@@ -379,7 +379,7 @@ printing:
   - system-config-printer
   # - hplip
   - _post_commands:
-    - sudo systemctl enable --now avahi-deamon.service
+    - sudo systemctl enable --now avahi-daemon.service
     # Will automatically turn on cups service when applicable ports requested:
     -  sudo systemctl enable --now cups.socket
   - _post_notes:
