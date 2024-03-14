@@ -3,6 +3,7 @@
 --      [x] get basic functionality running
 --      [ ] clean and tidy things up
 --
+-- [ ] add neo-tree
 -- [ ] integrate chatgpt or copilot
 -- [ ] colorscheme switcher
 --    [ ] make vertical lines much lighter in in moonlight scheme

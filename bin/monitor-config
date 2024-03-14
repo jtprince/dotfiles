@@ -27,7 +27,7 @@ MONITORS = {
 
 # Either a width or a monitor key
 WIDTH_TO_SCALE = {
-    MONITORS[LAPTOP]: "1.85",
+    MONITORS[LAPTOP]: "2.0",
     3840: "1.6",
     1920: "1.0",
 }

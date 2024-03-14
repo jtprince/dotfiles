@@ -53,7 +53,7 @@ opt.pumblend      = 25
 opt.winblend      = 25
 
 -- shared data
-opt.shada         = "!,'100,<50,s10,h"
+o.shada           = "!,'100,<50,s10,h"
 
 opt.mousehide     = true               -- hide the mouse when typing text
 opt.mouse         = "a"                -- use your mouse in a terminal
