@@ -1,3 +1,0 @@
-#!/bin/bash
-
-/usr/bin/spotify --ozone-platform=wayland --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations

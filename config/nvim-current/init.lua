@@ -3,6 +3,9 @@
 --      [x] get basic functionality running
 --      [ ] clean and tidy things up
 --
+-- [ ] figure out method to interact with jupyter notebooks
+--    [ ] Magma for jupyter https://github.com/dccsillag/magma-nvim
+--    [ ] jupynium https://github.com/kiyoon/jupynium.nvim
 -- [ ] add neo-tree
 -- [ ] integrate chatgpt or copilot
 -- [ ] colorscheme switcher

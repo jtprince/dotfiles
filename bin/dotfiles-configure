@@ -61,7 +61,7 @@ SOFTLINK_INTO_CONFIG = [
     "npmrc",
     "pulseaudio-ctl",
     "pipewire",
-    "nvim",
+    ## "nvim", # using nvim-switcher for this right now
     "sheldon",
     "mimeapps.list",
     "Xresources.d",
@@ -71,6 +71,7 @@ SOFTLINK_INTO_CONFIG = [
     "ncmpcpp",
     "waybar",
     "tofi",
+    "spotify-flags.conf",
 ]
 
 # Softlink into home dotfile as "$HOME/.{name}"
