@@ -406,7 +406,7 @@ docker:
     - "sudo systemctl enable docker.service"
 secondary-browser:
   - google-chrome
-  - midori
+  - midori-bin
 github:
   - github-cli ## installed very early now
 misc:
