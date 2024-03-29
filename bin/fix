@@ -7,7 +7,7 @@ import sys
 if sys.argv[1:]:
     line = " ".join(sys.argv[1:])
 else:
-    line = subprocess.check_output(["xclip", "-p", "-o"]).decode('8859').strip()
+    line = subprocess.check_output(["xclip", "-p", "-o"]).decode("8859").strip()
 
 
 print("LINE!", line)
@@ -15,18 +15,18 @@ print("LINE!", line)
 remove_prefixes = {"FAILED", "ERROR"}
 for prefix in remove_prefixes:
     if line.startswith(prefix):
-        line = line[len(prefix):].lstrip()
+        line = line[len(prefix) :].lstrip()
 
 if not line:
     raise ValueError("no reasonable file info to work from")
 
 regexs = (  # noqa: W605
-    '^([^\s]+)\s+\d+\s+\d+\s+\d+\%\s+(\d+)-?',  # noqa: W605
-    r'^#\d+ (.*)?\((\d+)\):',
+    "^([^\s]+)\s+\d+\s+\d+\s+\d+\%\s+(\d+)-?",  # noqa: W605
+    r"^#\d+ (.*)?\((\d+)\):",
     r'E?\s*File "(.*)", line (\d+)',
-    r'(.*):(\d+):(\d+):',
-    r'(.*):(\d+):',
-    r'(.*):(\d+)',
+    r"(.*):(\d+):(\d+):",
+    r"(.*):(\d+):",
+    r"(.*):(\d+)",
 )
 
 filename = line.split()[0]
@@ -45,11 +45,9 @@ for regex in regexs:
             colnum = captures[2]
         break
 
-cmd = ["gvim"]
+cmd = ["gvim-server-open"]
 
-file_to_call = filename.split(':')[0]
-file_to_call = file_to_call.replace("/drone/src/blackwidow", "/home/jtprince/dev/blackwidow/blackwidow")
-file_to_call = file_to_call.replace("/thanos", "/home/jtprince/dev/crux-api")
+file_to_call = filename.split(":")[0]
 
 # once we switch top level docker image dir to crux or something else:
 # file_to_call = file_to_call.replace("/crux-api", "/home/jtprince/dev/crux-api")
@@ -61,15 +59,15 @@ if "/" not in file_to_call:
 
 # Sometimes the module path starts with '=='
 if file_to_call.startswith("=="):
-    file_to_call = file_to_call.replace("==", '', 1)
+    file_to_call = file_to_call.replace("==", "", 1)
 
 nvim_cmd = [file_to_call]
 
 if colnum:
     # nvim can't do the call cursor() :(
-    nvim_cmd.extend(["-c", "\":call cursor({}, {})\"".format(linenum, colnum)])
+    nvim_cmd.extend(["-c", '":call cursor({}, {})"'.format(linenum, colnum)])
 elif linenum:
-    nvim_cmd.extend(["-c", "\":{}\"".format(int(linenum))])
+    nvim_cmd.extend(["-c", '":{}"'.format(int(linenum))])
 
 final_cmd = cmd + nvim_cmd
 final_cmd_str = " ".join(final_cmd)

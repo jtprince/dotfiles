@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# For nvr executable
+# yay -S neovim-remote
+nvr --remote "$@"

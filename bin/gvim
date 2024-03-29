@@ -1,5 +1,45 @@
-#!/bin/sh
+#!/bin/bash
 
 # if you change this, you need to change ~/bin/sgvim, too
 # alacritty -e $HOME/bin/sleep-and-start-nvim "$@" &
-kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
+
+server_mode=false
+
+newArgs=()
+
+# Loop through all command-line arguments
+for arg in "$@"; do
+  case "$arg" in
+    -r|--remote-server)
+      # Set server_mode to true if -s or --server is found
+      server_mode=true
+      ;;
+    *)
+      # Add other arguments to the newArgs array
+      newArgs+=("$arg")
+      ;;
+  esac
+done
+
+# Update the argument list to exclude -s or --server
+set -- "${newArgs[@]}"
+
+# echo "SERVER MODE $server_mode"
+# echo "ARGS:"
+# echo "$@"
+
+NVIM_SOCKET="/tmp/nvimsocket"
+
+if [ "$server_mode" = true ]; then
+    # echo "server first line"
+    if [ -S "$NVIM_SOCKET" ]; then
+        # nvr
+        nvr "$@"
+    else
+        # echo "kitty1 !!!!"
+        kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
+    fi
+else
+    # echo "kitty2 !!!!"
+    kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
+fi

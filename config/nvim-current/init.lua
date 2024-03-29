@@ -1,4 +1,5 @@
 -- TODO:
+-- install neotest
 -- [x] break out config into individual files
 --      [x] get basic functionality running
 --      [ ] clean and tidy things up

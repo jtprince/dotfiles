@@ -40,6 +40,7 @@ plymouth:
     - "sudo mkinitcpio -P"
 neovim:
   - ruff
+  - neovim-remote
   - code-minimap
   # for gp.nvim chatgpt plugin
   - sox
@@ -414,6 +415,7 @@ misc:
   - words
   # torrents
   - deluge-gtk
+  - reflector
   # read your bios version (sudo dmidecode -s bios-version)
   - dmidecode
   - _post_commands:

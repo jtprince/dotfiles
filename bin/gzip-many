@@ -2,11 +2,11 @@
 
 require 'optparse'
 
-base = "gunzip"
+base = "gzip"
 
 $KEEP = false
 opts = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename(__FILE__)} [-k] <file>.gz ..."
+  op.banner = "usage: #{File.basename(__FILE__)} [-k] <file> ..."
   op.separator "outputs: <file> ..."
   op.on("-k", "--keep", "keep the originals") {|v| $KEEP = true }
 end
@@ -21,9 +21,9 @@ end
 ARGV.each do |file|
   cmd =
     if $KEEP
-      base + " < #{file} > #{file.chomp(File.extname(file))}"
+      base + " < #{file} > #{file}.gz"
     else
-      base + " " + file
+      base  + " " + file
     end
   reply = `#{cmd}`
   puts reply if reply =~ /\w/
