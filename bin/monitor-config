@@ -3,7 +3,6 @@
 from typing import Dict, Any
 import argparse
 import subprocess
-import re
 import json
 
 MONITOR_LABEL_KEYS = ["make", "model", "serial"]
@@ -14,6 +13,10 @@ LAPTOP = "laptop"
 PHILIPS = "philips"
 HP = "hp"
 THINKPAD = "thinkpad"
+# SAMSUNG = "samsung"
+
+CHOICES = [LAPTOP, PHILIPS, HP]
+# CHOICES = [LAPTOP, PHILIPS, HP, SAMSUNG]
 
 
 MONITORS = {
@@ -23,6 +26,7 @@ MONITORS = {
     LAPTOP: "California Institute of Technology 0x1401 Unknown",
     # other
     THINKPAD: "Chimei Innolux Corporation 0x1409 0x00000000",
+    # SAMSUNG: "Samsung Electric Company SAMSUNG 0x01000E00 (DP-2 via HDMI)",
 }
 
 # Either a width or a monitor key
@@ -87,7 +91,7 @@ def get_args():
         "monitor",
         nargs="?",
         default=LAPTOP,
-        choices=[LAPTOP, PHILIPS, HP],
+        choices=CHOICES,
     )
     parser.add_argument("--list", action="store_true", help="list monitor ids")
     parser.add_argument("--dry", action="store_true", help="dry run")

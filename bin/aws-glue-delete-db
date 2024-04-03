@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+
+
+from typing import Union, Optional
+import re
+import boto3
+from urllib.parse import urlparse
+import argparse
+
+GLUE_CLIENT = boto3.client("glue")
+S3_CLIENT = boto3.client("s3")
+
+
+def list_glue_databases(matcher: Optional[Union[str, re.Pattern]] = None):
+    matching_databases = []
+
+    paginator = GLUE_CLIENT.get_paginator("get_databases")
+
+    if matcher is not None and not isinstance(matcher, re.Pattern):
+        matcher = re.compile(
+            "^" + re.sub(r"(\W)", r"\\\1", matcher).replace("\\*", ".*") + "$"
+        )
+
+    for page in paginator.paginate():
+        for db in page["DatabaseList"]:
+            db_name = db["Name"]
+
+            if matcher is None:
+                matching_databases.append(db_name)
+            else:
+                if matcher.search(db_name):
+                    matching_databases.append(db_name)
+
+    return matching_databases
+
+
+def delete_s3_objects(bucket, prefix, dry: bool = False):
+    objects_to_delete = S3_CLIENT.list_objects_v2(Bucket=bucket, Prefix=prefix)
+
+    if "Contents" in objects_to_delete:
+        delete_keys = [{"Key": obj["Key"]} for obj in objects_to_delete["Contents"]]
+        print("Planning to delete {bucket}/")
+        for key in delete_keys:
+            print(key)
+        if dry:
+            print("[not deleting since dry]")
+        else:
+            S3_CLIENT.delete_objects(Bucket=bucket, Delete={"Objects": delete_keys})
+
+
+def delete_glue_database_and_tables(database_name, dry: bool = False):
+    response = GLUE_CLIENT.get_tables(DatabaseName=database_name)
+    tables = response["TableList"]
+
+    for table in tables:
+        s3_path = table["StorageDescriptor"]["Location"]
+        parsed_url = urlparse(s3_path)
+        bucket = parsed_url.netloc
+        key = parsed_url.path.lstrip("/")
+        delete_s3_objects(bucket, key, dry=dry)
+
+    print(f"Planning to delete {database_name}...", end=" ")
+    if dry:
+        print("[not deleting since dry]")
+    else:
+        response = GLUE_CLIENT.delete_database(Name=database_name)
+        print(f"response: {response}")
+
+
+def _is_glob(value: str):
+    if value is not None:
+        no_chars = re.sub(r"\W+", "", value)
+        if list(set(no_chars)) == ["*"]:
+            return True
+    return False
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "glue_db_names", nargs="*", help="the names of the glue dbs to delete"
+    )
+    parser.add_argument(
+        "--list", nargs="?", const="__called__", help="use a glob or a regex to match"
+    )
+    parser.add_argument(
+        "--dry", action="store_true", help="don't do anything, just pretend"
+    )
+    args = parser.parse_args()
+
+    matcher = args.list
+    if matcher:
+        if matcher == "__called__":
+            matcher = None
+        elif not _is_glob(matcher):
+            matcher = re.compile(matcher)
+
+        databases = list_glue_databases(matcher)
+        for db in databases:
+            print(db)
+        exit(0)
+
+    for db in args.glue_db_names:
+        delete_glue_database_and_tables(database_name=db, dry=args.dry)
