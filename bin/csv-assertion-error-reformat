@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+import sys
+import subprocess
+
+if sys.argv[1:]:
+    line = " ".join(sys.argv[1:])
+else:
+    line = subprocess.check_output(["xclip", "-p", "-o"]).decode("8859").strip()
+
+line = line.strip("'")
+first, second = line.split("' == '")
+
+
+for first_line, other_line in zip(first.split("\\n"), second.split("\\n")):
+    print(first_line)
+    print(other_line)
+    print()
+
+
+__example__ = """
+'ccs,feature_id,im,intensity,isotope_index,max_ms1_intensity,median_ms1_intensity,msrun_id,mz,num_signals,peak_id,rt,spectrum\n229.72564,f_MSB1801_48_ms_dev_jtp_v1,1.02796,22012,1,1030,502.5,MSB1801,114.13655,40,243,368.11855,441\n208.5785,f_MSB1801_135_ms_dev_jtp_v1,1.00496,100255,0,2472,1099.0,MSB1801,377.32749,91,249,377.11906,463\n217.14401,f_MSB1801_201_ms_dev_jtp_v1,1.04882,47448,0,1007,509.0,MSB1801,406.30392,85,254,381.60467,421\n186.039,f_MSB1801_95_ms_dev_jtp_v1,0.89415,184243,0,6187,1832.0,MSB1801,352.14277,87,261,373.89551,568\n241.7451,f_MSB1801_124_ms_dev_jtp_v1,1.10275,120394,0,2211,736.0,MSB1801,141.16551,147,265,377.83066,369\n' == 'ccs,feature_id,im,intensity,isotope_index,max_ms1_intensity,median_ms1_intensity,msrun_id,mz,num_signals,peak_id,rt,spectrum\n208.5785,f_MSB1801_135_ms_dev_jtp_v1,1.00496,100255,0,2472,1099.0,MSB1801,377.32749,91,249,377.11906,463\n217.14401,f_MSB1801_201_ms_dev_jtp_v1,1.04882,47448,0,1007,509.0,MSB1801,406.30392,85,254,381.60467,421\n186.039,f_MSB1801_95_ms_dev_jtp_v1,0.89415,184243,0,6187,1832.0,MSB1801,352.14277,87,261,373.89551,568\n241.7451,f_MSB1801_124_ms_dev_jtp_v1,1.10275,120394,0,2211,736.0,MSB1801,141.16551,147,265,377.83066,369\n209.76109,f_MSB1801_209_ms_dev_jtp_v1,0.99657,45043,0,1887,671.0,MSB1801,267.26752,54,272,383.42825,471\n'
+"""

@@ -50,6 +50,11 @@ vimp.noremap("j", "f")
 vimp.noremap("F", "<PAGEDOWN>M")
 vimp.noremap("D", "<PAGEUP>M")
 
+
+vim.keymap.set('n', ',j', ':bnext<CR>', { noremap = true, silent = true, desc = 'go to next buffer' })
+vim.keymap.set('n', ',k', ':bprev<CR>', { noremap = true, silent = true, desc = 'go to next buffer' })
+vim.keymap.set('n', ',fo', ':Explore<CR>', { noremap = true, silent = true, desc = 'open netrw file explorer' })
+
 -- TODO: make all the keyboard stuff consistent
 vim.keymap.set('n', ',y', '"*y', { noremap = true, silent = true, desc = 'yank to primary clipboard' })
 vim.keymap.set('n', ',Y', '"+y', { noremap = true, silent = true, desc = 'yank to secondary clipboard' })
@@ -59,6 +64,7 @@ vim.api.nvim_set_keymap('n', 'hh', 'gg', { noremap = true, silent = true, desc =
 -- vim.api.nvim_set_keymap('n', 'gg', 'G', { noremap = true, silent = true, desc = 'jump to bottom of file' })
 
 vim.api.nvim_set_keymap('n', ',mm', ':MinimapToggle<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
+
 vimp.nnoremap(',mn', function()
   vim.wo.number = not vim.wo.number
 end)

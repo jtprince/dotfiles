@@ -34,7 +34,7 @@ if [ "$server_mode" = true ]; then
     # echo "server first line"
     if [ -S "$NVIM_SOCKET" ]; then
         # nvr
-        nvr "$@"
+        nvr --remote "$@"
     else
         # echo "kitty1 !!!!"
         kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
