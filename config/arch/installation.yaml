@@ -57,6 +57,7 @@ python:
   - python-black
   - python-isort
   - python-pynvim
+  - python-scipy
   - python-poetry
   - python-poetry-plugin-up
   - python-ipdb

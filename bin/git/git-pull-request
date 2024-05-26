@@ -28,6 +28,6 @@ compare_url = f"{base_url}/compare/{pull_into}...{branch}?expand=1"
 
 print(compare_url)
 
-cmd = ["xdg-open", compare_url]
-
-subprocess.run(cmd)
+if not args.dry:
+    cmd = ["xdg-open", compare_url]
+    subprocess.run(cmd)

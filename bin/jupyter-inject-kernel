@@ -5,19 +5,28 @@ import subprocess
 import os
 from pathlib import Path
 
-parser = argparse.ArgumentParser(description="inject current python into jupyter as a kernel")
+parser = argparse.ArgumentParser(
+    description="inject current python into jupyter as a kernel"
+)
+args = parser.add_argument(
+    "-p",
+    "--poetry",
+    action="store_true",
+    help="install with poetry instead of just pip",
+)
+
 args = parser.parse_args()
 
+try:
+    env = subprocess.check_output("basename $VIRTUAL_ENV", shell=True, text=True)
+except subprocess.CalledProcessError:
+    version_file = Path(".") / ".python-version"
+    if version_file.exists():
+        env = version_file.read_text()
 
-env = os.environ.get("CONDA_DEFAULT_ENV")
-if not env:
-    try:
-        env = subprocess.check_output("basename $VIRTUAL_ENV", shell=True, text=True)
-    except subprocess.CalledProcessError:
-        version_file = Path('.') / '.python-version'
-        if version_file.exists():
-            env = version_file.read_text()
+base_cmd = "pip install"
+if args.poetry:
+    base_cmd = "poetry add"
 
-
-subprocess.run("pip install ipykernel", shell=True)
+subprocess.run(f"{base_cmd} ipykernel", shell=True)
 subprocess.run(f"python -m ipykernel install --user --name={env}", shell=True)

@@ -24,7 +24,8 @@ iab ipt import
 iab ii import
 iab prtin print
 
-noremap ,o <Esc>:w<CR>:!pre-commit run --files %<CR>
+noremap ,O <Esc>:w<CR>:!pre-commit run --files %<CR>
+noremap ,o <Esc>:w<CR>:!ruff check --fix %<CR>
 
 " pylint disable using the X11 buffer (highlight 'E1101-no-member' and it will
 " inject the trailer:  pylint: disable=no-member
