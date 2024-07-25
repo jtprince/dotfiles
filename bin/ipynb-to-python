@@ -3,7 +3,7 @@
 
 if [ "$#" -eq 0 ]
 then
-    echo "ipynb-to-markdown <file>.ipynb ..."
+    echo "ipynb-to-python <file>.ipynb ..."
     exit 1
 fi
 

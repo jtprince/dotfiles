@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# yay -S slack-desktop-wayland
+/usr/bin/slack --disable-gpu-compositing --enable-features=UseOzonePlatform --ozone-platform=wayland --enable-features=WebRTCPipeWireCapturer --enable-features=WaylandWindowDecorations

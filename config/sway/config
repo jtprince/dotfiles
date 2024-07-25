@@ -498,11 +498,11 @@ bindsym $mod+Ctrl+Shift+d exec $noid dragon-drop-latest --screenshot
 
 # ☆ <Favorites> toggles monitor setting
 set $monitor_laptop_cmd monitor-config laptop
-set $monitor_laptop_cmd_integer monitor-config laptop --force-integer
+set $monitor_laptop_cmd_integer monitor-config laptop
 set $monitor_primary1_cmd monitor-config philips
-set $monitor_primary1_cmd_integer monitor-config philips --force-integer
+set $monitor_primary1_cmd_integer monitor-config philips
 # mod+shift and mod+ctrl don't seem to work, so can't really use this :(
-# set $monitor_primary2_cmd_integer monitor-config hp --force-integer
+# set $monitor_primary2_cmd_integer monitor-config hp
 
 # LAPTOP
 bindsym $locked XF86Display exec $noid $monitor_laptop_cmd

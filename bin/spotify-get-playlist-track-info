@@ -4,6 +4,7 @@ import argparse
 import base64
 import requests
 from pathlib import Path
+import re
 
 MY_SPOTIFY_API_DIR = Path.home() / "Dropbox/env/cloud-and-apis/spotify"
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/api/token"
@@ -67,6 +68,17 @@ def extract_tracks(playlist_json):
     return tracks
 
 
+def sanitize_filename(filename):
+    filename = filename.lower()  # Convert to lowercase
+    filename = re.sub(
+        r"[^\w\s-]", "", filename
+    )  # Remove non-alphanumeric characters except underscores and hyphens
+    filename = re.sub(
+        r"[\s-]+", "_", filename
+    )  # Replace spaces and hyphens with underscores
+    return filename
+
+
 def save_tracks_to_file(tracks, file_path):
     with open(file_path, "w") as file:
         file.write("\n".join(tracks))
@@ -75,9 +87,7 @@ def save_tracks_to_file(tracks, file_path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--playlist-id", required=True, help="set the playlist id")
-    parser.add_argument(
-        "--output-file", default="playlist_tracks.txt", help="set the output file"
-    )
+    parser.add_argument("--output-file", help="set the output file")
     args = parser.parse_args()
 
     client_id = read_file(MY_SPOTIFY_API_DIR / "client_id.txt")
@@ -86,7 +96,15 @@ def main():
     access_token = get_auth_token(client_id, client_secret)
     playlist_json = fetch_playlist(args.playlist_id, access_token)
     tracks = extract_tracks(playlist_json)
-    save_tracks_to_file(tracks, args.output_file)
+
+    if args.output_file:
+        output_file = args.output_file
+    else:
+        playlist_name = playlist_json["name"]
+        sanitized_playlist_name = sanitize_filename(playlist_name)
+        output_file = f"{sanitized_playlist_name}.txt"
+
+    save_tracks_to_file(tracks, output_file)
 
 
 if __name__ == "__main__":
