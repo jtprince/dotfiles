@@ -36,7 +36,17 @@ vimp.nnoremap(";", ":")
 --  print('world')
 -- end)
 
--- Toggle line numbers
+-- netrw
+--
+local function set_netrw_keymap(key, action)
+  --   vim.api.nvim_command(string.format('autocmd FileType netrw noremap <buffer> %s %s', key, action))
+  vim.api.nvim_command(string.format('autocmd FileType netrw nmap <buffer> %s %s', key, action))
+end
+
+set_netrw_keymap('d', '<Up>')
+
+
+-- Toggle line numbers ??
 
 
 vimp.noremap("s", "h")

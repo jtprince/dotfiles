@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import subprocess
+import argparse
+import contextlib
+import pathlib
+import os
+from pathlib import Path
+
+
+@contextlib.contextmanager
+def directory_switcher_and_git_checkout(new_dir, git_tag=None):
+    # Store the current working directory
+    original_dir = pathlib.Path.cwd()
+
+    try:
+        os.chdir(new_dir)
+
+        if git_tag:
+            subprocess.run(["git", "checkout", git_tag], check=True)
+
+        yield
+    finally:
+        os.chdir(original_dir)
+
+
+adducter_dir = Path.home() / "enveda" / "adduct-parsimony-cpp"
+bin_path = adducter_dir / "cpp" / "de_adduct"
+
+parser = argparse.ArgumentParser()
+parser.add_argument("git_tag", help="the git tag of the version you want")
+parser.add_argument(
+    "--dir", type=Path, default=adducter_dir, help="the git tag of the version you want"
+)
+args = parser.parse_args()
+
+bin_path.unlink(missing_ok=True)
+assert not bin_path.exists()
+
+with directory_switcher_and_git_checkout(adducter_dir, args.git_tag):
+    subprocess.run(["git", "branch"])
+    subprocess.run("./compile_ubuntu.sh")
+    subprocess.run(["git", "branch"])
+
+assert bin_path.exists()

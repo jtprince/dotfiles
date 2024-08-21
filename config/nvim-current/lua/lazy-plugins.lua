@@ -26,6 +26,21 @@ require('lazy').setup({
         -- better lua experience
         { "folke/neodev.nvim", opts = {} },
 
+
+        {
+            'rmagatti/auto-session',
+            lazy = false,
+            dependencies = {
+                'nvim-telescope/telescope.nvim',
+            },
+            config = function()
+                require('auto-session').setup({
+                    auto_session_suppress_dirs = { '~/', '~/tmp', '~/Downloads', '/' },
+                })
+            end,
+        },
+
+
         -- "gc" to comment visual regions/lines
         {
             'numToStr/Comment.nvim',
