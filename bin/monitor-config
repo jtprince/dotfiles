@@ -9,24 +9,20 @@ MONITOR_LABEL_KEYS = ["make", "model", "serial"]
 _CONFIG_FMT_STR = "enable scale {scale} pos 0 0"
 
 LAPTOP = "laptop"
-# DELL = "dell"
 PHILIPS = "philips"
 HP = "hp"
 THINKPAD = "thinkpad"
-# SAMSUNG = "samsung"
+WORK_DELL = "workdell"
 
-CHOICES = [LAPTOP, PHILIPS, HP]
-# CHOICES = [LAPTOP, PHILIPS, HP, SAMSUNG]
+CHOICES = [LAPTOP, PHILIPS, HP, WORK_DELL]
 
 
 MONITORS = {
     PHILIPS: "Philips Consumer Electronics Company PHL 278E1 0x00001684",
-    # DELL: "Dell Inc. DELL S2721QS CB64M43",
     HP: "HP Inc. HP VH240a 6CM83029MD",
     LAPTOP: "California Institute of Technology 0x1401 Unknown",
-    # other
     THINKPAD: "Chimei Innolux Corporation 0x1409 0x00000000",
-    # SAMSUNG: "Samsung Electric Company SAMSUNG 0x01000E00 (DP-2 via HDMI)",
+    WORK_DELL: "Dell Inc. DELL U2722DE 967T7P3",
 }
 
 # Either a width or a monitor key
@@ -34,6 +30,7 @@ WIDTH_TO_SCALE = {
     MONITORS[LAPTOP]: "2.0",
     3840: "1.6",
     1920: "1.0",
+    2560: "1.2",
 }
 
 

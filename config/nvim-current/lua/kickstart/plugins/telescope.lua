@@ -56,10 +56,18 @@ return {
           mappings = {
             i = {
               ['<C-u>'] = false,
-              ['<C-d>'] = false,
             },
           },
         },
+        -- I want to do something like this to delete buffers in telescope buffers
+        -- But this is not right (breaking!)
+        -- pickers = {
+        --   buffers = {
+        --     mappings = {
+        --       ['<c-d>'] = require('telescope.actions').delete_buffer
+        --     }
+        --   }
+        -- },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -86,7 +94,7 @@ return {
 
         -- Find the Git root directory from the current file's path
         local git_root = vim.fn.systemlist('git -C ' .. vim.fn.escape(current_dir, ' ') .. ' rev-parse --show-toplevel')
-        [1]
+            [1]
         if vim.v.shell_error ~= 0 then
           print 'Not a git repository. Searching on current working directory'
           return cwd

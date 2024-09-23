@@ -68,8 +68,8 @@ vim.keymap.set('n', ',fo', ':Explore<CR>', { noremap = true, silent = true, desc
 -- TODO: make all the keyboard stuff consistent
 vim.keymap.set('n', ',y', '"*y', { noremap = true, silent = true, desc = 'yank to primary clipboard' })
 vim.keymap.set('n', ',Y', '"+y', { noremap = true, silent = true, desc = 'yank to secondary clipboard' })
-vim.keymap.set('n', '<leader>y', '"*y', { noremap = true, silent = true, desc = 'yank to primary clipboard' })
-vim.keymap.set('n', '<leader>Y', '"+y', { noremap = true, silent = true, desc = 'yank to secondary clipboard' })
+vim.keymap.set('n', ',p', '"*p', { noremap = true, silent = true, desc = 'paste from primary clipboard' })
+vim.keymap.set('n', ',P', '"+p', { noremap = true, silent = true, desc = 'paste from secondary clipboard' })
 vim.api.nvim_set_keymap('n', 'hh', 'gg', { noremap = true, silent = true, desc = 'jump to top of file' })
 -- vim.api.nvim_set_keymap('n', 'gg', 'G', { noremap = true, silent = true, desc = 'jump to bottom of file' })
 

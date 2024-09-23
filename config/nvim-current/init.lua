@@ -4,6 +4,8 @@
 --      [x] get basic functionality running
 --      [ ] clean and tidy things up
 --
+-- [ ] get something that shows all shortcuts working
+-- [ ] add in treesj ?
 -- [ ] figure out method to interact with jupyter notebooks
 --    [ ] Magma for jupyter https://github.com/dccsillag/magma-nvim
 --    [ ] jupynium https://github.com/kiyoon/jupynium.nvim

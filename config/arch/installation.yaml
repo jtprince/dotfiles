@@ -279,7 +279,7 @@ configure-backlight:
 sad:
   - sad
 file-utils:
-  - mlocate
+  - plocate
   - pkgfile
   # for paccache
   - pacman-contrib

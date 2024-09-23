@@ -559,8 +559,9 @@ bindsym $mod+Ctrl+Shift+H exec $noid systemctl hibernate
 bindsym XF86Sleep exec $noid suspend-with-screenlock
 
 # Allows us to re-sleep the laptop if lock screen is up
-bindsym --locked $mod+Ctrl+Shift+O exec systemctl suspend
+bindsym --locked $mod+Ctrl+Shift+O exec $noid systemctl suspend
 
+bindsym $mod+Ctrl+Shift+XF86Calculator exec $noid king-james-grab-text
 
 # Scratchpad:
 

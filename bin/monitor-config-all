@@ -4,11 +4,13 @@ import json
 import argparse
 import subprocess
 
+DEFAULT_SCALE = 1.6
+
 # The ID is made by joining "make", "model", and "serial"
 LAPTOP_ID = "California Institute of Technology 0x1401 Unknown"
 SCALING = dict(
     laptop=2.0,
-    other=1.6,
+    other=DEFAULT_SCALE,
 )
 DEFAULT_RESOLUTION = "3840x2160"
 EXTRAS_SETTINGS = ["adaptive_sync", "on"]
@@ -18,12 +20,12 @@ _ID_KEYS = ["make", "model", "serial"]
 _SWAYMSG_OUTPUT = ["swaymsg", "output"]
 
 
-def setup_monitors(params):
+def setup_monitors(params, scaling):
     monitors = _get_monitors()
     name_to_id = get_name_to_id(monitors)
 
     names = list(name_to_id.keys())
-    scalings = [SCALING[key] for key in ["laptop", "other"]]
+    scalings = [scaling[key] for key in ["laptop", "other"]]
     position_ys = [params.laptop_y_offset, 0]
 
     if params.laptop_position == "right":
@@ -59,6 +61,13 @@ def _get_args():
         type=int,
         help="vertical bump up of the laptop",
     )
+    parser.add_argument(
+        "--main-scale",
+        default=1.6,
+        type=float,
+        help="the scaling factor for the main monitor",
+    )
+
     return parser.parse_args()
 
 
@@ -101,4 +110,6 @@ def _get_enable_and_output_cmds(name, scale, position_x, position_y):
 
 if __name__ == "__main__":
     args = _get_args()
-    setup_monitors(args)
+    scaling = {**SCALING}
+    scaling["other"] = args.main_scale
+    setup_monitors(args, scaling)
