@@ -45,7 +45,7 @@ for regex in regexs:
             colnum = captures[2]
         break
 
-cmd = ["gvim-server-open"]
+cmd = ["gvim"]
 
 file_to_call = filename.split(":")[0]
 
