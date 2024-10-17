@@ -27,16 +27,30 @@ return {
 
       local function delete_buffer_and_refresh(prompt_bufnr)
         local current_picker = action_state.get_current_picker(prompt_bufnr)
+        if not current_picker then
+          print("No active picker to close")
+          return
+        end
+
         local selected_buf = action_state.get_selected_entry()
 
-        -- Close the selected buffer
+        -- Close selected buffer
         vim.api.nvim_buf_delete(selected_buf.bufnr, { force = false })
 
-        -- Close the current picker
+        -- Close current picker
         actions.close(prompt_bufnr)
 
-        -- Reopen the buffer picker to refresh the list
+        -- Reopen buffer picker to refresh the list
         require('telescope.builtin').buffers()
+      end
+
+      local function safe_close(prompt_bufnr)
+        local picker = action_state.get_current_picker(prompt_bufnr)
+        if picker then
+          actions.close(prompt_bufnr)
+        else
+          print("Picker is nil, cannot close.")
+        end
       end
 
       require('telescope').setup {
@@ -85,8 +99,40 @@ return {
               i = {
                 ['<C-d>'] = delete_buffer_and_refresh,
               },
+              -- "normal" mode (access with <Esc>, navigate with jk, etc)
               n = {
-                ['<C-d>'] = delete_buffer_and_refresh,
+                ['dd'] = delete_buffer_and_refresh,
+
+                -- Use <Space> to toggle buffer selection (mark/unmark)
+                ['<Space>'] = actions.toggle_selection + actions.move_selection_worse,
+
+                -- Open the selected buffer in a vertical split
+                ['v'] = function(prompt_bufnr)
+                  local selected_buf = action_state.get_selected_entry()
+                  if not selected_buf then
+                    print("No buffer selected")
+                    return
+                  end
+
+                  -- Open the buffer in a vertical split
+                  vim.cmd('vsplit | buffer ' .. selected_buf.bufnr)
+                  -- Close the picker
+                  safe_close(prompt_bufnr)
+                end,
+
+                -- Open the selected buffer in a horizontal split
+                ['s'] = function(prompt_bufnr)
+                  local selected_buf = action_state.get_selected_entry()
+                  if not selected_buf then
+                    print("No buffer selected")
+                    return
+                  end
+
+                  -- Open the buffer in a horizontal split
+                  vim.cmd('split | buffer ' .. selected_buf.bufnr)
+                  -- Close the picker
+                  safe_close(prompt_bufnr)
+                end,
               },
             }
           }
