@@ -78,9 +78,6 @@ vim.api.nvim_set_keymap('n', ',b', '<Cmd>lua require\'dap\'.toggle_breakpoint()<
   { noremap = true, silent = true })
 
 
-vim.api.nvim_set_keymap('n', ',v', "<cmd>lua require('visidata').visualize_pandas_df()<CR>",
-  { noremap = true, silent = true })
-
 vimp.nnoremap(',mn', function()
   vim.wo.number = not vim.wo.number
 end)
