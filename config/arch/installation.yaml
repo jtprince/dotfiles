@@ -46,6 +46,8 @@ neovim:
   - sox
   # still trying to get ollama.cpp working since could be much faster?
   - ollama
+  # for better debugger
+  - lldb
   - _post_commands:
     - "sudo systemctl enable --now ollama.service"
 python:

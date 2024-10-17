@@ -34,11 +34,11 @@ noremap ,o <Esc>:w<CR>:!ruff check --fix %<CR>
 " The movement down one line (with left hand navigation) assumes that an import line was added
 " noremap <leader>i <Esc>mw:PymodeRopeAutoImport<Enter>1<Enter><Esc>:Isort<Enter>`wf
 
-noremap <leader>b <Esc>:Black<CR>
+" noremap <leader>b <Esc>:Black<CR>
 
 " insert breakpoint above the current line and position cursor at start of
 " breakpoint
-noremap ,B Obreakpoint()<Esc>0w
+" noremap ,B Obreakpoint()<Esc>0w
 
 " hop to next/prev class or def
 nnoremap ]] /^\s*class\|^\s*def<CR>

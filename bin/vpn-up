@@ -15,34 +15,17 @@ DROPBOX = Path.home() / "Dropbox"
 PRIVADO = DROPBOX / "env/cloud-and-apis/privado"
 OVPN_DIR = PRIVADO / "ovpn_configs"
 
-preferred_prefixe_file = PRIVADO / "preferred_prefixes.txt"
 
-lines = preferred_prefixe_file.read_text().strip().split("\n")
-prefixes = [line.split()[0] for line in lines]
+# Get all configs in OVPN_DIR (using pathlib stuff preferably)
+config_files = list(OVPN_DIR.glob("*.ovpn"))
 
-prefix_to_rank = {prefix: prefixes.index(prefix) for prefix in prefixes}
-
-config_files = [file for file in OVPN_DIR.glob("*") if file.is_file()]
+if not config_files:
+    raise FileNotFoundError(f"No .ovpn files found in {OVPN_DIR}!")
 
 
-def _prefix(file: Path) -> str:
-    return file.name.split("-")[0]
+config_file = random.choice(config_files)
 
-
-config_files = [file for file in config_files if _prefix(file) in prefix_to_rank]
-
-
-sorted_configs = sorted(config_files, key=lambda file: prefix_to_rank[_prefix(file)])
-
-sorted_configs = [file for file in sorted_configs if "default" in file.name.split(".")]
-
-final_list = []
-for prefix, group in groupby(sorted_configs, key=lambda file: _prefix(file)):
-    group = list(group)
-    random.shuffle(group)
-    final_list.extend(group)
-
-cmd = ["sudo", "openvpn", "--config", str(final_list[0])]
+cmd = ["sudo", "openvpn", "--config", str(config_file)]
 
 print(" ".join(cmd))
 if not args.dry:

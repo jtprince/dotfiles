@@ -40,7 +40,6 @@ require('lazy').setup({
             end,
         },
 
-
         -- "gc" to comment visual regions/lines
         {
             'numToStr/Comment.nvim',
@@ -117,11 +116,13 @@ require('lazy').setup({
 
         require 'kickstart/plugins/treesitter',
 
+        require 'kickstart/plugins/debug',
+
         require 'kickstart/plugins/lsp',
         -- require 'kickstart/plugins/which-key',
 
-        -- require 'kickstart.plugins.debug',
         -- require 'kickstart.plugins.indent_line',
+
     },
 
     {

@@ -74,6 +74,12 @@ vim.api.nvim_set_keymap('n', 'hh', 'gg', { noremap = true, silent = true, desc =
 -- vim.api.nvim_set_keymap('n', 'gg', 'G', { noremap = true, silent = true, desc = 'jump to bottom of file' })
 
 vim.api.nvim_set_keymap('n', ',mm', ':MinimapToggle<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
+vim.api.nvim_set_keymap('n', ',b', '<Cmd>lua require\'dap\'.toggle_breakpoint()<CR>',
+  { noremap = true, silent = true })
+
+
+vim.api.nvim_set_keymap('n', ',v', "<cmd>lua require('visidata').visualize_pandas_df()<CR>",
+  { noremap = true, silent = true })
 
 vimp.nnoremap(',mn', function()
   vim.wo.number = not vim.wo.number
