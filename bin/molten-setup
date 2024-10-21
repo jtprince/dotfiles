@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pip install pynvim
+pip install ipykernel
+pip install jupyter_client

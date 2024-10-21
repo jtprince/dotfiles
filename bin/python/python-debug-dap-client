@@ -1,0 +1,27 @@
+#!/bin/bash
+
+DEBUG_PORT=5678
+
+# Function to echo to stderr
+function echo_stderr {
+    echo "$@" >&2
+}
+
+# Function to display help messages
+function print_help {
+    echo_stderr "[Debugging on port $DEBUG_PORT]"
+    echo_stderr "Keybindings (check if Fn is enabled):"
+    echo_stderr "  F6  to start debugging"
+    echo_stderr "  F7  toggle UI"
+    echo_stderr "  F1  step over (n)"
+    echo_stderr "  F2  step into (s)"
+    echo_stderr "  F3  step out (r)"
+}
+
+# Print help messages if no arguments are provided
+if [ $# -eq 0 ]; then
+    print_help
+fi
+
+# Start the Python debugger on the specified port
+python -m debugpy --listen $DEBUG_PORT --wait-for-client "$@"

@@ -48,7 +48,6 @@ set_netrw_keymap('d', '<Up>')
 
 -- Toggle line numbers ??
 
-
 vimp.noremap("s", "h")
 vimp.noremap("g", "l")
 vimp.noremap("d", "k")
@@ -76,6 +75,13 @@ vim.api.nvim_set_keymap('n', 'hh', 'gg', { noremap = true, silent = true, desc =
 vim.api.nvim_set_keymap('n', ',mm', ':MinimapToggle<CR>', { noremap = true, silent = true, desc = 'Toggle Minimap' })
 vim.api.nvim_set_keymap('n', ',b', '<Cmd>lua require\'dap\'.toggle_breakpoint()<CR>',
   { noremap = true, silent = true })
+
+
+-- Easy window navigation with <C-h>, <C-j>, <C-k>, <C-l>
+vim.api.nvim_set_keymap('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-j>', '<C-w>j', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
 
 
 vimp.nnoremap(',mn', function()

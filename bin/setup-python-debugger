@@ -1,0 +1,5 @@
+#!/bin/bash
+# set up neovim-dap debugger prereqs (and related) that I'm using
+
+pip install debugpy
+pip install visidata

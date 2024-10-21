@@ -114,9 +114,7 @@ return {
                     return
                   end
 
-                  -- Open the buffer in a vertical split
                   vim.cmd('vsplit | buffer ' .. selected_buf.bufnr)
-                  -- Close the picker
                   safe_close(prompt_bufnr)
                 end,
 
@@ -128,9 +126,7 @@ return {
                     return
                   end
 
-                  -- Open the buffer in a horizontal split
                   vim.cmd('split | buffer ' .. selected_buf.bufnr)
-                  -- Close the picker
                   safe_close(prompt_bufnr)
                 end,
               },

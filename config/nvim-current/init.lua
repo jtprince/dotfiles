@@ -41,8 +41,8 @@
 -- [x] bring over preferred options from nvim-new
 -- [x] fix telescope breakage
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.mapleader = ','
+vim.g.maplocalleader = ','
 
 require 'lazy-bootstrap'
 
