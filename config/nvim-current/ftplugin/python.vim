@@ -38,7 +38,7 @@ noremap ,o <Esc>:w<CR>:!ruff check --fix %<CR>
 
 " insert breakpoint above the current line and position cursor at start of
 " breakpoint
-" noremap ,B Obreakpoint()<Esc>0w
+noremap ,B Obreakpoint()<Esc>0w
 
 " hop to next/prev class or def
 nnoremap ]] /^\s*class\|^\s*def<CR>

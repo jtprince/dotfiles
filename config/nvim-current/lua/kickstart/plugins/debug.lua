@@ -33,8 +33,9 @@ local function setup_debug_keymaps(dap, dapui)
   keymap('n', '<F2>', dap.step_into, { desc = 'Step Into' })
   keymap('n', '<F3>', dap.step_out, { desc = 'Step Out' })
   keymap('n', ',b', dap.toggle_breakpoint, { desc = 'Toggle Breakpoint' })
-  keymap('n', ',B', function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end,
-    { desc = 'Set Conditional Breakpoint' })
+  -- Currently using ,B in python plugins to add breakpoint for ipython debgugging
+  -- keymap('n', ',B', function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end,
+     -- { desc = 'Set Conditional Breakpoint' })
   keymap('n', '<F7>', dapui.toggle, { desc = 'Toggle DAP UI' })
   keymap('n', '<F6>', function()
     dap.run({

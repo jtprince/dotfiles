@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+
+import sys
+import re
+from pathlib import Path
+import argparse
+
+touched_files_cmd = "strace -e trace=open,openat -f -o touched.log <cmd> <args> ..."
+all_files_cmd = "find tests -type f > all.log"
+
+
+def parse_strace_output(strace_lines):
+    # Regular expression to capture system call details
+    pattern = re.compile(r'(\d+)\s+openat\(.*?,\s*"([^"]+)",\s*([^)]*)\)\s*=\s*(\d+)')
+
+    parsed_data = []
+
+    for line in strace_lines:
+        match = pattern.match(line)
+        if match:
+            pid = match.group(1)  # Process ID
+            file_path = match.group(2)  # File path
+            flags = match.group(3)  # Flags used in the openat call
+            fd = match.group(4)  # File descriptor returned by openat
+
+            parsed_data.append(
+                {"pid": pid, "file_path": file_path, "flags": flags, "fd": fd}
+            )
+
+    return parsed_data
+
+
+def get_subfiles(base_path, absolute_paths):
+    subfiles = []
+    for abs_path in absolute_paths:
+        path = Path(abs_path)
+        if path.is_relative_to(base_path):
+            subfiles.append(path)
+    return subfiles
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "touched", type=Path, help=f"file produced with: {touched_files_cmd}"
+)
+parser.add_argument("all", type=Path, help=f"all files, made with: {all_files_cmd}")
+parser.add_argument(
+    "--dir", type=Path, default=".", help=f"the directory all mods have to be under"
+)
+args = parser.parse_args()
+
+dir = args.dir.resolve()
+
+touched_file_data = parse_strace_output(args.touched.read_text().split("\n"))
+
+touched_paths = list(set([Path(data["file_path"]) for data in touched_file_data]))
+touched_paths = get_subfiles(dir, touched_paths)
+touched_paths = [str(path) for path in touched_paths]
+
+
+all_paths = args.all.read_text().split("\n")
+all_paths = [str(Path(path).resolve()) for path in all_paths]
+
+untouched_paths = list(sorted(set(all_paths) - set(touched_paths)))
+
+print(f"UNTOUCHED ({len(untouched_paths)}):", file=sys.stderr)
+for path in untouched_paths:
+    print(path)
