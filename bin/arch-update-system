@@ -16,6 +16,8 @@ echo "[UPDATING NOW]"
 PIP_REQUIRE_VIRTUALENV=false /usr/bin/paru
 echo "[UPDATING DONE]"
 
+arch-reboot-needed
+
 echo ""
 echo "[Setting python back to '$current_python']"
 pyenv global "$current_python"

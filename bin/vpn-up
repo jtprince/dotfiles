@@ -24,6 +24,11 @@ if not config_files:
 
 
 config_file = random.choice(config_files)
+print(f"USING: {config_file}")
+
+print()
+subprocess.run(["cat", str(PRIVADO / "login.txt")])
+print()
 
 cmd = ["sudo", "openvpn", "--config", str(config_file)]
 
