@@ -1,29 +1,33 @@
 #!/bin/bash
 
-DEBUG_PORT=5678
+debug_port=5678
 
-# Function to echo to stderr
+# function to echo to stderr
 function echo_stderr {
     echo "$@" >&2
 }
 
 function print_usage {
-    echo_stderr "[Debugging on port $DEBUG_PORT]"
-    echo_stderr "Keybindings (check if Fn is enabled) (pdb equiv in parens):"
-    echo_stderr "  F6  to start debugging"
-    echo_stderr "  F7  toggle UI"
-    echo_stderr "  F1  step over (n)"
-    echo_stderr "  F2  step into (s)"
-    echo_stderr "  F3  step out (r)"
-    echo_stderr "  F5  continue (c)"
+    echo_stderr "[debugging on port $debug_port]"
+    echo_stderr "keybindings (check if fn is enabled) (pdb equiv in parens):"
+    echo_stderr "  f6  to start debugging"
+    echo_stderr "  f7  toggle ui"
+    echo_stderr "  f1  step over (n)"
+    echo_stderr "  f2  step into (s)"
+    echo_stderr "  f3  step out (r)"
+    echo_stderr "  f5  continue (c)"
 }
 
 if [ $# -eq 0 ]; then
-    echo_stderr "!! Need an arg !!"
+    echo_stderr "!! need an arg !!"
     echo_stderr "(hint) run this for more info:"
-    echo_stderr "python -m debugpy --listen $DEBUG_PORT --wait-for-client "$@""
+    echo_stderr "python -m debugpy --listen $debug_port --wait-for-client \"$@\""
     exit 0
 fi
 
 print_usage
-python -m debugpy --listen $DEBUG_PORT --wait-for-client "$@"
+
+python -m debugpy --listen $debug_port --wait-for-client "$@"
+if [ $? -ne 0 ]; then
+    echo_stderr "(HINT: pip install debugpy)"
+fi

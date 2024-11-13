@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $(basename "$0") <file1.parquet> [file2.parquet] ..."
+  echo "Opens each tabular file in a separate kitty window using VisiData."
+  echo "(not just parquet)"
+  exit 1
+fi
+
+# Loop through all provided files and open each in a new Kitty window
+for file in "$@"; do
+    kitty --title "visidata: $file" -e visidata "$file" &
+done

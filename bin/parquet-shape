@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import pandas as pd
+
+parser = argparse.ArgumentParser(
+    description="prints filename and shape of each dataframe"
+)
+parser.add_argument("parquet_files", type=Path, nargs="+")
+args = parser.parse_args()
+
+for path in args.parquet_files:
+    df = pd.read_parquet(path)
+    print(f"{str(path)}:", df.shape)
