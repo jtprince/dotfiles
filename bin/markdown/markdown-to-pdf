@@ -8,8 +8,8 @@ tex_header = "#{templates_dir}/head.tex"
 # --smart gets me proper curly quotes and apostrophes!
 # but they will not look right unless --standalone is also used
 
-# default_options = "-f markdown+smart --standalone -H #{tex_header} -V geometry:margin=1.25in -V fontsize=12pt --variable urlcolor=NavyBlue --pdf-engine=xelatex "
-default_options = "-f markdown+smart --standalone -H #{tex_header} -V geometry:margin=1.25in -V fontsize=12pt --variable urlcolor=NavyBlue --pdf-engine=xelatex --toc --toc-depth=2 --verbose"
+default_options = "-f markdown+smart --standalone -H #{tex_header} -V geometry:margin=1.25in -V fontsize=12pt --variable urlcolor=NavyBlue --pdf-engine=xelatex"
+# default_options = "-f markdown+smart --standalone -H #{tex_header} -V geometry:margin=1.25in -V fontsize=12pt --variable urlcolor=NavyBlue --pdf-engine=xelatex --toc --toc-depth=2 --verbose"
 
 
 #

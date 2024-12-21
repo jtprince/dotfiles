@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-REMOTE_PREFIX = "remotes/origin"
 
-
-from collections import defaultdict
 import argparse
 import re
 import subprocess
+from collections import defaultdict
+
+REMOTE_PREFIX = "remotes/origin"
 
 
 DEFAULT_MAIN_BRANCH = subprocess.check_output(["git-main-branch"], text=True).strip()
@@ -75,7 +75,7 @@ branch_name_groups = group_by(lambda branch_: branch_.split("/")[-1], branches)
 
 
 deleted = 0
-for branch_name, branches in branch_name_groups.items():
+for _branch_name, branches in branch_name_groups.items():
     if (len(branches) == 1) and (not is_remote(branches[0])):
         deleted += 1
         branch_ = branches[0]
@@ -89,9 +89,7 @@ for branch_name, branches in branch_name_groups.items():
             # if it is not merged, then we'll force delete IFF equivalent to
             # remote master
             remote = f"origin/{args.main_branch}"
-            response = run(
-                f"git diff {remote}", print_cmd=True, print_response=True
-            )
+            response = run(f"git diff {remote}", print_cmd=True, print_response=True)
             if not response:
                 print(f"No difference between local branch and {remote}")
                 print("So, going to force delete local branch")

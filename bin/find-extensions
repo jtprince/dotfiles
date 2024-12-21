@@ -1,6 +1,77 @@
 #!/bin/bash
 
-# without counts:
-# find . -type f -name '*.*' | sed 's|.*\.||' | sort -u
+show_help() {
+    echo "Usage: find-extensions [DEPTH]"
+    echo
+    echo "List file extensions and their counts within a directory hierarchy."
+    echo
+    echo "Arguments:"
+    echo "  DEPTH   An integer specifying the maximum directory depth to traverse."
+    echo "          - '0': Analyze all files recursively from the current directory."
+    echo "          - '1': Summarize extensions for each directory in the current directory recursively."
+    echo "          - 'N': Summarize extensions for directories up to depth N recursively."
+    echo
+    echo "Options:"
+    echo "  -h, --help   Show this help message and exit."
+}
 
-find . -type f -name '*.*' | sed 's|.*\.||' | sort | uniq -c | sort -nr
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+    exit 0
+fi
+
+# Set depth
+DEPTH="${1:-0}"
+
+# Validate depth is a non-negative integer
+if ! [[ "$DEPTH" =~ ^[0-9]+$ ]]; then
+    echo "Error: Depth must be a non-negative integer." >&2
+    exit 1
+fi
+
+# Function to summarize extensions for a given directory
+summarize_extensions() {
+    local dir="$1"
+    find "$dir" -type f -name '*.*' | \
+        sed 's|.*\.||' | \
+        sort | \
+        uniq -c | \
+        sort -nr
+}
+
+# Recursive function to summarize directories up to a specified depth
+summarize_directories() {
+    local base_dir="$1"
+    local remaining_depth="$2"
+
+    # Summarize current directory
+    echo "Summary for directory: ${base_dir}"
+    summarize_extensions "$base_dir"
+    echo
+
+    # Recurse into subdirectories if depth allows
+    if [[ "$remaining_depth" -gt 0 ]]; then
+        for subdir in "$base_dir"*/; do
+            if [[ -d "$subdir" ]]; then
+                summarize_directories "$subdir" $((remaining_depth - 1))
+            fi
+        done
+    fi
+}
+
+# Main logic
+if [[ "$DEPTH" -eq 0 ]]; then
+    # Original behavior: Summarize for the entire hierarchy
+    find . -type f -name '*.*' | sed 's|.*\.||' | sort | uniq -c | sort -nr
+else
+    # Summarize directories up to the specified depth
+    summarize_directories "./" "$DEPTH"
+fi
+
+
+# #!/bin/bash
+#
+# # without counts:
+# # find . -type f -name '*.*' | sed 's|.*\.||' | sort -u
+#
+# find . -type f -name '*.*' | sed 's|.*\.||' | sort | uniq -c | sort -nr

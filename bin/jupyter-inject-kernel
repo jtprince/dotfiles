@@ -2,8 +2,12 @@
 
 import argparse
 import subprocess
-import os
 from pathlib import Path
+
+
+def install_kernel(name):
+    subprocess.run(f"python -m ipykernel install --user --name={name}", shell=True)
+
 
 parser = argparse.ArgumentParser(
     description="inject current python into jupyter as a kernel"
@@ -14,6 +18,13 @@ args = parser.add_argument(
     action="store_true",
     help="install with poetry instead of just pip",
 )
+args = parser.add_argument(
+    "-k",
+    "--kernel",
+    action="store_true",
+    help="just install the kernel (assumes deps installed already)",
+)
+
 
 args = parser.parse_args()
 
@@ -28,5 +39,9 @@ base_cmd = "pip install"
 if args.poetry:
     base_cmd = "poetry add"
 
+if args.kernel:
+    install_kernel(env)
+    exit(0)
+
 subprocess.run(f"{base_cmd} ipykernel", shell=True)
-subprocess.run(f"python -m ipykernel install --user --name={env}", shell=True)
+install_kernel(env)
