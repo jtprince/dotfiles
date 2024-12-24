@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 
-import awswrangler as awr
 import argparse
+
+import awswrangler as awr
 
 parser = argparse.ArgumentParser()
 parser.add_argument("db_name", nargs="+", help="the athena db name")
+parser.add_argument("--shape", action="store_true", help="just print shape")
 args = parser.parse_args()
 
 for db_name in args.db_name:
     print()
     print(db_name)
-    df = awr.athena.read_sql_table(
-        "run", database=db_name, ctas_approach=True
-    )
+    df = awr.athena.read_sql_table("run", database=db_name, ctas_approach=True)
+    if args.shape:
+        print(df.shape)
+        continue
+
     print(df)
