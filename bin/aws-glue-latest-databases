@@ -1,0 +1,3 @@
+#!/bin/bash
+
+aws glue get-databases --query 'DatabaseList | sort_by(@, &CreateTime)[*].[Name,CreateTime]' --output table

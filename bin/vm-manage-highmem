@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+# manage_vm.sh - Simple script to manage an Azure VM on Arch Linux using Azure CLI.
+#
+
+RESOURCE_GROUP="data-science-dev-ncus-rg-01"
+# VM_NAME="johnprince-dev"
+VM_NAME="johnprince-highmem"
+
+
+# You can log in interactively (az login) or via a service principal.
+# az login
+
+case "$1" in
+  start)
+    echo "Starting VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    az vm start --resource-group "$RESOURCE_GROUP" --name "$VM_NAME"
+    ;;
+  stop)
+    echo "Stopping (but not deallocating) VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    az vm stop --resource-group "$RESOURCE_GROUP" --name "$VM_NAME"
+    ;;
+  deallocate)
+    echo "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
+    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME"
+    ;;
+  ssh)
+    echo "SSH into VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    # --prefer-private-ip used as per your example
+    az ssh vm -g "$RESOURCE_GROUP" -n "$VM_NAME" --prefer-private-ip
+    ;;
+  refresh-ssh-keys)
+    echo "Refreshing keys for VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    az ssh config --resource-group data-science-dev-ncus-rg-01 --vm-name johnprince-dev --prefer-private-ip --file ./myvm_ssh_config
+    # can remove the file since I've already captured the info from it, but if
+    # ip address changes or something, then we need to not remove it.
+    rm ./myvm_ssh_config
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|deallocate|ssh|refresh-ssh-keys}"
+    exit 1
+    ;;
+esac

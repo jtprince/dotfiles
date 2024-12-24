@@ -1,0 +1,140 @@
+#!/usr/bin/env python
+
+import argparse
+import asyncio
+from pathlib import Path
+
+from prefect import get_client
+
+notes = """
+prefect cloud login
+(hint: cheat prefect-misosoup)
+"""
+
+FLOW = "batch-feature-calling-custom-pairs"
+DEPLOYMENT = "v0"
+NAME = f"{FLOW}/{DEPLOYMENT}"
+
+
+def dot_strings_to_dict(dot_strings):
+    """
+    Converts a list of dot-notation strings (e.g., "a.b.c=1") into a nested
+    dictionary, merging overlapping paths correctly.
+
+    Example:
+        Input: [
+            "a.b.c=1",
+            "a.b.d=2",
+            "a.e=3",
+            "z=4"
+        ]
+        Output:
+        {
+            "a": {
+                "b": {
+                    "c": 1,
+                    "d": 2
+                },
+                "e": 3
+            },
+            "z": 4
+        }
+    """
+    if dot_strings is None:
+        return {}
+
+    def nested_set(d, keys, value):
+        """
+        Sets the value in dictionary d at the nested path described by `keys`.
+        If intermediate dictionaries don't exist, creates them.
+        """
+        for key in keys[:-1]:
+            d = d.setdefault(key, {})
+        d[keys[-1]] = value
+
+    result = {}
+    for dot_str in dot_strings:
+        path, value_str = dot_str.split('=', 1)
+
+        try:
+            value = int(value_str)
+        except ValueError:
+            try:
+                value = float(value_str)
+            except ValueError:
+                normalized = value_str.strip().lower()
+                if normalized in ("true", "false"):
+                    value = (normalized == "true")
+                else:
+                    value = value_str
+
+        keys = path.split('.')
+        nested_set(result, keys, value)
+
+    return result
+
+
+async def main():
+    # Parse CLI arguments
+    parser = argparse.ArgumentParser(description=notes)
+    parser.add_argument(
+        "msrun_id_pairs_file",
+        type=Path,
+        help="File with msrun_id pairs, one pair per line, space-separated."
+    )
+    parser.add_argument(
+        "--misosoup-version",
+        required=True,
+        help="as Major.Minor"
+    )
+    parser.add_argument("--database", required=True)
+    parser.add_argument(
+        "--config-override",
+        action="append",
+        help="dot notation e.g. \"misosoup.num_cpu_cores=31\"",
+    )
+    args = parser.parse_args()
+
+    msrun_pairs_file = args.msrun_id_pairs_file
+
+    database = args.database
+
+    config = dot_strings_to_dict(args.config_override)
+
+    # merge in the athena db (clunky but correct)
+    athena_node = config.get("athena", {})
+    athena_node["athena_db"] = database
+    config["athena"] = athena_node
+
+    print(f"Reading msrun_id pairs from: {msrun_pairs_file}")
+    print(f"Using database: {database}")
+
+    pairs = []
+    with msrun_pairs_file.open("r") as file:
+        for line in file:
+            line = line.strip()
+            if not line:
+                continue
+            pairs.append(line.split())
+
+    async with get_client() as client:
+        deployment = await client.read_deployment_by_name(NAME)
+
+        flow_params = {
+            "env": "dev",
+            "msrun_id_pairs": pairs,
+            "misosoup_version": args.misosoup_version,
+            "config": config
+        }
+        print(f"Submitting to {NAME} with params:\n {flow_params}", flush=True)
+        response = await client.create_flow_run_from_deployment(
+            deployment_id=deployment.id,
+            parameters=flow_params,
+        )
+
+        print("FINISHED SUBMITTING!", flush=True)
+        print(response, flush=True)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
