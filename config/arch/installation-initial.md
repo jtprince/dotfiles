@@ -105,7 +105,6 @@ man-pages     # documentation
 sof-firmware  # if applicable
 gnome-keyring
 httpie
-zsh
 git
 sudo
 sheldon
@@ -116,8 +115,6 @@ usbutils       # for lsusb etc
 keychain
 npm
 vi
-vim
-neovim-nvim-treesitter
 fzf
 ctags
 xterm
