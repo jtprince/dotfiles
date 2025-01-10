@@ -92,6 +92,7 @@ Then reboot (`shutdown now`, remove drive, reboot)
 
 ### Set up wifi
 ```bash
+systemctl start NetworkManager
 nmcli d wifi connect PrinceTPLink password <password>
 ```
 
