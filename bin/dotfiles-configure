@@ -31,47 +31,48 @@ ENSURE_DIRS = [
 
 # These are softlinked in ~/.config
 SOFTLINK_INTO_CONFIG = [
-    "sway",
-    "mako",
-    "alias",
-    "xmodmap",
-    "git",
-    "gtk-3.0",
-    "zsh",
-    "fontconfig",
-    "ipython",
-    "texlive",
-    "dunst",
-    "xava",
-    "latex",
-    "conky",
-    "blockify",
-    "mypy",
-    "ranger",
-    "imv",
-    "mpv",
-    "alacritty",
-    "kitty",
-    "isort.cfg",
-    "cheat",
-    "flake8",
-    "ackrc",
-    "pylintrc",
-    "pulse",
-    "npmrc",
-    "pulseaudio-ctl",
-    "pipewire",
-    ## "nvim", # using nvim-switcher for this right now
-    "sheldon",
-    "mimeapps.list",
     "Xresources.d",
-    "goofys",
+    "ackrc",
+    "alacritty",
+    "alias",
     "avizo",
-    "ncspot",
+    "blockify",
+    "cheat",
+    "conky",
+    "dunst",
+    "feh",
+    "flake8",
+    "fontconfig",
+    "git",
+    "goofys",
+    "gtk-3.0",
+    "imv",
+    "ipython",
+    "isort.cfg",
+    "kitty",
+    "latex",
+    "mako",
+    "mimeapps.list",
+    "mpv",
+    "mypy",
     "ncmpcpp",
-    "waybar",
-    "tofi",
+    "ncspot",
+    "npmrc",
+    "pipewire",
+    "pulse",
+    "pulseaudio-ctl",
+    "pylintrc",
+    "ranger",
+    "sheldon",
     "spotify-flags.conf",
+    "sway",
+    "texlive",
+    "tofi",
+    "waybar",
+    "xava",
+    "xmodmap",
+    "zsh",
+    # "nvim", # using nvim-switcher for this right now
 ]
 
 # Softlink into home dotfile as "$HOME/.{name}"
@@ -156,11 +157,13 @@ class Symlinker:
 
     def softlink_into_dotconfig(self, filenames: list[str]):
         for name in filenames:
-            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME_CONFIG / name))
+            self.ensure_link(
+                Symlink(REPO_CONFIG / name, link=HOME_CONFIG / name))
 
     def softlink_into_home(self, filenames):
         for name in filenames:
-            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME / ("." + name)))
+            self.ensure_link(
+                Symlink(REPO_CONFIG / name, link=HOME / ("." + name)))
 
     def _make_dir(self, name):
         """Make a directory relative to home dir."""

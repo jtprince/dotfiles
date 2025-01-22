@@ -163,7 +163,7 @@ neovim `PlugInstall`. github-cli lets us start with dotfiles and edit it if
 needed.
 
 ```bash
-yay -S python-ruyaml neovim-plug ttf-dejavu-nerd noto-fonts github-cli
+yay -S python-ruyaml ttf-dejavu-nerd noto-fonts github-cli neovim
 ```
 ### Launch sway
 
@@ -179,6 +179,7 @@ Windows-Shift-E: exit sway
 
 ```bash
 cd
+gh auth login
 gh repo clone jtprince/dotfiles
 ln -s dotfiles/bin
 # pick your resolution, 4k or hd
@@ -194,14 +195,7 @@ Will need to give treesitter time to download all the language syntaxes.
 ```
 nvim-switcher current
 nvim
-:PlugInstall
-# exit and then:
-:COQdeps
-:CHADdeps
-
-nvim-switcher kickstart
-nvim
-:PylspInstall python-lsp-ruff
+(lazy will load everything)
 ```
 
 ## Setup keys
