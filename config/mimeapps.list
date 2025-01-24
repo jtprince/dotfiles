@@ -15,3 +15,4 @@ text/tsv=libreoffice-calc.desktop;
 text/uri-list=google-chrome.desktop;
 x-scheme-handler/http=google-chrome.desktop;
 x-scheme-handler/https=google-chrome.desktop;
+x-scheme-handler/webcal=google-chrome.desktop

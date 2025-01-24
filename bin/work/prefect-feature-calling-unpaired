@@ -11,7 +11,7 @@ prefect cloud login
 (hint: cheat prefect-misosoup)
 """
 
-FLOW = "batch-feature-calling-custom-pairs"
+FLOW = "batch-feature-calling-unpaired"
 DEPLOYMENT = "v0"
 NAME = f"{FLOW}/{DEPLOYMENT}"
 
@@ -78,7 +78,7 @@ async def main():
     # Parse CLI arguments
     parser = argparse.ArgumentParser(description=notes)
     parser.add_argument(
-        "msrun_id_pairs_file",
+        "msrun_ids_file",
         type=Path,
         help="File with msrun_id pairs, one pair per line, space-separated.",
     )
@@ -91,7 +91,7 @@ async def main():
     )
     args = parser.parse_args()
 
-    msrun_pairs_file = args.msrun_id_pairs_file
+    msrun_ids_file = args.msrun_ids_file
 
     database = args.database
 
@@ -102,25 +102,27 @@ async def main():
     athena_node["athena_db"] = database
     config["athena"] = athena_node
 
-    print(f"Reading msrun_id pairs from: {msrun_pairs_file}")
+    print(f"Reading msrun_ids from: {msrun_ids_file}")
     print(f"Using database: {database}")
 
-    pairs = []
-    with msrun_pairs_file.open("r") as file:
+    msbs = []
+    with msrun_ids_file.open("r") as file:
         for line in file:
-            line = line.strip()
-            if not line:
+            msb = line.strip()
+            if not msb:
                 continue
-            pairs.append(line.split())
+            msbs.append(msb)
 
     async with get_client() as client:
         deployment = await client.read_deployment_by_name(NAME)
 
         flow_params = {
             "env": "dev",
-            "msrun_id_pairs": pairs,
+            "msbs": msbs,
             "misosoup_version": args.misosoup_version,
             "config": config,
+            "slack_errors": False,
+            "write_results_to_unpaired_db": False,
         }
         print(f"Submitting to {NAME} with params:\n {flow_params}", flush=True)
         response = await client.create_flow_run_from_deployment(
@@ -130,10 +132,6 @@ async def main():
 
         print("FINISHED SUBMITTING!", flush=True)
         print(response, flush=True)
-
-        print()
-        print("hint:")
-        print("prefect flow-run inspect <id>")
 
 
 if __name__ == "__main__":

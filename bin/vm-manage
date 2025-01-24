@@ -2,13 +2,15 @@
 #
 # manage_vm.sh - Simple script to manage an Azure VM on Arch Linux using Azure CLI.
 #
+if [[ -n "$1" && "$1" == "login" ]]; then
+  az login --scope "https://management.core.windows.net//.default" --use-device-code
+fi
+
+DEFAULT_VM_NAME="johnprince-dev"
 
 # Update these variables as needed
 RESOURCE_GROUP="data-science-dev-ncus-rg-01"
-VM_NAME="johnprince-dev"
-
-# You can log in interactively (az login) or via a service principal.
-# az login
+VM_NAME="${2:-$DEFAULT_VM_NAME}"
 
 case "$1" in
   start)
@@ -26,18 +28,23 @@ case "$1" in
   ssh)
     echo "SSH into VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
     # --prefer-private-ip used as per your example
-    az ssh vm -g "$RESOURCE_GROUP" -n "$VM_NAME" --prefer-private-ip
+    # az ssh vm -g "$RESOURCE_GROUP" -n "$VM_NAME" --prefer-private-ip
+    ssh "$VM_NAME"
     ;;
   refresh-ssh-keys)
     echo "Refreshing keys for VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    az ssh config --resource-group data-science-dev-ncus-rg-01 --vm-name johnprince-dev --prefer-private-ip --file ./myvm_ssh_config
+    az ssh config --resource-group data-science-dev-ncus-rg-01 --vm-name "$VM_NAME" --prefer-private-ip --file ./myvm_ssh_config
     # can remove the file since I've already captured the info from it, but if
     # ip address changes or something, then we need to not remove it.
-    rm ./myvm_ssh_config
+    rm -f ./myvm_ssh_config
     ;;
 
   *)
-    echo "Usage: $0 {start|stop|deallocate|ssh|refresh-ssh-keys}"
+    echo "Usage: $0 {login|start|stop|deallocate|ssh|refresh-ssh-keys} [VM-NAME]"
     exit 1
     ;;
 esac
+
+
+
+

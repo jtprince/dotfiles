@@ -1,0 +1,122 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import re
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
+
+import requests
+
+# Regex to find markdown links
+LINK_REGEX = r"\[.*?\]\((.*?)\)"
+RELATIVE_URL_FUNCTION = r'\{\{\s*"(.*?)"\s*\|\s*relative_url\s*\}\}'
+
+
+class MarkdownLinkChecker:
+    def __init__(self, max_threads=10, base_url=None):
+        self.max_threads = max_threads
+        self.base_url = base_url
+
+    def check_link(self, url, base_path):
+        """Check if a link is valid."""
+        if url.startswith("http://") or url.startswith("https://"):
+            try:
+                response = requests.head(url, allow_redirects=True, timeout=5)
+                return response.status_code == 200
+            except requests.RequestException:
+                return False
+        elif url.startswith("mailto:"):
+            return True  # Assume mailto links are valid
+        elif self.base_url and url.startswith("/"):
+            # Check relative URLs against the base URL
+            full_url = self.base_url.rstrip("/") + url
+            try:
+                response = requests.head(full_url, allow_redirects=True, timeout=5)
+                return response.status_code == 200
+            except requests.RequestException:
+                return False
+        else:  # Local file link
+            abs_path = os.path.join(base_path, url)
+            return os.path.exists(abs_path)
+
+    def find_broken_links(self, file_path):
+        """Find broken links in a markdown file."""
+        broken_links = []
+        base_path = os.path.dirname(file_path)
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+            # Extract all standard markdown links
+            links = re.findall(LINK_REGEX, content)
+
+            # Handle relative_url function if base_url is provided
+            if self.base_url:
+                relative_links = re.findall(RELATIVE_URL_FUNCTION, content)
+                links.extend(relative_links)
+
+            with ThreadPoolExecutor(max_workers=self.max_threads) as executor:
+                check_partial = partial(self.check_link, base_path=base_path)
+                results = executor.map(check_partial, links)
+
+                for link, is_valid in zip(links, results):
+                    if not is_valid:
+                        broken_links.append(link)
+
+        return broken_links
+
+    def check_directory(self, directory):
+        """Recursively check all markdown files in a directory."""
+        results = {}
+        markdown_files = []
+
+        # Gather all markdown files
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.endswith(".md"):
+                    markdown_files.append(os.path.join(root, file))
+
+        # Process files concurrently
+        with ThreadPoolExecutor(max_workers=self.max_threads) as executor:
+            for file_path, broken_links in zip(
+                markdown_files, executor.map(self.find_broken_links, markdown_files)
+            ):
+                if broken_links:
+                    results[file_path] = broken_links
+
+        return results
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Markdown Broken Link Checker")
+    parser.add_argument("directory", help="Directory to check for markdown files")
+    parser.add_argument(
+        "--threads",
+        type=int,
+        default=10,
+        help="Number of threads to use (default: 10)",
+    )
+    parser.add_argument(
+        "--base-url",
+        type=str,
+        default=None,
+        help="Base URL for resolving relative links (default: None)",
+    )
+    args = parser.parse_args()
+
+    checker = MarkdownLinkChecker(max_threads=args.threads, base_url=args.base_url)
+    results = checker.check_directory(args.directory)
+
+    if results:
+        print("\nBroken links found:")
+        for file_path, links in results.items():
+            print(f"{file_path}:")
+            for link in links:
+                print(f"  - {link}")
+    else:
+        print("No broken links found!")
+
+
+if __name__ == "__main__":
+    main()

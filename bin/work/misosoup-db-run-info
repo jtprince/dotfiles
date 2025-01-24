@@ -1,20 +1,45 @@
 #!/usr/bin/env python
 
 import argparse
+import traceback
 
 import awswrangler as awr
 
 parser = argparse.ArgumentParser()
 parser.add_argument("db_name", nargs="+", help="the athena db name")
 parser.add_argument("--shape", action="store_true", help="just print shape")
+parser.add_argument("--inspect", action="store_true", help="open the debugger")
+parser.add_argument(
+    "--inspect-early",
+    action="store_true",
+    help="open the debugger befor making the call",
+)
+parser.add_argument(
+    "-m", "--msrun_ids", action="store_true", help="list msrun_ids, one per line"
+)
 args = parser.parse_args()
 
 for db_name in args.db_name:
     print()
-    print(db_name)
-    df = awr.athena.read_sql_table("run", database=db_name, ctas_approach=True)
-    if args.shape:
-        print(df.shape)
-        continue
+    print("#", db_name)
+    if args.inspect_early:
+        breakpoint()
+    try:
+        df = awr.athena.read_sql_table("run", database=db_name, ctas_approach=True)
+        if args.msrun_ids:
+            for msrun_id in df.id.tolist():
+                print(msrun_id)
+            continue
+        if args.shape:
+            print(df.shape)
+            continue
+        if args.inspect:
+            breakpoint()
 
-    print(df)
+        print(df)
+    except Exception as exc:
+        # print(traceback.format_exc())
+        print(exc)
+        print()
+        print("--- Continuing to next db ---")
+        print()
