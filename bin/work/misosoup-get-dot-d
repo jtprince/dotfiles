@@ -1,0 +1,151 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+from typing import List
+
+import awswrangler as awr
+from s3path import S3Path
+
+S3_URI_PREFIX = "s3://"
+MINIMAL_BRUKER_MSRUN_FILES = {"analysis.tdf", "analysis.tdf_bin"}
+MIN_TDF_BIN_FILE_MB = 0.5
+
+
+def download_bruker_ms_data(
+    uri: str, local_filepath: Path, overwrite: bool = False
+) -> List[Path]:
+    """Downloads bruker tdf* files.
+
+    Parameters
+    ----------
+    uri
+        The s3 uri of the Bruker .d folder.
+    local_filepath
+        Directory where the bruker data should be downloaded. Will create if not exists.
+    overwrite
+        Will download data fresh regardless of whether it already exists locally.
+
+    Returns
+    -------
+    A list of Path objects (the paths to the local analysis files).
+    """
+    if (not uri) or (not uri.startswith(S3_URI_PREFIX)):
+        print(f"{uri} doesn't start with {S3_URI_PREFIX}, skipping")
+        return None
+
+    if not local_filepath.exists():
+        local_filepath.mkdir(exist_ok=True, parents=True)
+
+    local_files = [local_filepath / name for name in MINIMAL_BRUKER_MSRUN_FILES]
+    for local_file in local_files:
+        if (not overwrite) and local_file.exists():
+            print(f"Skipping download since exists: {local_file}")
+            continue
+
+        base_uri = "/" + uri.lstrip(S3_URI_PREFIX).rstrip("/")
+        file_uri = f"{base_uri}/{local_file.name}"
+
+        print(f"Downloading {file_uri}")
+        local_file.write_bytes(S3Path(file_uri).read_bytes())
+
+        if local_file.suffix == "tdf_bin" and _tdf_bin_too_small(local_file):
+            print("tdf_bin too small, skipping!")
+            return None
+
+    return local_files
+
+
+def _tdf_bin_too_small(path: Path):
+    return path.stat().st_size / 2**20 < MIN_TDF_BIN_FILE_MB
+
+
+def download_dot_d_dirs(
+    msrun_ids: List[str], db: str, outdir: Path, overwrite: bool = False
+) -> None:
+    """
+    Downloads contents of S3 URIs for given msrun_ids into local directories.
+
+    Args:
+        msrun_ids (List[str]): List of msrun_ids to process.
+        db (str): The database to query.
+        outdir (Path): The output directory to save the downloaded directories.
+    """
+    # Ensure output directory exists
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    # Create a comma-separated string of msrun_ids for the SQL query
+    msrun_ids_list_str = ", ".join([f"'{run}'" for run in msrun_ids])
+    db = "benchling.envedatx"
+
+    # SQL query to retrieve msrun data
+    query = f"""
+        SELECT
+            msrun."file_registry_id$" AS id,
+            REGEXP_EXTRACT(
+                REGEXP_REPLACE(msrun.s3_uri, '/+$'),
+                '[^/]+$'
+            ) AS name,
+            msrun.s3_uri AS uri
+        FROM {db}.bruker_mass_spec_run msrun
+        WHERE msrun."file_registry_id$" IN ({msrun_ids_list_str})
+    """
+
+    # Execute the query
+    try:
+        run_info = awr.athena.read_sql_query(query, database="default")
+    except Exception as e:
+        print(f"Error querying Athena: {e}")
+        return
+
+    # Convert results to a dictionary for easy lookup
+    run_data = {row["id"]: row["uri"] for _, row in run_info.iterrows()}
+
+    # Process each msrun_id
+    for msrun_id in msrun_ids:
+        if msrun_id in run_data:
+            uri = run_data[msrun_id]
+            local_dir = outdir / f"{msrun_id}.d"
+
+            local_dir.mkdir(parents=True, exist_ok=True)
+
+            # Simulate downloading from S3 (replace with actual download logic if needed)
+            print(f"Downloading contents of {uri} to {local_dir}...")
+            download_bruker_ms_data(uri, local_dir, overwrite=overwrite)
+        else:
+            print(f"Run {msrun_id} is not in Benchling")
+
+
+def get_args() -> argparse.Namespace:
+    """
+    Parses command-line arguments.
+
+    Returns:
+        argparse.Namespace: Parsed command-line arguments.
+    """
+    # Default database
+    default_db = "benchling.envedatx"
+
+    # Set up argument parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument("msrun_ids", nargs="+", help="List of msrun_ids to process")
+    parser.add_argument("--db", default=default_db, help="The database to query")
+    parser.add_argument(
+        "--force", action="store_true", help="overwrite anything existing"
+    )
+    parser.add_argument(
+        "--outdir",
+        default=".",
+        help="Output directory to save the downloaded directories",
+    )
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = get_args()
+    download_dot_d_dirs(
+        msrun_ids=args.msrun_ids,
+        db=args.db,
+        outdir=Path(args.outdir).resolve(),
+        overwrite=args.force,
+    )

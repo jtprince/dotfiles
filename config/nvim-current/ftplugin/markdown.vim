@@ -50,3 +50,5 @@ map <leader>mc <Esc>:call MarkdownToClipboard()<CR>
 
 map <leader>mn <Esc>:set conceallevel=0<CR>
 map <leader>mo <Esc>:set conceallevel=2<CR>
+
+setlocal formatoptions-=t
