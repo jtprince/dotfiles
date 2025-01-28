@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+import argparse
+import sqlite3
+from pathlib import Path
+
+from tabulate import tabulate
+
+
+def generate_markdown_with_tabulate(db_path):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Get all table names
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = [row[0] for row in cursor.fetchall()]
+
+    markdown = ""
+
+    for table in tables:
+        markdown += f"## Table: `{table}`\n\n"
+
+        # Get table info
+        cursor.execute(f"PRAGMA table_info({table});")
+        columns = cursor.fetchall()
+
+        # Prepare data for tabulate
+        headers = [
+            "Column ID",
+            "Name",
+            "Type",
+            "Not Null",
+            "Default Value",
+            "Primary Key",
+        ]
+        rows = [
+            [
+                col[0],  # Column ID
+                col[1],  # Name
+                col[2],  # Type
+                bool(col[3]),  # Not Null
+                col[4] if col[4] else "NULL",  # Default Value
+                bool(col[5]),  # Primary Key
+            ]
+            for col in columns
+        ]
+
+        # Generate the table using tabulate
+        markdown += tabulate(rows, headers, tablefmt="github")
+        markdown += "\n\n"
+
+    conn.close()
+    return markdown
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "sqlite_file", type=Path, help="path to the sqlite3 database file"
+    )
+    args = parser.parse_args()
+
+    markdown_output = generate_markdown_with_tabulate(args.sqlite_file)
+    outpath = args.sqlite_file.with_suffix(".md")
+
+    print(f"Markdown table info saved to {str(outpath)}")
+    outpath.write_text(markdown_output)
