@@ -622,13 +622,13 @@ input type:keyboard {
 input type:touchpad {
   tap enabled
   dwt enabled
-  # natural_scroll enabled
+  natural_scroll enabled
   middle_emulation enabled
 }
 input type:mouse {
   accel_profile adaptive
   # Following line didn&#39;t work:
   pointer_accel 0.5
+  natural_scroll enabled
 }
 input 0:5:Lid_Switch events disabled
-
