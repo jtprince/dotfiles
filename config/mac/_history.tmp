@@ -1,0 +1,509 @@
+ sudo profiles renew -type enrollment
+ sudo profiles renew -type enrollment
+ sudo profiles renew -type enrollment
+ ls
+ pwd
+ ls
+ pwd
+ ls
+ echo $SHELL
+ echo $TERM
+ df -h
+ cat /Users/johnprince
+ ls
+ pwd
+ ls
+ cd Movies
+ ls
+ pwd
+ ls
+ ls
+ cd ls
+ pwd
+ ls
+ cd
+ ls
+ cd Documents
+ ls
+ ls
+ cd
+ ls
+ cd Applications
+ ls
+ cd
+ cd /Users/Shared
+ ls
+ find . -iname Karbiner
+ ls
+ cd
+ cd
+ ls
+ pwd
+ ls
+ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+ head ~/.zprofile
+ echo >> /Users/johnprince/.zprofile
+ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/johnprince/.zprofile
+ eval "$(/opt/homebrew/bin/brew shellenv)"
+ pwd
+ ls
+ brew install gh
+ gh auth login
+ gh auth login
+ ls
+ gh repo clone jtprince/dotfiles
+ lsa
+ ls
+ brew install --cask iterm2
+ brew upate
+ brew update
+ ls
+ \n\ndefaults write com.apple.dock expose-group-apps -bool true && killall Dock\n\n
+ exit
+ pqs
+ pwd
+ ls
+ pwd
+ ls
+ ls
+ cd Downloads
+ ls
+ ls
+ rm -rf Install\ Spotify.app
+ rm SpotifyInstaller.zip
+ ls
+ cd
+ ls
+ cd Dropbox
+ ls
+ du -sh
+ du -sh
+ ls
+ du -sh
+ df -h
+ cd
+ ls
+ brew install --cask nikitabobko/tap/aerospace
+ ls
+ cd
+ cd .config
+ ls
+ ls
+ pwd
+ ls
+ cd
+ ls
+ cd .config
+ mkdir aerospace
+ cd aerospace
+ ls
+ \n\ncp /Applications/AeroSpace.app/Contents/Resources/default-config.toml ~/.config/aerospace/aerospace.toml\n\n
+ ls
+ vim aerospace.toml
+ exit
+ brew install --cask neovide
+ rehash
+ neovide
+ pwd
+ brew install --cask chatgpt
+ vim .zprofile
+ brew install neovim
+ ls
+ vim ~/.zshrc
+ exit
+ cd .config
+ ls
+ cd aerospace
+ ls
+ mv aerospace.toml aerospace_og.toml
+ mv ~/Downloads/i3-like-config-example.toml aerospace.toml
+ ls
+ ls
+ pwd
+ ls
+ exit
+ neovide ~/.config/aerospace/aerospace.toml
+ bg
+ ls
+ cat ~/.config/aerospace/aerospace_og.toml| pbcopy
+ cat ~/.config/aerospace/aerospace.toml| pbcopy
+ cd
+ pwd
+ ls
+ cd dotfiles
+ ls
+ cd config
+ ls
+ cat sway/config | pbcopy
+ ls
+ cd aer
+ pwd
+ ls
+ cd
+ cd .config/aerospace
+ ls
+ mv aerospace.toml aerospace_i3_ish.toml
+ pbpaste > aerospace.toml
+ neovide aerospace.toml
+ exit
+ ls
+ pwd
+ ls;
+ ls
+ nvim ~/.config/aerospace/aerospace.toml
+ exit
+ nvim ~/.config/aerospace/aerospace.toml
+ ls
+ cd .config/aerospace
+ ls
+ cat aerospace.toml | pbcopy
+ exit
+ ls
+ ls
+ nvim ~/.config/aerospace/aerospace.toml
+ exit
+ brew install python3
+ python3 --version
+ which python3
+ ls
+ cd Dropbox
+ ls
+ cd writing
+ ls
+ nvim linux-to-mac-surprises-and-reflections.md
+ nvim linux-to-mac-surprises-and-reflections.md
+ cd
+ ls
+ brew install pipx
+ pipx ensurepath
+ echo $SHELL
+ vim .bashrc
+ vim .zshrc
+ ls
+ exit
+ cd Downloads
+ ls
+ rm -rf archarm-root
+ sudo rm -rf archarm-root
+ ls
+ mkdir archarm-root
+ exit
+ ls
+ which pipx
+ pipx
+ pipx install torrent-dl
+ brew install boost libtorrent-rasterbar\n
+ pipx install torrent-dl
+ brew install --cask qbittorrent
+ rehash
+ ls
+ cd Downloads
+ ls
+ wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
+ brew install wget
+ rehash
+ wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
+ ls
+ mkdir archarm-root
+ tar -xzf ArchLinuxARM-aarch64-latest.tar.gz -C archarm-root
+ ls
+ tar --keep-directory-symlink --same-owner  -xzf ArchLinuxARM-aarch64-latest.tar.gz -C archarm-root
+ tar --version
+ brew install gnu-tar
+ ls
+ gtar -xzf ArchLinuxARM-aarch64-latest.tar.gz -C archarm-root
+ ls
+ sudo rm -rf archarm-tto
+ sudo rm -rf archarm-root
+ mkdir archarm-root
+ ls
+ gtar --keep-directory-symlink --same-owner  -xzf ArchLinuxARM-aarch64-latest.tar.gz -C archarm-root
+ ls
+ cd
+ brew install --cask visual-studio-code
+ rehash
+ ls
+ mkdir enveda
+ cd enveda
+ ls
+ gh repo clone enveda/misosoup
+ defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
+ exit
+ cd dotfiles
+ ls
+ cd config
+ ls
+ cd nvim-
+ cd nvim-current
+ ls
+ cd lua
+ ls
+ vim keymaps.lua
+ nvim keymaps.lua
+ defaults delete -g ApplePressAndHoldEnabled
+ exit
+ pwd
+ ls
+ brew install alacritty
+ cd
+ pwd
+ ls
+ cd
+ ls
+ gh repo clone faenrandir/a_careful_examination
+ rehash
+ cd a_careful_examination
+ ls
+ pwd
+ ls
+ cat README.md
+ bundle install
+ bundle install .vendor/bundle
+ bundle install --path .vendor/bundle
+ ls
+ cat scripts/release.py
+ ./scripts/release.py
+ cd
+ pyenv
+ brew install pyenv
+ brew uninstall python
+ rehash
+ pyenv
+ pyenv install --list
+ pyenv install 
+ pyenv install  --list | grep 3.13
+ nvim ~/.zprofile
+ exit
+ pwd
+ s
+ ls
+ cd a_careful_examination
+ ls
+ pwd
+ ls
+ cd
+ ln -s ~/dotfiles/config/alacritty ~/.config
+ cd ~/.config
+ ls
+ ls -alh alacritty
+ cd
+ exit
+ brew install --cask font-liberation
+ exit
+ ls
+ pwd
+ ls
+ pwd
+ ls
+ ls
+ pwd
+ ls
+ cd a_careful_examination
+ ls
+ cd
+ ls
+ pwdls
+ pwd
+ ls
+ which pyenv
+ pyenv
+ cd
+ ls
+ cd dotfiles
+ ls
+ cd config
+ ls
+ mkdir _from_shaurya
+ cd _from_shaurya
+ ls
+ vim azure.sh
+ mv ~/Downloads/readme.md ./
+ mv ~/Downloads/vm-setup.md ./
+ ls
+ cat readme.md
+ neovide readme.md
+ bg
+ ls
+ pwd
+ ls
+ cd
+ ls
+ pyenv install --list | grep 3.10
+ pyenv install 3.10.16
+ pyenv uninstall 3.10.16
+ brew install openssl readline sqlite3 xz zlib
+ brew uninstall zlib
+ pyenv install 3.10.16
+ brew install xz
+ pyenv install --list | grep 3.13
+ pyenv install 3.13.2
+ pyenv install --list | grep 3.11
+ pyenv install 3.11.11
+ ls
+ pyenv global 3.10
+ python 
+ python --version
+ ls
+ pwd
+ ls
+ cd a_careful_examination
+ ls
+ ./scripts/release.py
+ cd
+ brew install rbenv
+ cd
+ ls
+ which rbenv
+ rbenv
+ rbenv versions
+ rbenv install --list
+ rbenv install 3.1.6
+ rbenv global 3.1.6
+ cd
+ ruby --versin
+ ruby --version
+ ls
+ ls
+ vim ~/.zprofile 
+ exit
+ exit
+ ls
+ cd
+ ls .rbenv
+ which rbenv
+ nvim ~/.zprofile
+ nvim ~/.zprofile
+ exit
+ ruby --version
+ rbenv version
+ rbenv versions
+ ruby --version
+ cat ~/.zprofile
+ cat ~/.zshrc
+ nvim .zprofile 
+ xit
+ exit
+ ls
+ ruby --version
+ exit
+ pwd
+ ls
+ pwd
+ ls
+ cd a_careful_examination
+ ls
+ ./scripts/release.py
+ rm -rf .vendor/bundle
+ ls
+ bundle install
+ bundle 
+ cd .vendor/bundle/
+ ls
+ cd ..
+ cd
+ ls
+ cd a_careful_examination
+ ls
+ gh auth login
+ ls
+ ./scripts/release.py
+ cat scripts/release.py
+ ./sdr
+ ./scripts/release.py
+ exit
+ cd a_careful_examination
+ ls
+ cat scripts/release.py
+ ./scripts/release.py
+ gem install sass-embedded
+ bundle add sass-embedded
+ bundle add rexml
+ bundle install
+ bundle install --path .vendor/bundle\n
+ JEKYLL_ENV=production bundle exec jekyll build
+ gem install bundler
+ bundle update --bundler\n
+ rm -rf .vendor/bundle
+ bundle install --path .vendor/bundle\n
+ bundle lock --add-platform arm64-darwin
+ bundle install --path .vendor/bundle\n
+ bundle config set path .vendor/bundle
+ bundle install
+ JEKYLL_ENV=production bundle exec jekyll build
+ head -n 10 _layouts/*.html
+ vim _layouts/default.html
+ ls
+ ls
+ cd _layouts
+ ls
+ nvim home.html page.html post.html
+ ls
+ head default.html
+ cd ..
+ ls
+ JEKYLL_ENV=production bundle exec jekyll build\n
+ bundle add jekyll
+ bundle update jekyll
+ ls
+ cat Gemfile
+ bundle update jekyll
+ vim Gemfile
+ vim Gemfile
+ bundle install
+ JEKYLL_ENV=production bundle exec jekyll build\n
+ git st
+ git st
+ cat README.md
+ bundle exec jekyll serve
+ ls
+ lsa
+ ls
+ pwd
+ ls
+ cat << EOF >> ~/.zprofile\n# Add Visual Studio Code (code)\nexport PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"\nEOF\n
+ cxat ~/.zprofile
+ cat ~/.zprofile
+ exit
+ cd a_careful_examination
+ ls
+ code
+ ls
+ cd dotfiles
+ ls
+ ..
+ ls
+ ..
+ ls
+ cd ..
+ ls
+ ls
+ cd dotfiles
+ ls
+ pwd
+ ls
+ ..
+ cd ..
+ ls
+ mkdir dotfiles-mac
+ rm -rf dotfiles-mac
+ ls
+ cd
+ cd dotfiles
+ ls
+ cd config
+ ls
+ mkdir mac
+ cd mac
+ ls
+ ls
+ ls
+ neovide installation.md
+ bg
+ ls
+ neovide $HIStORY
+ neovide $HISTORY
+ history
+ history 0
+ history 0 ls
+ echo $HISTORY > _history.tmp
+ neovide _history.tmp
