@@ -4,12 +4,17 @@ setopt auto_pushd
 setopt pushd_ignore_dups
 setopt pushdminus
 
-#alias ..='cd ..'
-alias cd..='cd ..'
-#alias cd...='cd ../..'
-#alias cd....='cd ../../..'
-#alias cd.....='cd ../../../..'
 alias cd/='cd /'
+
+
+alias .........='cd ../../../../../../../..'
+alias ........='cd ../../../../../../..'
+alias .......='cd ../../../../../..'
+alias ......='cd ../../../../..'
+alias .....='cd ../../../..'
+alias ....='cd ../../..'
+alias ...='cd ../..'
+alias ..='cd ..'
 
 # use in conjunction with dirs -v
 # the number will take you to that entry!

@@ -1,44 +1,9 @@
-# amazon cloud EC2 instances:
-export AWSID="i-b5a0196f"
-alias AWSSTOP="aws ec2 stop-instances --instance-ids $AWSID"
-alias AWSSTART="aws ec2 start-instances --instance-ids $AWSID"
-alias gotoaws="ssh $RMT -t 'source /home/jtprince/dotfiles/config/remote_root_bashrc; cd /home/build; bash -l'"
-
-# AWS VPN
-# alias awsvpn="/opt/awsvpnclient/AWS\ VPN\ Client &"
-
-# apt-get
-# alias apti='sudo apt-get install'
-# alias aptinstall='sudo apt-get install'
-# alias apts='aptitude search'
-# alias aptsearch='aptitude search'
-# alias aptr='sudo aptitude remove --purge-unused'
-# alias aptremove='sudo aptitude remove --purge-unused'
-# alias aptshow='apt-cache show'
-# alias aptupdate='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get autoremove'
-# alias aptaddkey='sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com'
-# alias dependenciesr="apt-cache --recurse depends"
-# alias dependencies="apt-cache depends"
-# alias depends_on="apt-cache rdepends"
-# alias aptppa='sudo add-apt-repository'
-
-# docker
-export DOCKERDOBAWEB="cd /home/jtprince/dev/docker.doba.com && docker-compose run --service-ports web"
-alias dkdobabash="$DOCKERDOBAWEB bash"
-
-# pacman and yaourt
-alias pinstall='pacaur -S --noconfirm'
-alias pint=pinstall
 
 # extraction & compression
 alias utar='dtrx -n'
 # compression (see ~/bin/tarz)
 alias bunzip='bunzip2'
 alias bzip='bzip2'
-
-# npm's jira requires to be in home dir, so I use a small shim, jira-cli to
-# put things into home.  But the shim isn't easy to write, so shortcut.
-alias jra='jira-cli'
 
 alias paru="arch-update-system"
 
@@ -50,23 +15,11 @@ alias fzfo='fuzzy-file-open'
 alias zf='fuzzy-file-open-top-hit'
 alias fz='fuzzy-file-open-top-hit'
 
-# alias ghtoken="cat $HOME/Dropbox/env/cloud-and-apis/github/access_tokens/owlet_repo_and_read_package.token.txt | clip -q"
-
 # wine
 alias wine32="export WINEARCH=win32; export WINEPREFIX=$HOME/.wine32; wine"
 alias winecfg32="export WINEARCH=win32; export WINEPREFIX=$HOME/.wine32; winecfg"
 alias wine64="export WINEARCH=win64; export WINEPREFIX=$HOME/.wine64; wine"
 alias winecfg64="export WINEARCH=win64; export WINEPREFIX=$HOME/.wine64; winecfg"
-
-# navigation
-alias .........='cd ../../../../../../../..'
-alias ........='cd ../../../../../../..'
-alias .......='cd ../../../../../..'
-alias ......='cd ../../../../..'
-alias .....='cd ../../../..'
-alias ....='cd ../../..'
-alias ...='cd ../..'
-alias ..='cd ..'
 
 # calendar
 alias calendar="python -m calendar"

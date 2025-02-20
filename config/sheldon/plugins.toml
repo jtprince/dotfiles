@@ -109,6 +109,11 @@ use = [ "theme-and-appearance.zsh" ]
 local = "~/.config/zsh/plugins"
 use = [ "wordchars.zsh" ]
 
+[plugins.aliases]
+local = "~/.config/zsh/plugins"
+use = [ "aliases.zsh" ]
+
+
 ####################################
 # THIRD PARTY
 ####################################
@@ -125,4 +130,7 @@ github = 'zsh-users/zsh-syntax-highlighting'
 [plugins.spaceship]
 github = "spaceship-prompt/spaceship-prompt"
 
+[plugins.spaceshiconfig]
+local = "~/.config/zsh/plugins"
+use = [ "spaceship.zsh" ]
 

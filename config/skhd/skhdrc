@@ -132,8 +132,8 @@ alt - p  : osascript -e 'tell application "Spotify" to playpause'
 alt - 0x21  : osascript -e 'tell application "Spotify" to previous track'
 alt - 0x1E  : osascript -e 'tell application "Spotify" to next track'
 
-alt - 0x19 : osascript -e 'tell application "System Events" to key code 144' # Decrease volume with UI feedback
-alt - 0x1D : osascript -e 'tell application "System Events" to key code 145' # Increase volume with UI feedback
+# alt - 0x19 : osascript -e 'tell application "System Events" to key code 144' # Decrease volume with UI feedback
+# alt - 0x1D : osascript -e 'tell application "System Events" to key code 145' # Increase volume with UI feedback
 # alt + shift + ctrl - 0x19  : osascript -e 'set volume output volume (output volume of (get volume settings) - 5) -- decrease volume'
 # alt + shift + ctrl - 0x1D  : osascript -e 'set volume output volume (output volume of (get volume settings) + 5) -- increase volume'
 # alt - 0x1B -  : osascript -e 'set volume output muted not (output muted of (get volume settings)) -- toggle mute'
