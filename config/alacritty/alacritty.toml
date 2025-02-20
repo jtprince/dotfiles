@@ -6,6 +6,9 @@ draw_bold_text_with_bright_colors = true
 cursor = "#FF7F00"
 text = "#2c2c2c"
 
+[font]
+size = 13.0
+
 [font.normal]
 family = "MesloLGS Nerd Font"
 
