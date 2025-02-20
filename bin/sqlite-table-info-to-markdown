@@ -4,6 +4,8 @@ import argparse
 import sqlite3
 from pathlib import Path
 
+# yay -S python-tabulate
+# brew install python-tabulate
 from tabulate import tabulate
 
 
@@ -26,16 +28,16 @@ def generate_markdown_with_tabulate(db_path):
 
         # Prepare data for tabulate
         headers = [
-            "Column ID",
+            # "Column ID",
             "Name",
             "Type",
             "Not Null",
-            "Default Value",
-            "Primary Key",
+            "Default",
+            "PK",
         ]
         rows = [
             [
-                col[0],  # Column ID
+                # col[0],  # Column ID
                 col[1],  # Name
                 col[2],  # Type
                 bool(col[3]),  # Not Null
