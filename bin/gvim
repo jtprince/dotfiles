@@ -1,6 +1,11 @@
 #!/bin/bash
 
-kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    neovide "$@" &
+else
+    kitty -e $HOME/bin/sleep-and-start-nvim "$@" &
+fi
 
 # if you change this, you need to change ~/bin/sgvim, too
 # alacritty -e $HOME/bin/sleep-and-start-nvim "$@" &

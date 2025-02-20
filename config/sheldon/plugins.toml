@@ -10,9 +10,108 @@
 #
 # See the documentation for more https://github.com/rossmacarthur/sheldon#readme
 
+# For example:
+#
+# [plugins.base16]
+# github = "chriskempson/base16-shell"
+
 shell = "zsh"
 
 [plugins]
+
+######################################
+# PERSONAL
+######################################
+# Write them out to easily turn on/off
+
+[plugins.cmd_exists]
+local = "~/.config/zsh/plugins"
+use = [ "_cmd_exists.zsh" ]
+
+[plugins.correction]
+local = "~/.config/zsh/plugins"
+use = [ "correction.zsh" ]
+
+[plugins.directories]
+local = "~/.config/zsh/plugins"
+use = [ "directories.zsh" ]
+
+[plugins.edit_command_line]
+local = "~/.config/zsh/plugins"
+use = [ "edit-command-line.zsh" ]
+
+[plugins.file_associations]
+local = "~/.config/zsh/plugins"
+use = [ "file-associations.zsh" ]
+
+[plugins.functions]
+local = "~/.config/zsh/plugins"
+use = [ "functions.zsh" ]
+
+[plugins.git]
+local = "~/.config/zsh/plugins"
+use = [ "git.zsh" ]
+
+[plugins.grep]
+local = "~/.config/zsh/plugins"
+use = [ "grep.zsh" ]
+
+[plugins.history]
+local = "~/.config/zsh/plugins"
+use = [ "history.zsh" ]
+
+[plugins.key_bindings]
+local = "~/.config/zsh/plugins"
+use = [ "key-bindings.zsh" ]
+
+# [plugins.keychain]
+# local = "~/.config/zsh/plugins"
+# use = [ "keychain.zsh" ]
+
+[plugins.misc]
+local = "~/.config/zsh/plugins"
+use = [ "misc.zsh" ]
+
+# Trying out spaceship
+# [plugins.prompt]
+# local = "~/.config/zsh/plugins"
+# use = [ "prompt.zsh" ]
+
+# [plugins.pyenv]
+# local = "~/.config/zsh/plugins"
+# use = [ "pyenv.zsh" ]
+
+[plugins.rbenv]
+local = "~/.config/zsh/plugins"
+use = [ "rbenv.zsh" ]
+
+[plugins.search_history]
+local = "~/.config/zsh/plugins"
+use = [ "search-history.zsh" ]
+
+[plugins.spectrum]
+local = "~/.config/zsh/plugins"
+use = [ "spectrum.zsh" ]
+
+[plugins.terminal_title]
+local = "~/.config/zsh/plugins"
+use = [ "terminal-title.zsh" ]
+
+[plugins.termsupport]
+local = "~/.config/zsh/plugins"
+use = [ "termsupport.zsh" ]
+
+[plugins.theme_and_appearance]
+local = "~/.config/zsh/plugins"
+use = [ "theme-and-appearance.zsh" ]
+
+[plugins.wordchars]
+local = "~/.config/zsh/plugins"
+use = [ "wordchars.zsh" ]
+
+####################################
+# THIRD PARTY
+####################################
 
 [plugins.zsh-autosuggestions]
 github = 'zsh-users/zsh-autosuggestions'
@@ -23,7 +122,7 @@ github = 'agkozak/zsh-z'
 [plugins.zsh-syntax-highlighting]
 github = 'zsh-users/zsh-syntax-highlighting'
 
-# For example:
-#
-# [plugins.base16]
-# github = "chriskempson/base16-shell"
+[plugins.spaceship]
+github = "spaceship-prompt/spaceship-prompt"
+
+

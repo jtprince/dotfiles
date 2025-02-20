@@ -7,7 +7,19 @@ cursor = "#FF7F00"
 text = "#2c2c2c"
 
 [font.normal]
-family = "Liberation Mono"
+family = "MesloLGS Nerd Font"
+
+[font.bold]
+family = "MesloLGS Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "MesloLGS Nerd Font"
+style = "Italic"
+
+[font.bold_italic]
+family = "MesloLGS Nerd Font"
+style = "Bold Italic"
 
 [[mouse.bindings]]
 action = "PasteSelection"

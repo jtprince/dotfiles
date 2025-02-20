@@ -1,7 +1,3 @@
-if [[ $HAVE_READ_JTP_PROFILE != "true" ]]; then
-    source "$HOME/.profile"
-fi
-
 local user='%{$terminfo[bold]$FG[010]%}%n@%m%{$reset_color%}'
 local pwd='%{$terminfo[bold]$FG[069]%}%~%{$reset_color%}'
 
