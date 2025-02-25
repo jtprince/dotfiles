@@ -31,42 +31,11 @@ alias pdf-combine='pdfunite'
 # firejail
 alias notrust="firejail --profile=$HOME/dotfiles/config/firejail/notrust.profile"
 
-## OWLET
-export OWLET_CONFIGURATION="$HOME/owlet/ci-kit/bin/python/configuration"
-
-alias owlet_black="black --config $OWLET_PYPROJECT_FILE"
-
-alias owlet_test_all="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
-alias owlet_test_unit="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests/unit"
-
-alias owlet_isort="isort --sp $OWLET_PYPROJECT_FILE --src ."
-alias owlet_lint_all="black --config $OWLET_PYPROJECT_FILE . && isort --sp $OWLET_PYPROJECT_FILE --src . **/*.py"
-alias owlet_pylint="pylint --rcfile=$OWLET_PYPROJECT_FILE"
-
-alias owlet_pylint_global="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_global.toml"
-alias owlet_pylint_global_oas="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_global.toml --ignore=app/models"
-alias owlet_pylint_models="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_generated_models.toml"
-alias owlet_pylint_tests="pylint --rcfile=${OWLET_CONFIGURATION}/pylint_tests.toml"
-
-alias owlet_test_all="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests"
-alias owlet_test_unit="python -m pytest --cov=./ --cov-branch --cov-config=$OWLET_COVERAGERC_FILE ./tests/unit"
-
 alias ipythonr="ipython --profile=autoreload"
-
-# ruby
-alias bundlei="bundle install --jobs=$NUM_CPU_CORES"
-alias be="bundle exec"
-alias markdown_lint="mdl"
 
 # file system
 alias ls="ls --color=auto"
-alias dl='gvfs-trash'
-alias sudoe="sudo -E"
 alias mount_wd15="gvfs-mount smb://wd15/USB_Storage"
-
-# nmatrix
-alias atlasinclude="export C_INCLUDE_PATH=/usr/include/atlas && export CPLUS_INCLUDE_PATH=/usr/include/atlas"
-alias includeatlas=atlasinclude
 
 # common spelling mistakes
 alias sl="ls"
@@ -113,16 +82,6 @@ alias blueon="sudo systemctl restart bluetooth.service"
 alias passup="gvim $HOME/Dropbox/env/passwds_logins/login_info.txt"
 alias checkup="cd $HOME/work/REPORTING/checkins/"
 
-# latex
-alias latexmk="latexmk -pdf -xelatex"
-
-# grep and find
-alias rgrep="grep -rs"
-alias rgreptext="grep -rs --binary-files=without-match"
-alias gg="git grep"
-# -L follow links
-# alias findit="find -L . -iname"
-
 # git
 alias gitcim="gitci"
 
@@ -156,22 +115,10 @@ alias clearscreen="echo -ne '\033c'"
 
 alias icat="kitten icat"
 
-alias open="xdg-open"
-
-alias conky="conky --config $HOME/.config/conky/conky.conf"
-
 alias mp3encodinginfo="ffprobe -show_format 2>/dev/null"
-
-alias prn="poetry run"
-
-alias kubeon="export ZSH_KUBECTL_DISPLAY=true"
-alias kubeoff="export ZSH_KUBECTL_DISPLAY=false"
-
-## proxy to datascience instance
-alias socksproxy="ssh-proxy alex-ec2-medium 8080"
-
-alias condaenvs="conda info --env"
 
 alias icat="kitty +kitten icat"
 
 alias scocr="sc -b --dir /home/jtprince/screenshots --timestamp box --ocr"
+
+CHEATDIR="$HOME/dotfiles/config/cheat/cheatsheets/personal"

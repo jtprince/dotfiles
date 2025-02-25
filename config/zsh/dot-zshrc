@@ -1,0 +1,5 @@
+
+# also see ~/.zprofile
+
+autoload -Uz compinit
+compinit
