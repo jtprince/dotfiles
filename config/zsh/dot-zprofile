@@ -10,8 +10,18 @@ eval "$(rbenv init -)"
 
 eval "$(sheldon source)"
 
-export PATH="$PATH:/Users/johnprince/.local/bin"
+export PATH="$PATH:$HOME/.local/bin"
 
-export PATH="$PATH:/Users/johnprince/bin"
+BINPATH="$HOME/bin"
+
+export PATH="$PATH:$BINPATH"
+export PATH="$PATH:$BINPATH/aliases"
+export PATH="$PATH:$BINPATH/docker"
+export PATH="$PATH:$BINPATH/git"
+export PATH="$PATH:$BINPATH/markdown"
+export PATH="$PATH:$BINPATH/media"
+export PATH="$PATH:$BINPATH/pyenv"
+export PATH="$PATH:$BINPATH/python"
+export PATH="$PATH:$BINPATH/work"
 
 export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
