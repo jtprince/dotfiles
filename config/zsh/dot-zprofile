@@ -1,6 +1,4 @@
-
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
+## PYENV
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
@@ -10,10 +8,11 @@ eval "$(rbenv init -)"
 
 eval "$(sheldon source)"
 
+## PATH
+
 export PATH="$PATH:$HOME/.local/bin"
 
 BINPATH="$HOME/bin"
-
 export PATH="$PATH:$BINPATH"
 export PATH="$PATH:$BINPATH/aliases"
 export PATH="$PATH:$BINPATH/docker"
@@ -24,4 +23,10 @@ export PATH="$PATH:$BINPATH/pyenv"
 export PATH="$PATH:$BINPATH/python"
 export PATH="$PATH:$BINPATH/work"
 
-export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+## Mac
+if [[ "$(uname)" == "Darwin" ]]; then
+	eval "$(/opt/homebrew/bin/brew shellenv)"
+	export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+fi
+
+export ZPROFILE_HAS_BEEN_READ=true

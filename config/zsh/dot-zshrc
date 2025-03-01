@@ -1,5 +1,7 @@
 
-# also see ~/.zprofile
+if [ -z "$ZPROFILE_HAS_BEEN_READ" ]; then
+  source ~/.zprofile
+fi
 
 autoload -Uz compinit
 compinit
