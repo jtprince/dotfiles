@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-#
-# manage_vm.sh - Simple script to manage an Azure VM on Arch Linux using Azure CLI.
-#
+
 if [[ -n "$1" && "$1" == "login" ]]; then
-  az login --scope "https://management.core.windows.net//.default" --use-device-code
+  # az login --scope "https://management.core.windows.net//.default" --use-device-code
+  az login --scope "https://management.core.windows.net//.default"
 fi
 
 DEFAULT_VM_NAME="johnprince-dev"
@@ -27,24 +26,20 @@ case "$1" in
     ;;
   ssh)
     echo "SSH into VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    # --prefer-private-ip used as per your example
-    # az ssh vm -g "$RESOURCE_GROUP" -n "$VM_NAME" --prefer-private-ip
     ssh "$VM_NAME"
     ;;
   refresh-ssh-keys)
     echo "Refreshing keys for VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    az ssh config --resource-group data-science-dev-ncus-rg-01 --vm-name "$VM_NAME" --prefer-private-ip --file ./myvm_ssh_config
-    # can remove the file since I've already captured the info from it, but if
-    # ip address changes or something, then we need to not remove it.
-    rm -f ./myvm_ssh_config
+    az ssh config --resource-group "$RESOURCE_GROUP" --vm-name "$VM_NAME" --prefer-private-ip --file /tmp/myvm_ssh_config
+    rm -f /myvm_ssh_config
     ;;
-
+  status)
+    echo "Checking status of VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    az vm get-instance-view --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --query "instanceView.statuses[?code!='ProvisioningState/succeeded'].{Status:displayStatus}" --output table
+    az vm list-ip-addresses --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --query "[].{PublicIP:virtualMachine.network.publicIpAddresses[0].ipAddress, PrivateIP:virtualMachine.network.privateIpAddresses[0]}" --output table
+    ;;
   *)
-    echo "Usage: $0 {login|start|stop|deallocate|ssh|refresh-ssh-keys} [VM-NAME]"
+    echo "Usage: $0 {login|start|stop|deallocate|ssh|refresh-ssh-keys|status} [VM-NAME]"
     exit 1
     ;;
 esac
-
-
-
-

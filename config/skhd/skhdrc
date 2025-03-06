@@ -145,7 +145,10 @@ alt - 0x1E  : osascript -e 'tell application "Spotify" to next track'
 # alt + shift + ctrl - 0x1D  : osascript -e 'set volume output volume (output volume of (get volume settings) + 5) -- increase volume'
 # alt - 0x1B -  : osascript -e 'set volume output muted not (output muted of (get volume settings)) -- toggle mute'
 
-alt - h : open -a "ChatGPT"
+# Then alt-n for a "new" thread if wanted"
+# alt - h : open -a "ChatGPT"
+# new chatgpt thread
+alt - h : osascript -e 'tell application "ChatGPT" to activate' -e 'tell application "System Events" to keystroke "n" using {command down}'
 
 
 
