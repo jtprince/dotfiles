@@ -3,6 +3,12 @@
 if [[ -n "$1" && "$1" == "login" ]]; then
   # az login --scope "https://management.core.windows.net//.default" --use-device-code
   az login --scope "https://management.core.windows.net//.default"
+  exit 0
+fi
+
+
+if [[ -n "$1" && "$1" == "logout" ]]; then
+  az logout
 fi
 
 DEFAULT_VM_NAME="johnprince-dev"
@@ -39,7 +45,7 @@ case "$1" in
     az vm list-ip-addresses --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --query "[].{PublicIP:virtualMachine.network.publicIpAddresses[0].ipAddress, PrivateIP:virtualMachine.network.privateIpAddresses[0]}" --output table
     ;;
   *)
-    echo "Usage: $0 {login|start|stop|deallocate|ssh|refresh-ssh-keys|status} [VM-NAME]"
+    echo "Usage: $0 {login|logout| start|stop|deallocate|ssh|refresh-ssh-keys|status} [VM-NAME]"
     exit 1
     ;;
 esac
