@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# modified slightly
-# http://madebynathan.com/2011/10/04/a-nicer-way-to-use-xclip/
-# A shortcut function that simplifies usage of xclip.
-# - Accepts input from either stdin (pipe), or params.
-# ------------------------------------------------
+# Cross-platform clipboard utility with Wayland support.
+# Accepts input from stdin or arguments.
 
 if [[ "$1" == "-q" ]]; then
     verbose=false
@@ -13,46 +10,58 @@ else
     verbose=true
 fi
 
-_scs_col="\e[0;32m"; _wrn_col='\e[1;31m'; _trn_col='\e[0;33m'
-# Check that xclip is installed.
-if ! type xclip > /dev/null 2>&1; then
-    echo -e "$_wrn_col""You must have the 'xclip' program installed.\e[0m"
-    # Check user is not root (root doesn't have access to user xorg server)
-elif [[ "$USER" == "root" ]]; then
-    echo -e "$_wrn_col""Must be regular user (not root) to copy a file to the clipboard.\e[0m"
-    else
+_scs_col="\033[0;32m"
+_wrn_col="\033[1;31m"
+_trn_col="\033[0;33m"
+_nc="\033[0m"
+_lightblue_col="\033[1;36m"
 
-    # If no tty, data should be available on stdin
-    if ! [[ "$( tty )" == /dev/* ]]; then
-        input="$(< /dev/stdin)"
-    # Else, fetch input from params
-    else
-        input="$*"
-    fi
+# Determine OS
+OS="$(uname)"
 
-    if [ -z "$input" ]; then  # If no input, print usage message.
-        echo "Copies a string to the clipboard."
-        echo "Usage: clip <string>"
-        echo "       echo <string> | clip"
-    else
-        # Copy input to clipboard
-        echo -n "$input" | xclip -selection c
-        if $verbose; then
-            # Truncate text for status
-            if [ ${#input} -gt 80 ]; then input="$(echo $input | cut -c1-80)$_trn_col...\e[0m"; fi
-            # Print status.
-            echo -e "$_scs_col""Copied to clipboard:\e[0m $input"
-        fi
+# Select clipboard command
+if [[ "$OS" == "Darwin" ]]; then
+    if ! command -v pbcopy >/dev/null 2>&1; then
+        echo -e "${_wrn_col}You must have 'pbcopy' installed (should be present by default on macOS).${_nc}"
+        exit 1
     fi
+    clipboard_cmd="pbcopy"
+elif [[ "$OS" == "Linux" ]]; then
+    if [[ "$USER" == "root" ]]; then
+        echo -e "${_wrn_col}Must be regular user (not root) to copy a file to the clipboard.${_nc}"
+        exit 1
+    fi
+    if command -v wl-copy >/dev/null 2>&1; then
+        clipboard_cmd="wl-copy"
+    elif command -v xclip >/dev/null 2>&1; then
+        clipboard_cmd="xclip -selection c"
+    else
+        echo -e "${_wrn_col}You need either 'wl-copy' (Wayland) or 'xclip' (X11) installed.${_nc}"
+        exit 1
+    fi
+else
+    echo -e "${_wrn_col}Unsupported OS: $OS${_nc}"
+    exit 1
 fi
 
-# some examples
+# Input from stdin or arguments
+if ! [[ "$(tty)" == /dev/* ]]; then
+    input="$(< /dev/stdin)"
+else
+    input="$*"
+fi
 
-# Copy current working directory
-# pwd | clip
-
-# Copy most recent command in bash history
-# history -n -2 | tail -n 1 | clip
-
-# Copy quietly
-# pwd | clip -q
+if [ -z "$input" ]; then
+    echo "Copies a string to the clipboard."
+    echo "Usage: clip <string>"
+    echo "       echo <string> | clip"
+else
+    echo -n "$input" | eval $clipboard_cmd
+    if $verbose; then
+        truncated="$input"
+        if [ ${#input} -gt 80 ]; then
+		truncated="$(echo "$input" | head -n 10)\n..."
+        fi
+	echo -e "${_scs_col}Copied to clipboard:${_nc}\n${_lightblue_col}$truncated${_nc}"
+    fi
+fi

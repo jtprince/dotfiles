@@ -72,9 +72,17 @@ select-tall-layout:
   mod: mod1
   key: t
 
+select-tall-right-layout:
+  mod: mod1
+  key: y
+
 select-two-pane-layout:
   mod: mod1
   key: s
+
+select-two-pane-right-layout:
+  mod: mod1
+  key: d
 
 select-fullscreen-layout:
   mod: mod1
@@ -229,13 +237,13 @@ relaunch-amethyst:
 ####################################
 
 # disable screen padding on builtin display
-disable-padding-on-builtin-display: false
+disable-padding-on-builtin-display: true
 
 # Boolean flag for whether or not to add margins between windows (default false).
 window-margins: true
 
 # Boolean flag for whether or not to set window margins if there is only one window on the screen, assuming window margins are enabled (default false).
-smart-window-margins: true
+smart-window-margins: false
 
 # # Add 10px margin between windows
 # window-margins: true

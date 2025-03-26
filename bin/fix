@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import platform
 import re
 import subprocess
 import sys
@@ -7,10 +8,13 @@ import sys
 if sys.argv[1:]:
     line = " ".join(sys.argv[1:])
 else:
-    line = subprocess.check_output(["xclip", "-p", "-o"]).decode("8859").strip()
+    if platform.system() == "Darwin":
+        line = subprocess.check_output(["pbpaste"]).decode().strip()
+    else:
+        line = subprocess.check_output(["xclip", "-p", "-o"]).decode("8859").strip()
 
 
-print("LINE!", line)
+print("SLURPING IN LINE!", line)
 
 remove_prefixes = {"FAILED", "ERROR"}
 for prefix in remove_prefixes:
@@ -47,7 +51,7 @@ for regex in regexs:
 
 cmd = ["gvim"]
 
-file_to_call = filename.split(":")[0]
+file_to_call = filename.split(":")[0].strip()
 
 # once we switch top level docker image dir to crux or something else:
 # file_to_call = file_to_call.replace("/crux-api", "/home/jtprince/dev/crux-api")
@@ -61,16 +65,19 @@ if "/" not in file_to_call:
 if file_to_call.startswith("=="):
     file_to_call = file_to_call.replace("==", "", 1)
 
-nvim_cmd = [file_to_call]
+nvim_args = []
 
 if colnum:
-    # nvim can't do the call cursor() :(
-    nvim_cmd.extend(["-c", '":call cursor({}, {})"'.format(linenum, colnum)])
+    nvim_args = ["-c", f"call cursor({linenum}, {colnum})"]
 elif linenum:
-    nvim_cmd.extend(["-c", '":{}"'.format(int(linenum))])
+    nvim_args = ["-c", str(int(linenum))]
 
-final_cmd = cmd + nvim_cmd
+# becomes something like: neovide file.py -- -c ':180'
+final_cmd = cmd + [file_to_call, "--"] + nvim_args
+
 final_cmd_str = " ".join(final_cmd)
+print("Running this command:")
+print(final_cmd_str)
 
 subprocess.run(final_cmd_str, shell=True, check=False)
 
