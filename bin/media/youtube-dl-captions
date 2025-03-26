@@ -1,36 +1,55 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# requires youtube-dl
 import argparse
 import pathlib
 import subprocess
+import re
+# pip install webvtt-py
+import webvtt
 
 parser = argparse.ArgumentParser()
-parser.add_argument("url", help="The youtube url")
+parser.add_argument("url", help="The YouTube URL")
 parser.add_argument(
-    "-o",
-    "--outfile",
-    type=pathlib.Path,
-    help="file to write to, otherwise determined from title",
-)
+    "-o", "--outfile", type=pathlib.Path, help="File to write to, otherwise determined from title")
 args = parser.parse_args()
 
+# yt-dlp command to get subtitles
 base_cmd = [
-    "youtube-dl",
+    "yt-dlp",
     "--write-auto-sub",
     "--sub-lang", "en",
     "--skip-download",
+    "-o", "%(title)s.%(ext)s"
 ]
 
+# Run yt-dlp
+subprocess.run(base_cmd + [args.url])
 
-output = subprocess.check_output(base_cmd + [args.url], text=True)
-filename = output.split("Writing video subtitles to: ")[-1]
+# Find the downloaded subtitle file
+vtt_files = list(pathlib.Path(".").glob("*.en.vtt"))
+if not vtt_files:
+    print("No subtitles found.")
+    exit(1)
 
-new_name = args.outfile if args.outfile else filename.replace('_')
+vtt_file = vtt_files[0]
 
-Path(filename)
+# Normalize filename
+safe_filename = re.sub(r"[^a-z0-9-]", "-", vtt_file.stem.lower()) + ".vtt"
+output_filename = pathlib.Path(safe_filename)
+vtt_file.rename(output_filename)
 
-if not args.outfile:
-    args.outfile = pathlib.Path(re.sub(safe_filename_re, "_", source.title).lower() + ".txt")
+# Convert VTT to plain text while removing only *consecutive* duplicate lines
+transcript_filename = output_filename.with_suffix(".transcript.txt")
 
+with open(transcript_filename, "w", encoding="utf-8") as transcript_file:
+    last_line = None
+    for caption in webvtt.read(output_filename):
+        lines = caption.text.strip().split("\n")
+        for line in lines:
+            line = line.strip()
+            if line and line != last_line:
+                transcript_file.write(line + "\n")
+            last_line = line
 
+print(f"Subtitles saved to: {output_filename}")
+print(f"Transcript saved to: {transcript_filename}")

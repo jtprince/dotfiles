@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import re
+from dataclasses import dataclass
+from typing import List, Optional
+
+
+@dataclass(frozen=True)
+class KeyBinding:
+    action: str
+    mod: str
+    key: str
+    description: Optional[str] = None
+
+
+def parse_amethyst_config(filepath: Path, include_descriptions: bool) -> List[KeyBinding]:
+    bindings = []
+    comment_buffer = []
+
+    with filepath.open() as infile:
+        lines = infile.readlines()
+
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+
+        if line.startswith("#"):
+            comment_buffer.append(line.lstrip("# ").strip())
+            i += 1
+            continue
+
+        if re.match(r"^[\w-]+:\s*$", line):
+            action = line.rstrip(":").strip()
+            description = " ".join(comment_buffer).strip() if include_descriptions else None
+            comment_buffer = []
+
+            # Look ahead for 'mod' and 'key'
+            mod, key = None, None
+            j = i + 1
+            while j < len(lines) and lines[j].startswith("  "):
+                mod_match = re.match(r"\s*mod:\s*(\w+)", lines[j])
+                key_match = re.match(r"\s*key:\s*(.+)", lines[j])
+                if mod_match:
+                    mod = mod_match.group(1).strip()
+                if key_match:
+                    key = key_match.group(1).strip()
+                j += 1
+
+            if mod and key:
+                bindings.append(KeyBinding(action, mod, key, description))
+            i = j
+        else:
+            comment_buffer = []
+            i += 1
+
+    return bindings
+
+
+def sort_bindings(bindings: List[KeyBinding], sort_by: str) -> List[KeyBinding]:
+    if sort_by == "alphabetical":
+        return sorted(bindings, key=lambda b: (b.key, b.mod))
+    elif sort_by == "mod":
+        return sorted(bindings, key=lambda b: (b.mod, b.key))
+    elif sort_by == "action":
+        return sorted(bindings, key=lambda b: b.action)
+    elif sort_by == "none":
+        return bindings
+    else:
+        raise ValueError("Shouldn't be able to get here")
+
+
+def display_bindings(bindings: List[KeyBinding]):
+    for b in bindings:
+        line = f"{b.mod} {b.key}: {b.action}"
+        if b.description:
+            line += f"  # {b.description}"
+        print(line)
+
+
+def main():
+
+    path = Path.home() / ".config/amethyst/amethyst.yml"
+    parser = argparse.ArgumentParser(description="Parse Amethyst config keybindings.")
+    parser.add_argument("--config", type=Path, default=path, help="Path to Amethyst YAML config file.")
+    parser.add_argument("--sort", choices=["none", "alphabetical", "mod", "action"],
+                        default="alphabetical", help="Sorting method for keybindings.")
+    parser.add_argument("--descriptions", action="store_true", help="Include comments/descriptions.")
+    args = parser.parse_args()
+
+    bindings = parse_amethyst_config(args.config, args.descriptions)
+    sorted_bindings = sort_bindings(bindings, args.sort)
+    display_bindings(sorted_bindings)
+
+
+if __name__ == "__main__":
+    main()

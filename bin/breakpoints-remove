@@ -4,7 +4,11 @@ start_dir="."
 
 remove_breakpoints() {
     local file=$1
-    sed -i '/^[[:space:]]*breakpoint()[[:space:]]*$/d' "$file"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' '/^[[:space:]]*breakpoint()[[:space:]]*$/d' "$file"
+    else
+        sed -i '/^[[:space:]]*breakpoint()[[:space:]]*$/d' "$file"
+    fi
 }
 
 export -f remove_breakpoints

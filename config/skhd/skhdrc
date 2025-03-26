@@ -126,9 +126,9 @@ alt + shift - i : open -na "Google Chrome" --args --new-window
 # Terminals
 alt - x : open -na "Alacritty"
 alt + shift - x : open -na "kitty"
-ctrl + alt + shift - x : open -na "Iterm"
+# ctrl + alt + shift - x : open -na "Iterm"
 
-alt - g  : open -na Neovide
+alt - g  : open -na Neovide --frame none
 
 
 ########################################################

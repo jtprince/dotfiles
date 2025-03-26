@@ -32,8 +32,10 @@ mouse = "Middle"
 history = 99999
 
 [window]
-decorations = "full"
+decorations = "None"
 dynamic_title = true
+opacity = 0.95
+# blur = true
 
 [window.padding]
 x = 8
@@ -43,3 +45,22 @@ y = 8
 import = [
     "~/.config/alacritty/themes/themes/dracula-jtp.toml"
 ]
+
+[[keyboard.bindings]]
+key = "G"
+mods = "Command"
+chars = "\u0007"  # Ctrl-G = ASCII 7
+
+# This will work for the terminal, but it won't be passed to neovim :/
+[[keyboard.bindings]]
+key = "C"
+mods = "Command"
+action = "Copy"
+
+[[keyboard.bindings]]
+key = "V"
+mods = "Command"
+action = "Paste"
+
+[selection]
+save_to_clipboard = true

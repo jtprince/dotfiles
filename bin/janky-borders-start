@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# ensure that you've previous run:
+#    brew services start borders
+/opt/homebrew/bin/borders active_color=0xaa00ff00 inactive_color=0x20494d64 width=8.0

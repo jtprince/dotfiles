@@ -20,6 +20,7 @@
 # layouts - Ordered list of layouts to use by layout key (default tall, wide, fullscreen, and column).
 #####################################
 layouts:
+  # tall = one left, split tiles right horizontal
   - tall
   - two-pane
   - fullscreen
@@ -52,49 +53,50 @@ mod2:
   - shift
   - control
 
+mod3:
+  - command
+  - option
+  - shift
+  - control
+
 #######################################
 # LAYOUTS
 #######################################
 
 # Move to the next layout in the list.
-cycle-layout:
-  mod: mod1
-  key: space
+# cycle-layout:
+#   mod: mod1
+#   key: <not using currently>
 
-# Move to the previous layout in the list.
-# cycle-layout-backward:
-#  mod: mod2
-#  key: <blah>
-
-# Select tall layout
 select-tall-layout:
   mod: mod1
   key: t
 
-# # Select wide layout
-# select-two-pane-layout:
-#   mod: mod1
-#   key: s
+select-two-pane-layout:
+  mod: mod1
+  key: s
 
-# Select fullscreen layout
 select-fullscreen-layout:
   mod: mod1
   key: f
+
+toggle-float:
+  mod: mod1
+  key: space
 
 #######################################
 # RESIZE
 #######################################
 
-# Shrink the main pane by a percentage of the screen dimension as defined by window-resize-step. Note that not all layouts respond to this command.
+# embiggen main window by a certain fraction
 shrink-main:
-  mod: mod1
+  mod: mod3
   key: h
 
-# Expand the main pane by a percentage of the screen dimension as defined by window-resize-step. Note that not all layouts respond to this command.
+# shrink main window by a certain fraction
 expand-main:
-  mod: mod1
+  mod: mod3
   key: l
-
 
 #######################################
 # FOCUS & WINDOW MOVEMENT
@@ -104,7 +106,6 @@ expand-main:
 focus-ccw:
   mod: mod1
   key: k
-# originally j
 
 # Focus the next window in the list going clockwise.
 focus-cw:
@@ -112,25 +113,27 @@ focus-cw:
   key: j
 # originally k
 
-# Focus the main window in the list.
+# Toggles focus on the main window or not (sometimes toggles)
 focus-main:
   mod: mod1
   key: m
 
-# Swap the position of the currently focused window with the next window in the list going counter-clockwise.
+# Swap position of focused window w/ next window in list (counter-clockwise).
+# (counter-clockwise is *up* on tall layout)
 swap-ccw:
-  mod: mod2
-  key: j
-
-# Swap the position of the currently focused window with the next window in the list going clockwise.
-swap-cw:
   mod: mod2
   key: k
 
+# Swap position of focused window w/ next window in list (clockwise).
+# (clockwise is *down* on tall layout)
+swap-cw:
+  mod: mod2
+  key: j
+
 # Swap the position of the currently focused window with the main window in the list.
 swap-main:
-  mod: mod1
-  key: enter
+  mod: mod2
+  key: m
 
 
 ########################################
@@ -140,12 +143,12 @@ swap-main:
 # Focus the next screen in the list going counter-clockwise.
 focus-screen-ccw:
   mod: mod1
-  key: p
+  key: h
 
 # Focus the next screen in the list going clockwise.
 focus-screen-cw:
   mod: mod1
-  key: n
+  key: l
 
 # Move the currently focused window onto the next screen in the list going counter-clockwise.
 swap-screen-ccw:
@@ -174,14 +177,10 @@ swap-screen-cw:
 #   key: i
 
 
-# Toggle the floating state of the currently focused window; i.e., if it was floating make it tiled and if it was tiled make it floating.
-toggle-float:
-  mod: mod2
-  key: space
 
 # Display the layout HUD with the current layout on each screen.
 display-current-layout:
-  mod: mod1
+  mod: mod2
   key: i
 
 # Turn on or off tiling entirely.
@@ -213,10 +212,11 @@ throw-space-right:
 ####################################
 ## MISC KEYS
 ####################################
+# This just gives me trouble, turning off for now
 # Turn on or off focus-follows-mouse.
-toggle-focus-follows-mouse:
-  mod: mod2
-  key: x
+# toggle-focus-follows-mouse:
+#   mod: mod2
+#   key: x
 
 # Automatically quit and reopen Amethyst.
 relaunch-amethyst:
@@ -241,7 +241,7 @@ smart-window-margins: true
 # window-margins: true
 # window-margin-size: 5
 # The size of the margins between windows (in px, default 0).
-window-margin-size: 2
+window-margin-size: 10 
 
 # The max number of windows that may be visible on a screen at one time before
 # additional windows are minimized. A value of 0 disables the feature.
@@ -346,27 +346,3 @@ debug-layout-info: false
 # command4:
 #   mod: <NONE>
 #   key: <NONE>
-
-
-focus-ccw 	Focus the next window in the list going counter-clockwise.
-focus-cw 	Focus the next window in the list going clockwise.
-focus-main 	Focus the main window in the list.
-focus-screen-ccw 	Focus the next screen in the list going counter-clockwise.
-focus-screen-cw 	Focus the next screen in the list going clockwise.
-swap-screen-ccw 	Move the currently focused window onto the next screen in the list going counter-clockwise.
-swap-screen-cw 	Move the currently focused window onto the next screen in the list going clockwise.
-swap-ccw 	Swap the position of the currently focused window with the next window in the list going counter-clockwise.
-swap-cw 	Swap the position of the currently focused window with the next window in the list going clockwise.
-swap-main 	Swap the position of the currently focused window with the main window in the list.
-focus-screen-n 	Move focus to the n-th screen in the list; e.g., focus-screen-3 will move mouse focus to the 3rd screen. Note that the main window in the given screen will be focused.
-throw-screen-n 	Move the currently focused window to the n-th screen; e.g., throw-screen-3 will move the window to the 3rd screen.
-throw-space-n 	Move the currently focused window to the n-th space; e.g., throw-space-3 will move the window to the 3rd space.
-throw-space-left 	Move the currently focused window to the space to the left.
-throw-space-right 	Move currently the focused window to the space to the right.
-toggle-float 	Toggle the floating state of the currently focused window; i.e., if it was floating make it tiled and if it was tiled make it floating.
-display-current-layout 	Display the layout HUD with the current layout on each screen.
-toggle-tiling 	Turn on or off tiling entirely.
-reevaluate-windows 	Rerun the current layout's algorithm.
-toggle-focus-follows-mouse 	Turn on or off focus-follows-mouse.
-relaunch-amethyst 	Automatically quit and reopen Amethyst.
-

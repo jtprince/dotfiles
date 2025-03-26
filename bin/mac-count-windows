@@ -1,0 +1,16 @@
+#!/bin/bash
+
+count=$(osascript <<EOF
+tell application "System Events"
+    set appList to (application processes whose background only is false)
+    set windowCount to 0
+    repeat with a in appList
+        set windowCount to windowCount + (count of windows of a)
+    end repeat
+end tell
+return windowCount
+EOF
+)
+
+non_main=$((count - 1))
+echo "$non_main windows in the stack"
