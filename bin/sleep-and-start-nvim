@@ -17,7 +17,7 @@ echo -en "\033]0;🅽 ${window_title}\007"
 echo "Server mode $server_mode"
 echo "$@"
 
-sleep 0.05
+sleep 0.00
 # nvim "$@"
 # yay -S neovim-remote
 NVIM_SOCKET="/tmp/nvimsocket"

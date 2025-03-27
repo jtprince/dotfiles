@@ -128,7 +128,7 @@ alt - x : open -na "Alacritty"
 alt + shift - x : open -na "kitty"
 # ctrl + alt + shift - x : open -na "Iterm"
 
-alt - g  : open -na Neovide --frame none
+alt - g  : open -na Neovide --args --frame none
 
 
 ########################################################

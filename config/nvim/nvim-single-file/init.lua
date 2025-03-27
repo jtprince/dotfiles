@@ -1,23 +1,21 @@
 ---------------------------
 -- Early settings
 ---------------------------
+
+require("early_init")
+
 -- Ensure proper colors in Neovide and terminal
 vim.g.neovide_hide_titlebar = true
 vim.opt.termguicolors = true
 
--- Helper function for transparency formatting
-local alpha = function()
-	return string.format("%x", math.floor(255 * vim.g.transparency or 0.8))
+local function alpha()
+	return string.format("%02x", math.floor(255 * (vim.g.transparency or 0.8)))
 end
 
 if vim.g.neovide then
 	vim.g.neovide_scale_factor = 1.1
 	vim.g.neovide_scroll_animation_length = 0.00
-	vim.g.transparency = 0.8
 
-	-- g:neovide_opacity should be 0 if you want to unify transparency of content and title bar.
-	vim.g.neovide_opacity = 0.0
-	vim.g.neovide_background_color = "#0f1117" .. alpha()
 	vim.g.neovide_cursor_animate_in_insert_mode = false
 
 	-- Increase repeat rate (default is 40, lower is faster)
@@ -89,13 +87,26 @@ require('lazy').setup({
 		config = function()
 			vim.cmd("colorscheme dracula") -- Apply the theme first
 
-			-- ensure transparent background regardless of theme
-			vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-			vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
-			vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-			vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none" })
-			vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
-			vim.api.nvim_set_hl(0, "VertSplit", { bg = "none" })
+			-- Neovide-specific transparency config
+			if vim.g.neovide then
+				vim.g.transparency = 0.8
+				local alpha = function()
+					return string.format("%02x", math.floor(255 * (vim.g.transparency or 0.8)))
+				end
+
+				vim.g.neovide_background_color = "#0f1117" .. alpha()
+				vim.g.neovide_opacity = 1.0 -- or nil / just remove this line
+			end
+
+			-- Transparent backgrounds
+			local groups = {
+				"Normal", "NormalNC", "NormalFloat",
+				"FloatBorder", "SignColumn", "VertSplit"
+			}
+
+			for _, group in ipairs(groups) do
+				vim.api.nvim_set_hl(0, group, { bg = "none" })
+			end
 
 			-- override the cursor color after the theme loads
 			vim.api.nvim_set_hl(0, "Cursor", { fg = "#000000", bg = "#FFA500" })
@@ -169,31 +180,81 @@ require('lazy').setup({
 		},
 		config = function()
 			require("mason").setup()
-			require("mason-lspconfig").setup({
-				-- Python, Lua, Markdown
-				ensure_installed = { "pyright", "lua_ls", "marksman" }
-			})
+			require("mason-lspconfig").setup()
 
-			local lspconfig = require("lspconfig")
-			require("mason-lspconfig").setup_handlers({
-				function(server_name)
-					lspconfig[server_name].setup({
-						capabilities = require("cmp_nvim_lsp").default_capabilities(),
-					})
-				end,
-			})
-
-			-- Special settings for Lua LSP
-			lspconfig.lua_ls.setup({
-				settings = {
+			local servers = {
+				pylsp = {
+					plugins = {
+						ruff = {
+							enabled = true,
+							formatEnabled = true,
+							extendSelect = { "I" },
+							targetVersion = "py310",
+						},
+					},
+				},
+				lua_ls = {
 					Lua = {
-						diagnostics = { globals = { "vim" } },
-						workspace = { library = vim.api.nvim_get_runtime_file("", true) },
-						format = { enable = true },
+						workspace = { checkThirdParty = false },
+						telemetry = { enable = false },
+					},
+				},
+				marksman = {}, -- No special config needed
+			}
+
+			-- Broadcast cmp-nvim-lsp capabilities
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+			-- Shared on_attach
+			local on_attach = function(client, bufnr)
+				-- Local format command
+				vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
+					vim.lsp.buf.format({ async = false })
+				end, { desc = "Format buffer with LSP" })
+
+				-- Format on save for all buffers
+				vim.api.nvim_create_autocmd("BufWritePre", {
+					buffer = bufnr,
+					callback = function()
+						vim.lsp.buf.format({ async = false })
+					end,
+				})
+
+				-- Special case: Ruff fixAll on save (only for Ruff client)
+				if client.name == "pylsp" or client.name == "ruff" then
+					vim.api.nvim_create_autocmd("BufWritePre", {
+						group = vim.api.nvim_create_augroup("RuffFixAllOnSave", { clear = true }),
+						buffer = bufnr,
+						callback = function()
+							vim.lsp.buf.code_action({
+								context = {
+									only = { "source.fixAll.ruff" },
+								},
+								apply = true,
+							})
+						end,
+					})
+				end
+			end
+
+			-- Ensure all listed servers are installed
+			local mason_lspconfig = require("mason-lspconfig")
+			mason_lspconfig.setup {
+				ensure_installed = vim.tbl_keys(servers),
+			}
+
+			-- Set up each server with its config
+			mason_lspconfig.setup_handlers {
+				function(server_name)
+					require("lspconfig")[server_name].setup {
+						capabilities = capabilities,
+						on_attach = on_attach,
+						settings = servers[server_name],
+						filetypes = servers[server_name] and servers[server_name].filetypes,
 					}
-				}
-			})
-		end
+				end,
+			}
+		end,
 	} or nil,
 
 	-- Telescope (fuzzy finder)
@@ -275,3 +336,13 @@ vim.keymap.set('v', '<C-g>', '<Esc>ggVG', { noremap = true, silent = true })
 
 -- semicolon same as colon to make it easier to run various commands
 vim.keymap.set('n', ';', ':', { noremap = true })
+
+
+vim.keymap.set("n", "<leader>o", function()
+	vim.lsp.buf.code_action({
+		context = {
+			only = { "source.fixAll.ruff" },
+		},
+		apply = true,
+	})
+end, { desc = "Ruff: Fix All (incl. Import Sorting)", noremap = true, silent = true })
