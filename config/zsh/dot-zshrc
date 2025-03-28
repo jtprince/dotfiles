@@ -1,7 +1,4 @@
+# the venv is already included in starship
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-if [ -z "$ZPROFILE_HAS_BEEN_READ" ]; then
-  source ~/.zprofile
-fi
-
-autoload -Uz compinit
-compinit
+eval "$(starship init zsh)"

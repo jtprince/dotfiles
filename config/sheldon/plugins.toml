@@ -72,11 +72,6 @@ use = [ "key-bindings.zsh" ]
 local = "~/.config/zsh/plugins"
 use = [ "misc.zsh" ]
 
-# Trying out spaceship
-# [plugins.prompt]
-# local = "~/.config/zsh/plugins"
-# use = [ "prompt.zsh" ]
-
 # [plugins.pyenv]
 # local = "~/.config/zsh/plugins"
 # use = [ "pyenv.zsh" ]
@@ -113,6 +108,9 @@ use = [ "wordchars.zsh" ]
 local = "~/.config/zsh/plugins"
 use = [ "aliases.zsh" ]
 
+[plugins.completion]
+local = "~/.config/zsh/plugins"
+use = [ "completion.zsh" ]
 
 ####################################
 # THIRD PARTY
@@ -127,10 +125,11 @@ github = 'agkozak/zsh-z'
 [plugins.zsh-syntax-highlighting]
 github = 'zsh-users/zsh-syntax-highlighting'
 
-[plugins.spaceship]
-github = "spaceship-prompt/spaceship-prompt"
-
-[plugins.spaceshiconfig]
-local = "~/.config/zsh/plugins"
-use = [ "spaceship.zsh" ]
+# using starship which has its own init in zshrc and config
+# [plugins.spaceship]
+# github = "spaceship-prompt/spaceship-prompt"
+# 
+# [plugins.spaceshiconfig]
+# local = "~/.config/zsh/plugins"
+# use = [ "spaceship.zsh" ]
 

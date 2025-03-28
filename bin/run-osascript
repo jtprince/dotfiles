@@ -1,0 +1,51 @@
+#!/bin/bash
+
+SCRIPTDIR="$HOME/.config/osascript"
+input="$1"
+script_name="$(basename "$0")"
+
+show_help() {
+  cat <<EOF
+Usage: $script_name <script-name-or-path>
+
+Runs an AppleScript file via osascript.
+
+If <script-name-or-path> includes a slash (/), it is treated as a path (absolute or relative).
+Otherwise, it is assumed to refer to a file inside: $SCRIPTDIR
+
+The .scpt extension is optional. This script will attempt to find and run:
+  - <input>
+  - <input>.scpt
+
+Examples:
+  $script_name close_terminal
+  $script_name ./local-scripts/lock_screen.scpt
+  $script_name /Users/jt/custom.scpt
+
+EOF
+}
+
+# Show help if no args or help flags are passed
+if [[ -z "$input" || "$input" == "-h" || "$input" == "--help" || "$input" == "help" ]]; then
+  show_help
+  exit 0
+fi
+
+# If input is an absolute or relative path
+if [[ "$input" == */* ]]; then
+  script="$input"
+else
+  script="$SCRIPTDIR/$input"
+fi
+
+# Determine the actual script path to run
+if [[ -f "$script" ]]; then
+  final="$script"
+elif [[ -f "$script.scpt" ]]; then
+  final="$script.scpt"
+else
+  echo "$script_name: Script '$script' not found" >&2
+  exit 1
+fi
+
+osascript "$final"

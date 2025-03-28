@@ -192,9 +192,9 @@ display-current-layout:
   key: i
 
 # Turn on or off tiling entirely.
-# toggle-tiling:
-#   mod: mod2
-#   key: t
+toggle-tiling:
+  mod: mod3
+  key: z
 
 # Rerun the current layout's algorithm.
 reevaluate-windows:
