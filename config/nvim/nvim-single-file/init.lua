@@ -212,13 +212,28 @@ require('lazy').setup({
 					vim.lsp.buf.format({ async = false })
 				end, { desc = "Format buffer with LSP" })
 
-				-- Format on save for all buffers
 				vim.api.nvim_create_autocmd("BufWritePre", {
 					buffer = bufnr,
 					callback = function()
-						vim.lsp.buf.format({ async = false })
+						local client_with_format = nil
+						for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
+							if client.supports_method("textDocument/formatting") then
+								client_with_format = client
+								break
+							end
+						end
+
+						if client_with_format then
+							vim.lsp.buf.format({
+								async = false,
+								filter = function(c)
+									return c.id == client_with_format.id
+								end,
+							})
+						end
 					end,
 				})
+
 
 				-- Special case: Ruff fixAll on save (only for Ruff client)
 				if client.name == "pylsp" or client.name == "ruff" then
@@ -283,6 +298,54 @@ require('lazy').setup({
 	},
 })
 
+-- Define the command globally (one time only)
+if not vim.g._python_commands_defined then
+	vim.api.nvim_create_user_command("InsertCommandlineProgram", function()
+		if vim.bo.filetype ~= "python" then
+			vim.notify("InsertCommandlineProgram is only for Python buffers", vim.log.levels.WARN)
+			return
+		end
+
+		-- Insert the file contents just above the current line
+		vim.cmd('silent .-1read ~/.config/nvim/ftplugin/python-fragments/commandline_program.py')
+	end, {
+		desc = "Insert a basic argparse command-line program template",
+	})
+	vim.g._python_commands_defined = true
+end
+
+-- Python-specific ftplugin configuration inside init.lua
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "python",
+	callback = function()
+		-- Abbreviations
+		local abbrevs = {
+			improt = "import",
+			imrpot = "import",
+			imrpt = "import",
+			imprt = "import",
+			iport = "import",
+			impot = "import",
+			impowt = "import",
+			imropt = "import",
+			ipt = "import",
+			ii = "import",
+			prtin = "print",
+		}
+		for k, v in pairs(abbrevs) do
+			vim.cmd(string.format("iabbrev %s %s", k, v))
+		end
+
+		-- Mappings
+		-- vim.keymap.set("n", ",O", "<Esc>:w<CR>:!pre-commit run --files %<CR>", { buffer = true })
+		-- vim.keymap.set("n", ",o", "<Esc>:w<CR>:!ruff check --fix %<CR>", { buffer = true })
+
+		vim.keymap.set("n", ",B", "Obreakpoint()<Esc>0w", { buffer = true })
+		vim.keymap.set("n", "]]", [[/^\s*class\|^\s*def<CR>]], { buffer = true })
+		vim.keymap.set("n", "[[", [[?^\s*class\|^\s*def<CR>]], { buffer = true })
+	end,
+})
+
 ---------------------------
 -- Additional keymaps, basic settings, etc.
 ---------------------------
@@ -306,13 +369,6 @@ vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live
 ---------------------------
 vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = "*.lua",
-	callback = function()
-		vim.lsp.buf.format({ async = false })
-	end
-})
-
-vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = "*.md",
 	callback = function()
 		vim.lsp.buf.format({ async = false })
 	end
