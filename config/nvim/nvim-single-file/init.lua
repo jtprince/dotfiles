@@ -8,10 +8,6 @@ require("early_init")
 vim.g.neovide_hide_titlebar = true
 vim.opt.termguicolors = true
 
-local function alpha()
-	return string.format("%02x", math.floor(255 * (vim.g.transparency or 0.8)))
-end
-
 if vim.g.neovide then
 	vim.g.neovide_scale_factor = 1.1
 	vim.g.neovide_scroll_animation_length = 0.00
@@ -78,16 +74,26 @@ end
 ---------------------------
 -- Plugin specifications
 ---------------------------
+local function unless_vscode(spec)
+	return not is_vscode and spec or nil
+end
+
 require('lazy').setup({
 
 	-- Theme
-	{
-		"dracula/vim",
-		name = "dracula",
+	unless_vscode({
+		-- Need a treesitter based colorscheme for markview to work properly
+		-- Choose from: https://github.com/nvim-treesitter/nvim-treesitter/wiki/Colorschemes
+		-- "Mofiqul/dracula.nvim",
+		-- name = "dracula",
+		"navarasu/onedark.nvim",
+		name = "onedark",
 		config = function()
-			vim.cmd("colorscheme dracula") -- Apply the theme first
+			-- theme should be applied first, then remove background, etc for transparency
+			-- vim.cmd("colorscheme dracula")
+			vim.cmd("colorscheme onedark")
 
-			-- Neovide-specific transparency config
+			-- Neovide-specific transparency config (not working on my mac :/ )
 			if vim.g.neovide then
 				vim.g.transparency = 0.8
 				local alpha = function()
@@ -123,23 +129,100 @@ require('lazy').setup({
 				vim.g.neovide_cursor_color = "#FFA500" -- Explicitly set cursor color
 			end
 		end
-	},
+	}),
 
 	-- Treesitter
-	{
+	unless_vscode({
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		event = { "BufReadPost", "BufNewFile" },
 		config = function()
 			require("nvim-treesitter.configs").setup({
-				ensure_installed = { "lua", "python", "vim", "markdown" }, -- Add languages you need
+				ensure_installed = { "lua", "python", "vim", "markdown", "markdown_inline", "yaml", "latex" },
 				highlight = { enable = true },
+				modules = {},
+				sync_install = false,
+				ignore_install = {},
+				auto_install = true,
 			})
 		end
-	},
+	}),
+
+	unless_vscode({
+		'wfxr/minimap.vim',
+	}),
+
+	-- Comments
+	-- gcc to comment/uncomment
+	-- gc in visual mode
+	unless_vscode({
+		'numToStr/Comment.nvim',
+		event = 'VeryLazy',
+		config = function()
+			require('Comment').setup()
+		end,
+	}),
+
+	-- requires the vivify pkg installed
+	--
+	unless_vscode({ "jannis-baum/vivify.vim" }),
+
+	-- Telescope (fuzzy finder)
+	unless_vscode({
+		"nvim-telescope/telescope.nvim",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		cmd = "Telescope",
+		config = function()
+			require("telescope").setup({
+				defaults = {
+					prompt_prefix = "> ",
+					selection_caret = " ",
+					path_display = { "smart" },
+				},
+			})
+		end
+	}),
+
+	-- Gitsigns
+	unless_vscode({
+		"lewis6991/gitsigns.nvim",
+		event = { "BufReadPost", "BufNewFile" },
+		config = function()
+			require("gitsigns").setup()
+		end
+	}),
+
+	-- vim-table-mode
+	unless_vscode({
+		"dhruvasagar/vim-table-mode",
+		cmd = "TableModeToggle", -- Lazy-load when you actually call :TableModeToggle
+		config = function()
+			-- typical corner character:
+			vim.g.table_mode_corner = "|"
+		end,
+	}),
+
+
+
+	-- markview (view yaml, markdown, etc in a browser)
+	unless_vscode({
+		"OXY2DEV/markview.nvim",
+		-- No `ft` or `event` here; it loads at startup
+		config = function()
+			require("markview").setup({
+				auto_start = false,
+				auto_close = false,
+				dark_theme = true,
+				preview = {
+					enable = false,
+				},
+			})
+		end,
+	}),
+
 
 	-- Autocompletion
-	(not is_vscode) and {
+	unless_vscode({
 		"hrsh7th/nvim-cmp",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
@@ -169,16 +252,21 @@ require('lazy').setup({
 				}),
 			})
 		end
-	} or nil,
+	}),
 
 	-- Mason (for easy LSP/tool installation)
-	(not is_vscode) and {
+	unless_vscode({
 		"williamboman/mason.nvim",
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
 			"neovim/nvim-lspconfig",
+			-- neovim lua dev detup w/ smart LSP configs and types
+			"folke/neodev.nvim",
 		},
 		config = function()
+			-- neodev must be before lua_ls is set up
+			require("neodev").setup()
+
 			require("mason").setup()
 			require("mason-lspconfig").setup()
 
@@ -244,6 +332,7 @@ require('lazy').setup({
 							vim.lsp.buf.code_action({
 								context = {
 									only = { "source.fixAll.ruff" },
+									diagnostics = {},
 								},
 								apply = true,
 							})
@@ -256,6 +345,7 @@ require('lazy').setup({
 			local mason_lspconfig = require("mason-lspconfig")
 			mason_lspconfig.setup {
 				ensure_installed = vim.tbl_keys(servers),
+				automatic_installation = true,
 			}
 
 			-- Set up each server with its config
@@ -270,32 +360,10 @@ require('lazy').setup({
 				end,
 			}
 		end,
-	} or nil,
+	}),
 
-	-- Telescope (fuzzy finder)
-	{
-		"nvim-telescope/telescope.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		cmd = "Telescope",
-		config = function()
-			require("telescope").setup({
-				defaults = {
-					prompt_prefix = "> ",
-					selection_caret = " ",
-					path_display = { "smart" },
-				},
-			})
-		end
-	},
 
-	-- Gitsigns
-	{
-		"lewis6991/gitsigns.nvim",
-		event = { "BufReadPost", "BufNewFile" },
-		config = function()
-			require("gitsigns").setup()
-		end
-	},
+
 })
 
 -- Define the command globally (one time only)
@@ -393,12 +461,5 @@ vim.keymap.set('v', '<C-g>', '<Esc>ggVG', { noremap = true, silent = true })
 -- semicolon same as colon to make it easier to run various commands
 vim.keymap.set('n', ';', ':', { noremap = true })
 
-
-vim.keymap.set("n", "<leader>o", function()
-	vim.lsp.buf.code_action({
-		context = {
-			only = { "source.fixAll.ruff" },
-		},
-		apply = true,
-	})
-end, { desc = "Ruff: Fix All (incl. Import Sorting)", noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>mm', ':MinimapToggle<CR>',
+	{ noremap = true, silent = true, desc = 'Toggle Minimap' })

@@ -193,7 +193,7 @@ display-current-layout:
 
 # Turn on or off tiling entirely.
 toggle-tiling:
-  mod: mod3
+  mod: mod2
   key: z
 
 # Rerun the current layout's algorithm.
@@ -228,7 +228,7 @@ throw-space-right:
 
 # Automatically quit and reopen Amethyst.
 relaunch-amethyst:
-  mod: mod2
+  mod: mod3
   key: z
 
 
