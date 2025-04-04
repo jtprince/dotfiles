@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+import argparse
+import tarfile
+from pathlib import Path
+
+RISK2_DEFAULT_DIR = (
+    Path.home()
+    / "Applications/Kegworks/RiskII.app/Contents/drive_c/Program Files/RiskII"
+)
+FILES_TO_MANAGE = [("tourn.cfg", Path(".")), ("tourn.gsv", Path("GameSave"))]
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Save/load Risk II game files.")
+    parser.add_argument(
+        "--risk2-path",
+        type=Path,
+        default=RISK2_DEFAULT_DIR,
+        help="Path to Risk II folder (can be used with any command)",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    save_parser = subparsers.add_parser("save", help="Save current game files")
+    save_parser.add_argument("archive", type=Path, help="Output .tgz file")
+
+    load_parser = subparsers.add_parser("load", help="Load game from archive")
+    load_parser.add_argument("archive", type=Path, help="Input .tgz file")
+
+    return parser.parse_args()
+
+
+def save_game(archive: Path, risk2_path: Path):
+    with tarfile.open(archive, "w:gz") as tar:
+        for filename, subdir in FILES_TO_MANAGE:
+            src = risk2_path / subdir / filename
+            arcname = Path(subdir) / filename
+            if not src.exists():
+                raise FileNotFoundError(f"Missing file: {src}")
+            tar.add(src, arcname=arcname)
+    print(f"Saved game to {archive}")
+
+
+def safe_extract(tar, path="."):
+    def is_within_directory(directory, target):
+        abs_directory = Path(directory).resolve()
+        abs_target = Path(target).resolve()
+        return str(abs_target).startswith(str(abs_directory))
+
+    def filter_tarinfo(tarinfo, _path):
+        member_path = Path(path) / tarinfo.name
+        if not is_within_directory(path, member_path):
+            raise Exception(f"Unsafe path detected in tar file: {tarinfo.name}")
+        return tarinfo  # Allow extraction
+
+    tar.extractall(path=path, filter=filter_tarinfo)
+
+
+def load_game(archive: Path, risk2_path: Path):
+    with tarfile.open(archive, "r:gz") as tar:
+        safe_extract(tar, path=risk2_path)
+    print(f"Loaded game from {archive}")
+
+
+def main():
+    args = parse_args()
+
+    if args.command == "save":
+        save_game(args.archive, args.risk2_path)
+    elif args.command == "load":
+        load_game(args.archive, args.risk2_path)
+
+
+if __name__ == "__main__":
+    main()

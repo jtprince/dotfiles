@@ -149,6 +149,8 @@ require('lazy').setup({
 	}),
 
 	unless_vscode({
+		-- TODO: try out https://github.com/gorbit99/codewindow.nvim
+		-- requires code-minimap to be installed on your system
 		'wfxr/minimap.vim',
 	}),
 
@@ -281,12 +283,39 @@ require('lazy').setup({
 						},
 					},
 				},
-				lua_ls = {
-					Lua = {
-						workspace = { checkThirdParty = false },
-						telemetry = { enable = false },
-					},
-				},
+
+				lua_ls = (function()
+					local function optional_path(path)
+						local stat = vim.loop.fs_stat(path)
+						if stat and stat.type == "directory" then
+							return path
+						end
+						return nil
+					end
+
+					local hammerspoon_paths = vim.tbl_filter(function(p)
+						return p ~= nil
+					end, {
+						optional_path(vim.fn.expand("~/.local/share/hammerspoon-api/extensions")),
+						optional_path(vim.fn.expand(
+							"~/.local/share/hammerspoon-api/extensions/hs")),
+						optional_path(vim.fn.expand(
+							"~/.local/share/hammerspoon-api/extensions/hs/alert")),
+					})
+
+					return {
+						Lua = {
+							diagnostics = {
+								globals = { "hs" }, -- avoid "undefined global 'hs'"
+							},
+							workspace = {
+								checkThirdParty = false,
+								library = hammerspoon_paths,
+							},
+							telemetry = { enable = false },
+						}
+					}
+				end)(),
 				marksman = {}, -- No special config needed
 			}
 
