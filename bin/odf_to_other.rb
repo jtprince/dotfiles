@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 # DO NOT DELETE, RENAME, or MOVE since relied on by other scripts
 
 require 'shellwords'

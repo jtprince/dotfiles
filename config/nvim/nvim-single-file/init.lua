@@ -4,6 +4,8 @@
 
 require("early_init")
 
+vim.g.mapleader = ","
+
 -- Ensure proper colors in Neovide and terminal
 vim.g.neovide_hide_titlebar = true
 vim.opt.termguicolors = true
@@ -35,6 +37,43 @@ end
 -- VS Code check
 ---------------------------
 local is_vscode = vim.g.vscode ~= nil
+
+-- Auto-reload neovim config on save or :ReloadConfig
+-- if not is_vscode then
+-- local function reload_config()
+-- 	local config_dir = vim.fn.stdpath("config")
+-- 	local init_file = config_dir .. "/init.lua"
+--
+-- 	-- Always re-run init.lua
+-- 	dofile(init_file)
+--
+-- 	-- Check for modular setup by looking for 'lua/' folder
+-- 	local lua_dir = config_dir .. "/lua"
+-- 	local stat = vim.loop.fs_stat(lua_dir)
+--
+-- 	if stat and stat.type == "directory" then
+-- 		for name, _ in pairs(package.loaded) do
+-- 			-- clear only your own modules (safeguard to avoid nuking plugins)
+-- 			if name:match("^.+") and not name:match("^vim") then
+-- 				package.loaded[name] = nil
+-- 			end
+-- 		end
+-- 	end
+--
+-- 	vim.notify("Neovim config reloaded!", vim.log.levels.INFO)
+-- end
+--
+-- vim.api.nvim_create_user_command("ReloadConfig", reload_config, {})
+--
+-- vim.api.nvim_create_autocmd("BufWritePost", {
+-- 	-- when you modularize, need to change to something like this:
+-- 	-- pattern = lua/**/*.lua
+-- 	pattern = "init.lua",
+-- 	callback = function()
+-- 		reload_config()
+-- 	end,
+-- })
+-- end
 
 ---------------------------
 -- Plugin manager: lazy.nvim (2024/2025 approach)
@@ -80,6 +119,113 @@ end
 
 require('lazy').setup({
 
+	unless_vscode(
+		{
+			"folke/trouble.nvim",
+			opts = {},
+			cmd = "Trouble",
+			keys = {
+				{
+					"<leader>xx",
+					"<cmd>Trouble diagnostics toggle<cr>",
+					desc = "Diagnostics (Trouble)",
+				},
+				{
+					"<leader>xX",
+					"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+					desc = "Buffer Diagnostics (Trouble)",
+				},
+				{
+					"<leader>cs",
+					"<cmd>Trouble symbols toggle focus=false<cr>",
+					desc = "Symbols (Trouble)",
+				},
+				{
+					"<leader>cl",
+					"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+					desc = "LSP Definitions / references / ... (Trouble)",
+				},
+				{
+					"<leader>xL",
+					"<cmd>Trouble loclist toggle<cr>",
+					desc = "Location List (Trouble)",
+				},
+				{
+					"<leader>xQ",
+					"<cmd>Trouble qflist toggle<cr>",
+					desc = "Quickfix List (Trouble)",
+				},
+			},
+		}),
+
+	-- toggle term
+	unless_vscode({
+		'akinsho/toggleterm.nvim',
+		version = "*",
+		opts = {
+			size = 120,
+			open_mapping = [[<C-\>]], -- toggles the terminal window
+			direction = 'vertical',
+			shade_terminals = true,
+			start_in_insert = true,
+			insert_mappings = true,
+			terminal_mappings = true,
+			persist_size = true,
+			persist_mode = true,
+			close_on_exit = true,
+		},
+		config = function(_, opts)
+			require("toggleterm").setup(opts)
+
+			-- Terminal navigation with Ctrl+h/j/k/l from terminal mode
+			local function tmap(lhs, rhs)
+				vim.keymap.set('t', lhs, rhs, { noremap = true, silent = true })
+			end
+
+			-- Use <C-h/j/k/l> directly instead of <C-w>h/j/k/l
+			tmap('<C-h>', [[<C-\><C-n><C-w>h]])
+			tmap('<C-j>', [[<C-\><C-n><C-w>j]])
+			tmap('<C-k>', [[<C-\><C-n><C-w>k]])
+			tmap('<C-l>', [[<C-\><C-n><C-w>l]])
+
+			-- Auto-start insert mode when entering terminal buffers
+			vim.api.nvim_create_autocmd("BufEnter", {
+				pattern = "term://*",
+				callback = function()
+					if vim.bo.buftype == "terminal" then
+						vim.cmd("startinsert")
+					end
+				end,
+			})
+		end,
+
+
+	}),
+
+	-- persistence for automatic session mgmt
+	unless_vscode({
+		"folke/persistence.nvim",
+		event = "BufReadPre",             -- only start session saving when an actual file was opened
+		opts = {
+			dir = vim.fn.stdpath("state") .. "/sessions/", -- directory where session files are saved
+			-- minimum number of file buffers that need to be open to save
+			-- Set to 0 to always save
+			need = 1,
+			branch = true, -- use git branch to save session
+		}
+	}),
+
+	unless_vscode({
+		'stevearc/oil.nvim',
+		---@module 'oil'
+		---@type oil.SetupOpts
+		opts = {},
+		-- Optional dependencies
+		dependencies = { { "echasnovski/mini.icons", opts = {} } },
+		-- avoid lazy loading w/ this plugin since sometimes misbehaves w/ lazy
+		lazy = false,
+	}),
+
 	-- Theme
 	unless_vscode({
 		-- Need a treesitter based colorscheme for markview to work properly
@@ -115,7 +261,15 @@ require('lazy').setup({
 			end
 
 			-- override the cursor color after the theme loads
-			vim.api.nvim_set_hl(0, "Cursor", { fg = "#000000", bg = "#FFA500" })
+			-- something easily visible, like magenta (or orange for dracula)
+			vim.api.nvim_set_hl(0, "Cursor", { fg = "#000000", bg = "#FF00FF" }) -- magenta
+			-- vim.api.nvim_set_hl(0, "Cursor", { fg = "#000000", bg = "#FFA500" }) -- orange
+
+			-- vim.opt.fillchars:append({ eob = "." })  -- or another char
+			vim.api.nvim_set_hl(0, "EndOfBuffer", {
+				fg = "#44475a", -- Dracula gray or equivalent subtle tone
+				bg = "none"
+			})
 
 			-- Ensure 'guicursor' is set correctly
 			vim.opt.guicursor = "n-v-c:block-Cursor,i-ci-ve:ver25-Cursor,r-cr:hor20-Cursor,o:hor50-Cursor"
@@ -172,17 +326,107 @@ require('lazy').setup({
 	-- Telescope (fuzzy finder)
 	unless_vscode({
 		"nvim-telescope/telescope.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
+		branch = "0.1.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			{
+				"nvim-telescope/telescope-fzf-native.nvim",
+				build = "make",
+				cond = function()
+					return vim.fn.executable("make") == 1
+				end,
+			},
+		},
 		cmd = "Telescope",
 		config = function()
+			local actions = require("telescope.actions")
+			local action_state = require("telescope.actions.state")
+
+			local function delete_buffer_and_refresh(prompt_bufnr)
+				local current_picker = action_state.get_current_picker(prompt_bufnr)
+				if not current_picker then return end
+				local selected_buf = action_state.get_selected_entry()
+				vim.api.nvim_buf_delete(selected_buf.bufnr, { force = false })
+				actions.close(prompt_bufnr)
+				require("telescope.builtin").buffers()
+			end
+
+			local function safe_close(prompt_bufnr)
+				local picker = action_state.get_current_picker(prompt_bufnr)
+				if picker then actions.close(prompt_bufnr) end
+			end
+
+			local function open_buffer_in_vsplit(prompt_bufnr)
+				local selected_buf = action_state.get_selected_entry()
+				if selected_buf then
+					vim.cmd("vsplit | buffer " .. selected_buf.bufnr)
+					safe_close(prompt_bufnr)
+				end
+			end
+
+			local function open_buffer_in_split(prompt_bufnr)
+				local selected_buf = action_state.get_selected_entry()
+				if selected_buf then
+					vim.cmd("split | buffer " .. selected_buf.bufnr)
+					safe_close(prompt_bufnr)
+				end
+			end
+
 			require("telescope").setup({
 				defaults = {
 					prompt_prefix = "> ",
 					selection_caret = " ",
 					path_display = { "smart" },
+					layout_config = {
+						horizontal  = { width = 0.9, height = 0.9, prompt_position = "bottom", preview_cutoff = 120 },
+						vertical    = { width = 0.9, height = 0.9, prompt_position = "bottom", preview_cutoff = 40 },
+						center      = { width = 0.5, height = 0.4, prompt_position = "top", preview_cutoff = 40 },
+						cursor      = { width = 0.8, height = 0.9, preview_cutoff = 40 },
+						bottom_pane = { height = 25, prompt_position = "top", preview_cutoff = 120 },
+					},
+				},
+				pickers = {
+					buffers = {
+						mappings = {
+							i = {
+								["<C-d>"] = delete_buffer_and_refresh,
+							},
+							n = {
+								["dd"] = delete_buffer_and_refresh,
+								["<Space>"] = actions.toggle_selection +
+								    actions.move_selection_worse,
+								["v"] = open_buffer_in_vsplit,
+								["s"] = open_buffer_in_split,
+							},
+						},
+					},
+				},
+				extensions = {
+					["ui-select"] = require("telescope.themes").get_dropdown(),
 				},
 			})
-		end
+
+			-- Load extensions
+			pcall(require("telescope").load_extension, "fzf")
+			pcall(require("telescope").load_extension, "ui-select")
+
+			-- Git-rooted live grep
+			local function find_git_root()
+				local file = vim.api.nvim_buf_get_name(0)
+				local dir = (file == "") and vim.fn.getcwd() or vim.fn.fnamemodify(file, ":h")
+				local git_root = vim.fn.systemlist("git -C " ..
+					vim.fn.escape(dir, " ") .. " rev-parse --show-toplevel")[1]
+				if vim.v.shell_error ~= 0 then return vim.fn.getcwd() end
+				return git_root
+			end
+
+			local function live_grep_git_root()
+				local root = find_git_root()
+				require("telescope.builtin").live_grep({ search_dirs = { root } })
+			end
+
+			vim.api.nvim_create_user_command("LiveGrepGitRoot", live_grep_git_root, {})
+		end,
 	}),
 
 	-- Gitsigns
@@ -222,6 +466,18 @@ require('lazy').setup({
 		end,
 	}),
 
+
+	unless_vscode({
+		"iamcco/markdown-preview.nvim",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		ft = { "markdown" },
+		build = "cd app && npm install",
+		config = function()
+			vim.g.mkdp_auto_start = 0
+			vim.g.mkdp_echo_preview_url = 1
+			vim.g.mkdp_browser = "firefox" -- or set to "firefox", etc.
+		end,
+	}),
 
 	-- Autocompletion
 	unless_vscode({
@@ -457,9 +713,64 @@ vim.opt.wrap = true
 -- vim.opt.scrolloff = 8
 -- vim.opt.sidescrolloff = 8
 
-vim.g.mapleader = ","
-vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live grep" })
+
+if not is_vscode then
+	-- Telescope bindings
+	local tlscope = require("telescope.builtin")
+	vim.keymap.set("n", "<leader>?", tlscope.oldfiles, { desc = "[?] Recently opened files" })
+	vim.keymap.set("n", "<leader>ff", tlscope.buffers, { desc = "[ ] Find existing buffers" })
+	vim.keymap.set("n", "<leader>fb", tlscope.find_files, { desc = "[F]ind [B]y Name" })
+	vim.keymap.set("n", "<leader>fh", tlscope.help_tags, { desc = "[F]ind [H]elp" })
+	vim.keymap.set("n", "<leader>fs", tlscope.grep_string, { desc = "[F]ind [S]tring under cursor" })
+	vim.keymap.set("n", "<leader>gf", tlscope.git_files, { desc = "Git files" })
+	vim.keymap.set("n", "<leader>sd", tlscope.diagnostics, { desc = "Diagnostics" })
+	vim.keymap.set("n", "<leader>sr", tlscope.resume, { desc = "Resume last picker" })
+
+	vim.keymap.set("n", "<leader>sG", ":LiveGrepGitRoot<CR>", { desc = "[S]earch by [G]rep in Git root" })
+
+	vim.keymap.set("n", "<leader>/", function()
+		tlscope.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+			winblend = 10,
+			previewer = false,
+		}))
+	end, { desc = "[/] Search in current buffer" })
+
+	vim.keymap.set("n", "<leader>ss", tlscope.builtin, { desc = "[S]elect Telescope function" })
+	vim.keymap.set("n", "<leader>s/", function()
+		tlscope.live_grep({ grep_open_files = true, prompt_title = "Live Grep in Open Files" })
+	end, { desc = "[S]earch [/] in Open Files" })
+
+
+	-- persistence/session bindings
+	-- load the session for the current directory
+	vim.keymap.set("n", "<leader>qs", function() require("persistence").load() end)
+	-- select a session to load
+	vim.keymap.set("n", "<leader>qS", function() require("persistence").select() end)
+	-- load the last session
+	vim.keymap.set("n", "<leader>ql", function() require("persistence").load({ last = true }) end)
+	-- stop Persistence => session won't be saved on exit
+	vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end)
+
+
+	-- minimap bindings
+	vim.api.nvim_set_keymap('n', '<leader>mm', ':MinimapToggle<CR>',
+		{ noremap = true, silent = true, desc = 'Toggle Minimap' })
+
+	-- escape from terminal mode (i.e., insert on terminal line) to browse terminal
+	-- hit 'i' to enter the terminal mode again
+	vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]])
+
+	-- navigate between windows with <ctrl><KEY>
+	vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
+	vim.keymap.set('n', '<C-j>', '<C-w>j', { noremap = true, silent = true })
+	vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
+	vim.keymap.set('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
+	vim.keymap.set('i', '<C-h>', '<Esc><C-w>h', { noremap = true, silent = true })
+	vim.keymap.set('i', '<C-j>', '<Esc><C-w>j', { noremap = true, silent = true })
+	vim.keymap.set('i', '<C-k>', '<Esc><C-w>k', { noremap = true, silent = true })
+	vim.keymap.set('i', '<C-l>', '<Esc><C-w>l', { noremap = true, silent = true })
+end
+
 
 ---------------------------
 -- Auto-formatting on Save
@@ -489,6 +800,3 @@ vim.keymap.set('v', '<C-g>', '<Esc>ggVG', { noremap = true, silent = true })
 
 -- semicolon same as colon to make it easier to run various commands
 vim.keymap.set('n', ';', ':', { noremap = true })
-
-vim.api.nvim_set_keymap('n', '<leader>mm', ':MinimapToggle<CR>',
-	{ noremap = true, silent = true, desc = 'Toggle Minimap' })

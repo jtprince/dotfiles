@@ -1,21 +1,16 @@
-# Set profiling start time after shell is ready
-if [[ -z "$ZSH_PROF_START" ]]; then
-  export ZSH_PROF_START=$EPOCHREALTIME
-fi
-
-
-## PYENV
+## pyenv
 export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+eval "$(pyenv init --path)"
 eval "$(pyenv virtualenv-init -)"
 
+
+## rbenv
 eval "$(rbenv init -)"
 
 eval "$(sheldon source)"
 
 ## PATH
-
 export PATH="$PATH:$HOME/.local/bin"
 
 BINPATH="$HOME/bin"

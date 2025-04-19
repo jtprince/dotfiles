@@ -4,9 +4,13 @@
 
 # Firefox
 alt - i : open -na "Firefox" --args --new-window
+alt - c : open -na "Firefox" --args --new-window "https://calendar.google.com/calendar/"
+alt - e : open -na "Firefox" --args --new-window "https://mail.google.com/mail/"
 
 # Chrome
 alt + shift - i : open -na "Google Chrome" --args --new-window
+ctrl + alt + shift - c : open -na "Google Chrome" --args --new-window "https://calendar.google.com/calendar/"
+alt + shift - c : open -na "Google Chrome" --args --new-window "https://mail.google.com/mail/"
 
 # ChatGPT
 alt - h : open -na "ChatGPT"
@@ -41,8 +45,14 @@ alt - 0x1B    : run-osascript volume-mute-toggle
 # Edit this file
 ctrl + shift + alt + cmd - k : gvim ~/.config/skhd/skhdrc
 
+######################################################################
+######################################################################
+######################################################################
 # Restart skhd
 alt + shift - u : skhd --restart-service
+######################################################################
+######################################################################
+######################################################################
 
 # Close window gently
 alt + shift - w : run-osascript close-window-gently
