@@ -64,3 +64,22 @@ action = "Paste"
 
 [selection]
 save_to_clipboard = true
+
+#########################################
+# HINTS (enable clicking a url)
+#########################################
+
+[[hints.enabled]]
+# The regex to identify URLs
+regex = "https?://[^\"]+"
+
+# What to do when the URL is activated
+command = "open"
+
+# Whether to do post-processing (e.g., strip surrounding chars)
+post_processing = true
+
+# Mouse behavior setup
+[hints.enabled.mouse]
+enabled = true
+mods = "Control"
