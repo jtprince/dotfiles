@@ -10,7 +10,7 @@ alt - e : open -na "Firefox" --args --new-window "https://mail.google.com/mail/"
 # Chrome
 alt + shift - i : open -na "Google Chrome" --args --new-window
 ctrl + alt + shift - c : open -na "Google Chrome" --args --new-window "https://calendar.google.com/calendar/"
-alt + shift - c : open -na "Google Chrome" --args --new-window "https://mail.google.com/mail/"
+alt + shift - e : open -na "Google Chrome" --args --new-window "https://mail.google.com/mail/"
 
 # ChatGPT
 alt - h : open -na "ChatGPT"
