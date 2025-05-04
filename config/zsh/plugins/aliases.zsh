@@ -89,8 +89,6 @@ alias gitcim="gitci"
 alias vlisten="vlc --intf rc -Vdummy"
 #alias mp="mpd ; ncmpcpp ; mpd --kill"
 alias mplayer="mplayer -ao pulse -af scaletempo"
-alias mpv_bar="mpv --gpu-context=wayland --script-opts=osc-visibility=always"
-alias mpv="mpv --gpu-context=wayland"
 #alias youtube-dl="youtube-dl --prefer-ffmpeg"
 
 # applications

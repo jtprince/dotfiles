@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+
+from pathlib import Path
+import subprocess
+
+
+def reveal_latest_screenshot(screenshot_dir=Path.home() / "screenshots"):
+    # Get list of .png files
+    screenshots = list(screenshot_dir.glob("*.png"))
+    if not screenshots:
+        print("No screenshots found.")
+        return
+
+    # Sort by modification time and pick the latest
+    latest = max(screenshots, key=lambda p: p.stat().st_mtime)
+
+    # Reveal the file in Finder
+    print(f"Revealing: {latest}")
+    subprocess.run(["open", "-R", str(latest)])
+
+
+if __name__ == "__main__":
+    reveal_latest_screenshot()
