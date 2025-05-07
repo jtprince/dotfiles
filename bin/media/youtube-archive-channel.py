@@ -31,6 +31,9 @@ output_template = str(output_dir / "%(upload_date)s--%(title).200B.%(ext)s")
 command = [
     "yt-dlp",
     "--verbose",
+    "--no-overwrites",
+    "--no-part",
+    "--continue",
     "--download-archive",
     str(archive_file),
     "--output",
