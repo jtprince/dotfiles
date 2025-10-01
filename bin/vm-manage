@@ -1,51 +1,148 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-if [[ -n "$1" && "$1" == "login" ]]; then
+# --- Config ---
+DEFAULT_VM_NAME="johnprince-dev"
+RESOURCE_GROUP="data-science-dev-ncus-rg-01"
+
+VM_NAME="${2:-$DEFAULT_VM_NAME}"
+
+# --- Helpers ---
+err() { printf "ERROR: %s\n" "$*" >&2; }
+log() { printf "%s\n" "$*"; }
+
+require_az() {
+  if ! command -v az >/dev/null 2>&1; then
+    err "Azure CLI (az) not found. Install from https://aka.ms/azcli"
+    exit 127
+  fi
+}
+
+power_state() {
+  az vm get-instance-view \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$VM_NAME" \
+    --query "instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus | [0]" \
+    -o tsv 2>/dev/null || true
+}
+
+wait_for_state() {
+  local desired="$1" ; local timeout="${2:-600}" ; local interval=5
+  local start end now
+  start=$(date +%s)
+  end=$((start + timeout))
+  while true; do
+    now=$(date +%s)
+    local state
+    state="$(power_state)"
+    if [[ "$state" == "$desired" ]]; then
+      log "✅ Reached desired state: $state"
+      return 0
+    fi
+    if (( now >= end )); then
+      err "Timed out waiting for state '$desired'. Last seen: '${state:-unknown}'"
+      return 1
+    fi
+    log "Waiting for '$desired' (current: '${state:-unknown}')..."
+    sleep "$interval"
+  done
+}
+
+usage() {
+  cat <<USAGE
+Usage: $(basename "$0") {login|logout|start|stop|stop-only|deallocate|ssh|refresh-ssh-keys|status} [VM-NAME]
+
+Commands:
+  login                 az login (resource manager scope)
+  logout                az logout
+  start                 Start VM
+  stop                  Fully stop and deallocate (no compute charges)
+  stop-only             Power off without deallocating (still billed for compute)
+  deallocate            Deallocate explicitly (alias to 'stop' behavior)
+  ssh                   SSH using local host entry
+  refresh-ssh-keys      Generate SSH config via 'az ssh config'
+  status                Show power state and IPs
+USAGE
+}
+
+# --- Entry ---
+require_az
+
+if [[ -n "${1:-}" && "$1" == "login" ]]; then
+  # If device code is preferred, uncomment the next line and comment the one after.
   # az login --scope "https://management.core.windows.net//.default" --use-device-code
   az login --scope "https://management.core.windows.net//.default"
   exit 0
 fi
 
-
-if [[ -n "$1" && "$1" == "logout" ]]; then
+if [[ -n "${1:-}" && "$1" == "logout" ]]; then
   az logout
+  exit 0
 fi
 
-DEFAULT_VM_NAME="johnprince-dev"
-
-# Update these variables as needed
-RESOURCE_GROUP="data-science-dev-ncus-rg-01"
-VM_NAME="${2:-$DEFAULT_VM_NAME}"
-
-case "$1" in
+case "${1:-}" in
   start)
-    echo "Starting VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    az vm start --resource-group "$RESOURCE_GROUP" --name "$VM_NAME"
+    log "Starting VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    az vm start --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
+    wait_for_state "VM running" 600
     ;;
+
   stop)
-    echo "Stopping (but not deallocating) VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    az vm stop --resource-group "$RESOURCE_GROUP" --name "$VM_NAME"
+    log "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
+    # 'deallocate' is enough; it transitions to 'VM deallocated'
+    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
+    wait_for_state "VM deallocated" 900
     ;;
+
+  stop-only)
+    log "Powering off (NOT deallocating) VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    az vm stop --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
+    wait_for_state "VM stopped" 600
+    ;;
+
   deallocate)
-    echo "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
-    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME"
+    log "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
+    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
+    wait_for_state "VM deallocated" 900
     ;;
+
   ssh)
-    echo "SSH into VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    log "SSH into VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
     ssh "$VM_NAME"
     ;;
+
   refresh-ssh-keys)
-    echo "Refreshing keys for VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    az ssh config --resource-group "$RESOURCE_GROUP" --vm-name "$VM_NAME" --prefer-private-ip --file /tmp/myvm_ssh_config
-    rm -f /myvm_ssh_config
+    log "Refreshing SSH config for VM '$VM_NAME'..."
+    az ssh config \
+      --resource-group "$RESOURCE_GROUP" \
+      --vm-name "$VM_NAME" \
+      --prefer-private-ip \
+      --file /tmp/myvm_ssh_config
+    # Fix: remove the right temp file path if it existed from a previous run
+    rm -f /tmp/myvm_ssh_config 2>/dev/null || true
     ;;
+
   status)
-    echo "Checking status of VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    az vm get-instance-view --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --query "instanceView.statuses[?code!='ProvisioningState/succeeded'].{Status:displayStatus}" --output table
-    az vm list-ip-addresses --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --query "[].{PublicIP:virtualMachine.network.publicIpAddresses[0].ipAddress, PrivateIP:virtualMachine.network.privateIpAddresses[0]}" --output table
+    log "Checking status of VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
+    az vm get-instance-view \
+      --resource-group "$RESOURCE_GROUP" \
+      --name "$VM_NAME" \
+      --query "instanceView.statuses[?code!='ProvisioningState/succeeded'].{Status:displayStatus}" \
+      --output table
+    az vm list-ip-addresses \
+      --resource-group "$RESOURCE_GROUP" \
+      --name "$VM_NAME" \
+      --query "[].{PublicIP:virtualMachine.network.publicIpAddresses[0].ipAddress, PrivateIP:virtualMachine.network.privateIpAddresses[0]}" \
+      --output table
     ;;
+
+  ""|-h|--help|help)
+    usage
+    exit 0
+    ;;
+
   *)
-    echo "Usage: $0 {login|logout| start|stop|deallocate|ssh|refresh-ssh-keys|status} [VM-NAME]"
+    usage
     exit 1
     ;;
 esac

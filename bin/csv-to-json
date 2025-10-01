@@ -2,18 +2,41 @@
 
 require 'csv'
 require 'json'
+require 'optparse'
+
+options = {
+  pretty: false
+}
+
+opt_parser = OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename(__FILE__)} [options] <filename>.csv|tsv"
+
+  opts.on("--pretty", "Pretty-print JSON output") do
+    options[:pretty] = true
+  end
+
+  opts.on("-h", "--help", "Show this help") do
+    puts opts
+    exit
+  end
+end
+
+opt_parser.parse!(ARGV)
 
 filename = ARGV.shift
-
 if filename.nil?
-  puts "usage: #{File.basename(__FILE__)} <filename>.csv|tsv"
-  puts "outputs lines of json to stdout"
-  exit
+  puts opt_parser
+  exit 1
 end
 
 delimiter = File.extname(filename) == '.tsv' ? "\t" : ","
 
 table = CSV.table(filename, col_sep: delimiter)
 table.each do |row|
-  puts JSON.dump(row.to_h)
+  hash = row.to_h
+  if options[:pretty]
+    puts JSON.pretty_generate(hash)
+  else
+    puts JSON.dump(hash)
+  end
 end

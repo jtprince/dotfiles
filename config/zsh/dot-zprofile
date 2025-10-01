@@ -1,8 +1,8 @@
 ## pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv virtualenv-init -)"
+# export PYENV_ROOT="$HOME/.pyenv"
+# [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+# eval "$(pyenv init --path)"
+# eval "$(pyenv virtualenv-init -)"
 
 
 ## rbenv
@@ -20,7 +20,7 @@ export PATH="$PATH:$BINPATH/docker"
 export PATH="$PATH:$BINPATH/git"
 export PATH="$PATH:$BINPATH/markdown"
 export PATH="$PATH:$BINPATH/media"
-export PATH="$PATH:$BINPATH/pyenv"
+# export PATH="$PATH:$BINPATH/pyenv"
 export PATH="$PATH:$BINPATH/python"
 export PATH="$PATH:$BINPATH/work"
 

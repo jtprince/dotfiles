@@ -70,7 +70,7 @@ export PATH=$HOME/bin/docker:$PATH
 export PATH=$HOME/bin/git:$PATH
 export PATH=$HOME/bin/markdown:$PATH
 export PATH=$HOME/bin/media:$PATH
-export PATH=$HOME/bin/pyenv:$PATH
+# export PATH=$HOME/bin/pyenv:$PATH
 export PATH=$HOME/bin/python:$PATH
 export PATH=$HOME/bin/work:$PATH
 
@@ -137,12 +137,12 @@ if [ -d ~/.rbenv ]; then
 fi
 
 # yay -S pyenv pyenv-virtualenv
-if [ -d ~/.pyenv ]; then
-    export PYENV_ROOT="$HOME/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init --path)"
-    eval "$(pyenv virtualenv-init -)"
-fi
+# if [ -d ~/.pyenv ]; then
+#     export PYENV_ROOT="$HOME/.pyenv"
+#     export PATH="$PYENV_ROOT/bin:$PATH"
+#     eval "$(pyenv init --path)"
+#     eval "$(pyenv virtualenv-init -)"
+# fi
 
 if [ -d ~/go ]; then
     export GOPATH="$HOME/go"

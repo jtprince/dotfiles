@@ -216,14 +216,15 @@ require('lazy').setup({
 	}),
 
 	unless_vscode({
-		'stevearc/oil.nvim',
-		---@module 'oil'
-		---@type oil.SetupOpts
-		opts = {},
-		-- Optional dependencies
+		"stevearc/oil.nvim",
 		dependencies = { { "echasnovski/mini.icons", opts = {} } },
-		-- avoid lazy loading w/ this plugin since sometimes misbehaves w/ lazy
 		lazy = false,
+		opts = {
+			default_file_explorer = true, -- only triggers when opening a directory (e.g., `nvim .`)
+		},
+		keys = {
+			{ "-", "<cmd>Oil<CR>", desc = "Open parent directory with Oil" },
+		},
 	}),
 
 	-- Theme

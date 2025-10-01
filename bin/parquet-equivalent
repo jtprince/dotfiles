@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+import math
+from pathlib import Path
+from typing import Tuple
+
+import numpy as np
+import pandas as pd
+from pandas.util import hash_pandas_object
+
+
+def _normalize_df(
+    df: pd.DataFrame,
+    float_tol: float | None = None,
+    drop_index_like_cols: bool = True,
+) -> pd.DataFrame:
+    # Ignore the index entirely inside the normalized data
+    df = df.reset_index(drop=True)
+
+    if drop_index_like_cols:
+        idx_cols = [c for c in df.columns if str(c).startswith("__index_level_")]
+        if "index" in df.columns:
+            idx_cols.append("index")
+        if idx_cols:
+            df = df.drop(columns=idx_cols)
+
+    for c in df.columns:
+        if pd.api.types.is_categorical_dtype(df[c]):
+            df[c] = df[c].astype("string")
+
+    for c in df.columns:
+        if pd.api.types.is_string_dtype(df[c]) or pd.api.types.is_object_dtype(df[c]):
+            df[c] = df[c].astype("string")
+
+    if float_tol is not None:
+        float_cols = [c for c in df.columns if pd.api.types.is_float_dtype(df[c])]
+        if float_cols:
+            decimals = max(0, int(round(-math.log10(float_tol))))
+            for c in float_cols:
+                df[c] = df[c].astype("float64").round(decimals)
+
+    df = df.reindex(sorted(df.columns), axis=1)
+    return df
+
+
+def _row_multiset_signature(df: pd.DataFrame) -> pd.Series:
+    row_hashes = hash_pandas_object(df, index=False)
+    return row_hashes.value_counts(dropna=False).sort_index()
+
+
+def _index_multiset_signature(idx: pd.Index) -> pd.Series:
+    """
+    Build a multiset signature for an Index (supports MultiIndex).
+    Compares index values ignoring order but counting multiplicity.
+    """
+    # Represent MultiIndex rows as tuples; simple Index values pass through
+    if isinstance(idx, pd.MultiIndex):
+        s = pd.Series(list(idx.to_list()))
+    else:
+        s = pd.Series(idx.to_list())
+    return s.value_counts(dropna=False).sort_index()
+
+
+def parquet_equivalent(
+    a: str | Path,
+    b: str | Path,
+    float_tol: float | None = None,
+    engine: str = "pyarrow",
+    compare_index: bool = False,  # NEW FLAG
+) -> Tuple[bool, str]:
+    """
+    Returns (is_equivalent, explanation)
+      - Row order and column order are ignored.
+      - If float_tol is set (e.g., 1e-6), floats are rounded to that tolerance.
+      - If compare_index is True, require the two DataFrames to have the same index values
+        as a multiset (order-insensitive, multiplicity-sensitive). Index *names* are ignored.
+    """
+    df1 = pd.read_parquet(a, engine=engine)
+    df2 = pd.read_parquet(b, engine=engine)
+
+    # Optional: compare index multisets before normalization drops them
+    if compare_index:
+        if len(df1.index) != len(df2.index):
+            return False, "Not equivalent: different index lengths."
+        sig_idx1 = _index_multiset_signature(df1.index)
+        sig_idx2 = _index_multiset_signature(df2.index)
+        if not sig_idx1.equals(sig_idx2):
+            # quick summary
+            # compute total surplus/deficit counts
+            diff_idx = pd.concat([sig_idx1.rename("A"), sig_idx2.rename("B")], axis=1).fillna(0).astype(int)
+            more_in_a = int((diff_idx["A"] - diff_idx["B"]).clip(lower=0).sum())
+            more_in_b = int((diff_idx["B"] - diff_idx["A"]).clip(lower=0).sum())
+            return False, f"Not equivalent: index differs ({more_in_a} extra index values in A, {more_in_b} in B)."
+
+    # Continue with data equivalence ignoring index/row order
+    df1n = _normalize_df(df1, float_tol=float_tol)
+    df2n = _normalize_df(df2, float_tol=float_tol)
+
+    if set(df1n.columns) != set(df2n.columns):
+        only1 = sorted(set(df1n.columns) - set(df2n.columns))
+        only2 = sorted(set(df2n.columns) - set(df1n.columns))
+        msg = []
+        if only1:
+            msg.append(f"columns only in file A: {only1}")
+        if only2:
+            msg.append(f"columns only in file B: {only2}")
+        return False, "; ".join(msg)
+
+    df2n = df2n[df1n.columns]
+
+    sig1 = _row_multiset_signature(df1n)
+    sig2 = _row_multiset_signature(df2n)
+    if sig1.equals(sig2):
+        ok_msg = "Equivalent (ignoring row & column order"
+        if float_tol is not None:
+            ok_msg += f"; float tol={float_tol}"
+        if compare_index:
+            ok_msg += "; index multiset equal"
+        ok_msg += ")."
+        return True, ok_msg
+
+    diff = pd.concat([sig1.rename("A"), sig2.rename("B")], axis=1).fillna(0).astype(int)
+    more_in_a = int((diff["A"] - diff["B"]).clip(lower=0).sum())
+    more_in_b = int((diff["B"] - diff["A"]).clip(lower=0).sum())
+    extra_idx_note = " (index also compared)" if compare_index else ""
+    return False, f"Not equivalent{extra_idx_note}: {more_in_a} extra rows in A and {more_in_b} extra rows in B."
+
+
+if __name__ == "__main__":
+    import argparse
+
+    p = argparse.ArgumentParser(description="Compare two Parquet files for data equivalence.")
+    p.add_argument("file_a")
+    p.add_argument("file_b")
+    p.add_argument("--float-tol", type=float, default=None, help="e.g. 1e-6 to allow small float differences")
+    p.add_argument("--engine", default="pyarrow", choices=["pyarrow", "fastparquet"])
+    p.add_argument(
+        "--compare-index",
+        action="store_true",
+        help="Require the two files to have equivalent index values (multiset equality, order-insensitive).",
+    )
+    args = p.parse_args()
+
+    ok, why = parquet_equivalent(
+        args.file_a,
+        args.file_b,
+        float_tol=args.float_tol,
+        engine=args.engine,
+        compare_index=args.compare_index,
+    )
+    print("EQUIVALENT" if ok else "DIFFERENT", "-", why)

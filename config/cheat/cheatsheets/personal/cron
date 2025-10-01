@@ -58,9 +58,9 @@ PATH=/usr/bin:/bin:/usr/local/bin
 ---
 #!/bin/bash
 
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv virtualenv-init -)"
+# export PATH="$HOME/.pyenv/bin:$PATH"
+# eval "$(pyenv init --path)"
+# eval "$(pyenv virtualenv-init -)"
 
 # Add other env vars
 export XTO_CONFIG_DIR="$HOME/xtoconfig"

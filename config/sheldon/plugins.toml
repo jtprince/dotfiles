@@ -112,6 +112,10 @@ use = [ "aliases.zsh" ]
 local = "~/.config/zsh/plugins"
 use = [ "completion.zsh" ]
 
+[plugins.direnv]
+local = "~/.config/zsh/plugins"
+use = [ "direnv.zsh" ]
+
 ####################################
 # THIRD PARTY
 ####################################
