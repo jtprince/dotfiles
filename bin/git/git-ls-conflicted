@@ -1,26 +1,67 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-unresolved_marker = '<<<<<<<'
+import argparse
+import subprocess
+import sys
+from pathlib import Path
 
-if ARGV.size == 0
-  puts "usage: #{File.basename(__FILE__)} [u]nresolved | [r]esolved | [a]ll"
-  puts "  unresolved: files with #{unresolved_marker} in them"
-  puts "    resolved: files that no longer have the 'conflicted' marker in them."
-  puts "         all: any file that was ever conflicted in this round of merging"
-  exit
-end
+CONFLICT_MARKER = "<<<<<<<"
 
-type = ARGV.shift
+def run_command(*args: str) -> list[str]:
+    """Run a shell command and return output lines (stripped)."""
+    output = subprocess.check_output(args).decode("utf-8", "replace")
+    return [line for line in output.splitlines() if line.strip()]
 
-unresolved = `grep -lr '#{unresolved_marker}' .`.strip.split("\n")
-all = `git diff --name-only --diff-filter=U`.strip.split("\n")
-resolved = all - unresolved
+def file_contains_conflict_marker(file_path: Path) -> bool:
+    """Check if a file contains the merge conflict marker."""
+    try:
+        with file_path.open("r", encoding="utf-8", errors="ignore") as file:
+            return any(CONFLICT_MARKER in line for line in file)
+    except OSError:
+        return False
 
-case type[0]
-when 'u'
-  puts unresolved
-when 'r'
-  puts resolved
-when 'a'
-  puts all
-end
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="List files in the current merge conflict (one per line)."
+    )
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--unresolved", action="store_true",
+        help="Only files that still contain conflict markers (<<<<<<<)."
+    )
+    group.add_argument(
+        "--resolved", action="store_true",
+        help="Files that no longer have markers but are still unmerged."
+    )
+    group.add_argument(
+        "--all", action="store_true",
+        help="All files Git currently considers unmerged (default)."
+    )
+    arguments = parser.parse_args()
+
+    conflicted_files = [
+        Path(path) for path in run_command(
+            "git", "diff", "--name-only", "--diff-filter=U", "--relative"
+        )
+    ]
+
+    if arguments.unresolved:
+        selected_files = [
+            file_path for file_path in conflicted_files
+            if file_contains_conflict_marker(file_path)
+        ]
+    elif arguments.resolved:
+        selected_files = [
+            file_path for file_path in conflicted_files
+            if not file_contains_conflict_marker(file_path)
+        ]
+    else:  # default or --all
+        selected_files = conflicted_files
+
+    for file_path in selected_files:
+        print(file_path.as_posix())
+
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

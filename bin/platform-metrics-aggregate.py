@@ -20,6 +20,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("ms_versions", nargs="+", help="the ms_versions")
 parser.add_argument("--tables", nargs="*", help="the tables to calculate on")
 parser.add_argument("--split", default="test", help="the split")
+parser.add_argument(
+    "--simple", action="store_true", help="only show precision,recall, and f1 score"
+)
 parser.add_argument("--env", default="dev", help="the environment")
 args = parser.parse_args()
 
@@ -43,6 +46,19 @@ for table in args.tables:
         env=args.env,
     )
     df = aggregated_metrics(**aggregate_params)
+
+    if args.simple:
+        df = df[
+            [
+                "ms_version",
+                "source_database",
+                "n_cubes",
+                "precision",
+                "recall",
+                "f1_score",
+            ]
+        ]
+
     print(json.dumps(aggregate_params))
     print(table)
     print(df.to_string(index=False))
