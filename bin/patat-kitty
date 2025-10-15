@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# kitty-patat.sh — launch patat in Kitty with specified font size and opacity
+
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <font_size> <opacity> <patat_args...>"
+  exit 1
+fi
+
+font_size="$1"
+opacity="$2"
+shift 2
+
+kitty --override "font_size=${font_size}" \
+      --override "background_opacity=${opacity}" \
+      patat "$@"
