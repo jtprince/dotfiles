@@ -31,9 +31,8 @@
 - ⌘ + S — Save the notebook  
 - ⌘ + ⇧ + P — Open Command Palette  
 - ⌘ + K, ⌘ + S — Open Keyboard Shortcuts settings  
-- ⌃ + ` — Toggle terminal panel  
+- ctrl + ` — Toggle terminal panel  
 - ⌘ + B — Toggle sidebar visibility  
-- ⌘ + Tab — Cycle through open apps (system-wide app switcher, often useful in Cursor workflows)  
 
 
 ## In Cursor (VS Code + AI)
