@@ -4,9 +4,17 @@ uv python install 3.10
 uv python list
 uv python pin --global <version>
 
-
 ## Create new project	
 uv init <project>
+
+## Use private repo in your pyproject.toml
+
+```
+[[tool.uv.index]]
+name = "Enveda"
+url = "https://pypi.dev.enveda.io/simple/"
+default = true
+```
 
 ## Install dependencies	
 uv sync
