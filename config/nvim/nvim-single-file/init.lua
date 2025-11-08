@@ -773,6 +773,18 @@ if not is_vscode then
 end
 
 
+-- py2nb syntax highlighting (modern Neovim Lua API)
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	pattern = "*.py",
+	callback = function()
+		vim.cmd([[
+      syntax match Comment "#|.*$"
+      syntax match Special "#!.*$"
+      syntax match Delimiter "#-.*$"
+    ]])
+	end,
+})
+
 ---------------------------
 -- Auto-formatting on Save
 ---------------------------

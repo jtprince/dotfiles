@@ -1,11 +1,4 @@
-#!/usr/bin/env python3
-"""
-Implementation of download_msrun function without ms-toolkit and
-enveda-toolkit dependencies.
-
-This module provides a self-contained way to download mass spectrometry run files
-from Azure Blob Storage using Databricks for metadata lookup.
-"""
+#!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
@@ -17,6 +10,13 @@ from Azure Blob Storage using Databricks for metadata lookup.
 #     "databricks-sdk>=0.40.0",
 # ]
 # ///
+"""
+Implementation of download_msrun function without ms-toolkit and
+enveda-toolkit dependencies.
+
+This module provides a self-contained way to download mass spectrometry run files
+from Azure Blob Storage using Databricks for metadata lookup.
+"""
 
 import logging
 import pathlib
@@ -60,7 +60,9 @@ class Databricks:
     """Databricks client without enveda-toolkit dependencies."""
 
     def __init__(
-        self, env: Literal["dev", "prod"], compute_size: Literal["small", "large"] = "small"
+        self,
+        env: Literal["dev", "prod"],
+        compute_size: Literal["small", "large"] = "small",
     ):
         if env not in ["dev", "prod"]:
             raise ValueError(f"Invalid env: {env}")
@@ -92,10 +94,12 @@ class Databricks:
 
     def _get_connection(self, database: str = None):
         """Get a fresh Databricks connection."""
+        access_token = self._get_databricks_access_token()
         connection = sql.connect(
             server_hostname=self.server_hostname,
             http_path=self.http_path,
-            access_token=self._get_databricks_access_token(),
+            access_token=access_token,
+            auth_type="oauth",
         )
 
         with connection.cursor() as cursor:
@@ -127,7 +131,9 @@ class AzureBlobStorage:
             account_url=self.storage_account_url, credential=self.credentials
         )
 
-    def download_blob_to_file(self, container: str, blob_name: str, local_file_path: Path):
+    def download_blob_to_file(
+        self, container: str, blob_name: str, local_file_path: Path
+    ):
         """Download a blob to a local file."""
         container_client = self.blob_service_client.get_container_client(container)
         blob_client = container_client.get_blob_client(blob_name)

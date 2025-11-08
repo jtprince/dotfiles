@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+
+from enveda_toolkit import get_databricks
+from enveda_toolkit.azure_tools.azure_blob_storage import AzureBlobStorage
+
+ENVEDA_ENV = "prod"
+BLOB_STORAGE = "nassyncncus01"
+BRUKER_FILES = ["analysis.tdf", "analysis.tdf_bin"]
+CONTAINER = "mass-spec"
+
+cwd = Path.cwd()
+
+parser = argparse.ArgumentParser()
+parser.add_argument("msrun_ids", nargs="+", help="msrun_ids")
+parser.add_argument("--outdir", default=cwd, type=Path, help="dir to download to")
+parser.add_argument("--workers", type=int, default=4, help="number of download threads")
+args = parser.parse_args()
+
+db = get_databricks(ENVEDA_ENV)
+msrun_ids = ", ".join([f"'{id}'" for id in args.msrun_ids])
+result = db.query_df(
+    f"""
+        SELECT msrun_id, cloud_path
+        FROM enveda_prod.benchling_views.platform_ms_runs
+        WHERE msrun_id IN ({msrun_ids})
+    """
+)
+found_msrun_ids = result.msrun_id.tolist()
+
+missing_msrun_ids = set(args.msrun_ids) - set(found_msrun_ids)
+print(f"Could not find {len(missing_msrun_ids)} msrun_ids: {missing_msrun_ids}")
+
+
+storage = AzureBlobStorage(BLOB_STORAGE)
+
+tasks = []
+for row in result.itertuples():
+    outpath = args.outdir / f"{row.msrun_id}.d"
+    outpath.mkdir(parents=True, exist_ok=True)
+    for name in BRUKER_FILES:
+        if (outpath / name).exists():
+            continue
+        tasks.append((row.msrun_id, row.cloud_path, name, outpath))
+
+
+def _download_one(task):
+    msrun_id, cloud_path, name, outpath = task
+    # Perform the I/O-bound download
+    storage.download_blob(
+        container=CONTAINER,
+        blob_path=f"{cloud_path}/{name}",
+        local_directory=outpath,
+    )
+    return f"{msrun_id}:{name}"
+
+
+if not tasks:
+    print("Everything already present — nothing to download.")
+else:
+    print(f"Starting {len(tasks)} downloads with {args.workers} threads...")
+    completed = 0
+    # Thread pool for I/O parallelism
+    with ThreadPoolExecutor(max_workers=args.workers) as ex:
+        futures = [ex.submit(_download_one, t) for t in tasks]
+        for fut in as_completed(futures):
+            try:
+                label = fut.result()
+                completed += 1
+                if completed % 10 == 0 or completed == len(tasks):
+                    print(f"[{completed}/{len(tasks)}] {label}")
+            except Exception as e:
+                # Keep going on failures; print and continue
+                print(f"Download failed: {e}")
+
+    print("All done.")
