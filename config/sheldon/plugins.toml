@@ -24,6 +24,25 @@ shell = "zsh"
 ######################################
 # Write them out to easily turn on/off
 
+[plugins.__init_completion]
+inline = '''
+# put custom completion scripts ahead of defaults (optional)
+fpath=("$HOME/.config/zsh/completion" $fpath)
+
+# zsh native completion
+autoload -Uz compinit
+compinit -i
+
+# bridge for bash-style completers (argcomplete)
+autoload -U bashcompinit
+bashcompinit
+
+# register argcomplete for `cheat` if available on PATH
+if command -v register-python-argcomplete >/dev/null 2>&1 && command -v cheat >/dev/null 2>&1; then
+  eval "$(register-python-argcomplete cheat)"
+fi
+'''
+
 [plugins.cmd_exists]
 local = "~/.config/zsh/plugins"
 use = [ "_cmd_exists.zsh" ]
@@ -64,17 +83,13 @@ use = [ "history.zsh" ]
 local = "~/.config/zsh/plugins"
 use = [ "key-bindings.zsh" ]
 
-# [plugins.keychain]
-# local = "~/.config/zsh/plugins"
-# use = [ "keychain.zsh" ]
+[plugins.argcomplete]
+local = "~/.config/zsh/plugins"
+use = [ "argcomplete.zsh" ]
 
 [plugins.misc]
 local = "~/.config/zsh/plugins"
 use = [ "misc.zsh" ]
-
-# [plugins.pyenv]
-# local = "~/.config/zsh/plugins"
-# use = [ "pyenv.zsh" ]
 
 [plugins.rbenv]
 local = "~/.config/zsh/plugins"

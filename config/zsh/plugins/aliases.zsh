@@ -123,3 +123,12 @@ alias scocr="sc -b --dir /home/jtprince/screenshots --timestamp box --ocr"
 CHEATDIR="$HOME/dotfiles/config/cheat/cheatsheets/personal"
 
 alias tree='tree -I "__pycache__|.git|.mypy_cache" --prune'
+
+pip-install () {
+  local py="$PYTHON_GLOBAL_VENV/bin/python"
+  if [[ ! -x "$py" ]]; then
+    echo "No python at: $py" >&2
+    return 1
+  fi
+  command uv pip install --python "$py" "$@"
+}

@@ -8,8 +8,6 @@
 ## rbenv
 eval "$(rbenv init -)"
 
-eval "$(sheldon source)"
-
 ## PATH
 export PATH="$PATH:$HOME/.local/bin"
 
@@ -20,7 +18,6 @@ export PATH="$PATH:$BINPATH/docker"
 export PATH="$PATH:$BINPATH/git"
 export PATH="$PATH:$BINPATH/markdown"
 export PATH="$PATH:$BINPATH/media"
-# export PATH="$PATH:$BINPATH/pyenv"
 export PATH="$PATH:$BINPATH/python"
 export PATH="$PATH:$BINPATH/work"
 
@@ -29,5 +26,14 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	eval "$(/opt/homebrew/bin/brew shellenv)"
 	export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 fi
+
+# uv python install 3.14
+# Create a single, user-global env for your account
+# uv venv -p 3.14 ~/.local/uv-global-314
+export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global-314"
+export PATH="$PYTHON_GLOBAL_VENV/bin:$PATH"
+
+
+eval "$(sheldon source)"
 
 export ZPROFILE_HAS_BEEN_READ=true

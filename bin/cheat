@@ -1,0 +1,290 @@
+#!/usr/bin/env python3
+"""
+cheat: quick personal cheatsheet helper
+
+Features
+- Set CHEATS_DIR at the top of this file (or override with env CHEAT_DIR).
+- Topics ignore the .md extension for lookup and tab completion.
+- `cheat <topic>` prints the cheatsheet.
+- `cheat -e <topic>` opens it in $EDITOR (fallback to `nvim`).
+- `cheat -l` lists all topics.
+- Optional tab completion with argcomplete (bash/zsh).
+
+Tab completion setup (one-time):
+  pip install argcomplete
+  # Bash:
+  activate-global-python-argcomplete --user
+  # Zsh:
+  autoload -U bashcompinit && bashcompinit
+  eval "$(register-python-argcomplete cheat)"
+
+   OR
+
+  register-python-argcomplete --shell zsh cheat > ~/.config/zsh/completion/_cheat
+"""
+
+from __future__ import annotations
+import argparse
+import os
+import re
+import sys
+from pathlib import Path
+import subprocess
+import shutil
+import difflib
+
+from pygments import highlight
+from pygments.lexers import BashLexer
+from pygments.formatters import TerminalFormatter
+
+# ---------------------- Configuration ----------------------
+# Set your cheatsheets directory here (can be overridden by env CHEAT_DIR)
+CHEATS_DIR = Path("/Users/johnprince/dotfiles/config/cheat/cheatsheets/personal")
+# -----------------------------------------------------------
+
+# Optional argcomplete (script still works if not installed)
+try:
+    HAVE_ARGCOMPLETE = True
+except Exception:
+    HAVE_ARGCOMPLETE = False
+
+
+def get_cheats_dir() -> Path:
+    env = os.environ.get("CHEAT_DIR")
+    base = Path(env).expanduser() if env else CHEATS_DIR
+    return base
+
+
+def list_topics() -> list[str]:
+    base = get_cheats_dir()
+    if not base.exists():
+        return []
+    topics = [p.stem for p in base.glob("*.md") if p.is_file()]
+    topics.sort(key=str.lower)
+    return topics
+
+
+def resolve_topic(user_input: str) -> Path | None:
+    """
+    Resolve a user topic (without .md) to a file path.
+    Matching order:
+      1) exact (case-sensitive) match
+      2) exact (case-insensitive) match
+      3) unique prefix match (case-insensitive)
+    Returns a Path (to .md) or None if not resolvable.
+    """
+    base = get_cheats_dir()
+    candidates = list_topics()
+    if not candidates:
+        return None
+
+    # 1) exact case-sensitive
+    if user_input in candidates:
+        return base / f"{user_input}.md"
+
+    # 2) exact case-insensitive
+    lower_map = {t.lower(): t for t in candidates}
+    if user_input.lower() in lower_map:
+        return base / f"{lower_map[user_input.lower()]}.md"
+
+    # 3) unique prefix (case-insensitive)
+    pref = [t for t in candidates if t.lower().startswith(user_input.lower())]
+    if len(pref) == 1:
+        return base / f"{pref[0]}.md"
+
+    return None
+
+
+def ensure_topic_path(topic: str) -> Path:
+    """
+    For editing: get the expected .md path for a topic name as-is.
+    (No fuzzy resolution; creates new if needed.)
+    """
+    return get_cheats_dir() / f"{topic}.md"
+
+
+def print_file(path: Path) -> int:
+    if not path.exists():
+        sys.stderr.write(f"cheat: not found: {path.name}\n")
+        return 1
+
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception as e:
+        sys.stderr.write(f"cheat: failed to read {path.name}: {e}\n")
+        return 1
+
+    inside_codeblock = False
+    heading_re = re.compile(r"^\s*#+\s*")  # match one or more leading #
+
+    for line in text.splitlines(keepends=True):
+        stripped = line.strip()
+
+        # Toggle fenced code blocks
+        if stripped.startswith("```"):
+            inside_codeblock = not inside_codeblock
+            print("\033[2m" + stripped + "\033[0m", end="")
+            continue
+
+        if inside_codeblock:
+            # Highlight bash code inside fenced blocks
+            print(highlight(line, BashLexer(), TerminalFormatter()), end="")
+            continue
+
+        # Lines beginning with one or more '#' = heading/comment
+        if heading_re.match(line):
+            print(f"\033[1;36m{line.rstrip()}\033[0m")  # bold cyan
+            continue
+
+        # Markdown horizontal rule
+        if stripped == "---":
+            print(f"\033[2m{'-' * 40}\033[0m")
+            continue
+
+        # Non-empty normal line → bash highlight
+        if stripped:
+            print(highlight(line, BashLexer(), TerminalFormatter()), end="")
+        else:
+            # preserve blank lines exactly
+            print(line, end="")
+
+    return 0
+
+
+def open_in_editor(path: Path) -> int:
+    editor = os.environ.get("EDITOR", "nvim")
+    # Create directory if missing
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Touch the file so editors that rely on existence work
+    if not path.exists():
+        path.touch()
+
+    try:
+        completed = subprocess.run([editor, str(path)])
+        return completed.returncode or 0
+    except FileNotFoundError:
+        # EDITOR not found: try nvim then vim then nano
+        for fallback in ("nvim", "vim", "nano"):
+            if shutil.which(fallback):
+                return subprocess.run([fallback, str(path)]).returncode or 0
+        sys.stderr.write("cheat: no editor found ($EDITOR, nvim, vim, nano)\n")
+        return 1
+
+
+def suggest_similar(topic: str) -> None:
+    topics = list_topics()
+    if not topics:
+        return
+    close = difflib.get_close_matches(topic, topics, n=5, cutoff=0.5)
+    if close:
+        sys.stderr.write("Did you mean:\n")
+        for c in close:
+            sys.stderr.write(f"  {c}\n")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="cheat",
+        description="Manage personal cheatsheets (.md files) by topic.",
+    )
+    topic_arg = parser.add_argument(
+        "topic",
+        nargs="?",
+        help="Cheatsheet topic (without .md). Omit to list topics.",
+    )
+    # Attach completer right here
+    if HAVE_ARGCOMPLETE:
+        try:
+            topic_arg.completer = _topic_completer  # type: ignore[attr-defined]
+        except Exception:
+            pass
+
+    parser.add_argument(
+        "-e",
+        "--edit",
+        action="store_true",
+        help="Open the topic in $EDITOR (fallback to nvim). Creates file if missing.",
+    )
+    parser.add_argument(
+        "-l",
+        "--list",
+        action="store_true",
+        help="List available topics.",
+    )
+    parser.add_argument(
+        "-p",
+        "--path",
+        action="store_true",
+        help="Print the full path to the resolved topic file.",
+    )
+    parser.add_argument(
+        "-d",
+        "--directory",
+        action="store_true",
+        help="Print the cheats directory and exit.",
+    )
+    return parser
+
+
+def _topic_completer(prefix: str, **_kwargs) -> list[str]:
+    """
+    argcomplete completer for 'topic' positional.
+    Returns stems only (no .md).
+    """
+    topics = list_topics()
+    if not prefix:
+        return topics
+    return [t for t in topics if t.lower().startswith(prefix.lower())]
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
+
+    if HAVE_ARGCOMPLETE:
+        try:
+            import argcomplete  # noqa: F401
+
+            argcomplete.autocomplete(parser)
+        except Exception:
+            pass
+
+    args = parser.parse_args(argv)
+
+    # Handle -d/--directory immediately
+    if args.directory:
+        print(get_cheats_dir())
+        return 0
+
+    # List topics if -l or no topic provided
+    if args.list or not args.topic:
+        topics = list_topics()
+        if not topics:
+            sys.stderr.write("cheat: no topics found\n")
+            return 1
+        for t in topics:
+            print(t)
+        return 0
+
+    topic: str = args.topic
+
+    if args.edit:
+        # Edit mode: create/open exact topic name (no fuzzy)
+        path = ensure_topic_path(topic)
+        return open_in_editor(path)
+
+    # Non-edit: resolve existing topic with fuzzy rules; print or path
+    resolved = resolve_topic(topic)
+    if not resolved:
+        sys.stderr.write(f"cheat: topic not found: {topic}\n")
+        suggest_similar(topic)
+        return 1
+
+    if args.path:
+        print(resolved)
+        return 0
+
+    return print_file(resolved)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
