@@ -10,6 +10,8 @@ Features
 - `cheat -l` lists all topics.
 - Optional tab completion with argcomplete (bash/zsh).
 
+`brew install glow` for markdown file display
+
 Tab completion setup (one-time):
   pip install argcomplete
   # Bash:
@@ -26,27 +28,35 @@ Tab completion setup (one-time):
 from __future__ import annotations
 import argparse
 import os
-import re
 import sys
 from pathlib import Path
 import subprocess
+import argcomplete
 import shutil
 import difflib
+import shlex
 
-from pygments import highlight
-from pygments.lexers import BashLexer
-from pygments.formatters import TerminalFormatter
 
 # ---------------------- Configuration ----------------------
 # Set your cheatsheets directory here (can be overridden by env CHEAT_DIR)
 CHEATS_DIR = Path("/Users/johnprince/dotfiles/config/cheat/cheatsheets/personal")
 # -----------------------------------------------------------
 
-# Optional argcomplete (script still works if not installed)
-try:
-    HAVE_ARGCOMPLETE = True
-except Exception:
-    HAVE_ARGCOMPLETE = False
+
+def _print_markdown(text: str) -> int:
+    """
+    Render markdown using `glow` via stdin. Fails if glow isn't installed.
+    """
+
+    glow = shutil.which("glow")
+    if not glow:
+        raise RuntimeError("`glow` is not installed or not in PATH. Please install it.")
+
+    extra = os.environ.get("CHEAT_GLOW_OPTS", "")
+    glow_args = [glow] + (shlex.split(extra) if extra else []) + ["-"]
+
+    proc = subprocess.run(glow_args, input=text, text=True)
+    return proc.returncode or 0
 
 
 def get_cheats_dir() -> Path:
@@ -103,52 +113,17 @@ def ensure_topic_path(topic: str) -> Path:
     return get_cheats_dir() / f"{topic}.md"
 
 
-def print_file(path: Path) -> int:
+def print_file(path: Path, args) -> int:
     if not path.exists():
         sys.stderr.write(f"cheat: not found: {path.name}\n")
         return 1
-
     try:
         text = path.read_text(encoding="utf-8")
     except Exception as e:
         sys.stderr.write(f"cheat: failed to read {path.name}: {e}\n")
         return 1
 
-    inside_codeblock = False
-    heading_re = re.compile(r"^\s*#+\s*")  # match one or more leading #
-
-    for line in text.splitlines(keepends=True):
-        stripped = line.strip()
-
-        # Toggle fenced code blocks
-        if stripped.startswith("```"):
-            inside_codeblock = not inside_codeblock
-            print("\033[2m" + stripped + "\033[0m", end="")
-            continue
-
-        if inside_codeblock:
-            # Highlight bash code inside fenced blocks
-            print(highlight(line, BashLexer(), TerminalFormatter()), end="")
-            continue
-
-        # Lines beginning with one or more '#' = heading/comment
-        if heading_re.match(line):
-            print(f"\033[1;36m{line.rstrip()}\033[0m")  # bold cyan
-            continue
-
-        # Markdown horizontal rule
-        if stripped == "---":
-            print(f"\033[2m{'-' * 40}\033[0m")
-            continue
-
-        # Non-empty normal line → bash highlight
-        if stripped:
-            print(highlight(line, BashLexer(), TerminalFormatter()), end="")
-        else:
-            # preserve blank lines exactly
-            print(line, end="")
-
-    return 0
+    return _print_markdown(text)
 
 
 def open_in_editor(path: Path) -> int:
@@ -192,12 +167,11 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="?",
         help="Cheatsheet topic (without .md). Omit to list topics.",
     )
-    # Attach completer right here
-    if HAVE_ARGCOMPLETE:
-        try:
-            topic_arg.completer = _topic_completer  # type: ignore[attr-defined]
-        except Exception:
-            pass
+
+    try:
+        topic_arg.completer = _topic_completer  # type: ignore[attr-defined]
+    except Exception:
+        pass
 
     parser.add_argument(
         "-e",
@@ -239,14 +213,7 @@ def _topic_completer(prefix: str, **_kwargs) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
-
-    if HAVE_ARGCOMPLETE:
-        try:
-            import argcomplete  # noqa: F401
-
-            argcomplete.autocomplete(parser)
-        except Exception:
-            pass
+    argcomplete.autocomplete(parser)
 
     args = parser.parse_args(argv)
 
@@ -283,7 +250,7 @@ def main(argv: list[str] | None = None) -> int:
         print(resolved)
         return 0
 
-    return print_file(resolved)
+    return print_file(resolved, args)
 
 
 if __name__ == "__main__":
