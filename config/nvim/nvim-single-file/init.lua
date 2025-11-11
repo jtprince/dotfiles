@@ -695,8 +695,8 @@ vim.api.nvim_create_autocmd("FileType", {
 		-- vim.keymap.set("n", ",o", "<Esc>:w<CR>:!ruff check --fix %<CR>", { buffer = true })
 
 		vim.keymap.set("n", ",B", "Obreakpoint()<Esc>0w", { buffer = true })
-		vim.keymap.set("n", "]]", [[/^\s*class\|^\s*def<CR>]], { buffer = true })
-		vim.keymap.set("n", "[[", [[?^\s*class\|^\s*def<CR>]], { buffer = true })
+		vim.keymap.set("n", "]]", [[/^\s*\(class\|def\)\s<CR>]], { buffer = true })
+		vim.keymap.set("n", "[[", [[?^\s*\(class\|def\)\s<CR>]], { buffer = true })
 	end,
 })
 
