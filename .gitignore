@@ -30,3 +30,5 @@
 /config/alacritty/themes
 
 lazy-lock.json
+
+.DS_Store

@@ -132,3 +132,5 @@ pip-install () {
   fi
   command uv pip install --python "$py" "$@"
 }
+
+alias qview="open -a qview"

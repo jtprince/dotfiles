@@ -1,10 +1,150 @@
+-- Existing stuff
 require "window_drag"
 
--- Hotkey to reload Hammerspoon
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "R", function()
+-- Convenience alias for your "hyper" chord
+local hyper = { "cmd", "alt", "ctrl" }
+
+-- Reload Hammerspoon
+hs.hotkey.bind(hyper, "R", function()
 	hs.reload()
 end)
 
+----------------------------------------------------------------------
+-- Small helpers
+----------------------------------------------------------------------
+
+local function sh(cmd)
+	-- async-ish: don't block on commands
+	hs.execute(cmd .. " &", false)
+end
+
+local function run_osascript(name)
+	sh("run-osascript " .. name)
+end
+
+----------------------------------------------------------------------
+-- 🏃 Quick Launch Applications  (from skhdrc)
+----------------------------------------------------------------------
+
+-- Firefox
+hs.hotkey.bind({ "alt" }, "I", function()
+	sh([[open -na "Firefox" --args --new-window]])
+end)
+
+hs.hotkey.bind({ "alt" }, "C", function()
+	sh([[open -na "Firefox" --args --new-window "https://calendar.google.com/calendar/"]])
+end)
+
+hs.hotkey.bind({ "alt" }, "E", function()
+	sh([[open -na "Firefox" --args --new-window "https://mail.google.com/mail/"]])
+end)
+
+-- Chrome
+hs.hotkey.bind({ "alt", "shift" }, "I", function()
+	sh([[open -na "Google Chrome" --args --new-window]])
+end)
+
+hs.hotkey.bind({ "ctrl", "alt", "shift" }, "C", function()
+	sh([[open -na "Google Chrome" --args --new-window "https://calendar.google.com/calendar/"]])
+end)
+
+hs.hotkey.bind({ "alt", "shift" }, "E", function()
+	sh([[open -na "Google Chrome" --args --new-window "https://mail.google.com/mail/"]])
+end)
+
+-- ChatGPT
+hs.hotkey.bind({ "alt" }, "H", function()
+	sh([[open -na "ChatGPT"]])
+end)
+
+-- GUI Editor
+hs.hotkey.bind({ "alt" }, "G", function()
+	sh([[gvim]])
+end)
+
+-- Terminals
+hs.hotkey.bind({ "alt" }, "X", function()
+	sh([[open -na "Alacritty"]])
+end)
+
+hs.hotkey.bind({ "alt", "shift" }, "X", function()
+	sh([[open -na "kitty"]])
+end)
+
+----------------------------------------------------------------------
+-- 🎵 Media Controls  (via your run-osascript helpers)
+----------------------------------------------------------------------
+
+-- Spotify
+hs.hotkey.bind({ "alt" }, "P", function()
+	run_osascript("spotify-playpause")
+end)
+
+-- Previous track
+hs.hotkey.bind({ "alt" }, 0x21, function()
+	run_osascript("spotify-prev-track")
+end)
+
+-- Next track
+hs.hotkey.bind({ "alt" }, 0x1E, function()
+	run_osascript("spotify-next-track")
+end)
+
+-- Volume down
+hs.hotkey.bind({ "alt" }, 0x19, function()
+	run_osascript("volume-down")
+end)
+
+-- Volume up
+hs.hotkey.bind({ "alt" }, 0x1D, function()
+	run_osascript("volume-up")
+end)
+
+-- Volume mute toggle
+hs.hotkey.bind({ "alt" }, 0x1B, function()
+	run_osascript("volume-mute-toggle")
+end)
+
+----------------------------------------------------------------------
+-- 🧰 System Actions
+----------------------------------------------------------------------
+
+-- Edit this Hammerspoon config (replaces skhdrc edit binding)
+hs.hotkey.bind({ "ctrl", "shift", "alt", "cmd" }, "K", function()
+	sh([[gvim ~/dotfiles/config/hammerspoon/init.lua]])
+end)
+
+-- Formerly "Restart skhd" – now: reload Hammerspoon
+hs.hotkey.bind({ "alt", "shift" }, "U", function()
+	hs.reload()
+end)
+
+-- Close window gently
+hs.hotkey.bind({ "alt", "shift" }, "W", function()
+	run_osascript("close-window-gently")
+end)
+
+-- Optional: Close harsh – you had same script, so same binding
+hs.hotkey.bind({ "alt", "shift" }, "C", function()
+	run_osascript("close-window-gently")
+end)
+
+-- Sleep / Power
+hs.hotkey.bind({ "ctrl", "shift", "alt", "cmd" }, "S", function()
+	sh([[pmset sleepnow]])
+end)
+
+hs.hotkey.bind({ "ctrl", "shift", "alt", "cmd" }, "P", function()
+	run_osascript("system-shutdown")
+end)
+
+hs.hotkey.bind({ "ctrl", "shift", "alt", "cmd" }, "R", function()
+	run_osascript("system-restart")
+end)
+
+----------------------------------------------------------------------
+-- 🧰 Existing Script Chooser (shift+alt+O from your init.lua)
+----------------------------------------------------------------------
 
 hs.hotkey.bind({ "shift", "alt" }, "O", function()
 	local home = os.getenv("HOME")
@@ -47,8 +187,8 @@ hs.hotkey.bind({ "shift", "alt" }, "O", function()
 		if p then
 			for file in p:lines() do
 				local displayName = file
-				    :gsub("^" .. realBin .. "/", "") -- pretend ~/bin/
-				    :gsub("^" .. localbin .. "/", "") -- pretend ~/.local/bin/
+				    :gsub("^" .. realBin .. "/", "")
+				    :gsub("^" .. localbin .. "/", "")
 				table.insert(choices, { text = displayName, fullpath = file })
 			end
 			p:close()
@@ -71,3 +211,4 @@ hs.hotkey.bind({ "shift", "alt" }, "O", function()
 	chooser:placeholderText("Run a script...")
 	chooser:show()
 end)
+

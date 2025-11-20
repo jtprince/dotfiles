@@ -87,6 +87,10 @@ use = [ "key-bindings.zsh" ]
 local = "~/.config/zsh/plugins"
 use = [ "argcomplete.zsh" ]
 
+[plugins.auto_uv_env]
+local = "~/.config/zsh/plugins"
+use = [ "auto-uv-env.zsh" ]
+
 [plugins.misc]
 local = "~/.config/zsh/plugins"
 use = [ "misc.zsh" ]
