@@ -18,8 +18,17 @@ local function sh(cmd)
 	hs.execute(cmd .. " &", false)
 end
 
+local home = os.getenv("HOME")
+local run_osascript_bin = home .. "/bin/run-osascript"
+local run_gvim_bin = home .. "/bin/gvim"
+
+local function run_gvim(name)
+	sh(run_gvim_bin .. " " .. name)
+end
+
+
 local function run_osascript(name)
-	sh("run-osascript " .. name)
+	sh(run_osascript_bin .. " " .. name)
 end
 
 ----------------------------------------------------------------------
@@ -59,7 +68,7 @@ end)
 
 -- GUI Editor
 hs.hotkey.bind({ "alt" }, "G", function()
-	sh([[gvim]])
+	sh(run_gvim_bin)
 end)
 
 -- Terminals
@@ -111,7 +120,7 @@ end)
 
 -- Edit this Hammerspoon config (replaces skhdrc edit binding)
 hs.hotkey.bind({ "ctrl", "shift", "alt", "cmd" }, "K", function()
-	sh([[gvim ~/dotfiles/config/hammerspoon/init.lua]])
+	run_gvim(home .. "/dotfiles/config/hammerspoon/init.lua")
 end)
 
 -- Formerly "Restart skhd" – now: reload Hammerspoon
@@ -211,4 +220,3 @@ hs.hotkey.bind({ "shift", "alt" }, "O", function()
 	chooser:placeholderText("Run a script...")
 	chooser:show()
 end)
-

@@ -15,11 +15,18 @@ parser.add_argument("parquet_files", type=Path, nargs="+")
 parser.add_argument(
     "--no-shape", action="store_true", help="don't print shape at the end"
 )
+parser.add_argument(
+    "--no-attrs", action="store_true", help="don't print df.attrs even if they exist"
+)
 args = parser.parse_args()
 
 for path in args.parquet_files:
     print(str(path))
     df = pd.read_parquet(path)
+
+    if df.attrs and not args.no_attrs:
+        print("attrs:", df.attrs)
+
     print(df.head())
     if not args.no_shape:
         print("\nshape:", df.shape)
