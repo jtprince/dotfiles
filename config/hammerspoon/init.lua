@@ -15,16 +15,12 @@ end)
 
 local function sh(cmd)
 	-- async-ish: don't block on commands
+	-- be aware that all calls and subcalls must not rely on PATH
 	hs.execute(cmd .. " &", false)
 end
 
 local home = os.getenv("HOME")
 local run_osascript_bin = home .. "/bin/run-osascript"
-local run_gvim_bin = home .. "/bin/gvim"
-
-local function run_gvim(name)
-	sh(run_gvim_bin .. " " .. name)
-end
 
 
 local function run_osascript(name)
@@ -66,9 +62,11 @@ hs.hotkey.bind({ "alt" }, "H", function()
 	sh([[open -na "ChatGPT"]])
 end)
 
+
 -- GUI Editor
 hs.hotkey.bind({ "alt" }, "G", function()
-	sh(run_gvim_bin)
+	hs.alert.show("Opening Vimr")
+	sh([[open -na VimR]])
 end)
 
 -- Terminals

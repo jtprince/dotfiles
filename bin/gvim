@@ -5,8 +5,3 @@ kitty --title "🅽vim: $*" -e /bin/bash -c '
   kitty_pid=$(ps -o ppid= -p $$ | tr -d " ");
   kill "$kitty_pid"
 ' &
-
-# kitty --title "🅽vim: $*" -e /bin/bash -c "exec nvim $(printf '%q ' "$@")" &
-# kitty --single-instance --detach --title "🅽vim: $*" -e /bin/bash -c "exec nvim $(printf '%q ' "$@")"
-# kitty -e nvim "$@" &
-# kitty -e $HOME/bin/sleep-and-start-nvim "$@"
