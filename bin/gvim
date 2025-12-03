@@ -1,7 +1,23 @@
 #!/bin/bash
 
-kitty --title "🅽vim: $*" -e /bin/bash -c '
-  nvim '"$(printf '%q ' "$@")"';
-  kitty_pid=$(ps -o ppid= -p $$ | tr -d " ");
-  kill "$kitty_pid"
-' &
+if [ "$#" -eq 0 ]; then
+  # No arguments: open plain Neovim with an empty buffer
+  kitty --title "🅽vim" -e /bin/bash -c '
+    nvim;
+    kitty_pid=$(ps -o ppid= -p $$ | tr -d " ");
+    kill "$kitty_pid"
+  ' &
+else
+  # With arguments: forward them to nvim
+  kitty --title "🅽vim: $*" -e /bin/bash -c '
+    nvim '"$(printf '%q ' "$@")"';
+    kitty_pid=$(ps -o ppid= -p $$ | tr -d " ");
+    kill "$kitty_pid"
+  ' &
+fi
+
+# kitty --title "🅽vim: $*" -e /bin/bash -c '
+#   nvim '"$(printf '%q ' "$@")"';
+#   kitty_pid=$(ps -o ppid= -p $$ | tr -d " ");
+#   kill "$kitty_pid"
+# ' &

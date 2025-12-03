@@ -24,27 +24,29 @@ db = get_databricks(ENVEDA_ENV)
 msrun_ids = ", ".join([f"'{id}'" for id in args.msrun_ids])
 result = db.query_df(
     f"""
-        SELECT msrun_id, cloud_path
-        FROM enveda_prod.benchling_views.platform_ms_runs
-        WHERE msrun_id IN ({msrun_ids})
+        SELECT `name$` as msrun_id, cloud_path
+        FROM enveda_prod.benchling_raw.bruker_mass_spec_run
+        WHERE `name$` IN ({msrun_ids})
     """
 )
 found_msrun_ids = result.msrun_id.tolist()
 
 missing_msrun_ids = set(args.msrun_ids) - set(found_msrun_ids)
-print(f"Could not find {len(missing_msrun_ids)} msrun_ids: {missing_msrun_ids}")
+if len(missing_msrun_ids) > 0:
+    print(f"Could not find {len(missing_msrun_ids)} msrun_ids: {missing_msrun_ids}")
 
 
 storage = AzureBlobStorage(BLOB_STORAGE)
 
 tasks = []
 for row in result.itertuples():
+    cloud_path_no_root_slash = row.cloud_path.lstrip("/")
     outpath = args.outdir / f"{row.msrun_id}.d"
     outpath.mkdir(parents=True, exist_ok=True)
     for name in BRUKER_FILES:
         if (outpath / name).exists():
             continue
-        tasks.append((row.msrun_id, row.cloud_path, name, outpath))
+        tasks.append((row.msrun_id, cloud_path_no_root_slash, name, outpath))
 
 
 def _download_one(task):
