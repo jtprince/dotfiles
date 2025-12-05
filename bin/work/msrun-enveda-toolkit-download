@@ -26,7 +26,7 @@ parser.add_argument("--workers", type=int, default=4, help="number of download t
 parser.add_argument(
     "--dry",
     action="store_true",
-    help="Print Azure CLI commands and exit before downloading."
+    help="Print Azure CLI commands and exit before downloading.",
 )
 args = parser.parse_args()
 
@@ -97,8 +97,9 @@ if args.dry:
     if not tasks:
         print("Everything already present — nothing to download.")
     else:
-        print("Azure CLI commands that would be run:\n")
-        for (msrun_id, cloud_path, name, outpath) in tasks:
+        print("CLI commands:\n")
+        print(f"mkdir -p {str(outpath)}")
+        for msrun_id, cloud_path, name, outpath in tasks:
             print(azure_cli_cmd(msrun_id, cloud_path, name, outpath, color=True))
     print("\nExiting due to --dry.\n")
     exit(0)
