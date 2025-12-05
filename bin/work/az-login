@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+import argparse
+import subprocess
+
+
+SUBSCRIPTIONS = {
+    "dev": "sub-enveda-data-dev-01",
+    "prod": "sub-enveda-data-prod-01",
+}
+
+
+def run(cmd, check=True, capture=False):
+    """Run a command, optionally capturing stdout."""
+    return subprocess.run(
+        cmd,
+        check=check,
+        text=True,
+        capture_output=capture,
+    )
+
+
+def is_logged_in() -> bool:
+    """Return True if 'az account show' succeeds."""
+    try:
+        run(["az", "account", "show"], check=True, capture=True)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Log in to Azure (if needed) and switch subscription."
+    )
+    parser.add_argument(
+        "env",
+        nargs="?",
+        choices=("dev", "prod"),
+        default="dev",
+        help="Environment to activate (default: dev)",
+    )
+    parser.add_argument(
+        "-f",
+        "--force-login",
+        action="store_true",
+        help="Force running 'az login' even if already logged in.",
+    )
+
+    args = parser.parse_args()
+    target_sub = SUBSCRIPTIONS[args.env]
+
+    logged_in = is_logged_in()
+
+    if args.force_login or not logged_in:
+        run(["az", "login"])
+    else:
+        run(
+            ["az", "account", "get-access-token", "--subscription", target_sub],
+            capture=True,
+        )
+        print(f"(refreshed access token for {args.env})")
+
+    run(["az", "account", "set", "--subscription", target_sub])
+
+    result = run(
+        [
+            "az",
+            "account",
+            "show",
+            "--query",
+            "{name:name, subscriptionId:id}",
+            "-o",
+            "tsv",
+        ],
+        capture=True,
+    )
+    print(result.stdout.strip())
+
+
+if __name__ == "__main__":
+    main()

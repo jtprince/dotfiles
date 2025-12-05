@@ -14,10 +14,20 @@ CONTAINER = "mass-spec"
 
 cwd = Path.cwd()
 
+# ANSI colors
+COLOR_CYAN = "\033[96m"
+COLOR_BOLD = "\033[1m"
+COLOR_RESET = "\033[0m"
+
 parser = argparse.ArgumentParser()
 parser.add_argument("msrun_ids", nargs="+", help="msrun_ids")
 parser.add_argument("--outdir", default=cwd, type=Path, help="dir to download to")
 parser.add_argument("--workers", type=int, default=4, help="number of download threads")
+parser.add_argument(
+    "--dry",
+    action="store_true",
+    help="Print Azure CLI commands and exit before downloading."
+)
 args = parser.parse_args()
 
 db = get_databricks(ENVEDA_ENV)
@@ -35,7 +45,6 @@ missing_msrun_ids = set(args.msrun_ids) - set(found_msrun_ids)
 if len(missing_msrun_ids) > 0:
     print(f"Could not find {len(missing_msrun_ids)} msrun_ids: {missing_msrun_ids}")
 
-
 storage = AzureBlobStorage(BLOB_STORAGE)
 
 tasks = []
@@ -49,9 +58,29 @@ for row in result.itertuples():
         tasks.append((row.msrun_id, cloud_path_no_root_slash, name, outpath))
 
 
+def azure_cli_cmd(msrun_id, cloud_path, name, outdir: Path, color=False) -> str:
+    """
+    Produce an Azure CLI command for downloading the blob.
+    Optionally returns a colorized string.
+    """
+    blob = f"{cloud_path}/{name}"
+    local = outdir / name
+
+    cmd = (
+        f"az storage blob download "
+        f"--account-name {BLOB_STORAGE} "
+        f"--container-name {CONTAINER} "
+        f"--name '{blob}' "
+        f"--file '{local}'"
+    )
+
+    if color:
+        return f"{COLOR_BOLD}{COLOR_CYAN}{cmd}{COLOR_RESET}"
+    return cmd
+
+
 def _download_one(task):
     msrun_id, cloud_path, name, outpath = task
-    # Perform the I/O-bound download
     storage.download_blob(
         container=CONTAINER,
         blob_path=f"{cloud_path}/{name}",
@@ -60,12 +89,29 @@ def _download_one(task):
     return f"{msrun_id}:{name}"
 
 
+# ---------------------------------------------------------
+# DRY RUN MODE
+# ---------------------------------------------------------
+if args.dry:
+    print("\n--dry run requested; no downloads will be performed.\n")
+    if not tasks:
+        print("Everything already present — nothing to download.")
+    else:
+        print("Azure CLI commands that would be run:\n")
+        for (msrun_id, cloud_path, name, outpath) in tasks:
+            print(azure_cli_cmd(msrun_id, cloud_path, name, outpath, color=True))
+    print("\nExiting due to --dry.\n")
+    exit(0)
+
+
+# ---------------------------------------------------------
+# REAL DOWNLOAD MODE
+# ---------------------------------------------------------
 if not tasks:
     print("Everything already present — nothing to download.")
 else:
     print(f"Starting {len(tasks)} downloads with {args.workers} threads...")
     completed = 0
-    # Thread pool for I/O parallelism
     with ThreadPoolExecutor(max_workers=args.workers) as ex:
         futures = [ex.submit(_download_one, t) for t in tasks]
         for fut in as_completed(futures):
@@ -75,7 +121,6 @@ else:
                 if completed % 10 == 0 or completed == len(tasks):
                     print(f"[{completed}/{len(tasks)}] {label}")
             except Exception as e:
-                # Keep going on failures; print and continue
                 print(f"Download failed: {e}")
 
     print("All done.")
