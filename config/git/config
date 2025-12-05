@@ -7,6 +7,7 @@
     ct = commit
     cm = commit
     cmm = commit -m
+    cmmf = commit --no-verify -m
     co = checkout
     cl = clone
     br = branch

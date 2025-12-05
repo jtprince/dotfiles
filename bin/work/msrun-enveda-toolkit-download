@@ -65,13 +65,21 @@ def azure_cli_cmd(msrun_id, cloud_path, name, outdir: Path, color=False) -> str:
     """
     blob = f"{cloud_path}/{name}"
     local = outdir / name
+    cwd = Path.cwd()
+
+    # Make the path relative if possible
+    try:
+        local_rel = local.relative_to(cwd)
+    except ValueError:
+        # If not relative, fall back to absolute
+        local_rel = local
 
     cmd = (
         f"az storage blob download "
         f"--account-name {BLOB_STORAGE} "
         f"--container-name {CONTAINER} "
         f"--name '{blob}' "
-        f"--file '{local}'"
+        f"--file '{local_rel}'"
     )
 
     if color:
@@ -98,8 +106,8 @@ if args.dry:
         print("Everything already present — nothing to download.")
     else:
         print("CLI commands:\n")
-        print(f"mkdir -p {str(outpath)}")
         for msrun_id, cloud_path, name, outpath in tasks:
+            print(f"mkdir -p {str(outpath)}")
             print(azure_cli_cmd(msrun_id, cloud_path, name, outpath, color=True))
     print("\nExiting due to --dry.\n")
     exit(0)
