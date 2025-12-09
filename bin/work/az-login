@@ -2,7 +2,6 @@
 import argparse
 import subprocess
 
-
 SUBSCRIPTIONS = {
     "dev": "sub-enveda-data-dev-01",
     "prod": "sub-enveda-data-prod-01",
@@ -19,13 +18,14 @@ def run(cmd, check=True, capture=False):
     )
 
 
-def is_logged_in() -> bool:
-    """Return True if 'az account show' succeeds."""
-    try:
-        run(["az", "account", "show"], check=True, capture=True)
-        return True
-    except subprocess.CalledProcessError:
-        return False
+def ensure_login_experience_noninteractive():
+    """Disable the subscription selector so az login doesn't prompt."""
+    # This is idempotent; safe to call every time.
+    run(
+        ["az", "config", "set", "core.login_experience_v2=off"],
+        check=True,
+        capture=True,
+    )
 
 
 def main():
@@ -49,19 +49,27 @@ def main():
     args = parser.parse_args()
     target_sub = SUBSCRIPTIONS[args.env]
 
-    logged_in = is_logged_in()
+    ensure_login_experience_noninteractive()
 
-    if args.force_login or not logged_in:
+    if args.force_login:
+        print("Forcing 'az login'...")
         run(["az", "login"])
     else:
-        run(
-            ["az", "account", "get-access-token", "--subscription", target_sub],
-            capture=True,
-        )
-        print(f"(refreshed access token for {args.env})")
+        # Try to get/refresh a token for the target subscription.
+        try:
+            run(
+                ["az", "account", "get-access-token", "--subscription", target_sub],
+                capture=True,
+            )
+            print(f"(refreshed access token for {args.env})")
+        except subprocess.CalledProcessError:
+            print("No valid token / not logged in; running 'az login'...")
+            run(["az", "login"])
 
+    # Now set the subscription you actually want.
     run(["az", "account", "set", "--subscription", target_sub])
 
+    # Show the active account/subscription.
     result = run(
         [
             "az",
