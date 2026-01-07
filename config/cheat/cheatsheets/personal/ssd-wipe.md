@@ -2,7 +2,10 @@ For an nvme system
 
 Launch a USB (either Ubuntu or Manjaro Gnome??)
 
-install nvme-cli
+# manjaro
+# (login to wifi)
+sudo pacman -Syu
+sudo pacman -S nvme-cli
 
 # Find your main partition
 lsblk
@@ -13,4 +16,3 @@ sudo nvme format /dev/nvme0n1 -s 1 -f
 
 # To verify
 sudo fdisk -l /dev/nvme0n1
-

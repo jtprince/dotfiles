@@ -1,15 +1,28 @@
--- The following were derived from a debug session with chatgpt
--- Basically, if I don't do something like this, then it takes 3 seconds
--- for the old vim python omnifunc to load *for every python file I open*
+-- early_init.lua
+-- Goal: keep filetype/ftplugin/indent fast, but avoid slow legacy Python omnifunc loads
+
+-- Modern, fast filetype detection
 vim.g.did_load_filetypes = nil
-vim.g.do_filetype_lua = 1            -- use the fast Lua system
+vim.g.do_filetype_lua = 1
 
-vim.g.did_ftplugin = 1
-vim.g.did_indent_on = 1
-vim.g.skip_loading_python_provider = true
+-- DO NOT disable ftplugins/indent globally; this breaks lots of useful defaults.
+-- vim.g.did_ftplugin = 1
+-- vim.g.did_indent_on = 1
 
--- Prevent built-in omnifunc from initializing
-vim.g.loaded_python3_provider = 1
+-- Disable Python provider ONLY if you truly don't need python-hosted plugins.
+-- (Many people do fine without it; keep it if you want fastest startup.)
+vim.g.loaded_python3_provider = 0
+-- If you *really* want python provider fully disabled:
+-- vim.g.loaded_python3_provider = 1
 
--- Optional: disable Python syntax files too
--- vim.g.skip_loading_syntax = true
+-- ----
+-- Fix the slow python omnifunc loading:
+-- Disable the legacy omnifunc *only for python buffers*.
+-- ----
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "python",
+	callback = function()
+		-- Prevent legacy omnifunc (sometimes triggers slow runtime loads)
+		vim.bo.omnifunc = ""
+	end,
+})

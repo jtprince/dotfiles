@@ -2,7 +2,29 @@
 
 uv python install 3.10
 uv python list
-uv python pin --global <version>
+uv python pin --global <version>  # writes to uv config dir to use as uv default version
+
+## My robust user-wide setup (e.g., in ~/.zprofile)
+```
+### In .zprofile: ####
+export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global"
+export PATH="$PYTHON_GLOBAL_VENV/bin:$PATH"
+######################
+
+PYV=3.14
+V=${PYV//.}
+PREFIX="$HOME/.local/uv-global-$V"
+uv python install "$PYV"
+uv venv -p "$PYV" "$PREFIX"
+
+PATH="$PREFIX/bin:$PATH" uv pip install -U pip setuptools wheel
+PATH="$PREFIX/bin:$PATH" uv pip install argcomplete
+
+ln -sfn "$PREFIX/bin/pip3" "$PREFIX/bin/pip"
+
+ln -sfn "$PREFIX" "$HOME/.local/uv-global"
+uv python pin --global "$PYV"
+```
 
 ## Create new project	
 uv init <project>

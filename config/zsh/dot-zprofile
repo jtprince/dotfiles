@@ -27,12 +27,9 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 fi
 
-# uv python install 3.14
-# Create a single, user-global env for your account
-# uv venv -p 3.14 ~/.local/uv-global-314
-export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global-314"
+# See `cheat uv` robust user-wide setup for details
+export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global"
 export PATH="$PYTHON_GLOBAL_VENV/bin:$PATH"
-
 
 eval "$(sheldon source)"
 

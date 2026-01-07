@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+import argparse
+import random
+import shutil
+from pathlib import Path
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Randomly split files into train and test directories."
+    )
+    parser.add_argument(
+        "files",
+        nargs="+",
+        help="List of files to split",
+    )
+    parser.add_argument(
+        "--train-fraction",
+        type=float,
+        default=0.2,
+        help="Fraction of files to put in train (default: 0.2)",
+    )
+
+    args = parser.parse_args()
+
+    files = [Path(f) for f in args.files]
+
+    train_dir = Path("train")
+    test_dir = Path("test")
+
+    train_dir.mkdir(exist_ok=True)
+    test_dir.mkdir(exist_ok=True)
+
+    n_train = int(len(files) * args.train_fraction)  # round down
+    train_files = set(random.sample(files, n_train))
+
+    for f in files:
+        destination = train_dir if f in train_files else test_dir
+        shutil.move(str(f), destination / f.name)
+
+
+if __name__ == "__main__":
+    main()
