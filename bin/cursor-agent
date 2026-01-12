@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-TERM=xterm-256color command cursor-agent "$@"
+TERM=xterm-256color /opt/homebrew/bin/cursor-agent "$@"

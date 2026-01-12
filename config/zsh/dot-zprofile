@@ -1,39 +1,22 @@
-## pyenv
-# export PYENV_ROOT="$HOME/.pyenv"
-# [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
-# eval "$(pyenv init --path)"
-# eval "$(pyenv virtualenv-init -)"
-
-
-## rbenv
-# eval "$(rbenv init -)"
-
-## PATH
-
-## Mac
 if [[ "$(uname)" == "Darwin" ]]; then
 	export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
-fi
-
-export PATH="$PYTHON_GLOBAL_VENV/bin:$PATH"
-# See `cheat uv` robust user-wide setup for details
-export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global"
-
-BINPATH="$HOME/bin"
-export PATH="$PATH:$BINPATH/docker"
-export PATH="$PATH:$BINPATH/git"
-export PATH="$PATH:$BINPATH/markdown"
-export PATH="$PATH:$BINPATH/media"
-export PATH="$PATH:$BINPATH/python"
-export PATH="$PATH:$BINPATH/work"
-export PATH="$PATH:$BINPATH"
-export PATH="$PATH:$HOME/.local/bin"
-export PATH="$PATH:$BINPATH/aliases"
-
-## Mac - Homebrew (after custom PATH so custom bins take precedence)
-if [[ "$(uname)" == "Darwin" ]]; then
 	eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
+
+# See `cheat uv` robust user-wide setup for details
+export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global"
+export PATH="$PYTHON_GLOBAL_VENV/bin:$PATH"
+
+BINPATH="$HOME/bin"
+export PATH="$BINPATH/docker:$PATH"
+export PATH="$BINPATH/git:$PATH"
+export PATH="$BINPATH/markdown:$PATH"
+export PATH="$BINPATH/media:$PATH"
+export PATH="$BINPATH/python:$PATH"
+export PATH="$BINPATH/work:$PATH"
+export PATH="$BINPATH:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$BINPATH/aliases:$PATH"
 
 eval "$(sheldon source)"
 
