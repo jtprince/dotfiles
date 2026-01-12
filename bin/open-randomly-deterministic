@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import hashlib
+import subprocess
+import sys
+from pathlib import Path
+from typing import List, Tuple
+
+
+DEFAULT_SEED = "default-seed"  # change this if you want a different stable ordering
+
+
+def stable_score(seed: str, path: str) -> str:
+    """
+    Create a stable deterministic "random" score for a file path.
+
+    We hash (seed + path) so results are reproducible across runs,
+    machines, python versions, etc.
+    """
+    h = hashlib.sha1()
+    h.update(seed.encode("utf-8"))
+    h.update(b"\0")
+    h.update(path.encode("utf-8"))
+    return h.hexdigest()
+
+
+def deterministic_sample(seed: str, paths: List[str], n: int) -> List[str]:
+    scored: List[Tuple[str, str]] = [(stable_score(seed, p), p) for p in paths]
+    scored.sort(key=lambda t: t[0])
+    return [p for _, p in scored[:n]]
+
+
+def open_paths(paths: List[str]) -> None:
+    if not paths:
+        return
+    subprocess.run(["open", *paths], check=True)
+
+
+def usage() -> None:
+    prog = Path(sys.argv[0]).name
+    print(
+        f"Usage: {prog} NUM_TO_OPEN <file> <file> ...\n"
+        f"Example: {prog} 10 *.html\n",
+        file=sys.stderr,
+    )
+
+
+def main(argv: List[str]) -> int:
+    if len(argv) < 3:
+        usage()
+        return 2
+
+    try:
+        n = int(argv[1])
+        if n <= 0:
+            raise ValueError
+    except ValueError:
+        print("NUM_TO_OPEN must be a positive integer.", file=sys.stderr)
+        usage()
+        return 2
+
+    raw_paths = argv[2:]
+
+    # Normalize paths for stability (e.g., remove ./ prefixes, resolve symlinks if desired)
+    paths = [str(Path(p)) for p in raw_paths]
+
+    # You can make this configurable later (env var, flag, etc.)
+    seed = DEFAULT_SEED
+
+    chosen = deterministic_sample(seed=seed, paths=paths, n=min(n, len(paths)))
+
+    # Optional: print what you're opening for debugging/logging
+    for p in chosen:
+        print(p)
+
+    open_paths(chosen)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))
