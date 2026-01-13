@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+
+from enveda_toolkit import get_databricks
+
+ENVEDA_ENV = "prod"
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--outfile",
+    default="msrun_experiment_name.parquet",
+    type=Path,
+    help="Output parquet file path",
+)
+args = parser.parse_args()
+
+db = get_databricks(ENVEDA_ENV)
+df = db.query_df(
+    """
+    SELECT DISTINCT 
+        bmsr.`name$` AS msrun_id, 
+        entry.`name` AS experiment_name,
+        bmsr.`created_at$` AS msrun_created_at,
+        bmsr.`modified_at$` AS msrun_modified_at,
+        entry.created_at AS experiment_created_at,
+        entry.modified_at AS experiment_modified_at,
+        -- Analytical metadata from bruker_mass_spec_run
+        bmsr.ionization_mode,
+        bmsr.method_ms,
+        bmsr.method_lc,
+        bmsr.column_chemistry,
+        bmsr.sample_type,
+        bmsr.valid,
+        bmsr.plate_id,
+        bmsr.well_id,
+        bmsr.injection_volume_ul,
+        bmsr.lc_column,
+        bmsr.sample_description,
+        -- Platform MS runs metadata (will be NULL for non-stockplate runs)
+        pmr.spre_id,
+        pmr.stockplate_version,
+        pmr.cohort,
+        pmr.extract_id,
+        pmr.extract_type,
+        pmr.plant_id,
+        pmr.plant_name,
+        pmr.plant_part,
+        pmr.plant_vendor,
+        pmr.ms_runs_completed_at
+    FROM benchling_raw.bruker_mass_spec_run bmsr
+    JOIN benchling_raw.entry entry ON bmsr.experiment_id = entry.id
+    LEFT JOIN benchling_views.platform_ms_runs pmr ON bmsr.`name$` = pmr.msrun_id
+    """
+)
+
+df.sort_values(
+    by="msrun_id",
+    key=lambda s: s.str.extract(r"(\d+)", expand=False).astype("Int64"),
+    inplace=True,
+)
+
+df.to_parquet(args.outfile, index=False)
+print(f"Wrote {len(df)} rows to {args.outfile}")
