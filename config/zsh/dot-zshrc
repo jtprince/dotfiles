@@ -4,3 +4,5 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 eval "$(rbenv init - zsh)"
 
 eval "$(starship init zsh)"
+
+export PATH="/opt/homebrew/opt/perl/bin:$PATH"

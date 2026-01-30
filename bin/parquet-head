@@ -6,7 +6,6 @@ import pandas as pd
 
 
 pd.set_option("display.max_columns", None)
-# pd.set_option('display.max_rows', None)
 
 parser = argparse.ArgumentParser(
     description="prints headers and first rows of each dataframe"
@@ -18,7 +17,16 @@ parser.add_argument(
 parser.add_argument(
     "--no-attrs", action="store_true", help="don't print df.attrs even if they exist"
 )
+parser.add_argument(
+    "--all",
+    action="store_true",
+    help="display the whole parquet file, not just the head",
+)
+
 args = parser.parse_args()
+
+if args.all:
+    pd.set_option("display.max_rows", None)
 
 for path in args.parquet_files:
     print(str(path))
@@ -27,6 +35,9 @@ for path in args.parquet_files:
     if df.attrs and not args.no_attrs:
         print("attrs:", df.attrs)
 
-    print(df.head())
+    if args.all:
+        print(df)
+    else:
+        print(df.head())
     if not args.no_shape:
         print("\nshape:", df.shape)
