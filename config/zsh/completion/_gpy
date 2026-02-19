@@ -1,0 +1,33 @@
+#compdef gpy
+
+_gpy() {
+  local context state line
+  typeset -A opt_args
+
+  if (( CURRENT == 2 )); then
+    # First argument: complete command names
+    _command_names -e
+    return
+  fi
+
+  # Delegate to wrapped command's completion if it exists
+  local cmd="${words[2]}"
+  local compfunc
+
+  compfunc="_${cmd}"
+
+  if (( $+functions[$compfunc] )); then
+    # Shift words so completion thinks it's completing <cmd>
+    local -a shifted_words
+    shifted_words=("${words[@]:1}")
+    words=("${shifted_words[@]}")
+    (( CURRENT-- ))
+    "$compfunc"
+    return
+  fi
+
+  # Fallback to file completion
+  _files
+}
+
+compdef _gpy gpy

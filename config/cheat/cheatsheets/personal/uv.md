@@ -20,11 +20,15 @@ uv venv -p "$PYV" "$PREFIX"
 PATH="$PREFIX/bin:$PATH" uv pip install -U pip setuptools wheel
 PATH="$PREFIX/bin:$PATH" uv pip install argcomplete
 
+
 ln -sfn "$PREFIX/bin/pip3" "$PREFIX/bin/pip"
 
 ln -sfn "$PREFIX" "$HOME/.local/uv-global"
 uv python pin --global "$PYV"
 ```
+
+## Install using uv pip into the global python
+uv pip install --python "$PYTHON_GLOBAL_VENV" pandas
 
 ## Create new project	
 uv init <project>
@@ -34,7 +38,7 @@ uv init <project>
 ```
 [[tool.uv.index]]
 name = "Enveda"
-url = "https://pypi.dev.enveda.io/simple/"
+url = "https://pypi.enveda.io/simple/"
 default = true
 ```
 
