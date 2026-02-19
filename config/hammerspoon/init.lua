@@ -66,7 +66,7 @@ end)
 -- GUI Editor
 hs.hotkey.bind({ "alt" }, "G", function()
 	hs.alert.show("Opening Vimr")
-	sh([[open -na VimR]])
+	sh([[open -a VimR]])
 end)
 
 -- Terminals

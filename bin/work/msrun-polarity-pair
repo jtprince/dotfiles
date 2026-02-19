@@ -3,7 +3,7 @@
 Find opposite polarity msrun_id pairs.
 
 Given one or more msrun_ids, finds their opposite polarity pairs from
-Benchling. MSruns of opposite polarity are paired by batch_id.
+Benchling. MSruns of opposite polarity are paired by sample_description pattern.
 
 Output format:
   positive_id:negative_id (one pair per line)
@@ -12,86 +12,109 @@ If an msrun_id has no opposite polarity pair, it's omitted from output.
 """
 
 import argparse
+import re
 import sys
 from enveda_toolkit import get_databricks
 
 
-def get_opposite_polarity_msrun_id(
-    msrun_id: str, env: str = "prod"
-) -> tuple[str, str, str] | None:
+def extract_pattern(sample_desc: str) -> str | None:
     """
-    Find the opposite polarity msrun_id for a given msrun_id.
+    Extract the pairing pattern from a sample_description.
 
-    Pairs are matched by sample_description pattern (date prefix, well, replicate)
-    but with opposite ionization_mode.
+    Examples:
+        "PS211214_S100_1to243_1-C,1_5_1710.d" -> "PS211214_S100_1to243_1-C,1_5_"
+        "RS513_260127-1156" -> "RS513_260127-"
+    
+    Returns the prefix before the last number.
+    """
+    if not sample_desc:
+        return None
+
+    # Try format with .d extension
+    match = re.match(r"^(.+[_-])(\d+)\.d$", sample_desc)
+    if match:
+        return match.group(1)
+
+    # Try format without .d
+    match = re.match(r"^(.+[_-])(\d+)$", sample_desc)
+    if match:
+        return match.group(1)
+
+    return None
+
+
+def get_all_polarity_pairs(
+    msrun_ids: list[str], env: str = "prod"
+) -> dict[str, tuple[str, str, str]]:
+    """
+    Find opposite polarity pairs for multiple msrun_ids in a single query.
 
     Args:
-        msrun_id: The msrun_id to find the opposite polarity pair for
+        msrun_ids: List of msrun_ids to find pairs for
         env: Environment to query ("prod" or "dev")
 
     Returns:
-        Tuple of (input_msrun_id, opposite_msrun_id, input_polarity),
-        or None if no pair exists
+        Dict mapping input msrun_id to (input_id, opposite_id, polarity) tuple
     """
     dbx = get_databricks(env)
 
-    # First get the sample description and parse the pattern
+    msrun_ids_str = "', '".join(msrun_ids)
+
+    # Single query: get input runs and all runs in one go
+    # We'll do pattern matching in Python
     query = f"""
-    SELECT sample_description,
-           ionization_mode
+    SELECT `file_registry_id$` as msrun_id,
+           sample_description,
+           ionization_mode,
+           CASE 
+               WHEN `file_registry_id$` IN ('{msrun_ids_str}') THEN 1
+               ELSE 0
+           END as is_input
     FROM benchling_raw.bruker_mass_spec_run
-    WHERE `file_registry_id$` = '{msrun_id}'
+    WHERE sample_description IS NOT NULL
     """
 
     df = dbx.query_df(query)
 
     if df.empty:
-        return None
+        return {}
 
-    sample_desc = df["sample_description"].iloc[0]
-    polarity = df["ionization_mode"].iloc[0]
+    # Split into input and all runs
+    input_df = df[df["is_input"] == 1].copy()
+    all_df = df.copy()
 
-    if not sample_desc:
-        return None
+    # Add pattern column
+    input_df["pattern"] = input_df["sample_description"].apply(extract_pattern)
+    all_df["pattern"] = all_df["sample_description"].apply(extract_pattern)
 
-    # Extract the pattern before the last number (the run-specific ID)
-    # Handles two formats:
-    #   - "PS211214_S100_1to243_1-C,1_5_1710.d" -> "PS211214_S100_1to243_1-C,1_5_"
-    #   - "RS513_260127-1156" -> "RS513_260127-"
-    import re
-    
-    # Try format with .d extension first
-    match = re.match(r"^(.+_)(\d+)\.d$", sample_desc)
-    if not match:
-        # Try format without .d
-        match = re.match(r"^(.+[-_])(\d+)$", sample_desc)
-    
-    if not match:
-        return None
+    # Remove nulls
+    input_df = input_df[input_df["pattern"].notna()]
+    all_df = all_df[all_df["pattern"].notna()]
 
-    pattern_prefix = match.group(1)  # Everything before the last number
+    results = {}
 
-    # Find opposite polarity with matching pattern
-    opposite_polarity = (
-        "ESI Negative" if polarity == "ESI Positive" else "ESI Positive"
-    )
+    # For each input, find the opposite polarity with same pattern
+    for _, input_row in input_df.iterrows():
+        input_id = input_row["msrun_id"]
+        pattern = input_row["pattern"]
+        polarity = input_row["ionization_mode"]
 
-    query2 = f"""
-    SELECT `file_registry_id$` as opposite_msrun_id
-    FROM benchling_raw.bruker_mass_spec_run
-    WHERE sample_description LIKE '{pattern_prefix}%'
-      AND ionization_mode = '{opposite_polarity}'
-      AND `file_registry_id$` != '{msrun_id}'
-    """
+        # Find opposite polarity with same pattern
+        opposite_polarity = (
+            "ESI Negative" if polarity == "ESI Positive" else "ESI Positive"
+        )
 
-    df2 = dbx.query_df(query2)
+        matches = all_df[
+            (all_df["pattern"] == pattern)
+            & (all_df["ionization_mode"] == opposite_polarity)
+            & (all_df["msrun_id"] != input_id)
+        ]
 
-    if df2.empty:
-        return None
+        if not matches.empty:
+            opposite_id = matches.iloc[0]["msrun_id"]
+            results[input_id] = (input_id, opposite_id, polarity)
 
-    opposite = df2["opposite_msrun_id"].iloc[0]
-
-    return (msrun_id, opposite, polarity)
+    return results
 
 
 def format_pair(
@@ -167,14 +190,15 @@ def parse_args():
 def main():
     args = parse_args()
 
+    # Get all pairs in a single query
+    pairs = get_all_polarity_pairs(args.msrun_ids, env=args.env)
+
     found_count = 0
     missing_count = 0
 
     for msrun_id in args.msrun_ids:
-        result = get_opposite_polarity_msrun_id(msrun_id, env=args.env)
-
-        if result:
-            input_id, opposite_id, polarity = result
+        if msrun_id in pairs:
+            input_id, opposite_id, polarity = pairs[msrun_id]
             output = format_pair(input_id, opposite_id, polarity, args.format)
             print(output)
             found_count += 1

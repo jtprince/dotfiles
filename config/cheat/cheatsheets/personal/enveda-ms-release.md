@@ -1,23 +1,24 @@
 
-1. make a ms-toolkit release (doesn't have to be, since could point to a git tag)
-	gh release create --generate-notes
-2. make a branch on enveda ms (make it very small lenght name)
-3. make a PR
-4. make a dev deployment
+## 1. make a ms-toolkit release (doesn't have to be, since could point to a git tag)
 
-	gh workflow run deploy-dev.yml --ref $(git branch --show-current)
+    gh release create --generate-notes
 
-5. Then go to your Actions tab of your PR, make sure it succeeds
-6. 
+## 2. make a branch on enveda ms (make it very small lenght name)
+## 3. make a PR
+## 4. make a dev deployment
 
+    gh workflow run deploy-dev.yml --ref $(git branch --show-current)
 
-flow: enveda-ms.feature-calling-ground-truth-runs
-find the flow, hit the deployments tab (internal tab, not on the left)
-Pick the dev deployment
-Then click run
+## 5. Then go to your Actions tab of your PR, make sure it succeeds
 
-Or, just go to this link:
+* flow: `enveda-ms.feature-calling-ground-truth-runs`
+* find the flow, hit the deployments tab (internal tab, not on the left)
+* Pick the dev deployment
+* Then click run
 
+Or, just go to this link
+
+https://prefect.dev.enveda.io/flows/flow/97328f0a-cae1-4928-97a4-8d6f42300fdb?tab=Deployments&deployments.deployments.flowOrDeploymentNameLike=contig&deployments.limit=100
 
 Hit Run button
 	- quickrun
@@ -28,8 +29,6 @@ Hit Run button
 	     dev-{branch_name}-{ms_version}
 	     eg.: dev-contig-caller-ms_8_4 (if the branch is contig-caller)
 
-
-https://prefect.dev.enveda.io/flows/flow/97328f0a-cae1-4928-97a4-8d6f42300fdb?tab=Deployments&deployments.deployments.flowOrDeploymentNameLike=contig&deployments.limit=100
 
 Can search for deployment name based on branch name here ^
 
