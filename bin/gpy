@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+GPY_PYTHON="${GPY_PYTHON:-$HOME/.local/uv-global/bin/python}"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  gpy <command> [args...]
+
+Runs a PATH-resolved script <command> under the global uv python interpreter.
+
+Completion:
+  source <(gpy --bash-completion)
+
+Env:
+  GPY_PYTHON   Override interpreter (default: ~/.local/uv-global/bin/python)
+EOF
+}
+
+# Emit bash completion code
+if [[ "${1:-}" == "--bash-completion" ]]; then
+  cat <<'EOF'
+# bash completion for gpy
+_gpy_complete() {
+  local cur prev cmd
+  cur="${COMP_WORDS[COMP_CWORD]:-}"
+  prev="${COMP_WORDS[COMP_CWORD-1]:-}"
+
+  # Completing the first argument: complete command names from PATH
+  if (( COMP_CWORD == 1 )); then
+    COMPREPLY=( $(compgen -c -- "$cur") )
+    return 0
+  fi
+
+  cmd="${COMP_WORDS[1]}"
+
+  # If the wrapped command has a registered completion, try to delegate.
+  # We shift COMP_WORDS/COMP_CWORD so the completion thinks it's completing for <cmd>.
+  local spec fn compcmd
+  spec="$(complete -p -- "$cmd" 2>/dev/null || true)"
+
+  if [[ -n "$spec" ]]; then
+    # Save originals
+    local -a _orig_words
+    local _orig_cword _orig_line _orig_point
+    _orig_words=("${COMP_WORDS[@]}")
+    _orig_cword="$COMP_CWORD"
+    _orig_line="${COMP_LINE-}"
+    _orig_point="${COMP_POINT-}"
+
+    # Build shifted words: (<cmd> <args...>) dropping leading "gpy"
+    COMP_WORDS=("$cmd" "${_orig_words[@]:2}")
+    COMP_CWORD=$((_orig_cword - 1))
+
+    # Adjust COMP_LINE / COMP_POINT approximately (good enough for most completers)
+    if [[ -n "${_orig_line}" ]]; then
+      COMP_LINE="${_orig_line#gpy }"
+    fi
+    if [[ -n "${_orig_point}" ]]; then
+      # subtract length of "gpy " (4), clamp at 0
+      if (( _orig_point >= 4 )); then
+        COMP_POINT=$((_orig_point - 4))
+      else
+        COMP_POINT=0
+      fi
+    fi
+
+    # Delegate: -F <function> or -C <command>
+    if [[ "$spec" =~ [[:space:]]-F[[:space:]]+([^[:space:]]+) ]]; then
+      fn="${BASH_REMATCH[1]}"
+      # call completion function if it exists
+      if declare -F "$fn" >/dev/null 2>&1; then
+        "$fn"
+      fi
+    elif [[ "$spec" =~ [[:space:]]-C[[:space:]]+([^[:space:]]+) ]]; then
+      compcmd="${BASH_REMATCH[1]}"
+      # -C completers are executables; run them in this environment
+      # They typically print completions on stdout
+      local out
+      out="$("$compcmd" 2>/dev/null || true)"
+      # Split output into COMPREPLY
+      COMPREPLY=( $(compgen -W "$out" -- "${COMP_WORDS[COMP_CWORD]}") )
+    fi
+
+    # Restore originals
+    COMP_WORDS=("${_orig_words[@]}")
+    COMP_CWORD="$_orig_cword"
+    COMP_LINE="$_orig_line"
+    COMP_POINT="$_orig_point"
+
+    # If delegation produced something, we're done
+    if (( ${#COMPREPLY[@]} > 0 )); then
+      return 0
+    fi
+  fi
+
+  # Fallback: filename completion for remaining args
+  COMPREPLY=( $(compgen -f -- "$cur") )
+  return 0
+}
+
+complete -o default -o bashdefault -F _gpy_complete gpy
+EOF
+  exit 0
+fi
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" || $# -lt 1 ]]; then
+  usage
+  exit 0
+fi
+
+cmd="$1"
+shift || true
+
+if [[ ! -x "$GPY_PYTHON" ]]; then
+  echo "gpy: GPY_PYTHON not executable: $GPY_PYTHON" >&2
+  exit 127
+fi
+
+exe="$(command -v -- "$cmd" || true)"
+if [[ -z "$exe" ]]; then
+  echo "gpy: command not found on PATH: $cmd" >&2
+  exit 127
+fi
+
+exec "$GPY_PYTHON" "$exe" "$@"
