@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+SESSION_FILE = Path("_copilot_last_session")
+
+
+def main() -> int:
+    args = sys.argv[1:]
+
+    # Prepend --resume=... from cwd session file (if present)
+    if SESSION_FILE.is_file():
+        resume = SESSION_FILE.read_text(errors="ignore").splitlines()[:1]
+        if resume and resume[0].strip():
+            args = [resume[0].strip(), *args]
+
+    # Capture full combined output while streaming to terminal
+    with tempfile.TemporaryFile(mode="w+b") as buf:
+        proc = subprocess.Popen(
+            ["copilot", *args],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            bufsize=0,
+        )
+
+        assert proc.stdout is not None
+        while True:
+            chunk = proc.stdout.read(4096)
+            if not chunk:
+                break
+            os.write(sys.stdout.fileno(), chunk)
+            buf.write(chunk)
+
+        rc = proc.wait()
+
+        # Penultimate line contains: " Resume this session with copilot --resume=..."
+        buf.seek(0)
+        text = buf.read().decode(errors="ignore")
+        lines = text.splitlines()
+        if len(lines) >= 2:
+            penultimate = lines[-2].strip()
+            parts = penultimate.split()
+            if parts:
+                last_token = parts[-1].strip()
+                if last_token.startswith("--resume="):
+                    SESSION_FILE.write_text(last_token + "\n")
+
+    return rc
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

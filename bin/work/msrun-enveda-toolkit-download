@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 
 import argparse
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from enveda_toolkit import get_databricks
 from enveda_toolkit.azure_tools.azure_blob_storage import AzureBlobStorage
 
 ENVEDA_ENV = "prod"
+SUBSCRIPTION = "sub-enveda-data-prod-01"
 BLOB_STORAGE = "nassyncncus01"
-BRUKER_FILES = ["analysis.tdf", "analysis.tdf_bin"]
 CONTAINER = "mass-spec"
+BRUKER_FILES = ["analysis.tdf", "analysis.tdf_bin"]
 
 cwd = Path.cwd()
 
@@ -19,59 +20,96 @@ COLOR_CYAN = "\033[96m"
 COLOR_BOLD = "\033[1m"
 COLOR_RESET = "\033[0m"
 
-parser = argparse.ArgumentParser()
-parser.add_argument("msrun_ids", nargs="+", help="msrun_ids")
-parser.add_argument("--outdir", default=cwd, type=Path, help="dir to download to")
-parser.add_argument("--workers", type=int, default=4, help="number of download threads")
-parser.add_argument(
-    "--dry",
-    action="store_true",
-    help="Print Azure CLI commands and exit before downloading.",
-)
-args = parser.parse_args()
+# Task tuple: (label, blob_prefix, filename, outpath)
+#   label       - human-readable identifier for progress output
+#   blob_prefix - path inside the blob container up to (not including) the filename
+#   filename    - one of BRUKER_FILES
+#   outpath     - local directory where the file will be written
 
-db = get_databricks(ENVEDA_ENV)
-msrun_ids = ", ".join([f"'{id}'" for id in args.msrun_ids])
-result = db.query_df(
-    f"""
-        SELECT `name$` as msrun_id, cloud_path
-        FROM enveda_prod.benchling_raw.bruker_mass_spec_run
-        WHERE `name$` IN ({msrun_ids})
-    """
-)
-found_msrun_ids = result.msrun_id.tolist()
+# =============================================================================
+# Input classification
+# =============================================================================
 
-missing_msrun_ids = set(args.msrun_ids) - set(found_msrun_ids)
-if len(missing_msrun_ids) > 0:
-    print(f"Could not find {len(missing_msrun_ids)} msrun_ids: {missing_msrun_ids}")
-
-storage = AzureBlobStorage(BLOB_STORAGE)
-
-tasks = []
-for row in result.itertuples():
-    cloud_path_no_root_slash = row.cloud_path.lstrip("/")
-    outpath = args.outdir / f"{row.msrun_id}.d"
-    outpath.mkdir(parents=True, exist_ok=True)
-    for name in BRUKER_FILES:
-        if (outpath / name).exists():
-            continue
-        tasks.append((row.msrun_id, cloud_path_no_root_slash, name, outpath))
+MSB_PATTERN = re.compile(r"^MSB\d+$")
 
 
-def azure_cli_cmd(msrun_id, cloud_path, name, outdir: Path, color=False) -> str:
-    """
-    Produce an Azure CLI command for downloading the blob.
-    Optionally returns a colorized string.
-    """
-    blob = f"{cloud_path}/{name}"
+def classify_inputs(inputs: list[str]) -> tuple[list[str], list[str]]:
+    """Split raw CLI inputs into MSB run IDs and raw dot-d blob paths."""
+    msb_ids, dot_d_paths = [], []
+    for inp in inputs:
+        if MSB_PATTERN.match(inp):
+            msb_ids.append(inp)
+        elif inp.rstrip("/").endswith(".d"):
+            dot_d_paths.append(inp.rstrip("/"))
+        else:
+            print(f"Warning: unrecognized input (not MSB* or *.d), skipping: {inp}")
+    return msb_ids, dot_d_paths
+
+
+# =============================================================================
+# MSB path — resolves via Databricks
+# =============================================================================
+
+def resolve_msb_tasks(msb_ids: list[str], outdir: Path, db) -> list[tuple]:
+    """Query Databricks for cloud paths and build download tasks for MSB runs."""
+    msrun_ids_sql = ", ".join([f"'{id}'" for id in msb_ids])
+    result = db.query_df(
+        f"""
+            SELECT `name$` as msrun_id, cloud_path
+            FROM enveda_prod.benchling_raw.bruker_mass_spec_run
+            WHERE `name$` IN ({msrun_ids_sql})
+        """
+    )
+    found_msrun_ids = result.msrun_id.tolist()
+    missing = set(msb_ids) - set(found_msrun_ids)
+    if missing:
+        print(f"Could not find {len(missing)} msrun_id(s): {missing}")
+
+    tasks = []
+    for row in result.itertuples():
+        blob_prefix = row.cloud_path.lstrip("/")
+        outpath = outdir / f"{row.msrun_id}.d"
+        outpath.mkdir(parents=True, exist_ok=True)
+        for name in BRUKER_FILES:
+            if (outpath / name).exists():
+                continue
+            tasks.append((row.msrun_id, blob_prefix, name, outpath))
+    return tasks
+
+
+# =============================================================================
+# Dot-d path — blob path given directly, no Databricks needed
+# =============================================================================
+
+def resolve_dot_d_tasks(dot_d_paths: list[str], outdir: Path, flat: bool = False) -> list[tuple]:
+    """Build download tasks for raw blob dot-d paths (no Databricks lookup required)."""
+    tasks = []
+    for dot_d_path in dot_d_paths:
+        blob_prefix = dot_d_path.lstrip("/")
+        dot_d_name = Path(blob_prefix).name  # e.g. Blank_V-1_1_54941.d
+        if flat:
+            outpath = outdir / dot_d_name
+        else:
+            outpath = outdir / blob_prefix  # preserves full experiment directory structure
+        outpath.mkdir(parents=True, exist_ok=True)
+        for name in BRUKER_FILES:
+            if (outpath / name).exists():
+                continue
+            tasks.append((dot_d_path, blob_prefix, name, outpath))
+    return tasks
+
+
+# =============================================================================
+# Shared download helpers
+# =============================================================================
+
+def azure_cli_cmd(label: str, blob_prefix: str, name: str, outdir: Path, color: bool = False) -> str:
+    """Produce an Azure CLI command for downloading a single blob file."""
+    blob = f"{blob_prefix}/{name}"
     local = outdir / name
-    cwd = Path.cwd()
-
-    # Make the path relative if possible
     try:
-        local_rel = local.relative_to(cwd)
+        local_rel = local.relative_to(Path.cwd())
     except ValueError:
-        # If not relative, fall back to absolute
         local_rel = local
 
     cmd = (
@@ -81,21 +119,70 @@ def azure_cli_cmd(msrun_id, cloud_path, name, outdir: Path, color=False) -> str:
         f"--name '{blob}' "
         f"--file '{local_rel}'"
     )
-
     if color:
         return f"{COLOR_BOLD}{COLOR_CYAN}{cmd}{COLOR_RESET}"
     return cmd
 
 
-def _download_one(task):
-    msrun_id, cloud_path, name, outpath = task
+def _download_one(task: tuple, storage: AzureBlobStorage) -> str:
+    label, blob_prefix, name, outpath = task
     storage.download_blob(
         container=CONTAINER,
-        blob_path=f"{cloud_path}/{name}",
+        blob_path=f"{blob_prefix}/{name}",
         local_directory=outpath,
     )
-    return f"{msrun_id}:{name}"
+    return f"{label}:{name}"
 
+
+# =============================================================================
+# CLI
+# =============================================================================
+
+parser = argparse.ArgumentParser(
+    description="Download Bruker .d run files from Azure blob storage. "
+    "Accepts MSB* run IDs (resolved via Databricks) or raw blob paths ending in .d."
+)
+parser.add_argument(
+    "inputs",
+    nargs="+",
+    help="MSB run IDs (e.g. MSB12345) and/or blob paths ending in .d "
+    "(e.g. Profiling/EXP26000191_SynBio_Profiling_260226/Blank_V-1_1_54941.d)",
+)
+parser.add_argument("--outdir", default=cwd, type=Path, help=f"dir to download to (default: cwd at invocation time)")
+parser.add_argument("--workers", type=int, default=4, help="number of download threads")
+parser.add_argument(
+    "--flat",
+    action="store_true",
+    help="For dot-d paths: download to outdir/<name>.d/ instead of preserving the full blob path structure.",
+)
+parser.add_argument(
+    "--dry",
+    action="store_true",
+    help="Print Azure CLI commands and exit before downloading.",
+)
+args = parser.parse_args()
+
+print(
+    f"\n{COLOR_BOLD}Blob storage provenance{COLOR_RESET}\n"
+    f"  Subscription   : {SUBSCRIPTION}\n"
+    f"  Storage account: {BLOB_STORAGE}\n"
+    f"  Container      : {CONTAINER}\n"
+    f"  Output dir     : {args.outdir}\n"
+)
+
+msb_ids, dot_d_paths = classify_inputs(args.inputs)
+
+# Lazy-init Databricks only when MSB IDs are present
+tasks = []
+if msb_ids:
+    from enveda_toolkit import get_databricks
+    db = get_databricks(ENVEDA_ENV)
+    tasks += resolve_msb_tasks(msb_ids, args.outdir, db)
+
+if dot_d_paths:
+    tasks += resolve_dot_d_tasks(dot_d_paths, args.outdir, flat=args.flat)
+
+storage = AzureBlobStorage(BLOB_STORAGE)
 
 # ---------------------------------------------------------
 # DRY RUN MODE
@@ -106,12 +193,11 @@ if args.dry:
         print("Everything already present — nothing to download.")
     else:
         print("CLI commands:\n")
-        for msrun_id, cloud_path, name, outpath in tasks:
+        for label, blob_prefix, name, outpath in tasks:
             print(f"mkdir -p {str(outpath)}")
-            print(azure_cli_cmd(msrun_id, cloud_path, name, outpath, color=True))
+            print(azure_cli_cmd(label, blob_prefix, name, outpath, color=True))
     print("\nExiting due to --dry.\n")
     exit(0)
-
 
 # ---------------------------------------------------------
 # REAL DOWNLOAD MODE
@@ -122,7 +208,7 @@ else:
     print(f"Starting {len(tasks)} downloads with {args.workers} threads...")
     completed = 0
     with ThreadPoolExecutor(max_workers=args.workers) as ex:
-        futures = [ex.submit(_download_one, t) for t in tasks]
+        futures = [ex.submit(_download_one, t, storage) for t in tasks]
         for fut in as_completed(futures):
             try:
                 label = fut.result()

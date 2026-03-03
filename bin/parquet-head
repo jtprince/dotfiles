@@ -12,11 +12,16 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("parquet_files", type=Path, nargs="+")
 parser.add_argument(
+    "-n", "--num-rows", type=int, default=5, help="print this number of rows"
+)
+
+parser.add_argument(
     "--no-shape", action="store_true", help="don't print shape at the end"
 )
 parser.add_argument(
     "--no-attrs", action="store_true", help="don't print df.attrs even if they exist"
 )
+
 parser.add_argument(
     "--all",
     action="store_true",
@@ -38,6 +43,7 @@ for path in args.parquet_files:
     if args.all:
         print(df)
     else:
-        print(df.head())
+        head = df.head(args.num_rows)
+        print(head)
     if not args.no_shape:
         print("\nshape:", df.shape)

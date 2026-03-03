@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""
+Minimal release helper.
+
+Does:
+  - ensure we're in a git repo
+  - checkout main (if needed) and pull (fast-forward only)
+  - read version via: uv version --short and derive tag v<version>
+  - if GitHub release already exists -> print message and exit (no prompts)
+  - otherwise prompt user to confirm version/tag
+  - create GitHub release on main with generated notes
+  - fetch tags and print current tags
+
+Requires: git, uv, gh (authenticated), and a git repo.
+"""
+
+from __future__ import annotations
+
+import subprocess
+import sys
+
+
+def run(cmd: list[str], *, capture: bool = True, check: bool = True) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, text=True, capture_output=capture, check=check)
+
+
+def output(cmd: list[str]) -> str:
+    p = run(cmd)
+    return (p.stdout or "").strip()
+
+
+def require_git_repo() -> None:
+    run(["git", "rev-parse", "--is-inside-work-tree"])
+
+
+def ensure_on_main_and_pulled() -> None:
+    branch = output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    if branch != "main":
+        run(["git", "checkout", "main"])
+
+    run(["git", "pull", "--ff-only"])
+
+    branch2 = output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    if branch2 != "main":
+        raise RuntimeError(f"expected to be on 'main' but am on '{branch2}'")
+
+
+def get_version_and_tag() -> tuple[str, str]:
+    version = output(["uv", "version", "--short"])
+    return version, f"v{version}"
+
+
+def release_exists(tag: str) -> bool:
+    p = run(["gh", "release", "view", tag], capture=True, check=False)
+    return p.returncode == 0
+
+
+def confirm(version: str, tag: str) -> None:
+    resp = input(f"Proceed with version {version} and tag {tag}? [y/N] ").strip().lower()
+    if resp not in {"y", "yes"}:
+        raise RuntimeError("aborted by user")
+
+
+def create_release(tag: str) -> None:
+    run(["gh", "release", "create", tag, "--generate-notes", "--target", "main"])
+
+
+def fetch_and_list_tags() -> None:
+    run(["git", "fetch", "origin", "--tags"])
+    tags = output(["git", "tag"])
+    print("Current git tags:")
+    if tags:
+        print(tags)
+    else:
+        print("(none)")
+
+
+def main() -> int:
+    try:
+        require_git_repo()
+        ensure_on_main_and_pulled()
+
+        version, tag = get_version_and_tag()
+
+        # Bail out early (no prompts) if the release already exists.
+        if release_exists(tag):
+            print(f"Release {tag} already exists. No action taken.")
+            return 0
+
+        confirm(version, tag)
+        create_release(tag)
+        fetch_and_list_tags()
+        return 0
+
+    except subprocess.CalledProcessError as e:
+        msg = (e.stderr or e.stdout or "").strip()
+        print(f"ERROR: {msg}", file=sys.stderr)
+        return e.returncode or 1
+    except Exception as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
