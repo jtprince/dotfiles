@@ -23,15 +23,30 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--all",
+    "-r",
+    "--all-rows",
     action="store_true",
-    help="display the whole parquet file, not just the head",
+    help="display all rows, not just the head",
 )
+
+parser.add_argument(
+    "-c",
+    "--all-cols",
+    action="store_true",
+    help="don't break columns up with newline",
+)
+
 
 args = parser.parse_args()
 
-if args.all:
+if args.all_rows:
     pd.set_option("display.max_rows", None)
+
+if args.all_cols:
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.width", None)
+    pd.set_option("display.max_colwidth", None)
+
 
 for path in args.parquet_files:
     print(str(path))
@@ -40,7 +55,7 @@ for path in args.parquet_files:
     if df.attrs and not args.no_attrs:
         print("attrs:", df.attrs)
 
-    if args.all:
+    if args.all_rows:
         print(df)
     else:
         head = df.head(args.num_rows)
