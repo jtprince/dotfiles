@@ -46,6 +46,7 @@ CHEATS_DIR = Path("/Users/johnprince/dotfiles/config/cheat/cheatsheets/personal"
 def _print_markdown(text: str) -> int:
     """
     Render markdown using `glow` via stdin. Fails if glow isn't installed.
+    --width=0 disables word-wrap so long lines (e.g. commands) are never broken.
     """
 
     glow = shutil.which("glow")
@@ -53,7 +54,7 @@ def _print_markdown(text: str) -> int:
         raise RuntimeError("`glow` is not installed or not in PATH. Please install it.")
 
     extra = os.environ.get("CHEAT_GLOW_OPTS", "")
-    glow_args = [glow] + (shlex.split(extra) if extra else []) + ["-"]
+    glow_args = [glow] + (shlex.split(extra) if extra else []) + ["--width=0", "-"]
 
     proc = subprocess.run(glow_args, input=text, text=True)
     return proc.returncode or 0

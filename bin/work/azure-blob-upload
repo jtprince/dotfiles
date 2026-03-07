@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+"""Upload local files to Azure Blob Storage.
+
+Example:
+    python scripts/azure_blob_upload.py \\
+        --storage-account inferencedevncus01 \\
+        --container prism2 \\
+        --upload-dir input/batch01-ms1-context-only/MSB1234 \\
+        results/file1.parquet results/file2.parquet
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+from enveda_toolkit import AzureBlobStorage
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Upload files to Azure Blob Storage.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument(
+        "-a", "--storage-account", required=True, help="Azure storage account name"
+    )
+    parser.add_argument("-c", "--container", required=True, help="Blob container name")
+    parser.add_argument(
+        "-d",
+        "--upload-dir",
+        required=True,
+        help="Remote path prefix in the container (e.g. input/batch01/MSB1234)",
+    )
+    parser.add_argument("files", nargs="+", type=Path, help="Local files to upload")
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    missing = [f for f in args.files if not f.exists()]
+    if missing:
+        for f in missing:
+            print(f"ERROR: file not found: {f}", file=sys.stderr)
+        sys.exit(1)
+
+    blob_store = AzureBlobStorage(storage_account=args.storage_account)
+
+    for local_file in args.files:
+        blob_path = blob_store.upload_blob(
+            local_file=local_file,
+            container=args.container,
+            target_path=args.upload_dir,
+        )
+        print(f"✓ {local_file} → {blob_path}")
+
+
+if __name__ == "__main__":
+    main()

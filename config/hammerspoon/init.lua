@@ -71,11 +71,11 @@ end)
 
 -- Terminals
 hs.hotkey.bind({ "alt" }, "X", function()
-	sh([[open -na "Alacritty"]])
+	sh([[open -na "kitty"]])
 end)
 
 hs.hotkey.bind({ "alt", "shift" }, "X", function()
-	sh([[open -na "kitty"]])
+	sh([[open -na "Alacritty"]])
 end)
 
 ----------------------------------------------------------------------
