@@ -31,9 +31,6 @@ from glob import glob
 from itertools import islice
 from pathlib import Path
 
-from enveda_toolkit import AzureBlobStorage
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Upload files to Azure Blob Storage.",
@@ -187,6 +184,47 @@ def chunked(seq: list[Path], size: int):
         yield batch
 
 
+def upload_blob(
+    local_file: Path,
+    storage_account: str,
+    container: str,
+    target_path: str,
+) -> str:
+    """Upload a single file to Azure Blob Storage using the az CLI."""
+    blob_name = f"{target_path}/{local_file.name}"
+    try:
+        subprocess.run(
+            [
+                "az",
+                "storage",
+                "blob",
+                "upload",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--name",
+                blob_name,
+                "--file",
+                str(local_file),
+                "--auth-mode",
+                "login",
+                "--overwrite",
+                "--output",
+                "none",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(f"ERROR: failed to upload {local_file.name}.", file=sys.stderr)
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(1)
+    return f"az://{container}/{blob_name}"
+
+
 def main() -> None:
     args = parse_args()
 
@@ -202,14 +240,13 @@ def main() -> None:
         f"{args.storage_account}/{args.container}/{args.upload_dir}"
     )
 
-    blob_store = AzureBlobStorage(storage_account=args.storage_account)
-
     uploaded = 0
     for batch_num, batch in enumerate(chunked(files, args.batch_size), start=1):
         print(f"\nBatch {batch_num}: {len(batch)} file(s)")
         for local_file in batch:
-            blob_path = blob_store.upload_blob(
+            blob_path = upload_blob(
                 local_file=local_file,
+                storage_account=args.storage_account,
                 container=args.container,
                 target_path=args.upload_dir,
             )
