@@ -1,59 +1,222 @@
 #!/usr/bin/env python
 """Upload local files to Azure Blob Storage.
 
-Example:
-    python scripts/azure_blob_upload.py \\
-        --storage-account inferencedevncus01 \\
-        --container prism2 \\
-        --upload-dir input/batch01-ms1-context-only/MSB1234 \\
-        results/file1.parquet results/file2.parquet
+Examples:
+
+    # safest: let Python expand the glob, not the shell
+    uv run azure-blob-upload \
+        --subscription sub-enveda-data-dev-01 \
+        --storage-account inferencedevncus01 \
+        --container prism2 \
+        --upload-dir input/batch01-ms1-context-only \
+        --glob '~/projects/prism2-data-prepper/output/MSB*_MSB*.parquet'
+
+    # explicit files still work
+    uv run azure-blob-upload \
+        --subscription sub-enveda-data-dev-01 \
+        --storage-account inferencedevncus01 \
+        --container prism2 \
+        --upload-dir input/batch01-ms1-context-only \
+        ~/projects/prism2-data-prepper/output/MSB104409_MSB104410.prism2input.parquet \
+        ~/projects/prism2-data-prepper/output/MSB104401_MSB104402.prism2input.parquet
 """
 
+from __future__ import annotations
+
 import argparse
+import json
+import subprocess
 import sys
+from glob import glob
+from itertools import islice
 from pathlib import Path
 
 from enveda_toolkit import AzureBlobStorage
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Upload files to Azure Blob Storage.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
     parser.add_argument(
-        "-a", "--storage-account", required=True, help="Azure storage account name"
+        "-s",
+        "--subscription",
+        required=True,
+        help="Expected Azure subscription name or id (checked via `az account show`).",
     )
-    parser.add_argument("-c", "--container", required=True, help="Blob container name")
+    parser.add_argument(
+        "-a",
+        "--storage-account",
+        required=True,
+        help="Azure storage account name",
+    )
+    parser.add_argument(
+        "-c",
+        "--container",
+        required=True,
+        help="Blob container name",
+    )
     parser.add_argument(
         "-d",
         "--upload-dir",
         required=True,
-        help="Remote path prefix in the container (e.g. input/batch01/MSB1234)",
+        help="Remote path prefix in the container, e.g. input/batch01-ms1-context-only",
     )
-    parser.add_argument("files", nargs="+", type=Path, help="Local files to upload")
+    parser.add_argument(
+        "--glob",
+        dest="globs",
+        action="append",
+        default=[],
+        help=(
+            "Glob pattern to expand inside Python. Quote it so the shell does not expand it. "
+            "May be provided multiple times."
+        ),
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=250,
+        help="Number of files to process per batch for progress reporting (default: 250).",
+    )
+    parser.add_argument(
+        "files",
+        nargs="*",
+        type=Path,
+        help="Explicit local files to upload.",
+    )
     return parser.parse_args()
 
 
-def main():
+def get_active_subscription() -> dict[str, str]:
+    try:
+        proc = subprocess.run(
+            ["az", "account", "show", "-o", "json"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        print("ERROR: `az` CLI not found in PATH.", file=sys.stderr)
+        sys.exit(2)
+    except subprocess.CalledProcessError as exc:
+        print("ERROR: failed to run `az account show`.", file=sys.stderr)
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        print("ERROR: could not parse output from `az account show`.", file=sys.stderr)
+        sys.exit(2)
+
+    return {
+        "name": str(data.get("name", "")),
+        "id": str(data.get("id", "")),
+    }
+
+
+def verify_subscription(expected: str) -> None:
+    active = get_active_subscription()
+    if expected not in {active["name"], active["id"]}:
+        print(
+            "ERROR: active Azure subscription does not match.\n"
+            f"  expected: {expected}\n"
+            f"  active name: {active['name']}\n"
+            f"  active id:   {active['id']}",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+
+def resolve_input_files(args: argparse.Namespace) -> list[Path]:
+    resolved: list[Path] = []
+    errors: list[str] = []
+    seen: set[Path] = set()
+
+    # explicit files
+    for file_path in args.files:
+        path = file_path.expanduser()
+        if not path.exists():
+            errors.append(f"file not found: {path}")
+            continue
+        if not path.is_file():
+            errors.append(f"not a file: {path}")
+            continue
+        norm = path.resolve()
+        if norm not in seen:
+            seen.add(norm)
+            resolved.append(norm)
+
+    # glob patterns expanded in Python
+    for pattern in args.globs:
+        expanded_pattern = str(Path(pattern).expanduser())
+        matches = [Path(p).resolve() for p in glob(expanded_pattern, recursive=True)]
+
+        if not matches:
+            errors.append(f"glob matched no files: {pattern}")
+            continue
+
+        for match in matches:
+            if not match.is_file():
+                continue
+            if match not in seen:
+                seen.add(match)
+                resolved.append(match)
+
+    if errors:
+        for error in errors:
+            print(f"ERROR: {error}", file=sys.stderr)
+        sys.exit(1)
+
+    if not resolved:
+        print(
+            "ERROR: no files to upload. Provide explicit files and/or one or more --glob patterns.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    return resolved
+
+
+def chunked(seq: list[Path], size: int):
+    it = iter(seq)
+    while batch := list(islice(it, size)):
+        yield batch
+
+
+def main() -> None:
     args = parse_args()
 
-    missing = [f for f in args.files if not f.exists()]
-    if missing:
-        for f in missing:
-            print(f"ERROR: file not found: {f}", file=sys.stderr)
-        sys.exit(1)
+    if args.batch_size < 1:
+        print("ERROR: --batch-size must be >= 1", file=sys.stderr)
+        sys.exit(2)
+
+    verify_subscription(args.subscription)
+    files = resolve_input_files(args)
+
+    print(
+        f"Uploading {len(files)} file(s) to "
+        f"{args.storage_account}/{args.container}/{args.upload_dir}"
+    )
 
     blob_store = AzureBlobStorage(storage_account=args.storage_account)
 
-    for local_file in args.files:
-        blob_path = blob_store.upload_blob(
-            local_file=local_file,
-            container=args.container,
-            target_path=args.upload_dir,
-        )
-        print(f"✓ {local_file} → {blob_path}")
+    uploaded = 0
+    for batch_num, batch in enumerate(chunked(files, args.batch_size), start=1):
+        print(f"\nBatch {batch_num}: {len(batch)} file(s)")
+        for local_file in batch:
+            blob_path = blob_store.upload_blob(
+                local_file=local_file,
+                container=args.container,
+                target_path=args.upload_dir,
+            )
+            uploaded += 1
+            print(f"[{uploaded}/{len(files)}] ✓ {local_file.name} → {blob_path}")
+
+    print(f"\nDone: uploaded {uploaded} file(s).")
 
 
 if __name__ == "__main__":
