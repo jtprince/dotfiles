@@ -71,7 +71,7 @@ end)
 
 -- Terminals
 hs.hotkey.bind({ "alt" }, "X", function()
-	sh([[open -na "kitty"]])
+	sh([[open -a "kitty"]])
 end)
 
 hs.hotkey.bind({ "alt", "shift" }, "X", function()
