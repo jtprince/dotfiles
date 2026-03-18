@@ -1,5 +1,46 @@
 \usepackage{tcolorbox}
-% This is acceptable, but could be improved a lot I'm sure
-% https://mirrors.concertpass.com/tex-archive/macros/latex/contrib/tcolorbox/tcolorbox.pdf
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{newunicodechar}
+
 \newtcolorbox{myquote}{left skip=1em, colback=gray!25!white, colframe=gray!25!white}
 \renewenvironment{quote}{\begin{myquote}}{\end{myquote}}
+
+% Dedicated fallback font for standalone Unicode math-like glyphs
+\newfontfamily\mathfallback{STIX Two Math}
+
+% comparison / operators
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{∝}{\ensuremath{\propto}}
+\newunicodechar{≤}{\ensuremath{\le}}
+\newunicodechar{≥}{\ensuremath{\ge}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+
+% roots / arrows
+% Use a real glyph from a math-capable font; raise slightly for better baseline alignment
+\newunicodechar{√}{\raisebox{0.10ex}{{\mathfallback √}}}
+\newunicodechar{→}{\ensuremath{\to}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{⇔}{\ensuremath{\Leftrightarrow}}
+
+% superscripts often produced by AI/copied text
+\newunicodechar{⁰}{\textsuperscript{0}}
+\newunicodechar{¹}{\textsuperscript{1}}
+\newunicodechar{²}{\textsuperscript{2}}
+\newunicodechar{³}{\textsuperscript{3}}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{⁵}{\textsuperscript{5}}
+\newunicodechar{⁶}{\textsuperscript{6}}
+\newunicodechar{⁷}{\textsuperscript{7}}
+\newunicodechar{⁸}{\textsuperscript{8}}
+\newunicodechar{⁹}{\textsuperscript{9}}
+\newunicodechar{⁺}{\textsuperscript{+}}
+\newunicodechar{⁻}{\textsuperscript{-}}
+\newunicodechar{⁼}{\textsuperscript{=}}
+\newunicodechar{⁽}{\textsuperscript{(}}
+\newunicodechar{⁾}{\textsuperscript{)}}

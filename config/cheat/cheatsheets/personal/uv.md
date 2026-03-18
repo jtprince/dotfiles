@@ -66,8 +66,11 @@ uv add <package>[extra1]
 ## Remove dependency	
 uv remove <package>
 
-## Update dependencies	
+## Update dependencies (all)
 uv lock --upgrade
+
+## Update single dependency
+uv lock --upgrade-package <some_package>
 
 ## Run command in venv	
 uv run <command>
