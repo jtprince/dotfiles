@@ -3,6 +3,8 @@ _az_vm_meta[johnprince-dev]='data-science-dev-ncus-rg-01|sub-enveda-data-dev-01'
 _az_vm_meta[johnprince-highmem]='data-science-dev-ncus-rg-01|sub-enveda-data-dev-01'
 
 _az_ssh_cfg_dir="${HOME}/.ssh/azure-ephemeral"
+_az_ssh_keepalive_interval="${AZ_SSH_SERVER_ALIVE_INTERVAL:-30}"
+_az_ssh_keepalive_countmax="${AZ_SSH_SERVER_ALIVE_COUNT_MAX:-6}"
 mkdir -p "${_az_ssh_cfg_dir}"
 
 _az_extract_ssh_host() {
@@ -88,10 +90,38 @@ _az_cfg_is_fresh() {
   (( now - mtime < max_age ))
 }
 
+_az_harden_cfg_permissions() {
+  local cfg="$1"
+  local rg="$2"
+  local host="$3"
+  local cfg_dir key_root key_dir
+
+  [[ -f "$cfg" ]] || return 1
+
+  cfg_dir="${cfg:h}"
+  key_root="${cfg_dir}/az_ssh_config"
+  key_dir="${key_root}/${rg}-${host}"
+
+  chmod 700 "$cfg_dir" 2>/dev/null || return 1
+  [[ -d "$key_root" ]] && chmod 700 "$key_root" 2>/dev/null || true
+
+  if [[ -d "$key_dir" ]]; then
+    chmod 700 "$key_dir" 2>/dev/null || return 1
+    [[ -f "$key_dir/id_rsa" ]] && chmod 600 "$key_dir/id_rsa" 2>/dev/null || true
+    [[ -f "$key_dir/id_rsa.pub" ]] && chmod 644 "$key_dir/id_rsa.pub" 2>/dev/null || true
+    [[ -f "$key_dir/id_rsa.pub-aadcert.pub" ]] && chmod 644 "$key_dir/id_rsa.pub-aadcert.pub" 2>/dev/null || true
+  fi
+
+  chmod 600 "$cfg" 2>/dev/null || return 1
+}
+
 _az_ensure_cfg_alias() {
   local logical_host="$1"
   local cfg="$2"
-  local tmp="${cfg}.tmp"
+  local tmp
+
+  [[ -f "$cfg" ]] || return 1
+  tmp="$(mktemp "${cfg}.tmp.XXXXXX")" || return 1
 
   awk -v logical_host="$logical_host" '
     BEGIN { updated = 0 }
@@ -123,56 +153,52 @@ _az_refresh_cfg() {
   local rg="${meta%%|*}"
   local sub="${meta#*|}"
   local cfg="${_az_ssh_cfg_dir}/${host}.config"
+  local key_dir="${_az_ssh_cfg_dir}/az_ssh_config/${rg}-${host}"
+  local output
 
   if ! _az_cfg_is_fresh "$cfg"; then
-    az ssh config \
-      --name "$host" \
-      --resource-group "$rg" \
-      --subscription "$sub" \
-      --prefer-private-ip \
-      --overwrite \
-      --yes \
-      --file "$cfg" >/dev/null || return 1
+    rm -rf "$key_dir" "$cfg"
+    output="$(
+      az ssh config \
+        --name "$host" \
+        --resource-group "$rg" \
+        --subscription "$sub" \
+        --prefer-private-ip \
+        --overwrite \
+        --yes \
+        --only-show-errors \
+        -o none \
+        --file "$cfg" 2>&1
+    )" || {
+      [[ -n "$output" ]] && print -r -- "$output" >&2
+      return 1
+    }
   fi
 
   _az_ensure_cfg_alias "$host" "$cfg" || return 1
+  _az_harden_cfg_permissions "$cfg" "$rg" "$host" || return 1
   print -r -- "$cfg"
 }
 
 az-ssh() {
-  local host meta rg sub
-  local -a passthrough
+  local host cfg
   host="$(_az_extract_ssh_host "$@")" || {
     printf 'az-ssh: could not determine host\n' >&2
     return 2
   }
 
-  meta="${_az_vm_meta[$host]}"
-  [[ -n "$meta" ]] || {
+  [[ -n "${_az_vm_meta[$host]}" ]] || {
     printf 'az-ssh: unknown Azure host: %s\n' "$host" >&2
     return 2
   }
 
-  rg="${meta%%|*}"
-  sub="${meta#*|}"
-  passthrough=("${(@f)$(_az_strip_ssh_host "$@")}")
-
-  if (( ${#passthrough[@]} > 0 )); then
-    command az ssh vm \
-      --name "$host" \
-      --resource-group "$rg" \
-      --subscription "$sub" \
-      --prefer-private-ip \
-      --yes \
-      -- "${passthrough[@]}"
-  else
-    command az ssh vm \
-      --name "$host" \
-      --resource-group "$rg" \
-      --subscription "$sub" \
-      --prefer-private-ip \
-      --yes
-  fi
+  cfg="$(_az_refresh_cfg "$host")" || return 1
+  command ssh \
+    -o IdentitiesOnly=yes \
+    -o ServerAliveInterval="${_az_ssh_keepalive_interval}" \
+    -o ServerAliveCountMax="${_az_ssh_keepalive_countmax}" \
+    -F "$cfg" \
+    "$@"
 }
 
 az-scp() {
@@ -188,7 +214,12 @@ az-scp() {
   }
 
   cfg="$(_az_refresh_cfg "$host")" || return 1
-  command scp -o IdentitiesOnly=yes -F "$cfg" "$@"
+  command scp \
+    -o IdentitiesOnly=yes \
+    -o ServerAliveInterval="${_az_ssh_keepalive_interval}" \
+    -o ServerAliveCountMax="${_az_ssh_keepalive_countmax}" \
+    -F "$cfg" \
+    "$@"
 }
 
 autoload -Uz compinit
