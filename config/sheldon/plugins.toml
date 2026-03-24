@@ -71,6 +71,10 @@ use = [ "functions.zsh" ]
 local = "~/.config/zsh/plugins"
 use = [ "git.zsh" ]
 
+[plugins.az_ssh]
+local = "~/.config/zsh/plugins"
+use = [ "az-ssh.zsh" ]
+
 [plugins.grep]
 local = "~/.config/zsh/plugins"
 use = [ "grep.zsh" ]

@@ -1,0 +1,438 @@
+#!/usr/bin/env python3
+"""Download files from Azure Blob Storage.
+
+Examples:
+
+    # direct az:// URL mode
+    uv run azure-blob-download \
+        --storage-account miscdevncus01 \
+        "az://user-junk-365d-delete/ckrettle/datamoat/enamine-release/output/test-tiny/final_spectra.jsonl"
+
+    # explicit container/prefix mode
+    uv run azure-blob-download \
+        --storage-account miscdevncus01 \
+        --container user-junk-365d-delete \
+        --download-dir ckrettle/datamoat/enamine-release/output/test-tiny \
+        final_spectra.jsonl
+
+    # multiple files in container/prefix mode
+    uv run azure-blob-download \
+        --storage-account miscdevncus01 \
+        --container user-junk-365d-delete \
+        --download-dir ckrettle/datamoat/enamine-release/output/test-tiny \
+        final_spectra.jsonl \
+        other_file.jsonl
+
+    # recursive download from an az:// prefix
+    uv run azure-blob-download \
+        --storage-account miscdevncus01 \
+        --recursive \
+        "az://user-junk-365d-delete/ckrettle/datamoat/enamine-release/output/test-tiny/"
+
+    # recursive download from container/prefix mode
+    uv run azure-blob-download \
+        --storage-account miscdevncus01 \
+        --container user-junk-365d-delete \
+        --download-dir ckrettle/datamoat/enamine-release/output/test-tiny \
+        --recursive
+
+    # verify active subscription first
+    uv run azure-blob-download \
+        --subscription sub-enveda-data-dev-01 \
+        --storage-account miscdevncus01 \
+        "az://user-junk-365d-delete/ckrettle/datamoat/enamine-release/output/test-tiny/final_spectra.jsonl"
+
+    # just list visible storage accounts
+    uv run azure-blob-download --list-accounts
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from pathlib import Path
+from typing import Iterable, List, Tuple, TypeVar
+from urllib.parse import urlparse
+
+T = TypeVar("T")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Download files from Azure Blob Storage.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument(
+        "-s",
+        "--subscription",
+        help="Expected Azure subscription name or id (checked via `az account show`).",
+    )
+    parser.add_argument(
+        "-a",
+        "--storage-account",
+        help="Azure storage account name.",
+    )
+    parser.add_argument(
+        "-c",
+        "--container",
+        help="Blob container name. Omit when using az:// URLs.",
+    )
+    parser.add_argument(
+        "-d",
+        "--download-dir",
+        help="Remote path prefix in the container. Used in container/prefix mode.",
+    )
+    parser.add_argument(
+        "-o",
+        "--output-dir",
+        type=Path,
+        default=Path("."),
+        help="Local output directory (default: current directory).",
+    )
+    parser.add_argument(
+        "-r",
+        "--recursive",
+        action="store_true",
+        help="Download recursively from the given prefix.",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=250,
+        help="Number of files to process per batch for progress reporting (default: 250).",
+    )
+    parser.add_argument(
+        "--list-accounts",
+        action="store_true",
+        help="List visible storage accounts and exit.",
+    )
+    parser.add_argument(
+        "paths",
+        nargs="*",
+        help=(
+            "Either az:// URLs, or remote paths relative to --download-dir in "
+            "container/prefix mode. When --recursive is used with container/prefix "
+            "mode, positional paths are optional."
+        ),
+    )
+    return parser.parse_args()
+
+
+def run_az(cmd: List[str], capture_output: bool = False) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["az"] + cmd,
+        check=True,
+        capture_output=capture_output,
+        text=True,
+    )
+
+
+def get_active_subscription() -> dict:
+    try:
+        proc = run_az(["account", "show", "-o", "json"], capture_output=True)
+    except FileNotFoundError:
+        print("ERROR: `az` CLI not found in PATH.", file=sys.stderr)
+        sys.exit(2)
+    except subprocess.CalledProcessError as exc:
+        print("ERROR: failed to run `az account show`.", file=sys.stderr)
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        print("ERROR: could not parse output from `az account show`.", file=sys.stderr)
+        sys.exit(2)
+
+    return {
+        "name": str(data.get("name", "")),
+        "id": str(data.get("id", "")),
+    }
+
+
+def verify_subscription(expected: str) -> None:
+    active = get_active_subscription()
+    if expected not in {active["name"], active["id"]}:
+        print(
+            "ERROR: active Azure subscription does not match.\n"
+            "  expected: {expected}\n"
+            "  active name: {name}\n"
+            "  active id:   {id}".format(
+                expected=expected,
+                name=active["name"],
+                id=active["id"],
+            ),
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+
+def list_accounts() -> None:
+    try:
+        proc = run_az(["storage", "account", "list", "-o", "json"], capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        print("ERROR: failed to list storage accounts.", file=sys.stderr)
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    accounts = json.loads(proc.stdout)
+    for account in accounts:
+        print(account["name"])
+
+
+def parse_az_url(url: str) -> Tuple[str, str]:
+    parsed = urlparse(url)
+    if parsed.scheme != "az":
+        raise ValueError("expected az:// URL, got: {url}".format(url=url))
+    container = parsed.netloc
+    blob_path = parsed.path.lstrip("/")
+    if not container:
+        raise ValueError("missing container in URL: {url}".format(url=url))
+    return container, blob_path
+
+
+def is_az_url(value: str) -> bool:
+    return value.startswith("az://")
+
+
+def join_blob_path(prefix: str | None, suffix: str | None) -> str:
+    parts = []
+    if prefix:
+        parts.append(prefix.strip("/"))
+    if suffix:
+        parts.append(suffix.strip("/"))
+    return "/".join(part for part in parts if part)
+
+
+def infer_local_path(blob_path: str, output_dir: Path, preserve_structure: bool) -> Path:
+    if preserve_structure:
+        return output_dir / Path(blob_path)
+    return output_dir / Path(blob_path).name
+
+
+def download_blob(
+    *,
+    storage_account: str,
+    container: str,
+    blob_path: str,
+    output_file: Path,
+) -> None:
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        run_az(
+            [
+                "storage",
+                "blob",
+                "download",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--name",
+                blob_path,
+                "--file",
+                str(output_file),
+                "--auth-mode",
+                "login",
+                "--only-show-errors",
+                "--output",
+                "none",
+            ]
+        )
+    except subprocess.CalledProcessError as exc:
+        print(
+            "ERROR: failed to download az://{container}/{blob_path}".format(
+                container=container,
+                blob_path=blob_path,
+            ),
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(1)
+
+
+def download_recursive(
+    *,
+    storage_account: str,
+    container: str,
+    prefix: str,
+    output_dir: Path,
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    pattern = "{prefix}/*".format(prefix=prefix.rstrip("/")) if prefix else "*"
+
+    try:
+        run_az(
+            [
+                "storage",
+                "blob",
+                "download-batch",
+                "--account-name",
+                storage_account,
+                "--source",
+                container,
+                "--destination",
+                str(output_dir),
+                "--pattern",
+                pattern,
+                "--auth-mode",
+                "login",
+                "--only-show-errors",
+                "--output",
+                "none",
+            ]
+        )
+    except subprocess.CalledProcessError as exc:
+        print(
+            "ERROR: failed recursive download from az://{container}/{prefix}".format(
+                container=container,
+                prefix=prefix,
+            ),
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(1)
+
+
+def chunked(items: List[T], size: int) -> Iterable[List[T]]:
+    for i in range(0, len(items), size):
+        yield items[i : i + size]
+
+
+def resolve_inputs(args: argparse.Namespace) -> Tuple[str, List[Tuple[str, str]]]:
+    if not args.storage_account:
+        print("ERROR: --storage-account is required.", file=sys.stderr)
+        sys.exit(2)
+
+    if not args.paths and not args.recursive:
+        print("ERROR: provide az:// paths or container/prefix inputs.", file=sys.stderr)
+        sys.exit(2)
+
+    has_az_urls = any(is_az_url(path) for path in args.paths)
+    has_plain_paths = any(not is_az_url(path) for path in args.paths)
+
+    if has_az_urls and has_plain_paths:
+        print("ERROR: do not mix az:// URLs with plain remote paths.", file=sys.stderr)
+        sys.exit(2)
+
+    resolved: List[Tuple[str, str]] = []
+
+    if has_az_urls:
+        if args.container or args.download_dir:
+            print(
+                "ERROR: --container/--download-dir are not used with az:// URL mode.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        for url in args.paths:
+            container, blob_path = parse_az_url(url)
+            resolved.append((container, blob_path))
+        return args.storage_account, resolved
+
+    if not args.container:
+        print("ERROR: --container is required in container/prefix mode.", file=sys.stderr)
+        sys.exit(2)
+
+    base_prefix = args.download_dir or ""
+
+    if args.recursive and not args.paths:
+        resolved.append((args.container, base_prefix))
+        return args.storage_account, resolved
+
+    if not args.paths:
+        print("ERROR: no remote paths provided.", file=sys.stderr)
+        sys.exit(2)
+
+    for path in args.paths:
+        blob_path = join_blob_path(base_prefix, path)
+        resolved.append((args.container, blob_path))
+
+    return args.storage_account, resolved
+
+
+def main() -> None:
+    args = parse_args()
+
+    if args.list_accounts:
+        list_accounts()
+        return
+
+    if args.batch_size < 1:
+        print("ERROR: --batch-size must be >= 1", file=sys.stderr)
+        sys.exit(2)
+
+    if args.subscription:
+        verify_subscription(args.subscription)
+
+    storage_account, targets = resolve_inputs(args)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.recursive:
+        if len(targets) != 1:
+            print(
+                "ERROR: recursive mode currently expects exactly one prefix target.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+
+        container, prefix = targets[0]
+        local_dir_name = Path(prefix.rstrip("/")).name if prefix else container
+        local_dir = args.output_dir / local_dir_name
+
+        print(
+            "Downloading recursively from az://{container}/{prefix} -> {local_dir}".format(
+                container=container,
+                prefix=prefix,
+                local_dir=local_dir,
+            )
+        )
+        download_recursive(
+            storage_account=storage_account,
+            container=container,
+            prefix=prefix,
+            output_dir=local_dir,
+        )
+        print("Done.")
+        return
+
+    total = len(targets)
+    print("Downloading {total} file(s) from Azure Blob Storage".format(total=total))
+
+    downloaded = 0
+    for batch_num, batch in enumerate(chunked(targets, args.batch_size), start=1):
+        print("\nBatch {batch_num}: {count} file(s)".format(batch_num=batch_num, count=len(batch)))
+        for container, blob_path in batch:
+            local_file = infer_local_path(
+                blob_path=blob_path,
+                output_dir=args.output_dir,
+                preserve_structure=False,
+            )
+            download_blob(
+                storage_account=storage_account,
+                container=container,
+                blob_path=blob_path,
+                output_file=local_file,
+            )
+            downloaded += 1
+            print(
+                "[{downloaded}/{total}] ✓ az://{container}/{blob_path} -> {local_file}".format(
+                    downloaded=downloaded,
+                    total=total,
+                    container=container,
+                    blob_path=blob_path,
+                    local_file=local_file,
+                )
+            )
+
+    print("\nDone: downloaded {count} file(s).".format(count=downloaded))
+
+
+if __name__ == "__main__":
+    main()

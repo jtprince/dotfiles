@@ -50,7 +50,7 @@ wait_for_state() {
 
 usage() {
   cat <<USAGE
-Usage: $(basename "$0") {login|logout|start|stop|stop-only|deallocate|ssh|refresh-ssh-keys|status} [VM-NAME]
+Usage: $(basename "$0") {login|logout|start|stop|stop-only|deallocate|status} [VM-NAME]
 
 Commands:
   login                 az login (resource manager scope)
@@ -59,8 +59,6 @@ Commands:
   stop                  Fully stop and deallocate (no compute charges)
   stop-only             Power off without deallocating (still billed for compute)
   deallocate            Deallocate explicitly (alias to 'stop' behavior)
-  ssh                   SSH using local host entry
-  refresh-ssh-keys      Generate SSH config via 'az ssh config'
   status                Show power state and IPs
 USAGE
 }
@@ -104,22 +102,6 @@ case "${1:-}" in
     log "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
     az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
     wait_for_state "VM deallocated" 900
-    ;;
-
-  ssh)
-    log "SSH into VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    ssh "$VM_NAME"
-    ;;
-
-  refresh-ssh-keys)
-    log "Refreshing SSH config for VM '$VM_NAME'..."
-    az ssh config \
-      --resource-group "$RESOURCE_GROUP" \
-      --vm-name "$VM_NAME" \
-      --prefer-private-ip \
-      --file /tmp/myvm_ssh_config
-    # Fix: remove the right temp file path if it existed from a previous run
-    rm -f /tmp/myvm_ssh_config 2>/dev/null || true
     ;;
 
   status)
