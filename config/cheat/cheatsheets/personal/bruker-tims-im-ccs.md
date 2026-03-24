@@ -1,8 +1,12 @@
-# Bruker TIMS: scan index, `im` (`1/K0`), and CCS
-
 ```
-========================================================
-low scan idx / early    --->     high scan idx / late
+== SUMMARY =============================================
+    *          .
+low scan --> high scan
+high im  --> low im
+high ccs --> low ccs
+
+== PLOTTING (spectrum low->hi) =========================
+Plot low scan idx / early --->    high scan idx / late
 
        o   o                             ooo
       o  o  o                           oo oo
@@ -10,13 +14,11 @@ low scan idx / early    --->     high scan idx / late
 
 splayed / larger CCS              compact / smaller CCS
 higher im = higher 1/K0           lower im = lower 1/K0
-  high *im*mobile                   low *im*mobile
+  high immobile                     low immobile
 
-========================================================
-[Sometimes plotted by low to high `im`]
-
-low im (low 1/K0)       --->   high im (high 1/K0)
-not immobile                       more immobile
+== PLOTTING (im low->hi) ===============================
+  low im (low 1/Ko)       --->   high im (high 1/Ko)
+  low immobile                      high immobile
 
         ooo                             o   o
        oo oo                           o  o  o
@@ -25,14 +27,8 @@ not immobile                       more immobile
 compact / smaller CCS           splayed / larger CCS
 high scan idx / late scan     low scan idx / early scan
 ========================================================
-
 ```
-higher `im` = lower K (K is the "mobility" and compact is more mobile)
 
-Think `^ im` = ^ `immobile`
+We use the notation `im`, but that's inverse mobility (1/Ko)
 
-| thing gets bigger | usually means |
-|-------------------|---------------|
-| scan index | more compact / lower `1/K0` / lower CCS |
-| `im` (`1/K0`) | more splayed / lower mobility / higher CCS |
-| CCS | more splayed / higher `1/K0` / smaller scan index |
+Think:`^ im = ^ "immobile"`
