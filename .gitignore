@@ -32,3 +32,5 @@
 lazy-lock.json
 
 .DS_Store
+
+/config/kitty/kitty.conf

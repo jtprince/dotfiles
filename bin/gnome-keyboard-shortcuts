@@ -1,0 +1,474 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import ast
+import shlex
+import subprocess
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable
+
+
+MEDIA_KEYS_SCHEMA = "org.gnome.settings-daemon.plugins.media-keys"
+CUSTOM_LIST_KEY = "custom-keybindings"
+CUSTOM_BINDING_SCHEMA = (
+    "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding"
+)
+
+MANAGED_PATH_PREFIX = (
+    "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/"
+    "jtp-launchers-"
+)
+MANAGED_NAME_PREFIX = "JTP Launcher: "
+
+
+@dataclass(frozen=True)
+class Launcher:
+    slug: str
+    name: str
+    command: str
+    binding: str
+    enabled: bool = True
+    notes: str | None = None
+
+
+LAUNCHERS: list[Launcher] = [
+    Launcher(
+        slug="system-reboot",
+        name="System Reboot",
+        command="systemctl reboot",
+        binding="<Ctrl><Shift><Super>R",
+    ),
+    Launcher(
+        slug="system-poweroff",
+        name="System Power Off",
+        command="systemctl poweroff",
+        binding="<Ctrl><Shift><Super>P",
+    ),
+    Launcher(
+        slug="terminal-alacritty",
+        name="Alacritty",
+        command="alacritty",
+        binding="<Shift><Super>x",
+    ),
+    Launcher(
+        slug="terminal-kitty",
+        name="Kitty",
+        command="kitty",
+        binding="<Super>x",
+    ),
+    Launcher(
+        slug="firefox",
+        name="Firefox",
+        command='sh -lc "nohup firefox >/dev/null 2>&1 &"',
+        binding="<Super>I",
+    ),
+    Launcher(
+        slug="firefox-calendar",
+        name="Firefox Calendar",
+        command=(
+            'sh -lc "nohup firefox --new-window '
+            'https://calendar.google.com/calendar/ >/dev/null 2>&1 &"'
+        ),
+        binding="<Super>C",
+    ),
+    Launcher(
+        slug="firefox-mail",
+        name="Firefox Mail",
+        command=(
+            'sh -lc "nohup firefox --new-window '
+            'https://mail.google.com/mail/ >/dev/null 2>&1 &"'
+        ),
+        binding="<Super>E",
+    ),
+    Launcher(
+        slug="chrome",
+        name="Google Chrome",
+        command='sh -lc "nohup google-chrome >/dev/null 2>&1 &"',
+        binding="<Shift><Super>I",
+        notes="May need chromium, google-chrome-stable, or another binary name.",
+    ),
+    Launcher(
+        slug="chrome-calendar",
+        name="Google Chrome Calendar",
+        command=(
+            'sh -lc "nohup google-chrome --new-window '
+            'https://calendar.google.com/calendar/ >/dev/null 2>&1 &"'
+        ),
+        binding="<Ctrl><Shift><Super>C",
+        notes="May need chromium or google-chrome-stable.",
+    ),
+    Launcher(
+        slug="chrome-mail",
+        name="Google Chrome Mail",
+        command=(
+            'sh -lc "nohup google-chrome --new-window '
+            'https://mail.google.com/mail/ >/dev/null 2>&1 &"'
+        ),
+        binding="<Shift><Super>E",
+        notes="May need chromium or google-chrome-stable.",
+    ),
+    # Linux equivalent not obvious; enable and edit if desired.
+    Launcher(
+        slug="chatgpt",
+        name="ChatGPT",
+        command='sh -lc "nohup chatgpt >/dev/null 2>&1 &"',
+        binding="<Super>H",
+        enabled=False,
+        notes="Stub. Replace with desktop app command or a browser URL launcher.",
+    ),
+    # VimR is macOS-specific; this is a stub.
+    Launcher(
+        slug="gui-editor",
+        name="GUI Editor",
+        command='sh -lc "nohup gvim >/dev/null 2>&1 &"',
+        binding="<Super>G",
+        enabled=False,
+        notes="Stub. Replace with gvim, nvim-qt, code, etc.",
+    ),
+]
+
+
+class GSettingsError(RuntimeError):
+    pass
+
+
+def run_gsettings(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    cmd = ["gsettings", *args]
+    proc = subprocess.run(
+        cmd,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if check and proc.returncode != 0:
+        raise GSettingsError(
+            f"Command failed: {shlex.join(cmd)}\n"
+            f"stdout:\n{proc.stdout}\n"
+            f"stderr:\n{proc.stderr}"
+        )
+    return proc
+
+
+def gsettings_get(schema: str, key: str) -> str:
+    return run_gsettings("get", schema, key).stdout.strip()
+
+
+def gsettings_set(schema: str, key: str, value: str) -> None:
+    run_gsettings("set", schema, key, value)
+
+
+def custom_binding_schema_for_path(path: str) -> str:
+    return f"{CUSTOM_BINDING_SCHEMA}:{path}"
+
+
+def parse_gvariant_string_list(raw: str) -> list[str]:
+    raw = raw.strip()
+    if raw == "@as []":
+        return []
+    try:
+        value = ast.literal_eval(raw)
+    except Exception as exc:
+        raise GSettingsError(f"Could not parse gsettings list value: {raw}") from exc
+    if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
+        raise GSettingsError(f"Unexpected list format from gsettings: {raw}")
+    return value
+
+
+def format_gvariant_string_list(items: Iterable[str]) -> str:
+    escaped = [item.replace("\\", "\\\\").replace("'", "\\'") for item in items]
+    return "[" + ", ".join(f"'{item}'" for item in escaped) + "]"
+
+
+def get_custom_binding_paths() -> list[str]:
+    raw = gsettings_get(MEDIA_KEYS_SCHEMA, CUSTOM_LIST_KEY)
+    return parse_gvariant_string_list(raw)
+
+
+def set_custom_binding_paths(paths: list[str]) -> None:
+    gsettings_set(MEDIA_KEYS_SCHEMA, CUSTOM_LIST_KEY, format_gvariant_string_list(paths))
+
+
+def get_binding_value(path: str, key: str) -> str | None:
+    schema = custom_binding_schema_for_path(path)
+    proc = run_gsettings("get", schema, key, check=False)
+    if proc.returncode != 0:
+        return None
+    raw = proc.stdout.strip()
+    try:
+        value = ast.literal_eval(raw)
+    except Exception:
+        return raw
+    return value if isinstance(value, str) else raw
+
+
+def set_binding_fields(path: str, *, name: str, command: str, binding: str) -> None:
+    schema = custom_binding_schema_for_path(path)
+    gsettings_set(schema, "name", repr(name))
+    gsettings_set(schema, "command", repr(command))
+    gsettings_set(schema, "binding", repr(binding))
+
+
+def make_managed_path(slug: str) -> str:
+    return f"{MANAGED_PATH_PREFIX}{slug}/"
+
+
+def is_managed_path(path: str) -> bool:
+    return path.startswith(MANAGED_PATH_PREFIX)
+
+
+def managed_name(launcher: Launcher) -> str:
+    return f"{MANAGED_NAME_PREFIX}{launcher.name}"
+
+
+def enabled_launchers() -> list[Launcher]:
+    return [launcher for launcher in LAUNCHERS if launcher.enabled]
+
+
+def find_binding_conflicts(
+    desired_binding: str,
+    *,
+    desired_path: str,
+    all_paths: Iterable[str],
+) -> list[str]:
+    conflicts: list[str] = []
+    for path in all_paths:
+        if path == desired_path:
+            continue
+        existing = get_binding_value(path, "binding")
+        if existing == desired_binding:
+            conflicts.append(path)
+    return conflicts
+
+
+def path_summary(path: str) -> str:
+    name = get_binding_value(path, "name") or "<unknown>"
+    binding = get_binding_value(path, "binding") or "<unknown>"
+    command = get_binding_value(path, "command") or "<unknown>"
+    managed = "managed" if is_managed_path(path) else "UNMANAGED"
+    return f"{path} | {managed} | {name} | {binding} | {command}"
+
+
+def warn(msg: str) -> None:
+    print(f"WARNING: {msg}", file=sys.stderr)
+
+
+def info(msg: str) -> None:
+    print(msg)
+
+
+def apply_launchers(dry_run: bool = False) -> int:
+    existing_paths = get_custom_binding_paths()
+    existing_set = set(existing_paths)
+
+    desired = enabled_launchers()
+    desired_paths = {make_managed_path(launcher.slug) for launcher in desired}
+
+    skipped = 0
+
+    for launcher in desired:
+        path = make_managed_path(launcher.slug)
+        conflicts = find_binding_conflicts(
+            launcher.binding,
+            desired_path=path,
+            all_paths=existing_paths,
+        )
+
+        unmanaged_conflicts = [p for p in conflicts if not is_managed_path(p)]
+        if unmanaged_conflicts:
+            skipped += 1
+            warn("")
+            warn("=" * 78)
+            warn(
+                f"Refusing to assign {launcher.binding!r} to {launcher.name!r}: "
+                "that binding is already owned by unmanaged GNOME custom shortcut(s)."
+            )
+            for conflict in unmanaged_conflicts:
+                warn(path_summary(conflict))
+            warn("This entry was skipped. Resolve manually or change the binding.")
+            warn("=" * 78)
+            warn("")
+            continue
+
+        if dry_run:
+            info(
+                f"[dry-run] would apply: {launcher.name} "
+                f"{launcher.binding} -> {launcher.command}"
+            )
+        else:
+            if path not in existing_set:
+                existing_paths.append(path)
+                existing_set.add(path)
+            set_binding_fields(
+                path,
+                name=managed_name(launcher),
+                command=launcher.command,
+                binding=launcher.binding,
+            )
+            info(f"applied: {launcher.name} {launcher.binding} -> {launcher.command}")
+
+    stale_managed_paths = [
+        path for path in existing_paths
+        if is_managed_path(path) and path not in desired_paths
+    ]
+
+    if stale_managed_paths:
+        if dry_run:
+            for path in stale_managed_paths:
+                info(f"[dry-run] would remove stale managed binding: {path_summary(path)}")
+        else:
+            existing_paths = [path for path in existing_paths if path not in stale_managed_paths]
+            info("removing stale managed bindings:")
+            for path in stale_managed_paths:
+                info(f"  - {path_summary(path)}")
+
+    if not dry_run:
+        final_paths = []
+        seen: set[str] = set()
+        for path in existing_paths:
+            if path not in seen:
+                seen.add(path)
+                final_paths.append(path)
+        set_custom_binding_paths(final_paths)
+
+    return skipped
+
+
+def list_bindings(show_all: bool = False) -> None:
+    paths = get_custom_binding_paths()
+    if not paths:
+        info("No GNOME custom keybindings found.")
+        return
+
+    for path in paths:
+        if show_all or is_managed_path(path):
+            info(path_summary(path))
+
+
+def clear_managed(dry_run: bool = False) -> int:
+    paths = get_custom_binding_paths()
+    managed = [path for path in paths if is_managed_path(path)]
+
+    if not managed:
+        info("No managed bindings to remove.")
+        return 0
+
+    for path in managed:
+        if dry_run:
+            info(f"[dry-run] would remove: {path_summary(path)}")
+        else:
+            info(f"removing: {path_summary(path)}")
+
+    if not dry_run:
+        remaining = [path for path in paths if not is_managed_path(path)]
+        set_custom_binding_paths(remaining)
+
+    return len(managed)
+
+
+def print_config() -> None:
+    for launcher in LAUNCHERS:
+        state = "enabled" if launcher.enabled else "disabled"
+        info(
+            f"{launcher.slug:20} | {state:8} | {launcher.binding:22} | "
+            f"{launcher.name}"
+        )
+        info(f"  command: {launcher.command}")
+        if launcher.notes:
+            info(f"  notes:   {launcher.notes}")
+
+
+def ensure_gsettings_available() -> None:
+    try:
+        run_gsettings("list-schemas")
+    except FileNotFoundError as exc:
+        raise SystemExit(
+            "gsettings was not found. Install GLib/GNOME tools and run this inside a "
+            "GNOME session."
+        ) from exc
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Manage GNOME custom launcher keybindings via gsettings. "
+            "Only bindings created by this script are reconciled or removed."
+        )
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    apply_parser = subparsers.add_parser(
+        "apply",
+        help="Create/update configured launchers and remove stale managed launchers.",
+    )
+    apply_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would change without writing anything.",
+    )
+
+    list_parser = subparsers.add_parser(
+        "list",
+        help="List managed bindings.",
+    )
+    list_parser.add_argument(
+        "--all",
+        action="store_true",
+        help="List all GNOME custom keybindings, not just managed ones.",
+    )
+
+    clear_parser = subparsers.add_parser(
+        "clear-managed",
+        help="Remove only bindings managed by this script.",
+    )
+    clear_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be removed without writing anything.",
+    )
+
+    subparsers.add_parser(
+        "print-config",
+        help="Print the embedded launcher configuration.",
+    )
+
+    return parser
+
+
+def main() -> int:
+    ensure_gsettings_available()
+    parser = build_parser()
+    args = parser.parse_args()
+
+    try:
+        if args.command == "apply":
+            skipped = apply_launchers(dry_run=args.dry_run)
+            if skipped:
+                warn(f"{skipped} launcher(s) were skipped due to unmanaged conflicts.")
+                return 2
+            return 0
+
+        if args.command == "list":
+            list_bindings(show_all=args.all)
+            return 0
+
+        if args.command == "clear-managed":
+            clear_managed(dry_run=args.dry_run)
+            return 0
+
+        if args.command == "print-config":
+            print_config()
+            return 0
+
+        parser.error(f"Unknown command: {args.command}")
+        return 2
+
+    except GSettingsError as exc:
+        warn(str(exc))
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
