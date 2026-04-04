@@ -8,4 +8,6 @@ fi
 
 eval "$(starship init zsh)"
 
-export PATH="/opt/homebrew/opt/perl/bin:$PATH"
+if [[ "$(uname)" == "Darwin" ]]; then
+    export PATH="/opt/homebrew/opt/perl/bin:$PATH"
+fi

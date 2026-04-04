@@ -35,7 +35,6 @@ alias ipython="python3 -m IPython"
 alias ipythonr="python3 -m IPython --profile=autoreload"
 
 # file system
-alias ls="ls --color=auto"
 alias mount_wd15="gvfs-mount smb://wd15/USB_Storage"
 
 # common spelling mistakes
