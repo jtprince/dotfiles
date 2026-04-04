@@ -31,19 +31,38 @@ def deterministic_sample(seed: str, paths: List[str], n: int) -> List[str]:
     return [p for _, p in scored[:n]]
 
 
-def open_paths(paths: List[str]) -> None:
+def open_paths(open_args: List[str], paths: List[str]) -> None:
     if not paths:
         return
-    subprocess.run(["open", *paths], check=True)
+    subprocess.run(["open", *open_args, *paths], check=True)
 
 
 def usage() -> None:
     prog = Path(sys.argv[0]).name
     print(
-        f"Usage: {prog} NUM_TO_OPEN <file> <file> ...\n"
-        f"Example: {prog} 10 *.html\n",
+        f"Usage: {prog} [OPEN_ARG ...] NUM_TO_OPEN <file> <file> ...\n"
+        f"Examples:\n"
+        f"  {prog} 10 *.html\n"
+        f'  {prog} -a "Google Chrome" 10 *.html\n',
         file=sys.stderr,
     )
+
+
+def parse_args(argv: List[str]) -> Tuple[List[str], int, List[str]]:
+    args = argv[1:]
+    hinge_index = next((i for i, arg in enumerate(args) if arg.isdigit() and int(arg) > 0), None)
+
+    if hinge_index is None:
+        raise ValueError("NUM_TO_OPEN must be provided as a positive integer.")
+
+    open_args = args[:hinge_index]
+    n = int(args[hinge_index])
+    raw_paths = args[hinge_index + 1 :]
+
+    if not raw_paths:
+        raise ValueError("Provide at least one candidate path after NUM_TO_OPEN.")
+
+    return open_args, n, raw_paths
 
 
 def main(argv: List[str]) -> int:
@@ -52,15 +71,11 @@ def main(argv: List[str]) -> int:
         return 2
 
     try:
-        n = int(argv[1])
-        if n <= 0:
-            raise ValueError
-    except ValueError:
-        print("NUM_TO_OPEN must be a positive integer.", file=sys.stderr)
+        open_args, n, raw_paths = parse_args(argv)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
         usage()
         return 2
-
-    raw_paths = argv[2:]
 
     # Normalize paths for stability (e.g., remove ./ prefixes, resolve symlinks if desired)
     paths = [str(Path(p)) for p in raw_paths]
@@ -74,7 +89,7 @@ def main(argv: List[str]) -> int:
     for p in chosen:
         print(p)
 
-    open_paths(chosen)
+    open_paths(open_args, chosen)
     return 0
 
 

@@ -75,7 +75,7 @@ hs.hotkey.bind({ "alt" }, "X", function()
 end)
 
 hs.hotkey.bind({ "alt", "shift" }, "X", function()
-	sh([[open -na "Alacritty"]])
+	sh([[open -na "kitty"]])
 end)
 
 ----------------------------------------------------------------------

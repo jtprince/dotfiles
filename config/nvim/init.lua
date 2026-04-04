@@ -309,13 +309,13 @@ require("lazy").setup({
 	-------------------------------------------------------------------------
 	unless_vscode({
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		lazy = false, -- main branch does not support lazy-loading
 		build = ":TSUpdate",
-		event = { "BufReadPost", "BufNewFile" },
 		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = { "lua", "python", "vim", "markdown", "markdown_inline", "yaml", "latex" },
-				highlight = { enable = true },
-				auto_install = true,
+			require("nvim-treesitter").setup()
+			require("nvim-treesitter").install({
+				"lua", "python", "vim", "vimdoc", "markdown", "markdown_inline", "yaml", "latex",
 			})
 		end,
 	}),
@@ -346,7 +346,7 @@ require("lazy").setup({
 	-------------------------------------------------------------------------
 	unless_vscode({
 		"nvim-telescope/telescope.nvim",
-		branch = "0.1.x",
+		branch = "master",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{
@@ -532,10 +532,9 @@ require("lazy").setup({
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
 			"neovim/nvim-lspconfig", -- still needed for server definitions
-			"folke/neodev.nvim",
+			{ "folke/lazydev.nvim", ft = "lua", opts = {} }, -- replaces archived neodev.nvim
 		},
 		config = function()
-			require("neodev").setup()
 			require("mason").setup()
 
 			local mason_lspconfig = require("mason-lspconfig")
@@ -606,7 +605,7 @@ require("lazy").setup({
 				-- per-buffer augroup prevents collisions and double-registration
 				local group = vim.api.nvim_create_augroup("LspOnSave_" .. bufnr, { clear = true })
 
-				if client.supports_method("textDocument/formatting") then
+				if client:supports_method("textDocument/formatting") then
 					vim.api.nvim_create_autocmd("BufWritePre", {
 						group = group,
 						buffer = bufnr,

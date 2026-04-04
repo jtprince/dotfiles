@@ -3,8 +3,9 @@ _az_vm_meta[johnprince-dev]='data-science-dev-ncus-rg-01|sub-enveda-data-dev-01'
 _az_vm_meta[johnprince-highmem]='data-science-dev-ncus-rg-01|sub-enveda-data-dev-01'
 
 _az_ssh_cfg_dir="${HOME}/.ssh/azure-ephemeral"
-_az_ssh_keepalive_interval="${AZ_SSH_SERVER_ALIVE_INTERVAL:-30}"
-_az_ssh_keepalive_countmax="${AZ_SSH_SERVER_ALIVE_COUNT_MAX:-6}"
+# Defaults target ~2 hours before the client gives up on an otherwise idle session.
+_az_ssh_keepalive_interval="${AZ_SSH_SERVER_ALIVE_INTERVAL:-60}"
+_az_ssh_keepalive_countmax="${AZ_SSH_SERVER_ALIVE_COUNT_MAX:-120}"
 mkdir -p "${_az_ssh_cfg_dir}"
 
 _az_extract_ssh_host() {
@@ -220,6 +221,40 @@ az-scp() {
     -o ServerAliveCountMax="${_az_ssh_keepalive_countmax}" \
     -F "$cfg" \
     "$@"
+}
+
+az-ssh-keepalive-help() {
+  cat <<'EOF'
+Recommended client defaults from dotfiles:
+
+  AZ_SSH_SERVER_ALIVE_INTERVAL=60
+  AZ_SSH_SERVER_ALIVE_COUNT_MAX=120
+
+This gives the client roughly 2 hours before it gives up on a dead peer.
+
+Recommended server-side /etc/ssh/sshd_config settings:
+
+  ClientAliveInterval 60
+  ClientAliveCountMax 120
+  TCPKeepAlive yes
+
+After updating sshd_config:
+
+  sudo sshd -t
+  sudo systemctl reload ssh
+
+On Ubuntu 24 LTS, the OpenSSH server unit is typically `ssh`, not `sshd`.
+
+If your distro uses a different service name:
+
+  sudo systemctl reload sshd
+
+Also check for non-sshd idle killers such as:
+
+  - shell TMOUT
+  - firewall / VPN idle timeout
+  - cloud gateway / bastion timeout
+EOF
 }
 
 autoload -Uz compinit
