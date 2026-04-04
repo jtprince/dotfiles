@@ -44,9 +44,6 @@ else
   zstyle ':completion:*' list-colors ''
 fi
 
-# Override with blank list-colors (optional—can be removed)
-zstyle ':completion:*' list-colors ''
-
 # Custom prompt shown when listing is triggered
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
 

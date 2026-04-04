@@ -1,7 +1,10 @@
 # the venv is already included in starship
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-eval "$(rbenv init - zsh)"
+
+if command -v rbenv &> /dev/null; then
+    eval "$(rbenv init - zsh)"
+fi
 
 eval "$(starship init zsh)"
 
