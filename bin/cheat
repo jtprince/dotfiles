@@ -7,6 +7,7 @@ Features
 - Topics ignore the .md extension for lookup and tab completion.
 - `cheat <topic>` prints the cheatsheet.
 - `cheat -e <topic>` opens it in $EDITOR (fallback to `nvim`).
+- `cheat -s <topic>` prints the raw markdown source (no rendering).
 - `cheat -l` lists all topics.
 - Optional tab completion with argcomplete (bash/zsh).
 
@@ -198,6 +199,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print the cheats directory and exit.",
     )
+    parser.add_argument(
+        "-s",
+        "--source",
+        action="store_true",
+        help="Print the raw markdown source of the topic (no rendering).",
+    )
     return parser
 
 
@@ -249,6 +256,14 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.path:
         print(resolved)
+        return 0
+
+    if args.source:
+        try:
+            sys.stdout.write(resolved.read_text(encoding="utf-8"))
+        except Exception as e:
+            sys.stderr.write(f"cheat: failed to read {resolved.name}: {e}\n")
+            return 1
         return 0
 
     return print_file(resolved, args)
