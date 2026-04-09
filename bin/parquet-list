@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import pandas as pd
+
+
+parser = argparse.ArgumentParser(
+    description="extracts out one or more column as a newline list; concats list if > 1"
+)
+parser.add_argument("parquet_file", type=Path, nargs="+")
+parser.add_argument("-c", "--columns", type=str, nargs="*")
+parser.add_argument(
+    "-n", "--num-rows", type=int, help="print this number of rows PER FILE"
+)
+parser.add_argument(
+    "--line-separator", default="\n", type=str, help='end each line (default: "\n"'
+)
+parser.add_argument(
+    "--value-separator",
+    default=" ",
+    type=str,
+    help='separate each value per line (default: " "',
+)
+parser.add_argument("--list", action="store_true", help="list columns and exit")
+
+
+args = parser.parse_args()
+
+
+line_sep = args.line_separator
+value_sep = args.value_separator
+
+for path in args.parquet_file:
+    df = pd.read_parquet(path)
+    if args.list:
+        print(f"{str(path)}:", args.value_separator.join(df.columns.to_list()))
+        continue
+    if args.num_rows is not None:
+        df = df.head(args.num_rows)
+    if args.columns:
+        subset = df[args.columns]
+        for row in subset.itertuples():
+            print(value_sep.join(row[1:]), end=line_sep)
