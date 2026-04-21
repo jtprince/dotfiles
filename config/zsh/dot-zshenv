@@ -1,28 +1,7 @@
-# .zshenv — sourced for ALL zsh shells (login, non-login, interactive, non-interactive)
-# Put PATH and environment that must always be available here.
+# .zshenv — sourced for ALL zsh shells (login, non-login, interactive, scripts)
+# Keep minimal: only env vars needed universally.
+# PATH is set in .zprofile so it runs AFTER macOS path_helper (/etc/zprofile),
+# which otherwise reorders PATH and pushes user dirs behind /usr/bin.
 
-# macOS-specific
-if [[ "$(uname)" == "Darwin" ]]; then
-	export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
-	if [[ -x /opt/homebrew/bin/brew ]]; then
-		eval "$(/opt/homebrew/bin/brew shellenv)"
-	fi
-fi
-
-# See `cheat uv` robust user-wide setup for details
+# See `cheat uv` for robust user-wide setup details
 export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global"
-export PATH="$PYTHON_GLOBAL_VENV/bin:$PATH"
-
-BINPATH="$HOME/bin"
-export PATH="$BINPATH/docker:$PATH"
-export PATH="$BINPATH/git:$PATH"
-export PATH="$BINPATH/markdown:$PATH"
-export PATH="$BINPATH/media:$PATH"
-export PATH="$BINPATH/python:$PATH"
-export PATH="$BINPATH/work:$PATH"
-export PATH="$BINPATH:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$BINPATH/aliases:$PATH"
-
-# Load sheldon plugins (must be after PATH is set so sheldon is found)
-eval "$(sheldon source)"

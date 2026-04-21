@@ -1,3 +1,25 @@
-# .zprofile — sourced only for login shells
-# Most env is now in .zshenv so it works for non-login shells too (e.g. kitty)
+# .zprofile — sourced for login shells, AFTER /etc/zprofile
+# PATH setup lives here so it runs after macOS path_helper.
+# On Linux /etc/zprofile is absent or benign, so this is correct everywhere.
+# Child processes (non-login shells, scripts) inherit PATH from the login shell.
 
+if [[ "$(uname)" == "Darwin" ]]; then
+	export PATH="/opt/homebrew/opt/perl/bin:$PATH"
+	export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+	if [[ -x /opt/homebrew/bin/brew ]]; then
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+	fi
+fi
+
+export PATH="$PYTHON_GLOBAL_VENV/bin:$PATH"
+
+BINPATH="$HOME/bin"
+export PATH="$BINPATH/docker:$PATH"
+export PATH="$BINPATH/git:$PATH"
+export PATH="$BINPATH/markdown:$PATH"
+export PATH="$BINPATH/media:$PATH"
+export PATH="$BINPATH/python:$PATH"
+export PATH="$BINPATH/work:$PATH"
+export PATH="$BINPATH:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$BINPATH/aliases:$PATH"
