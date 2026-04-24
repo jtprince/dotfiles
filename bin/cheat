@@ -40,7 +40,7 @@ import shlex
 
 # ---------------------- Configuration ----------------------
 # Set your cheatsheets directory here (can be overridden by env CHEAT_DIR)
-CHEATS_DIR = Path("/Users/johnprince/dotfiles/config/cheat/cheatsheets/personal")
+CHEATS_DIR = Path(__file__).resolve().parent.parent / "config" / "cheat" / "cheatsheets"
 # -----------------------------------------------------------
 
 
