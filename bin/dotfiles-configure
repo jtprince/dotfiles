@@ -68,36 +68,36 @@ CONFIG_GENERAL = [
 ]
 
 CONFIG_MAC = [
-    "amethyst",
-    "karabiner",
-    "osascript",
+    "mac/amethyst",
+    "mac/karabiner",
+    "mac/osascript",
 ]
 
 CONFIG_LINUX = [
-    "Xresources.d",
-    "avizo",
-    "dunst",
-    "feh",
-    "fontconfig",
-    "goofys",
-    "gtk-3.0",
-    "imv",
-    "latex",
-    "mako",
-    "mimeapps.list",
-    "mpv",
-    "mypy",
-    "npmrc",
-    "pipewire",
-    "pulse",
-    "pulseaudio-ctl",
-    "ranger",
-    "spotify-flags.conf",
-    "sway",
-    "texlive",
-    "tofi",
-    "waybar",
-    "xmodmap",
+    "linux/Xresources.d",
+    "linux/avizo",
+    "linux/dunst",
+    "linux/feh",
+    "linux/fontconfig",
+    "linux/goofys",
+    "linux/gtk-3.0",
+    "linux/imv",
+    "linux/latex",
+    "linux/mako",
+    "linux/mimeapps.list",
+    "linux/mpv",
+    "linux/mypy",
+    "linux/npmrc",
+    "linux/pipewire",
+    "linux/pulse",
+    "linux/pulseaudio-ctl",
+    "linux/ranger",
+    "linux/spotify-flags.conf",
+    "linux/sway",
+    "linux/texlive",
+    "linux/tofi",
+    "linux/waybar",
+    "linux/xmodmap",
 ]
 
 # ---------------------------------------------------------------------------
@@ -105,10 +105,9 @@ CONFIG_LINUX = [
 # ---------------------------------------------------------------------------
 
 HOME_DOTFILES_LINUX = [
-    "xprofile",
-    "xinitrc",
-    "profile",
-    "gtkrc-2.0",
+    "linux/xprofile",
+    "linux/xinitrc",
+    "linux/gtkrc-2.0",
 ]
 
 # ---------------------------------------------------------------------------
@@ -124,17 +123,17 @@ EXPLICIT_GENERAL: list[Symlink] = [
 ]
 
 EXPLICIT_MAC: list[Symlink] = [
-    Symlink(REPO_CONFIG / "hammerspoon", link=HOME / ".hammerspoon"),
+    Symlink(REPO_CONFIG / "mac/hammerspoon", link=HOME / ".hammerspoon"),
 ]
 
 EXPLICIT_LINUX: list[Symlink] = [
     Symlink(CLOUD_ENV / "gpg/dot-gnupg", link=HOME / ".gnupg"),
     Symlink(
-        REPO_CONFIG / "mimeapps.list",
+        REPO_CONFIG / "linux/mimeapps.list",
         link=DOT_LOCAL / "share/applications/mimeapps.list",
     ),
     Symlink(
-        REPO_CONFIG / "applications/google-chrome-wayland-newwindow.desktop",
+        REPO_CONFIG / "linux/applications/google-chrome-wayland-newwindow.desktop",
         link=DOT_LOCAL / "share/applications/google-chrome.desktop",
     ),
 ]
@@ -156,16 +155,16 @@ ENSURE_DIRS_LINUX = [
 
 
 def _resolution_links(resolution: str) -> list[Symlink]:
-    xresources = REPO_CONFIG / f"Xresources-{resolution}"
+    xresources = REPO_CONFIG / f"linux/Xresources-{resolution}"
     return [
         Symlink(xresources, link=HOME / ".Xresources"),
         Symlink(xresources, link=HOME / ".Xdefaults"),
         Symlink(
-            REPO_CONFIG / f"gtkrc-2.0-{resolution}",
+            REPO_CONFIG / f"linux/gtkrc-2.0-{resolution}",
             link=HOME / ".gtkrc-2.0-local",
         ),
         Symlink(
-            REPO_CONFIG / f"x11-scale-factor-{resolution}",
+            REPO_CONFIG / f"linux/x11-scale-factor-{resolution}",
             link=HOME_CONFIG / "x11-scale-factor",
         ),
     ]
@@ -181,13 +180,13 @@ def _chrome_flag_links(display_server: str) -> list[Symlink]:
     for app in ["chrome", "electron"]:
         links.append(
             Symlink(
-                REPO_CONFIG / "chrome" / f"{app}-flags.conf-{display_server}",
+                REPO_CONFIG / "linux/chrome" / f"{app}-flags.conf-{display_server}",
                 link=HOME_CONFIG / f"{app}-flags.conf",
             )
         )
     links.append(
         Symlink(
-            REPO_CONFIG / "chrome" / f"electron-flags.conf-{display_server}",
+            REPO_CONFIG / "linux/chrome" / f"electron-flags.conf-{display_server}",
             link=HOME_CONFIG / "electron17-flags.conf",
         )
     )
@@ -229,11 +228,13 @@ class Symlinker:
 
     def link_into_config(self, names: list[str]) -> None:
         for name in names:
-            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME_CONFIG / name))
+            link_name = Path(name).name
+            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME_CONFIG / link_name))
 
     def link_into_home(self, names: list[str]) -> None:
         for name in names:
-            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME / f".{name}"))
+            link_name = Path(name).name
+            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME / f".{link_name}"))
 
     def ensure_dirs(self, dirs: list[str]) -> None:
         for name in dirs:
