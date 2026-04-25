@@ -76,52 +76,61 @@ local servers = {
 	marksman = {},
 }
 
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
+-- Shared defaults for every server (capabilities from cmp).
+vim.lsp.config("*", {
+	capabilities = require("cmp_nvim_lsp").default_capabilities(),
+})
 
-local on_attach = function(client, bufnr)
-	vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
-		vim.lsp.buf.format({ async = false })
-	end, { desc = "Format buffer with LSP" })
-
-	local group = vim.api.nvim_create_augroup("LspOnSave_" .. bufnr, { clear = true })
-
-	if client:supports_method("textDocument/formatting") then
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			group = group,
-			buffer = bufnr,
-			callback = function()
-				vim.lsp.buf.format({
-					async = false,
-					bufnr = bufnr,
-					filter = function(c) return c.id == client.id end,
-				})
-			end,
-		})
-	end
-
-	-- Ruff fixAll on save (only when ruff LSP is attached).
-	if client.name == "ruff" then
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			group = group,
-			buffer = bufnr,
-			callback = function()
-				vim.lsp.buf.code_action({
-					context = { only = { "source.fixAll.ruff" }, diagnostics = {} },
-					apply = true,
-				})
-			end,
-		})
-	end
+for name, config in pairs(servers) do
+	vim.lsp.config(name, config)
 end
 
+-- mason-lspconfig will install missing servers and (via automatic_enable)
+-- call vim.lsp.enable() for each, picking up our configs above.
 require("mason-lspconfig").setup({
 	ensure_installed = vim.tbl_keys(servers),
 })
 
-for server_name, config in pairs(servers) do
-	vim.lsp.config(server_name, vim.tbl_deep_extend("force", {
-		capabilities = capabilities,
-		on_attach = on_attach,
-	}, config or {}))
-	vim.lsp.enable(server_name)
-end
+-- Per-buffer LSP setup runs once, when any client attaches.
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("user_lsp_attach", { clear = true }),
+	callback = function(args)
+		local bufnr = args.buf
+		local client = vim.lsp.get_client_by_id(args.data.client_id)
+		if not client then return end
+
+		vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
+			vim.lsp.buf.format({ async = false })
+		end, { desc = "Format buffer with LSP" })
+
+		local group = vim.api.nvim_create_augroup("LspOnSave_" .. bufnr, { clear = false })
+
+		if client:supports_method("textDocument/formatting") then
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				group = group,
+				buffer = bufnr,
+				callback = function()
+					vim.lsp.buf.format({
+						async = false,
+						bufnr = bufnr,
+						filter = function(c) return c.id == client.id end,
+					})
+				end,
+			})
+		end
+
+		-- Ruff fixAll on save (only when the ruff LSP itself is attached).
+		if client.name == "ruff" then
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				group = group,
+				buffer = bufnr,
+				callback = function()
+					vim.lsp.buf.code_action({
+						context = { only = { "source.fixAll.ruff" }, diagnostics = {} },
+						apply = true,
+					})
+				end,
+			})
+		end
+	end,
+})
