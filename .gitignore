@@ -4,33 +4,23 @@
 .tags
 .vim
 .python-version
-
-/config/moc/cache
-/config/moc/pid
-/config/moc/last_directory
+__pycache__
+.DS_Store
 
 /config/zsh/.zcompdump*
 
-/config/pulse/*.tdb
-/config/pulse/cookie
-/config/pulse/*-default-sink
-/config/pulse/*-default-source
+/config/linux/pulse/*.tdb
+/config/linux/pulse/cookie
+/config/linux/pulse/*-default-sink
+/config/linux/pulse/*-default-source
 
 /config/git/gitk
-
-/config/gtkrc-2.0-local
 
 /config/ipython/profile_default/history.sqlite
 /config/ipython/profile_autoreload/history.sqlite
 
-/config/ncspot/userstate.cbor
-
 /config/mpv/watch_later
 
-/config/alacritty/themes
-
 lazy-lock.json
-
-.DS_Store
 
 /config/kitty/kitty.conf
