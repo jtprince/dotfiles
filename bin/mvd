@@ -1,48 +1,87 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
+"""mvd — move the most-recently-modified file(s) from a source directory.
 
-require 'optparse'
-require 'fileutils'
+Usage:
+    mvd <dest>              move the latest file to <dest>
+    mvd <count> <dest>      move the latest <count> files to <dest>
+    mvd -l                  list files without moving
+    mvd -d <dir> <dest>     use <dir> instead of ~/Downloads
+    mvd -t <dest>           use /tmp as source
+    mvd -s <dest>           use ~/screenshots as source
+"""
 
-def latest(n, dir)
-  Dir.chdir(dir) do
-    accessed = Dir['*'].sort_by {|f| File.atime(f) }
-    accessed[(-n)..-1].map {|f| File.expand_path(f) }
-  end
-end
+import argparse
+import shutil
+import sys
+from pathlib import Path
 
-opt = {
-  dir: ENV['HOME'] + '/Downloads'
+SOURCE_DIR = Path.home() / "Downloads"
 
+# Subdirectories within SOURCE_DIR to skip when scanning for files
+IGNORE_SUBDIRS = {
+    SOURCE_DIR / "screenshots",
+    SOURCE_DIR / "old",
 }
-opts = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename(__FILE__)} [COUNT] <dest>"
-  op.separator "moves the latest downloaded file(s) to <dest>"
-  op.separator "if given a count, moves the latest COUNT files to the <dest> dir"
-  op.on("-l", "--list", "just list the contents, don't move them") {|v| opt[:list] = v }
-  op.on("-d", "--dir <path>", "look in path (default: #{opt[:dir]})") {|v| opt[:dir] = File.expand_path(v) }
-  op.on("-t", "--tmp", "look in /tmp") {|v| opt[:dir] = "/tmp" }
-  op.on("-s", "--screenshots", "look in ~/screenshots/") {|v| opt[:dir] = ENV['HOME'] + "/screenshots" }
-end
-opts.parse!
 
-if ARGV.size == 0
-  puts opts
-  exit
-end
 
-count = ARGV.size == 2 ? ARGV.shift.to_i : 1
-dest = ARGV.shift
+def latest_files(n: int, directory: Path) -> list[Path]:
+    files = [p for p in directory.iterdir() if p.is_file() and p not in IGNORE_SUBDIRS]
+    return sorted(files, key=lambda p: p.stat().st_mtime)[-n:]
 
-abort 'destination must be a dir' if count > 1 && File.directory?(dest).!
 
-full_paths = latest(count, opt[:dir])
-abort 'file must still be downloading!' if full_paths.any? {|f| File.extname(f).include?("crdownload") }
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Move the latest downloaded file(s) to a destination.",
+        usage="mvd [-l] [-d DIR | -t | -s] [COUNT] <dest>",
+    )
+    parser.add_argument("args", nargs="*", help="[COUNT] <dest>")
+    parser.add_argument("-l", "--list", action="store_true", help="list files, don't move")
+    parser.add_argument("-d", "--dir", metavar="DIR", help="source directory")
+    parser.add_argument("-t", "--tmp", action="store_true", help="use /tmp as source")
+    parser.add_argument("-s", "--screenshots", action="store_true", help="use ~/screenshots as source")
 
-if opt[:list]
-  puts full_paths
-else
-  FileUtils.mv full_paths, dest
-  outstring = "moved: #{full_paths.map {|p| File.basename(p) }.join(", ")}"
-  outstring << " ---> #{dest}" if dest != "."
-  puts outstring
-end
+    opts = parser.parse_args()
+
+    if opts.tmp:
+        source = Path("/tmp")
+    elif opts.screenshots:
+        source = Path.home() / "screenshots"
+    elif opts.dir:
+        source = Path(opts.dir).expanduser()
+    else:
+        source = SOURCE_DIR
+
+    if not opts.list and not opts.args:
+        parser.print_help()
+        sys.exit(1)
+
+    count, dest = 1, None
+    if len(opts.args) == 2:
+        count, dest = int(opts.args[0]), Path(opts.args[1])
+    elif opts.args:
+        dest = Path(opts.args[0])
+
+    if dest and count > 1 and not dest.is_dir():
+        sys.exit("error: destination must be a directory when moving multiple files")
+
+    files = latest_files(count, source)
+    if not files:
+        sys.exit(f"error: no files found in {source}")
+    if any(".crdownload" in f.suffix for f in files):
+        sys.exit("error: file is still downloading (.crdownload)")
+
+    if opts.list:
+        for f in files:
+            print(f)
+        return
+
+    for f in files:
+        shutil.move(str(f), dest)
+
+    names = ", ".join(f.name for f in files)
+    suffix = f" ---> {dest}" if str(dest) != "." else ""
+    print(f"moved: {names}{suffix}")
+
+
+if __name__ == "__main__":
+    main()
