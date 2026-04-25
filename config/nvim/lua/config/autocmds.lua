@@ -43,15 +43,20 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		local initial = vim.fn.argc() > 0
 			and vim.fn.fnamemodify(vim.fn.argv(0), ":p")
 			or vim.fn.getcwd()
+		-- Resolve all argv paths to absolute BEFORE cd changes cwd.
+		local files = {}
+		for i = 0, vim.fn.argc() - 1 do
+			files[#files + 1] = vim.fn.fnamemodify(vim.fn.argv(i), ":p")
+		end
 		local root = find_project_root(initial)
 		vim.cmd("cd " .. vim.fn.fnameescape(root))
 		require("persistence").load()
 		vim.notify("Session: " .. vim.fn.fnamemodify(root, ":~"), vim.log.levels.INFO)
 		-- Re-open files passed on cmdline (session restore wipes them).
-		if vim.fn.argc() > 0 then
+		if #files > 0 then
 			vim.schedule(function()
-				for i = 0, vim.fn.argc() - 1 do
-					vim.cmd("edit " .. vim.fn.fnameescape(vim.fn.argv(i)))
+				for _, f in ipairs(files) do
+					vim.cmd("edit " .. vim.fn.fnameescape(f))
 				end
 			end)
 		end
