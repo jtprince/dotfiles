@@ -14,6 +14,7 @@ fi
 export PATH="$PYTHON_GLOBAL_VENV/bin:$PATH"
 
 BINPATH="$HOME/bin"
+export PATH="$BINPATH/data:$PATH"
 export PATH="$BINPATH/docker:$PATH"
 export PATH="$BINPATH/git:$PATH"
 export PATH="$BINPATH/markdown:$PATH"
