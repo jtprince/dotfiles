@@ -55,7 +55,6 @@ class Symlink:
 # ---------------------------------------------------------------------------
 
 CONFIG_GENERAL = [
-    "alacritty",
     "cheat",
     "cursor-agent",
     "git",
@@ -77,35 +76,27 @@ CONFIG_MAC = [
 CONFIG_LINUX = [
     "Xresources.d",
     "avizo",
-    "blockify",
-    "conky",
     "dunst",
     "feh",
-    "flake8",
     "fontconfig",
     "goofys",
     "gtk-3.0",
     "imv",
-    "isort.cfg",
     "latex",
     "mako",
     "mimeapps.list",
     "mpv",
     "mypy",
-    "ncmpcpp",
-    "ncspot",
     "npmrc",
     "pipewire",
     "pulse",
     "pulseaudio-ctl",
-    "pylintrc",
     "ranger",
     "spotify-flags.conf",
     "sway",
     "texlive",
     "tofi",
     "waybar",
-    "xava",
     "xmodmap",
 ]
 
@@ -116,9 +107,6 @@ CONFIG_LINUX = [
 HOME_DOTFILES_LINUX = [
     "xprofile",
     "xinitrc",
-    "pryrc",
-    "irbrc",
-    "gemrc",
     "profile",
     "gtkrc-2.0",
 ]
