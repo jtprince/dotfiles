@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------
--- init.lua (single-file config, modernized for Neovim 0.11+ / 2026)
+-- init.lua (single-file config, Neovim 0.12+ with vim.pack)
 -- Author: J.T. Prince
 ---------------------------------------------------------------------------
 
@@ -138,544 +138,407 @@ vim.api.nvim_create_user_command("MarkdownCopyGmailHtml", markdown_copy_gmail_ht
 })
 
 ---------------------------------------------------------------------------
--- Plugin manager: lazy.nvim (bootstrap)
+-- Plugins (vim.pack — built-in plugin manager, Neovim 0.12+)
 ---------------------------------------------------------------------------
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
-	vim.fn.system({
-		"git", "clone", "--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable",
-		lazypath
+if not is_vscode then
+	-- Build hooks for plugins that need post-install work.
+	-- Must be registered BEFORE vim.pack.add() so the first install runs them.
+	vim.api.nvim_create_autocmd("PackChanged", {
+		group = vim.api.nvim_create_augroup("user_pack_build", { clear = true }),
+		callback = function(args)
+			local d = args.data
+			if d.kind == "delete" then return end
+			local name = (d.spec and d.spec.name) or vim.fn.fnamemodify(d.path, ":t")
+
+			if name == "nvim-treesitter" then
+				vim.schedule(function() vim.cmd("TSUpdate") end)
+			elseif name == "telescope-fzf-native.nvim" then
+				vim.notify("Building telescope-fzf-native…", vim.log.levels.INFO)
+				vim.system({ "make" }, { cwd = d.path }):wait()
+			elseif name == "markdown-preview.nvim" then
+				vim.notify("Installing markdown-preview deps…", vim.log.levels.INFO)
+				vim.system({ "npm", "install" }, { cwd = d.path .. "/app" }):wait()
+			end
+		end,
 	})
-end
-vim.opt.rtp:prepend(lazypath)
 
----------------------------------------------------------------------------
--- Helper: plugin specs that should not load in VS Code
----------------------------------------------------------------------------
-local function unless_vscode(spec)
-	return (not is_vscode) and spec or nil
-end
-
----------------------------------------------------------------------------
--- Plugins
----------------------------------------------------------------------------
-require("lazy").setup({
+	vim.pack.add({
+		-- UI / appearance
+		"https://github.com/navarasu/onedark.nvim",
+		"https://github.com/echasnovski/mini.icons",
+		"https://github.com/stevearc/oil.nvim",
+		"https://github.com/wfxr/minimap.vim",
+		-- editing
+		"https://github.com/numToStr/Comment.nvim",
+		"https://github.com/dhruvasagar/vim-table-mode",
+		"https://github.com/lewis6991/gitsigns.nvim",
+		"https://github.com/folke/persistence.nvim",
+		"https://github.com/akinsho/toggleterm.nvim",
+		"https://github.com/cameron-wags/rainbow_csv.nvim",
+		"https://github.com/folke/trouble.nvim",
+		"https://github.com/jtprince/cursor-nvim-plugin",
+		"https://github.com/jannis-baum/vivify.vim",
+		-- treesitter (main branch uses the new install API)
+		{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
+		-- telescope
+		"https://github.com/nvim-lua/plenary.nvim",
+		"https://github.com/nvim-telescope/telescope.nvim",
+		"https://github.com/nvim-telescope/telescope-fzf-native.nvim",
+		-- markdown
+		"https://github.com/OXY2DEV/markview.nvim",
+		"https://github.com/iamcco/markdown-preview.nvim",
+		-- completion
+		"https://github.com/L3MON4D3/LuaSnip",
+		"https://github.com/hrsh7th/cmp-nvim-lsp",
+		"https://github.com/hrsh7th/cmp-buffer",
+		"https://github.com/hrsh7th/cmp-path",
+		"https://github.com/saadparwaiz1/cmp_luasnip",
+		"https://github.com/hrsh7th/nvim-cmp",
+		-- LSP
+		"https://github.com/williamboman/mason.nvim",
+		"https://github.com/williamboman/mason-lspconfig.nvim",
+		"https://github.com/neovim/nvim-lspconfig",
+		"https://github.com/folke/lazydev.nvim",
+	})
 
 	-------------------------------------------------------------------------
-	-- Trouble
+	-- Theme: onedark (configure first so highlights are set early)
 	-------------------------------------------------------------------------
-	unless_vscode({
-		"folke/trouble.nvim",
-		opts = {},
-		cmd = "Trouble",
-		keys = {
-			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",                        desc = "Diagnostics (Trouble)" },
-			{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",           desc = "Buffer Diagnostics (Trouble)" },
-			{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",                desc = "Symbols (Trouble)" },
-			{ "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP List (Trouble)" },
-			{ "<leader>xL", "<cmd>Trouble loclist toggle<cr>",                            desc = "Location List (Trouble)" },
-			{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",                             desc = "Quickfix List (Trouble)" },
-		},
-	}),
+	vim.cmd("colorscheme onedark")
+
+	if vim.g.neovide then
+		vim.g.transparency = 0.8
+		local alpha = function()
+			return string.format("%02x", math.floor(255 * (vim.g.transparency or 0.8)))
+		end
+		vim.g.neovide_background_color = "#0f1117" .. alpha()
+		vim.g.neovide_opacity = 1.0
+	end
+
+	for _, group in ipairs({
+		"Normal", "NormalNC", "NormalFloat",
+		"FloatBorder", "SignColumn", "VertSplit",
+	}) do
+		vim.api.nvim_set_hl(0, group, { bg = "none" })
+	end
+
+	vim.api.nvim_set_hl(0, "Cursor", { fg = "#000000", bg = "#FF00FF" })
+	vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = "#44475a", bg = "none" })
+	vim.opt.guicursor = "n-v-c:block-Cursor,i-ci-ve:ver25-Cursor,r-cr:hor20-Cursor,o:hor50-Cursor"
+
+	if vim.g.neovide then
+		vim.g.neovide_cursor_vfx_mode = "railgun"
+		vim.g.neovide_cursor_animate_in_insert_mode = false
+		vim.g.neovide_cursor_animate_command_line = false
+		vim.g.neovide_cursor_trail_size = 0.8
+		vim.g.neovide_cursor_color = "#FFA500"
+	end
 
 	-------------------------------------------------------------------------
-	-- Rainbow CSV
+	-- mini.icons / oil
 	-------------------------------------------------------------------------
-	unless_vscode({
-		"cameron-wags/rainbow_csv.nvim",
-		config = true,
-		ft = {
-			"csv",
-			"tsv",
-			"csv_semicolon",
-			"csv_whitespace",
-			"csv_pipe",
-			"rfc_csv",
-			"rfc_semicolon",
-		},
-		cmd = {
-			"RainbowDelim",
-			"RainbowDelimSimple",
-			"RainbowDelimQuoted",
-			"RainbowMultiDelim",
-		},
-	}),
+	require("mini.icons").setup()
+	require("oil").setup({ default_file_explorer = true })
+	vim.keymap.set("n", "-", "<cmd>Oil<CR>", { desc = "Open parent directory (Oil)" })
+
+	-------------------------------------------------------------------------
+	-- Editing plugins
+	-------------------------------------------------------------------------
+	require("Comment").setup()
+	vim.g.table_mode_corner = "|"
+	require("gitsigns").setup()
+
+	require("persistence").setup({
+		dir = vim.fn.stdpath("state") .. "/sessions/",
+		need = 1,
+		branch = true,
+	})
+
+	require("rainbow_csv").setup()
+
+	require("trouble").setup()
+	for _, m in ipairs({
+		{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",                        "Diagnostics (Trouble)" },
+		{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",           "Buffer Diagnostics (Trouble)" },
+		{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",                "Symbols (Trouble)" },
+		{ "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", "LSP List (Trouble)" },
+		{ "<leader>xL", "<cmd>Trouble loclist toggle<cr>",                            "Location List (Trouble)" },
+		{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",                             "Quickfix List (Trouble)" },
+	}) do
+		vim.keymap.set("n", m[1], m[2], { silent = true, desc = m[3] })
+	end
 
 	-------------------------------------------------------------------------
 	-- ToggleTerm
 	-------------------------------------------------------------------------
-	unless_vscode({
-		"akinsho/toggleterm.nvim",
-		version = "*",
-		opts = {
-			size = 120,
-			open_mapping = [[<C-\>]],
-			direction = "vertical",
-			shade_terminals = true,
-			start_in_insert = true,
-			insert_mappings = true,
-			terminal_mappings = true,
-			persist_size = true,
-			persist_mode = true,
-			close_on_exit = true,
-		},
-		config = function(_, opts)
-			require("toggleterm").setup(opts)
+	require("toggleterm").setup({
+		size = 120,
+		open_mapping = [[<C-\>]],
+		direction = "vertical",
+		shade_terminals = true,
+		start_in_insert = true,
+		insert_mappings = true,
+		terminal_mappings = true,
+		persist_size = true,
+		persist_mode = true,
+		close_on_exit = true,
+	})
 
-			local function tmap(lhs, rhs, desc)
-				vim.keymap.set("t", lhs, rhs, { noremap = true, silent = true, desc = desc })
-			end
+	for _, m in ipairs({
+		{ "<C-h>", [[<C-\><C-n><C-w>h]], "Terminal: focus left" },
+		{ "<C-j>", [[<C-\><C-n><C-w>j]], "Terminal: focus down" },
+		{ "<C-k>", [[<C-\><C-n><C-w>k]], "Terminal: focus up" },
+		{ "<C-l>", [[<C-\><C-n><C-w>l]], "Terminal: focus right" },
+	}) do
+		vim.keymap.set("t", m[1], m[2], { noremap = true, silent = true, desc = m[3] })
+	end
 
-			tmap("<C-h>", [[<C-\><C-n><C-w>h]], "Terminal: focus left")
-			tmap("<C-j>", [[<C-\><C-n><C-w>j]], "Terminal: focus down")
-			tmap("<C-k>", [[<C-\><C-n><C-w>k]], "Terminal: focus up")
-			tmap("<C-l>", [[<C-\><C-n><C-w>l]], "Terminal: focus right")
-
-			vim.api.nvim_create_autocmd("BufEnter", {
-				pattern = "term://*",
-				callback = function()
-					if vim.bo.buftype == "terminal" then
-						vim.cmd("startinsert")
-					end
-				end,
-			})
-		end,
-	}),
-
-	-------------------------------------------------------------------------
-	-- Persistence (session mgmt)
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"folke/persistence.nvim",
-		event = "BufReadPre",
-		opts = {
-			dir = vim.fn.stdpath("state") .. "/sessions/",
-			need = 1,
-			branch = true,
-		},
-	}),
-
-	-------------------------------------------------------------------------
-	-- cursor-nvim-plugin
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"jtprince/cursor-nvim-plugin",
-		config = function()
-			-- optional config
-		end,
-	}),
-
-	-------------------------------------------------------------------------
-	-- Oil
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"stevearc/oil.nvim",
-		dependencies = { { "echasnovski/mini.icons", opts = {} } },
-		lazy = false,
-		opts = {
-			default_file_explorer = true,
-		},
-		keys = {
-			{ "-", "<cmd>Oil<CR>", desc = "Open parent directory (Oil)" },
-		},
-	}),
-
-	-------------------------------------------------------------------------
-	-- Theme: onedark
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"navarasu/onedark.nvim",
-		name = "onedark",
-		priority = 1000, -- ensure it loads before other highlight tweaks
-		config = function()
-			vim.cmd("colorscheme onedark")
-
-			-- Neovide background transparency
-			if vim.g.neovide then
-				vim.g.transparency = 0.8
-				local alpha = function()
-					return string.format("%02x", math.floor(255 * (vim.g.transparency or 0.8)))
-				end
-				vim.g.neovide_background_color = "#0f1117" .. alpha()
-				vim.g.neovide_opacity = 1.0
-			end
-
-			-- Transparent backgrounds
-			local groups = {
-				"Normal", "NormalNC", "NormalFloat",
-				"FloatBorder", "SignColumn", "VertSplit",
-			}
-			for _, group in ipairs(groups) do
-				vim.api.nvim_set_hl(0, group, { bg = "none" })
-			end
-
-			-- Cursor highlight
-			vim.api.nvim_set_hl(0, "Cursor", { fg = "#000000", bg = "#FF00FF" })
-			vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = "#44475a", bg = "none" })
-
-			vim.opt.guicursor = "n-v-c:block-Cursor,i-ci-ve:ver25-Cursor,r-cr:hor20-Cursor,o:hor50-Cursor"
-
-			if vim.g.neovide then
-				vim.g.neovide_cursor_vfx_mode = "railgun"
-				vim.g.neovide_cursor_animate_in_insert_mode = false
-				vim.g.neovide_cursor_animate_command_line = false
-				vim.g.neovide_cursor_trail_size = 0.8
-				vim.g.neovide_cursor_color = "#FFA500"
+	vim.api.nvim_create_autocmd("BufEnter", {
+		pattern = "term://*",
+		callback = function()
+			if vim.bo.buftype == "terminal" then
+				vim.cmd("startinsert")
 			end
 		end,
-	}),
+	})
 
 	-------------------------------------------------------------------------
 	-- Treesitter
 	-------------------------------------------------------------------------
-	unless_vscode({
-		"nvim-treesitter/nvim-treesitter",
-		branch = "main",
-		lazy = false, -- main branch does not support lazy-loading
-		build = ":TSUpdate",
-		config = function()
-			require("nvim-treesitter").setup()
-			require("nvim-treesitter").install({
-				"lua", "python", "vim", "vimdoc", "markdown", "markdown_inline", "yaml", "latex",
-			})
-		end,
-	}),
+	require("nvim-treesitter").setup()
+	pcall(function()
+		require("nvim-treesitter").install({
+			"lua", "python", "vim", "vimdoc", "markdown", "markdown_inline", "yaml", "latex",
+		})
+	end)
 
 	-------------------------------------------------------------------------
-	-- Minimap
+	-- Markdown
 	-------------------------------------------------------------------------
-	unless_vscode({
-		"wfxr/minimap.vim",
-	}),
+	require("markview").setup({
+		auto_start = false,
+		auto_close = false,
+		dark_theme = true,
+		preview = { enable = false },
+	})
 
-	-------------------------------------------------------------------------
-	-- Comment.nvim
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"numToStr/Comment.nvim",
-		event = "VeryLazy",
-		opts = {},
-	}),
-
-	-------------------------------------------------------------------------
-	-- vivify
-	-------------------------------------------------------------------------
-	unless_vscode({ "jannis-baum/vivify.vim" }),
+	vim.g.mkdp_auto_start = 0
+	vim.g.mkdp_echo_preview_url = 1
+	vim.g.mkdp_browser = "firefox"
 
 	-------------------------------------------------------------------------
 	-- Telescope
 	-------------------------------------------------------------------------
-	unless_vscode({
-		"nvim-telescope/telescope.nvim",
-		branch = "master",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			{
-				"nvim-telescope/telescope-fzf-native.nvim",
-				build = "make",
-				cond = function() return vim.fn.executable("make") == 1 end,
-			},
-		},
-		cmd = "Telescope",
-		config = function()
-			local actions = require("telescope.actions")
-			local action_state = require("telescope.actions.state")
+	do
+		local actions = require("telescope.actions")
+		local action_state = require("telescope.actions.state")
 
-			local function delete_buffer_and_refresh(prompt_bufnr)
-				local selected_buf = action_state.get_selected_entry()
-				if not selected_buf then return end
-				vim.api.nvim_buf_delete(selected_buf.bufnr, { force = false })
-				actions.close(prompt_bufnr)
-				require("telescope.builtin").buffers()
+		local function delete_buffer_and_refresh(prompt_bufnr)
+			local selected_buf = action_state.get_selected_entry()
+			if not selected_buf then return end
+			vim.api.nvim_buf_delete(selected_buf.bufnr, { force = false })
+			actions.close(prompt_bufnr)
+			require("telescope.builtin").buffers()
+		end
+
+		local function safe_close(prompt_bufnr)
+			local picker = action_state.get_current_picker(prompt_bufnr)
+			if picker then actions.close(prompt_bufnr) end
+		end
+
+		local function open_buffer_in_vsplit(prompt_bufnr)
+			local selected_buf = action_state.get_selected_entry()
+			if selected_buf then
+				vim.cmd("vsplit | buffer " .. selected_buf.bufnr)
+				safe_close(prompt_bufnr)
 			end
+		end
 
-			local function safe_close(prompt_bufnr)
-				local picker = action_state.get_current_picker(prompt_bufnr)
-				if picker then actions.close(prompt_bufnr) end
+		local function open_buffer_in_split(prompt_bufnr)
+			local selected_buf = action_state.get_selected_entry()
+			if selected_buf then
+				vim.cmd("split | buffer " .. selected_buf.bufnr)
+				safe_close(prompt_bufnr)
 			end
+		end
 
-			local function open_buffer_in_vsplit(prompt_bufnr)
-				local selected_buf = action_state.get_selected_entry()
-				if selected_buf then
-					vim.cmd("vsplit | buffer " .. selected_buf.bufnr)
-					safe_close(prompt_bufnr)
-				end
-			end
-
-			local function open_buffer_in_split(prompt_bufnr)
-				local selected_buf = action_state.get_selected_entry()
-				if selected_buf then
-					vim.cmd("split | buffer " .. selected_buf.bufnr)
-					safe_close(prompt_bufnr)
-				end
-			end
-
-			require("telescope").setup({
-				defaults = {
-					prompt_prefix = "> ",
-					selection_caret = " ",
-					path_display = { "smart" },
-					layout_config = {
-						horizontal = { width = 0.9, height = 0.9, prompt_position = "bottom", preview_cutoff = 120 },
-						vertical = { width = 0.9, height = 0.9, prompt_position = "bottom", preview_cutoff = 40 },
-						center = { width = 0.5, height = 0.4, prompt_position = "top", preview_cutoff = 40 },
-						cursor = { width = 0.8, height = 0.9, preview_cutoff = 40 },
-						bottom_pane = { height = 25, prompt_position = "top", preview_cutoff = 120 },
-					},
+		require("telescope").setup({
+			defaults = {
+				prompt_prefix = "> ",
+				selection_caret = " ",
+				path_display = { "smart" },
+				layout_config = {
+					horizontal = { width = 0.9, height = 0.9, prompt_position = "bottom", preview_cutoff = 120 },
+					vertical = { width = 0.9, height = 0.9, prompt_position = "bottom", preview_cutoff = 40 },
+					center = { width = 0.5, height = 0.4, prompt_position = "top", preview_cutoff = 40 },
+					cursor = { width = 0.8, height = 0.9, preview_cutoff = 40 },
+					bottom_pane = { height = 25, prompt_position = "top", preview_cutoff = 120 },
 				},
-				pickers = {
-					buffers = {
-						mappings = {
-							i = { ["<C-d>"] = delete_buffer_and_refresh },
-							n = {
-								["dd"] = delete_buffer_and_refresh,
-								["<Space>"] = actions.toggle_selection +
-								    actions.move_selection_worse,
-								["v"] = open_buffer_in_vsplit,
-								["s"] = open_buffer_in_split,
-							},
+			},
+			pickers = {
+				buffers = {
+					mappings = {
+						i = { ["<C-d>"] = delete_buffer_and_refresh },
+						n = {
+							["dd"] = delete_buffer_and_refresh,
+							["<Space>"] = actions.toggle_selection + actions.move_selection_worse,
+							["v"] = open_buffer_in_vsplit,
+							["s"] = open_buffer_in_split,
 						},
 					},
 				},
-			})
+			},
+		})
 
-			pcall(require("telescope").load_extension, "fzf")
+		pcall(require("telescope").load_extension, "fzf")
 
-			-- Git-rooted live grep
-			local function find_git_root()
-				local file = vim.api.nvim_buf_get_name(0)
-				local dir = (file == "") and vim.fn.getcwd() or vim.fn.fnamemodify(file, ":h")
-				local root = vim.fn.systemlist("git -C " ..
-					vim.fn.escape(dir, " ") .. " rev-parse --show-toplevel")[1]
-				if vim.v.shell_error ~= 0 then return vim.fn.getcwd() end
-				return root
-			end
+		local function find_git_root()
+			local file = vim.api.nvim_buf_get_name(0)
+			local dir = (file == "") and vim.fn.getcwd() or vim.fn.fnamemodify(file, ":h")
+			local root = vim.fn.systemlist("git -C " ..
+				vim.fn.escape(dir, " ") .. " rev-parse --show-toplevel")[1]
+			if vim.v.shell_error ~= 0 then return vim.fn.getcwd() end
+			return root
+		end
 
-			local function live_grep_git_root()
-				local root = find_git_root()
-				require("telescope.builtin").live_grep({ search_dirs = { root } })
-			end
-
-			vim.api.nvim_create_user_command("LiveGrepGitRoot", live_grep_git_root, {})
-		end,
-	}),
-
-	-------------------------------------------------------------------------
-	-- Gitsigns
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"lewis6991/gitsigns.nvim",
-		event = { "BufReadPost", "BufNewFile" },
-		opts = {},
-	}),
-
-	-------------------------------------------------------------------------
-	-- vim-table-mode
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"dhruvasagar/vim-table-mode",
-		cmd = "TableModeToggle",
-		init = function()
-			vim.g.table_mode_corner = "|"
-		end,
-	}),
-
-	-------------------------------------------------------------------------
-	-- Markview
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"OXY2DEV/markview.nvim",
-		config = function()
-			require("markview").setup({
-				auto_start = false,
-				auto_close = false,
-				dark_theme = true,
-				preview = { enable = false },
-			})
-		end,
-	}),
-
-	-------------------------------------------------------------------------
-	-- Markdown preview
-	-------------------------------------------------------------------------
-	unless_vscode({
-		"iamcco/markdown-preview.nvim",
-		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-		ft = { "markdown" },
-		build = "cd app && npm install",
-		init = function()
-			vim.g.mkdp_auto_start = 0
-			vim.g.mkdp_echo_preview_url = 1
-			vim.g.mkdp_browser = "firefox"
-		end,
-	}),
+		vim.api.nvim_create_user_command("LiveGrepGitRoot", function()
+			require("telescope.builtin").live_grep({ search_dirs = { find_git_root() } })
+		end, {})
+	end
 
 	-------------------------------------------------------------------------
 	-- Completion: nvim-cmp
 	-------------------------------------------------------------------------
-	unless_vscode({
-		"hrsh7th/nvim-cmp",
-		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/cmp-buffer",
-			"hrsh7th/cmp-path",
-			"L3MON4D3/LuaSnip",
-			"saadparwaiz1/cmp_luasnip",
-		},
-		config = function()
-			local cmp = require("cmp")
-			cmp.setup({
-				snippet = {
-					expand = function(args)
-						require("luasnip").lsp_expand(args.body)
-					end,
-				},
-				mapping = cmp.mapping.preset.insert({
-					["<Tab>"] = cmp.mapping.select_next_item(),
-					["<S-Tab>"] = cmp.mapping.select_prev_item(),
-					["<CR>"] = cmp.mapping.confirm({ select = true }),
-				}),
-				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
-					{ name = "buffer" },
-					{ name = "path" },
-				}),
-			})
-		end,
-	}),
+	do
+		local cmp = require("cmp")
+		cmp.setup({
+			snippet = {
+				expand = function(args)
+					require("luasnip").lsp_expand(args.body)
+				end,
+			},
+			mapping = cmp.mapping.preset.insert({
+				["<Tab>"] = cmp.mapping.select_next_item(),
+				["<S-Tab>"] = cmp.mapping.select_prev_item(),
+				["<CR>"] = cmp.mapping.confirm({ select = true }),
+			}),
+			sources = cmp.config.sources({
+				{ name = "nvim_lsp" },
+				{ name = "luasnip" },
+				{ name = "buffer" },
+				{ name = "path" },
+			}),
+		})
+	end
 
 	-------------------------------------------------------------------------
 	-- Mason + LSP (Neovim 0.11+ native config)
 	-------------------------------------------------------------------------
-	unless_vscode({
-		"williamboman/mason.nvim",
-		dependencies = {
-			"williamboman/mason-lspconfig.nvim",
-			"neovim/nvim-lspconfig", -- still needed for server definitions
-			{ "folke/lazydev.nvim", ft = "lua", opts = {} }, -- replaces archived neodev.nvim
-		},
-		config = function()
-			require("mason").setup()
+	require("lazydev").setup({})
+	require("mason").setup()
 
-			local mason_lspconfig = require("mason-lspconfig")
-			mason_lspconfig.setup()
-
-			-- ------------------------------------------------------------------
-			-- LSP servers config
-			-- ------------------------------------------------------------------
-			local servers = {
-				pylsp = {
-					settings = {
-						pylsp = {
-							plugins = {
-								ruff = {
-									enabled = true,
-									formatEnabled = true,
-									extendSelect = { "I" },
-									targetVersion = "py310",
-								},
+	do
+		local servers = {
+			pylsp = {
+				settings = {
+					pylsp = {
+						plugins = {
+							ruff = {
+								enabled = true,
+								formatEnabled = true,
+								extendSelect = { "I" },
+								targetVersion = "py310",
 							},
 						},
 					},
 				},
+			},
 
-				lua_ls = (function()
-					local function optional_path(path)
-						local stat = vim.uv.fs_stat(path)
-						if stat and stat.type == "directory" then
-							return path
-						end
-						return nil
+			lua_ls = (function()
+				local function optional_path(path)
+					local stat = vim.uv.fs_stat(path)
+					if stat and stat.type == "directory" then
+						return path
 					end
+					return nil
+				end
 
-					local hammerspoon_paths = vim.tbl_filter(function(p)
-						return p ~= nil
-					end, {
-						optional_path(vim.fn.expand("~/.local/share/hammerspoon-api/extensions")),
-						optional_path(vim.fn.expand(
-							"~/.local/share/hammerspoon-api/extensions/hs")),
-						optional_path(vim.fn.expand(
-							"~/.local/share/hammerspoon-api/extensions/hs/alert")),
-					})
+				local hammerspoon_paths = vim.tbl_filter(function(p)
+					return p ~= nil
+				end, {
+					optional_path(vim.fn.expand("~/.local/share/hammerspoon-api/extensions")),
+					optional_path(vim.fn.expand("~/.local/share/hammerspoon-api/extensions/hs")),
+					optional_path(vim.fn.expand("~/.local/share/hammerspoon-api/extensions/hs/alert")),
+				})
 
-					return {
-						settings = {
-							Lua = {
-								diagnostics = { globals = { "hs" } },
-								workspace = {
-									checkThirdParty = false,
-									library = hammerspoon_paths,
-								},
-								telemetry = { enable = false },
+				return {
+					settings = {
+						Lua = {
+							diagnostics = { globals = { "hs" } },
+							workspace = {
+								checkThirdParty = false,
+								library = hammerspoon_paths,
 							},
+							telemetry = { enable = false },
 						},
-					}
-				end)(),
+					},
+				}
+			end)(),
 
-				marksman = {},
-			}
+			marksman = {},
+		}
 
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-			local on_attach = function(client, bufnr)
-				vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
-					vim.lsp.buf.format({ async = false })
-				end, { desc = "Format buffer with LSP" })
+		local on_attach = function(client, bufnr)
+			vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
+				vim.lsp.buf.format({ async = false })
+			end, { desc = "Format buffer with LSP" })
 
-				-- per-buffer augroup prevents collisions and double-registration
-				local group = vim.api.nvim_create_augroup("LspOnSave_" .. bufnr, { clear = true })
+			local group = vim.api.nvim_create_augroup("LspOnSave_" .. bufnr, { clear = true })
 
-				if client:supports_method("textDocument/formatting") then
-					vim.api.nvim_create_autocmd("BufWritePre", {
-						group = group,
-						buffer = bufnr,
-						callback = function()
-							vim.lsp.buf.format({
-								async = false,
-								bufnr = bufnr,
-								filter = function(c) return c.id == client.id end,
-							})
-						end,
-					})
-				end
-
-				-- Ruff fixAll on save (only if supported)
-				if client.name == "pylsp" or client.name == "ruff" then
-					vim.api.nvim_create_autocmd("BufWritePre", {
-						group = group,
-						buffer = bufnr,
-						callback = function()
-							vim.lsp.buf.code_action({
-								context = { only = { "source.fixAll.ruff" }, diagnostics = {} },
-								apply = true,
-							})
-						end,
-					})
-				end
+			if client:supports_method("textDocument/formatting") then
+				vim.api.nvim_create_autocmd("BufWritePre", {
+					group = group,
+					buffer = bufnr,
+					callback = function()
+						vim.lsp.buf.format({
+							async = false,
+							bufnr = bufnr,
+							filter = function(c) return c.id == client.id end,
+						})
+					end,
+				})
 			end
 
-			mason_lspconfig.setup({
-				ensure_installed = vim.tbl_keys(servers),
-			})
-
-			-- ------------------------------------------------------------------
-			-- Neovim 0.11+ native LSP config (future-proof)
-			-- ------------------------------------------------------------------
-			for server_name, config in pairs(servers) do
-				vim.lsp.config(server_name, vim.tbl_deep_extend("force", {
-					capabilities = capabilities,
-					on_attach = on_attach,
-				}, config or {}))
-
-				vim.lsp.enable(server_name)
+			-- Ruff fixAll on save (only applies if ruff LSP is attached)
+			if client.name == "ruff" then
+				vim.api.nvim_create_autocmd("BufWritePre", {
+					group = group,
+					buffer = bufnr,
+					callback = function()
+						vim.lsp.buf.code_action({
+							context = { only = { "source.fixAll.ruff" }, diagnostics = {} },
+							apply = true,
+						})
+					end,
+				})
 			end
-		end,
-	}),
+		end
 
-})
+		require("mason-lspconfig").setup({
+			ensure_installed = vim.tbl_keys(servers),
+		})
+
+		for server_name, config in pairs(servers) do
+			vim.lsp.config(server_name, vim.tbl_deep_extend("force", {
+				capabilities = capabilities,
+				on_attach = on_attach,
+			}, config or {}))
+			vim.lsp.enable(server_name)
+		end
+	end
+end
 
 ---------------------------------------------------------------------------
 -- User commands / filetype setup
