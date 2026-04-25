@@ -15,7 +15,7 @@ parser.add_argument(
     "--output",
     help="valid input to kubectl -o, e.g., yaml",
 )
-parser.add_argument("-v", "--verbose", action='store_true', help="talk about it")
+parser.add_argument("-v", "--verbose", action="store_true", help="talk about it")
 
 args = parser.parse_args()
 
@@ -23,6 +23,7 @@ args = parser.parse_args()
 def printv(*args_, **kwargs):
     if args.verbose:
         print(*args_, **kwargs)
+
 
 def check_output(cmd):
     printv(f"Running: {cmd}")
@@ -33,9 +34,7 @@ def check_output(cmd):
 
 def run(cmd):
     printv(f"Running: {cmd}")
-    return subprocess.run(
-        cmd, shell=True, text=True
-    )
+    return subprocess.run(cmd, shell=True, text=True)
 
 
 def is_pod_name(name):
@@ -55,9 +54,7 @@ def get_pods_from_deployment(name):
         shell=True,
     )
     return [
-        line.strip().split("/", 1)[-1]
-        for line in output.split("\n")
-        if line.strip()
+        line.strip().split("/", 1)[-1] for line in output.split("\n") if line.strip()
     ]
 
 
@@ -73,9 +70,7 @@ for name in args.names:
 
 
 for pod_name in pod_names:
-    base_cmd = (
-        f"kubectl get event --field-selector involvedObject.name={pod_name}"
-    )
+    base_cmd = f"kubectl get event --field-selector involvedObject.name={pod_name}"
     if args.output:
         # should shell escape for special custom column notation
         base_cmd += f" --output {args.output}"

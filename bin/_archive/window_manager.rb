@@ -28,7 +28,7 @@ cmds.each do |cmd|
 end
 
 if opt[:replace]
-  replacement = 
+  replacement =
     case wm
     when 'wmii' ; 'metacity'
     when 'metacity' ; 'wmii'

@@ -95,9 +95,9 @@ class Deployment:
         # turn to zero
         print("Setting replicas to 0 ", end="", flush=True)
         self.scale_replicas(0)
-        if self.params['dry']:
+        if self.params["dry"]:
             print("<Using --dry, and the rest requires results, so exiting>")
-            exit(1) 
+            exit(1)
         print(".", end="", flush=True)
         while num_replicas := self.num_replicas():
             print(".", end="", flush=True)
@@ -111,7 +111,7 @@ class Deployment:
         print(f"Setting replicas to {desired_replicas} ", end="", flush=True)
         self.scale_replicas(desired_replicas)
         while (num_ready := self.num_ready_replicas()) < desired_replicas:
-            print(f".", end="", flush=True)
+            print(".", end="", flush=True)
             time.sleep(4)
 
         print(" done!", flush=True)

@@ -16,7 +16,7 @@ Bio::NCBI.default_email = "abc@efg.com"
 
 opt = OpenStruct.new(abstract: true, browser: true)
 parser = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename(__FILE__)} <pubmed ID> ..." 
+  op.banner = "usage: #{File.basename(__FILE__)} <pubmed ID> ..."
   op.separator "outputs simpler reference and copies to clipboard for pasting"
 end
 parser.parse!
@@ -47,9 +47,7 @@ if __FILE__ == $0
 
   to_copy = lines.join("\n")
   # copy text to clipboard (depends on persistent xclip)
-  %w{clipboard primary}.each do |reg| 
+  %w{clipboard primary}.each do |reg|
     system %Q{echo -n #{Shellwords.escape(to_copy)} | xclip -selection #{reg} }
   end
 end
-
-

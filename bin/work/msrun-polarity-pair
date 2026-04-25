@@ -7,7 +7,7 @@ Benchling. MSruns of opposite polarity are paired by sample_description pattern.
 
 Output format:
   positive_id:negative_id (one pair per line)
-  
+
 If an msrun_id has no opposite polarity pair, it's omitted from output.
 """
 
@@ -24,7 +24,7 @@ def extract_pattern(sample_desc: str) -> str | None:
     Examples:
         "PS211214_S100_1to243_1-C,1_5_1710.d" -> "PS211214_S100_1to243_1-C,1_5_"
         "RS513_260127-1156" -> "RS513_260127-"
-    
+
     Returns the prefix before the last number.
     """
     if not sample_desc:
@@ -66,7 +66,7 @@ def get_all_polarity_pairs(
     SELECT `file_registry_id$` as msrun_id,
            sample_description,
            ionization_mode,
-           CASE 
+           CASE
                WHEN `file_registry_id$` IN ('{msrun_ids_str}') THEN 1
                ELSE 0
            END as is_input
@@ -117,9 +117,7 @@ def get_all_polarity_pairs(
     return results
 
 
-def format_pair(
-    msrun_id: str, opposite: str, polarity: str, format_type: str
-) -> str:
+def format_pair(msrun_id: str, opposite: str, polarity: str, format_type: str) -> str:
     """
     Format a polarity pair for output.
 
@@ -151,8 +149,7 @@ def format_pair(
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
-            "Find opposite polarity msrun_id pairs. "
-            "Output: positive_id:negative_id"
+            "Find opposite polarity msrun_id pairs. Output: positive_id:negative_id"
         ),
         epilog=(
             "Examples:\n"

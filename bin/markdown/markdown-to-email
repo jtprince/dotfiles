@@ -22,7 +22,9 @@ import sys
 try:
     import premailer
 except ImportError:
-    print("Error: premailer is not installed. Run: pip install premailer", file=sys.stderr)
+    print(
+        "Error: premailer is not installed. Run: pip install premailer", file=sys.stderr
+    )
     sys.exit(1)
 
 PANDOC_CMD = "pandoc"
@@ -35,17 +37,27 @@ logging.getLogger("CSSUTILS").setLevel(logging.CRITICAL)
 parser = argparse.ArgumentParser(
     description="Convert markdown to Gmail-friendly HTML with inlined CSS"
 )
-parser.add_argument("markdown_files", nargs="+", type=Path, help="markdown file(s) to convert")
-parser.add_argument("--suffix", default=DEFAULT_SUFFIX, help="output file suffix (default: .email.html)")
-parser.add_argument("--open", action="store_true", help="open output in browser after conversion")
-parser.add_argument("--dry", action="store_true", help="show pandoc command without running")
+parser.add_argument(
+    "markdown_files", nargs="+", type=Path, help="markdown file(s) to convert"
+)
+parser.add_argument(
+    "--suffix", default=DEFAULT_SUFFIX, help="output file suffix (default: .email.html)"
+)
+parser.add_argument(
+    "--open", action="store_true", help="open output in browser after conversion"
+)
+parser.add_argument(
+    "--dry", action="store_true", help="show pandoc command without running"
+)
 args = parser.parse_args()
 
 pandoc_options = [
     "-fmarkdown+implicit_figures+smart",
     "--standalone",
-    "--to", "html5",
-    "--template", "GitHub.html5",
+    "--to",
+    "html5",
+    "--template",
+    "GitHub.html5",
 ]
 
 for path in args.markdown_files:

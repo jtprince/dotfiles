@@ -8,8 +8,7 @@ link_re = re.compile(r"\[([^\]]+)\]\s?\(([^\)]+)\)")
 
 parser = argparse.ArgumentParser(
     description=str(
-        "substitutes links like this '[here](http://ab.com)' "
-        "for 'here (http://ab.com)'"
+        "substitutes links like this '[here](http://ab.com)' for 'here (http://ab.com)'"
     )
 )
 parser.add_argument(

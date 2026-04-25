@@ -536,4 +536,3 @@ loop do
   threads.each(&:join)
   i3bar.display!
 end
-

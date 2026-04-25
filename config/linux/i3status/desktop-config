@@ -30,4 +30,3 @@ load {
 time {
        format = "%Y-%m-%d %I:%M:%S %P | "
 }
-

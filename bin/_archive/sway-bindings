@@ -310,7 +310,6 @@ class SwayConfig:
         all_key_combos = []
 
         for key in ALL_PRIMITIVE_KEYS:
-
             if key in MAPPABLE_KEYS:
                 all_key_combos.append(KeyCombo.from_chars(key))
 

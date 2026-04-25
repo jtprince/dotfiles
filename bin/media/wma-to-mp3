@@ -25,4 +25,3 @@ mp3 = wav.sub(/\.wav$/, '.mp3')
 
 `lame --preset #{$preset} #{wav} #{mp3}`
 File.unlink wav
-

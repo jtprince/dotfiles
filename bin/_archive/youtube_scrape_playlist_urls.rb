@@ -12,7 +12,7 @@ end
 def get_all_hrefs_and_title(page)
   doc = Nokogiri::HTML(open(page))
   links = doc.css('a')
-  href_text_pairs = links.map do |link| 
+  href_text_pairs = links.map do |link|
     title = link.xpath("//span").map {|node| node['title video-title yt-uix-tooltip'] }.compact.first
     # still working this out....
     [link.attribute('href').to_s, link.text]

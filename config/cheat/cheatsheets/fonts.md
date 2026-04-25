@@ -14,5 +14,3 @@ font:
     family: DejaVuSansMono Nerd Font Mono
     # family: FiraCode Nerd Font Mono
     # family: Liberation Mono
-
-

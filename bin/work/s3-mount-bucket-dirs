@@ -23,13 +23,9 @@ parser.add_argument(
     type=Path,
     help=f"the dirs to mount (relative to {Path.cwd()}",
 )
-parser.add_argument(
-    "-u", "--unmount", action="store_true", help="unmount all the dirs"
-)
+parser.add_argument("-u", "--unmount", action="store_true", help="unmount all the dirs")
 parser.add_argument("-a", "--all", action="store_true", help="mount all dirs")
-parser.add_argument(
-    "-l", "--list", action="store_true", help="list mounted dirs"
-)
+parser.add_argument("-l", "--list", action="store_true", help="list mounted dirs")
 parser.add_argument("-v", "--verbose", action="store_true", help="say it")
 parser.add_argument(
     "-s",
@@ -53,6 +49,7 @@ def run(cmd):
 
 def get_paths():
     return [path for path in Path.cwd().iterdir() if path.is_dir()]
+
 
 def get_mounted_paths():
     mounted = []
@@ -106,9 +103,7 @@ if args.shell:
     single_dir = len(args.dirs) == 1
 
     bashrc = Path.home() / ".config/goofys/bashrc"
-    cmd = (
-        f"env -i bash --noprofile --rcfile {str(bashrc)}",
-    )
+    cmd = (f"env -i bash --noprofile --rcfile {str(bashrc)}",)
 
     if args.verbose:
         print("opening stripped down shell")

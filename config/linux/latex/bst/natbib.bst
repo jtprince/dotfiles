@@ -1,14 +1,14 @@
-%% 
-%% This is file `natbib.bst', generated 
+%%
+%% This is file `natbib.bst', generated
 %% on <1994/9/16> with the docstrip utility (2.2h).
-%% 
+%%
 %% The original source files were:
-%% 
+%%
 %% genbst.mbs  (with options: `ay,nat,seq-lab,nm-rev,dt-beg,yr-par,vol-bf,
 %%                             volp-com,etal-it')
-%% ---------------------------------------- 
-%% *** Personal bib style, PWD *** 
-%% 
+%% ----------------------------------------
+%% *** Personal bib style, PWD ***
+%%
 %% (Here are the specifications of the source file)
 %% \ProvidesFile{genbst.mbs}[1994/09/16 1.5 (PWD)]
 %%   For use with BibTeX version 0.99a or later
@@ -1284,5 +1284,4 @@ FUNCTION {end.bib}
 }
 
 EXECUTE {end.bib}
-%% End of customized bst file 
-
+%% End of customized bst file

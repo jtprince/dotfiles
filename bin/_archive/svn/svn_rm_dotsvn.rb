@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 ## deletes all .svn directories starting in pwd
-## copied from http://www.bigbold.com/snippets/posts/show/565 
+## copied from http://www.bigbold.com/snippets/posts/show/565
 
 def deleteDir(dir)
     puts "cd #{dir}"
@@ -51,4 +51,3 @@ if reply =~ /[Yy]/
 else
   puts "NOT deleting files!"
 end
-

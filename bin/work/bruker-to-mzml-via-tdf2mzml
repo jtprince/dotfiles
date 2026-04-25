@@ -6,9 +6,7 @@ from pathlib import Path
 
 DEFAULT_MS1_TYPE = "centroid"
 
-parser = argparse.ArgumentParser(
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
-)
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument(
     "dot_d_dirs",
     nargs="+",
@@ -32,8 +30,10 @@ parser.add_argument(
     default=10,
 )
 
+
 def get_output(cmd):
     return subprocess.check_output(cmd.split(), text=True).strip()
+
 
 args = parser.parse_args()
 

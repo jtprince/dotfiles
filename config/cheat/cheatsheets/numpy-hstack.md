@@ -20,4 +20,3 @@ def hstack_values(
         vec_list = [data[key] for data in list_of_data]
         vec_lists_by_key[key] = np.hstack(vec_list)
     return dict(vec_lists_by_key)
-

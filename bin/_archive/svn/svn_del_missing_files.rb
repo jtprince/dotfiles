@@ -13,7 +13,7 @@ end
 
 to_add = []
 `svn st`.split("\n").each do |line|
-  if line =~ /^\!\s+(.*)/ 
+  if line =~ /^\!\s+(.*)/
     #puts "first letter " + $1[0].chr
     filename = $1
     #puts "filename: " + filename
@@ -29,7 +29,7 @@ if to_add.length > 0
   cmd = "svn del "
   listed = to_add.join("\n")
   one_line = to_add.join(" ")
-  to_perform = cmd + one_line 
+  to_perform = cmd + one_line
   show = cmd + "\n" + listed
   puts "************************************************"
   puts "Performing the command:"
@@ -45,6 +45,3 @@ if to_add.length > 0
 else
   puts "No files found to delete!"
 end
-
-
-

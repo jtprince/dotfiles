@@ -11,7 +11,7 @@ sudo pacman -S nvme-cli
 lsblk
 
 # reformat the disk securely
-sudo nvme format /dev/nvme0n1 -s 1 -f 
+sudo nvme format /dev/nvme0n1 -s 1 -f
     # -> Looking for `Success formatting namespace:1`
 
 # To verify

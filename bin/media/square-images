@@ -35,4 +35,3 @@ end
 ARGV.each do |image|
   square(image)
 end
-

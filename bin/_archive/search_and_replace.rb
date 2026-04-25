@@ -30,7 +30,6 @@ Dir[file_glob].each do |file|
     end
   end
   File.rename(tmpfile, file)
-  File.chmod(st.mode, file) 
-  File.chown(st.uid, st.gid, file) 
+  File.chmod(st.mode, file)
+  File.chown(st.uid, st.gid, file)
 end
-

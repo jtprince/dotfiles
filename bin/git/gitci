@@ -22,9 +22,7 @@ parser.add_argument(
     action="store_true",
     help="prepends {} to the commit message".format(wip_prefix),
 )
-parser.add_argument(
-    "-p", "--push", action="store_true", help="also push to remote"
-)
+parser.add_argument("-p", "--push", action="store_true", help="also push to remote")
 parser.add_argument(
     "--no-all",
     action="store_true",
@@ -38,9 +36,7 @@ parser.add_argument(
 parser.add_argument(
     "--dry", action="store_true", help="don't actually do it (turns on verbose)"
 )
-parser.add_argument(
-    "-v", "--verbose", action="store_true", help="talk about it"
-)
+parser.add_argument("-v", "--verbose", action="store_true", help="talk about it")
 parser.add_argument(
     "-m",
     "--master",
@@ -54,7 +50,10 @@ if args.dry:
 
 def printv(*args_, **kwargs):
     if args.verbose:
-        print(*args_, **kwargs,)
+        print(
+            *args_,
+            **kwargs,
+        )
 
 
 description_ar = args.description
@@ -97,16 +96,14 @@ cmd.append("--message")
 cmd.append(message)
 
 printv("Calling (with proper shellescapes on message):")
-printv(' '.join(cmd))
+printv(" ".join(cmd))
 if not args.dry:
     subprocess.call(cmd)
 
 time.sleep(1)
 
 if args.push:
-    have_remote = subprocess.check_output(
-        "git config --get remote.origin.url".split()
-    )
+    have_remote = subprocess.check_output("git config --get remote.origin.url".split())
     printv(f"Checking for remote...{bool(have_remote)}")
 
     if have_remote:

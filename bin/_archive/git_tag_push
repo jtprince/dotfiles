@@ -38,4 +38,3 @@ args.delete_at(args.index(tagname))
 
 run "git tag -a #{tagname} #{args.join(' ')}"
 run "git push #{tagname}"
-

@@ -13,7 +13,7 @@
 # 1 up to refresh rate = refresh at the refresh rate of the monitor divided by the number given
 ; vsync = 1
 
-# 'autosens' will attempt to balance the sensitivity to keep the amplitude of the bars 
+# 'autosens' will attempt to balance the sensitivity to keep the amplitude of the bars
 # within a reasonable range
 ; autosens = true
 
@@ -48,7 +48,7 @@ bar_spacing = 0
 # Fullscreen toggle
 ; fullscreen = false
 
-# Enables or disables window borders 
+# Enables or disables window borders
 ; border = false
 
 # Window transparency toggle (your system must support transparent windows)
@@ -65,8 +65,8 @@ bar_spacing = 0
 
 # Additionally we can further adjust the position if needed (in pixels)
 # It moves the window the opposite direction of whats in alignment
-# FXP. if alignment is set to right and x_padding is 20, 
-# it will move the window left 20 pixels and so on for every direction 
+# FXP. if alignment is set to right and x_padding is 20,
+# it will move the window left 20 pixels and so on for every direction
 ; x_padding = 0
 ; y_padding = 0
 
@@ -74,7 +74,7 @@ bar_spacing = 0
 ; opengl = true
 
 # This option removes the ability to interact with the window
-# NOTE: It does not work with SDL2 
+# NOTE: It does not work with SDL2
 ; interactable = true
 
 # Create an taskbar icon
@@ -95,7 +95,7 @@ bar_spacing = 0
 
 # Audio capturing method. Possible methods are the ones listed below.
 # If one doesn't work, it might not be supported by your system or it just wasn't compiled with it.
-# 
+#
 # Defaults to the order shown below ('pulse', 'portaudio', 'alsa'...)
 #
 # All input methods uses the same config variable 'source'
@@ -103,11 +103,11 @@ bar_spacing = 0
 #
 # For pulseaudio 'source' will be the source. Default: 'auto', which uses the monitor source of the default sink
 # (all pulseaudio sinks(outputs) have 'monitor' sources(inputs) associated with them).
-# 
+#
 # For alsa, wasapi and portaudio 'source' will be the capture device.
 # For fifo 'source' will be the path to fifo-file.
 #
-# In case of wasapi, specify 'loopback' to capture audio from the system or anything else 
+# In case of wasapi, specify 'loopback' to capture audio from the system or anything else
 # to capture from an input device, such as a microphone
 #
 # You can also specify 'list' as the source to portaudio to list all available audio devices
@@ -121,10 +121,10 @@ bar_spacing = 0
 ; source = hw:Loopback,1
 
 ; method = sndio
-; source = 
+; source =
 
 ; method = shmem
-; source = /squeezelite-00:00:00:00:00:00 
+; source = /squeezelite-00:00:00:00:00:00
 
 ; method = fifo
 ; source = /tmp/mpd.fifo
@@ -161,7 +161,7 @@ foreground = "#2822fe"
 # This adjusts the opacity of the bars (must have transparency and OpenGL in order for it to work)
 foreground_opacity = 0.5
 
-# And this does the same but for the background (previous rule applies here as well) 
+# And this does the same but for the background (previous rule applies here as well)
 background_opacity = 0.3
 
 # Gradient mode, only hex defined colors are supported, background must also be defined in hex
@@ -180,7 +180,7 @@ background_opacity = 0.3
 # Higher values means smoother, but less precise. 0 to disable.
 ; integral = 85
 
-# Disables or enables the so-called "Monstercat smoothing" with or without "waves". Set to 0 to disable. 
+# Disables or enables the so-called "Monstercat smoothing" with or without "waves". Set to 0 to disable.
 ; monstercat = 1.2
 ; waves = 0
 
@@ -191,7 +191,7 @@ background_opacity = 0.3
 # In bar height, bars that would have been lower that this (in pixels) will not be drawn.
 ; ignore = 0
 
-# Adjust the logarithmic scale of the frequency band (the lower the value, 
+# Adjust the logarithmic scale of the frequency band (the lower the value,
 # the less difference between bars in frequency)
 ; log = 1.55
 

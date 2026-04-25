@@ -5,7 +5,7 @@ import random
 
 
 def each_slice(size, iterable):
-    """ Chunks the iterable into size elements at a time, each yielded as a list.
+    """Chunks the iterable into size elements at a time, each yielded as a list.
 
     Example:
       for chunk in each_slice(2, [1,2,3,4,5]):
@@ -28,7 +28,9 @@ def each_slice(size, iterable):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("names", nargs="+", help="names of people to pair up")
-parser.add_argument("--min-size", type=int, default=2, help="the minimum size of the groups")
+parser.add_argument(
+    "--min-size", type=int, default=2, help="the minimum size of the groups"
+)
 args = parser.parse_args()
 
 random.shuffle(args.names)

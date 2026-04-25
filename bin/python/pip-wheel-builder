@@ -4,7 +4,9 @@ from subprocess import run
 
 MISSING_WHEEL_PKG_STR = "invalid command 'bdist_wheel'"
 
-completed = run("python setup.py bdist_wheel", shell=True, capture_output=True, text=True)
+completed = run(
+    "python setup.py bdist_wheel", shell=True, capture_output=True, text=True
+)
 
 if completed.returncode and MISSING_WHEEL_PKG_STR in completed.stderr:
     print("You need to install the `wheel` package to build wheels: pip install wheel")

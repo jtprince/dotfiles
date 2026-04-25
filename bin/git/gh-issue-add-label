@@ -10,12 +10,5 @@ args = parser.parse_args()
 
 
 for issue in args.issues:
-    cmd = [
-        "gh",
-        "issue",
-        "edit",
-        str(issue),
-        "--add-label",
-        args.label
-    ]
+    cmd = ["gh", "issue", "edit", str(issue), "--add-label", args.label]
     subprocess.run(cmd)

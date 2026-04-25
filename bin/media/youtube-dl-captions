@@ -4,22 +4,29 @@ import argparse
 import pathlib
 import subprocess
 import re
+
 # pip install webvtt-py
 import webvtt
 
 parser = argparse.ArgumentParser()
 parser.add_argument("url", help="The YouTube URL")
 parser.add_argument(
-    "-o", "--outfile", type=pathlib.Path, help="File to write to, otherwise determined from title")
+    "-o",
+    "--outfile",
+    type=pathlib.Path,
+    help="File to write to, otherwise determined from title",
+)
 args = parser.parse_args()
 
 # yt-dlp command to get subtitles
 base_cmd = [
     "yt-dlp",
     "--write-auto-sub",
-    "--sub-lang", "en",
+    "--sub-lang",
+    "en",
     "--skip-download",
-    "-o", "%(title)s.%(ext)s"
+    "-o",
+    "%(title)s.%(ext)s",
 ]
 
 # Run yt-dlp

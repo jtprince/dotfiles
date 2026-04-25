@@ -12,6 +12,3 @@
 2. Make sure you're using a NOTEBOOK (doesn't work on lab).
 
 3. Make sure you have isort <5 installed.
-
-
-

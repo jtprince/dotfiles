@@ -27,11 +27,10 @@ files = ARGV
 
 files.each do |file|
   base = file.chomp(File.extname(file))
-  ext = EXT_SUB 
+  ext = EXT_SUB
   ext << "_#{range}" if opt.range
   ext << EXT_FINAL
   outfile = base + ext
   cmd = "pdftk A=#{Shellwords.escape(file)} cat A#{range} output #{Shellwords.escape(outfile)}"
   system cmd
 end
-

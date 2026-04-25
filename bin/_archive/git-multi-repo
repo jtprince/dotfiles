@@ -10,11 +10,11 @@ import subprocess
 import sys
 from contextlib import contextmanager
 import inspect
-from collections import namedtuple
 from termcolor import colored as color
 from joblib import Parallel, delayed
 
 from os.path import expanduser
+
 
 class Action(object):
     def __init__(self, methd, *args, **kwargs):
@@ -30,18 +30,22 @@ class Action(object):
             parts.append(repr(self.kwargs))
         return " ".join(parts)
 
+
 def process(path, actions, remote):
     repo = GitRepo(path, remote)
     for action in actions:
         repo.run_and_log(action)
     return repo
 
+
 class GitRepo(object):
-    NOT_ACTIONS = ['run_and_log', 'execute', 'actions', '__init__']
+    NOT_ACTIONS = ["run_and_log", "execute", "actions", "__init__"]
 
     @classmethod
     def actions(cls):
-        methods = [name for (name, _) in inspect.getmembers(cls, predicate=inspect.ismethod)]
+        methods = [
+            name for (name, _) in inspect.getmembers(cls, predicate=inspect.ismethod)
+        ]
         return [method for method in methods if method not in cls.NOT_ACTIONS]
 
     def __init__(self, path, remote=None):
@@ -56,10 +60,10 @@ class GitRepo(object):
         self.actions.append(action)
 
     def execute(self, string):
-        return subprocess.check_output(string.split(' ')).decode('utf-8').strip()
+        return subprocess.check_output(string.split(" ")).decode("utf-8").strip()
 
     def status(self):
-        uptodate = color('✔', 'green') if self.is_uptodate() else color('✘', 'red')
+        uptodate = color("✔", "green") if self.is_uptodate() else color("✘", "red")
         return "({}{})".format(self.current_branch(), uptodate)
 
     def is_uptodate(self):
@@ -68,7 +72,7 @@ class GitRepo(object):
         return uptodate_str in reply
 
     def bring_remotes_uptodate(self):
-       return self.execute("git remote update --prune")
+        return self.execute("git remote update --prune")
 
     def current_branch(self):
         return self.execute("git rev-parse --abbrev-ref HEAD")
@@ -77,7 +81,7 @@ class GitRepo(object):
         if not self.is_uptodate():
             return self.execute("git pull")
         else:
-            return 'already up-to-date'
+            return "already up-to-date"
 
     def has_remote(self):
         lines = self.execute("git branch -a").split("\n")
@@ -99,25 +103,35 @@ def cd(path):
     finally:
         os.chdir(old_dir)
 
+
 def get_immediate_git_repos(a_dir):
-    return [name for name in os.listdir(a_dir)
-            if os.path.isdir(os.path.join(a_dir, name))]
+    return [
+        name for name in os.listdir(a_dir) if os.path.isdir(os.path.join(a_dir, name))
+    ]
 
-rootdir = '/home/build'
-kernel_release = subprocess.check_output(['uname', '-r']).decode('utf-8').strip()
-if re.search(r'-ARCH$', kernel_release):
-   rootdir = expanduser("~") + '/dev'
 
-parser = argparse.ArgumentParser(description="check git branch status and more", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+rootdir = "/home/build"
+kernel_release = subprocess.check_output(["uname", "-r"]).decode("utf-8").strip()
+if re.search(r"-ARCH$", kernel_release):
+    rootdir = expanduser("~") + "/dev"
+
+parser = argparse.ArgumentParser(
+    description="check git branch status and more",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
 parser.add_argument("--root", default=rootdir, help="where to begin looking")
 # parser.add_argument("-c", "--checkout", help="checkout a branch on repos where it exists")
-parser.add_argument("--remote", help='the remote branch to deal with')
-parser.add_argument("actions", nargs="*", help='actions to perform', default=['status'])
-parser.add_argument("--list", action='store_true', help="list available actions and exit")
-parser.add_argument("-e", "--execute", help="perform some specified action on all repos")
-#parser.add_argument("--has-remote", help="display repos with that remote branch")
-#parser.add_argument("--co-remote", help="checkout the remote branch if it exists")
-#parser.add_argument("--cmd", help="execute an arbitrary command in git repos")
+parser.add_argument("--remote", help="the remote branch to deal with")
+parser.add_argument("actions", nargs="*", help="actions to perform", default=["status"])
+parser.add_argument(
+    "--list", action="store_true", help="list available actions and exit"
+)
+parser.add_argument(
+    "-e", "--execute", help="perform some specified action on all repos"
+)
+# parser.add_argument("--has-remote", help="display repos with that remote branch")
+# parser.add_argument("--co-remote", help="checkout the remote branch if it exists")
+# parser.add_argument("--cmd", help="execute an arbitrary command in git repos")
 
 args = parser.parse_args()
 
@@ -130,16 +144,22 @@ for action in args.actions:
     actions.append(Action(action))
 
 if args.execute:
-    actions.append(Action('execute', args.execute))
+    actions.append(Action("execute", args.execute))
 
 with cd(args.root):
-    git_dirs = [os.path.abspath(fn) for fn in os.listdir(".") if os.path.isdir(fn) and os.path.exists(os.path.join(fn, ".git"))]
+    git_dirs = [
+        os.path.abspath(fn)
+        for fn in os.listdir(".")
+        if os.path.isdir(fn) and os.path.exists(os.path.join(fn, ".git"))
+    ]
 
-repos = Parallel(n_jobs=len(git_dirs))(delayed(process)(dir, actions, args.remote) for dir in git_dirs)
+repos = Parallel(n_jobs=len(git_dirs))(
+    delayed(process)(dir, actions, args.remote) for dir in git_dirs
+)
 
 for repo in repos:
     for action in repo.actions:
-        if action.methd == 'status':
+        if action.methd == "status":
             sys.stdout.write(action.response)
             print(" " + repo.name)
         else:

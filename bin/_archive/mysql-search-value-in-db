@@ -7,7 +7,7 @@ from collections import namedtuple
 parser = ArgumentParser(description="search an entire database for a value")
 parser.add_argument("dbname", help="the name of the database to search")
 parser.add_argument("searchstring", help="the exact value to search for")
-parser.add_argument("-u", "--user", default='root', help="the mysql username")
+parser.add_argument("-u", "--user", default="root", help="the mysql username")
 parser.add_argument("--host", help="the mysql host url")
 parser.add_argument("-p", "--password", help="the mysql password")
 parser.add_argument("-a", "--all", action="store_true", help="show all matches")
@@ -18,21 +18,26 @@ if args.host:
     base_cmd += " -h " + args.host
 base_cmd += " -s -e "
 
-Field = namedtuple('Field', 'name type null key default extra')
+Field = namedtuple("Field", "name type null key default extra")
 
-Match = namedtuple('Match', 'table fieldname query')
+Match = namedtuple("Match", "table fieldname query")
+
 
 def query(sql):
-    return subprocess.check_output(base_cmd + "'" + sql + "'", shell=True).decode('utf-8').split("\n")[0:-1]
+    return (
+        subprocess.check_output(base_cmd + "'" + sql + "'", shell=True)
+        .decode("utf-8")
+        .split("\n")[0:-1]
+    )
+
 
 def get_all_tables():
     return query("show tables")
 
+
 def get_column_names(table):
-    return [
-        Field(*row.split("\t"))
-        for row in query("DESCRIBE %s" % table)
-    ]
+    return [Field(*row.split("\t")) for row in query("DESCRIBE %s" % table)]
+
 
 def is_in_field(table, field, searchstring):
     try:
@@ -41,6 +46,7 @@ def is_in_field(table, field, searchstring):
             return sql
     except UnicodeDecodeError:
         return False
+
 
 def get_matches(quit_on_match=True):
     for table in get_all_tables():
@@ -51,5 +57,6 @@ def get_matches(quit_on_match=True):
                 print(Match(table, field.name, reply))
                 if quit_on_match:
                     exit()
+
 
 get_matches(not args.all)

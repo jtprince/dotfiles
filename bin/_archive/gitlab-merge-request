@@ -29,24 +29,40 @@ def project_id_from_name(name):
 
 parser = argparse.ArgumentParser(description="generate merge requests")
 parser.add_argument("project", help="project id or name")
-parser.add_argument("--source", required=True, help="the name of the source branch to merge from")
-parser.add_argument("--target", required=True, help="the name of the target branch to merge into")
+parser.add_argument(
+    "--source", required=True, help="the name of the source branch to merge from"
+)
+parser.add_argument(
+    "--target", required=True, help="the name of the target branch to merge into"
+)
 parser.add_argument("--title", help="the title of the merge request")
-parser.add_argument("--merge", action="store_true", help="automatically approve and merge the mr")
-parser.add_argument("--token", required=True, help="the token string or path to file holding it")
+parser.add_argument(
+    "--merge", action="store_true", help="automatically approve and merge the mr"
+)
+parser.add_argument(
+    "--token", required=True, help="the token string or path to file holding it"
+)
 
 args = parser.parse_args()
 
-token = Path(args.token).read_text().strip() if Path(args.token).exists() else args.token
-gitlab = Gitlab('https://gitlab.com', private_token=token)
+token = (
+    Path(args.token).read_text().strip() if Path(args.token).exists() else args.token
+)
+gitlab = Gitlab("https://gitlab.com", private_token=token)
 
-project_id = int(args.project) if args.project.isdigit() else project_id_from_name(args.project)
+project_id = (
+    int(args.project) if args.project.isdigit() else project_id_from_name(args.project)
+)
 project = gitlab.projects.get(project_id)
 
-title = (args.title or f"{args.source} to {args.target}")
+title = args.title or f"{args.source} to {args.target}"
 
-existing_merge_requests = project.mergerequests.list(state='opened')
-already_opened = [merge_request for merge_request in existing_merge_requests if merge_request.title == title]
+existing_merge_requests = project.mergerequests.list(state="opened")
+already_opened = [
+    merge_request
+    for merge_request in existing_merge_requests
+    if merge_request.title == title
+]
 
 if len(already_opened) == 1:
     merge_request = already_opened[0]

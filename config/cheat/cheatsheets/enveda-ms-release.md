@@ -59,4 +59,3 @@ Or, can see the deployment name by searching for your branch in the github actio
 
 ## Now you need to calculate the ground truth metrics
 platform-metrics.calculate-ground-truth-metrics
-

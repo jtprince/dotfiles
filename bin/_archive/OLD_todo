@@ -64,17 +64,17 @@ class WebForm < WEBrick::HTTPServlet::AbstractServlet
     html << "</table>"
 
     #html += "Name: <input type='textbox' name='first_name' /><br /><br />";
-   # 
+   #
    # dbh = DBI.connect("DBI:Mysql:webarchive:localhost", "root", "pass")
    # sth = dbh.execute("SELECT DISTINCT(headline),story,id FROM yahoo_news where date >= '2004-12-01' and date <= '2005-01-01'")
-   # 
+   #
    #   while row = sth.fetch_hash do
    #       html += "<b>#{row['headline']}</b><br />\n"
    #       html += "#{row['story']}<br />\n"
    #       html += "<input type='textbox' name='#{row['id']}' /><br /><br />\n"
    #  end
    #  sth.finish
-     
+
     #html += "<input type='submit'></form></body></html>"
     html << "</body></html>"
     return 200, "text/html", html
@@ -85,7 +85,7 @@ class PersistAnswers < WEBrick::HTTPServlet::AbstractServlet
 
   def do_POST(request, response)
     status, content_type, body = save_answers(request)
-    
+
     response.status = status
     response['Content-Type'] = content_type
     response.body = body
@@ -94,12 +94,12 @@ class PersistAnswers < WEBrick::HTTPServlet::AbstractServlet
   def save_answers(request)
     if (filename = request.query['first_name'] )
       f = File.open("save-#{filename}.#{Time.now.strftime('%H%M%S')}.txt", 'w')
-      request.query.collect { | key, value | 
+      request.query.collect { | key, value |
         f.write("#{key}: #{value}\n")
       }
       f.close
     end
-  
+
     return 200, "text/plain", "Saved! Thank you."
   end
 end
@@ -157,7 +157,7 @@ class TodoList
   # deletes the ids from self and adds them to other
   def done(other, ids)
     deleted_objs = delete(ids)
-    other.add(*deleted_objs) 
+    other.add(*deleted_objs)
   end
 
   def to_file(file)
@@ -170,7 +170,7 @@ class TodoList
       obj.set_ids
       obj
     else
-      obj = self.new 
+      obj = self.new
     end
   end
 
@@ -220,7 +220,7 @@ class TodoList
   def list(report_file, categories=[])
     categories = mesh_categories(categories)
     cats = order(categories)
-    cat_of_interest = cats.first 
+    cat_of_interest = cats.first
     prev_val = nil
     hash = {}
     (hash[:context], hash[:project]) = max_lengths(:context, :project)
@@ -357,7 +357,7 @@ add_block = proc do |argv|
   # reconcile hash with opt struct
   hash.merge!($opt)
 
-  td = Todo.new do |t| 
+  td = Todo.new do |t|
     t.name = hash[:name] || DEFAULT_NAME
     t.project = hash[:project] || DEFAULT_TASK
     t.context = hash[:context] || DEFAULT_CONTEXT
@@ -412,7 +412,7 @@ cmd.add_command( sub_cmd )
 sub_cmd = CmdParse::Command.new( 'list', false, true )
 sub_cmd.short_desc = "list item(s)"
 sub_cmd.options = CmdParse::OptionParserWrapper.new do |op|
-  op.on("-b", "--by <s>", "by different categories", "(#{TodoList::DEFAULT_CATEGORIES.join(", ")})") {|v| $opt[:by] = v.split(',') } 
+  op.on("-b", "--by <s>", "by different categories", "(#{TodoList::DEFAULT_CATEGORIES.join(", ")})") {|v| $opt[:by] = v.split(',') }
   op.on("--cmdline", "each item as input by command line") {|v| $opt[:cmdline]=v}
 end
 sub_cmd.set_execution_block {|argv| list_block.call(argv) }
@@ -433,7 +433,7 @@ cmd.add_command( sub_cmd )
 ## SERVER
 sub_cmd = CmdParse::Command.new( 'server', false, true )
 sub_cmd.short_desc = "start webrick server (port 8000)"
-sub_cmd.set_execution_block do |argv| 
+sub_cmd.set_execution_block do |argv|
   #$tdl.delete(comma_list_to_int_ar(argv[0]))
   # run the server
   server = WEBrick::HTTPServer.new(:Port => 8000)
@@ -475,7 +475,7 @@ if __FILE__ == $0
   ## CREATE THE TODO LISTS
   $real_tdl = TodoList.from_file(files[:todo])
   $real_donelist = TodoList.from_file(files[:done])
-  $tdl = $real_tdl 
+  $tdl = $real_tdl
   $donelist = $real_donelist
 
   # grab 'done' option if passed in (will mess up other catches)
@@ -515,9 +515,6 @@ end
 
 
   ## Write to file:
-  $real_tdl.to_file(files[:todo]) 
+  $real_tdl.to_file(files[:todo])
   $real_donelist.to_file(files[:done])
 end
-
-
-

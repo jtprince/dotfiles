@@ -110,7 +110,7 @@ puts cards.map(&:to_s).join("\n\n")
 #   * the profiles available for each card
 #   * the active profile
 __END__
-2 card(s) available.    
+2 card(s) available.
     index: 0
     name: <alsa_card.pci-0000_00_03.0>
     driver: <module-alsa-card.c>

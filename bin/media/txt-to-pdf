@@ -93,7 +93,3 @@ files.each do |file|
     File.unlink ps_file
   end
 end
-
-
-
-

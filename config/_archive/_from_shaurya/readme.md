@@ -44,7 +44,7 @@ Then, open the app, go to settings and import the `RectangleConfig.json`
 
 
 ### install vscode
-```shell 
+```shell
 brew install visual-studio-code
 ```
 Then run settings sync from within

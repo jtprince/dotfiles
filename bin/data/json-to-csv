@@ -41,11 +41,7 @@ args = parser.parse_args()
 
 def assemble_line_generator(path, args):
     if args.jsonl or path.suffix == ".jsonl":
-        return (
-            flatten(json.loads(line))
-            for line in path.open()
-            if line.strip()
-        )
+        return (flatten(json.loads(line)) for line in path.open() if line.strip())
 
     data = json.load(path.open())
     if args.node:

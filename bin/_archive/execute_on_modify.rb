@@ -15,7 +15,7 @@ if ARGV.size < 2
   exit
 end
 
-files, command = 
+files, command =
   if ARGV.include?(div)
     dash_i = ARGV.index {|arg| arg == div }
     files = ARGV[0...dash_i]

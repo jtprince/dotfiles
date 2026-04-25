@@ -479,4 +479,3 @@
 --ignore-directory=is:tests/snapshots
 
 --ignore-directory=is:.nox
-

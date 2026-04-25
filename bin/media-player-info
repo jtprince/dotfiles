@@ -22,17 +22,10 @@ from ruyaml import YAML
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "player", help="the player to get info from (hint: `playerctl -l`)"
-)
+parser.add_argument("player", help="the player to get info from (hint: `playerctl -l`)")
 args = parser.parse_args()
 
-cmd = [
-    "playerctl",
-    "-p",
-    args.player,
-    "metadata"
-]
+cmd = ["playerctl", "-p", args.player, "metadata"]
 
 
 def isfloat(num):
@@ -54,12 +47,14 @@ def cast(value):
 
 output = subprocess.check_output(cmd, text=True)
 
+
 def key_val(line):
     player, key, value = line.split(maxsplit=2)
     casted_value = cast(value)
     return key, casted_value
 
+
 data = dict(key_val(line) for line in output.split("\n") if line)
 
-yaml=YAML()
+yaml = YAML()
 yaml.dump(data, sys.stdout)

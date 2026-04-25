@@ -30,7 +30,7 @@ home_dirs = base_dirs.map {|v| '/home/' + v }
 dt = Date.today
 dest_path = dest + [dt.year, dt.mon, dt.day].join("-")
 
-just_testing = 
+just_testing =
   case ARGV.shift
   when 'test'
     true

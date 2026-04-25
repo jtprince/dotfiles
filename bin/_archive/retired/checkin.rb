@@ -24,8 +24,8 @@ class VCS
 
   # given a path, returns the correct vcs object or nil if not version control
   def self.create(path)
-    klass = vcs_classes.find do |vcs| 
-      vcs_file = File.join(path, ".#{vcs.to_s.split('::').last.downcase}") 
+    klass = vcs_classes.find do |vcs|
+      vcs_file = File.join(path, ".#{vcs.to_s.split('::').last.downcase}")
       File.exist?( vcs_file ) && FileTest.directory?( vcs_file )
     end
     klass ? klass.new(path) : nil
@@ -52,8 +52,8 @@ class VCS
 
   # removes files that aren't under version control
   def rm
-    un = unknown 
-    Dir.chdir(path) do 
+    un = unknown
+    Dir.chdir(path) do
       FileUtils.rm_rf un
     end
     (ex, noex) = un.partition do |file|
@@ -138,7 +138,7 @@ class VCS
         nil
       end
     end
-    
+
     def unknown
       reply = run(:status)
       ret = []
@@ -182,8 +182,8 @@ def get_dirs(top_dir, recursive=false, soft=false, &block)
       end
     end
   else
-    Dir[File.join(File.expand_path(top_dir), '*')].select {|f| FileTest.directory?(f) }.each do |path| 
-      obj = block.call(path) 
+    Dir[File.join(File.expand_path(top_dir), '*')].select {|f| FileTest.directory?(f) }.each do |path|
+      obj = block.call(path)
       if obj ; vc_objs << obj
       else ; not_vc_dirs << path
       end
@@ -218,7 +218,7 @@ dir = ARGV[0]
 
 ARGV.clear # in case we want to do some query stuff
 
-(objs, not_vc) = get_dirs(dir, opt[:recursive], opt[:soft]) do |dr| 
+(objs, not_vc) = get_dirs(dir, opt[:recursive], opt[:soft]) do |dr|
   VCS.create(dr)
 end
 
@@ -244,6 +244,3 @@ if opt[:not_vc]
   puts "NOT UNDER VERSION CONTROL:"
   puts not_vc.map {|v| trim_dir(v)}.join(" ")
 end
-
-
-

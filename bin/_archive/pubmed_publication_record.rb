@@ -37,7 +37,7 @@ ARGV.each do |query|
 
   by_year = medline_entries.group_by(&:year)
   years = (2008..2013).map(&:to_s)
-  num_pubs = years.map do |year| 
+  num_pubs = years.map do |year|
     entries = by_year[year]
     entries ? entries.size : 0
   end
@@ -48,4 +48,3 @@ ARGV.each do |query|
   puts query
   puts AsciiCharts::Cartesian.new([years, num_pubs].transpose).draw
 end
-

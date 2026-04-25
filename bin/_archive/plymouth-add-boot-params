@@ -21,9 +21,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "systemd_boot_conf",
     type=Path,
-    help=(
-        "path to systemd entry .conf file " "(typically /boot/loader/entries/arch.conf"
-    ),
+    help=("path to systemd entry .conf file (typically /boot/loader/entries/arch.conf"),
 )
 args = parser.parse_args()
 

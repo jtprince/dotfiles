@@ -23,7 +23,7 @@ imap <C-p>  <Esc>:.s/[ ]*$//<CR>:noh<CR>$a<Space>{<bar><bar><Space>}<Esc>ssi
 "{{{ Ruby block delimiter conversion: do end <=> { }
 "Copyright © 2005 Mauricio Fernandez
 "Subject to same licensing terms as Ruby.
-" requires matchit and friends 
+" requires matchit and friends
 " since it uses the % and = bindings
 function! s:String_Strip(str)
     let s = substitute(a:str, '\v^\s*', '', '')
@@ -43,24 +43,24 @@ function! s:RubyBlockBraceToDoEnd(lineno)
     let nextline = substitute(orig, '\v[^{]*\v\s*\{\s*(\|[^|]*\|)?', '', '')
     let nextline = substitute(nextline, '\}[^}]*$', '', '')
     let numlines = 0
-    
+
 
     " uncomment one of the following:
-    
+
     " (1) just insert the body without splitting the lines on ;
     "call append(a:lineno, nextline)
     "call append(a:lineno+1, 'end' . suffix)
     "
-    
+
     " (2) try to split on ; ...
     call append(a:lineno, 'end' . suffix)
-    " this is what we would want to do: 
+    " this is what we would want to do:
     "let nextline = substitute(nextline, ';', "\n", 'g')
-    
+
     while stridx(nextline, ";") != -1
 	let eom = stridx(nextline, ";")
 	let line = s:String_Strip(strpart(nextline, 0, eom))
-	call append(a:lineno + numlines, line) 
+	call append(a:lineno + numlines, line)
 	let numlines = numlines + 1
 	let nextline = strpart(nextline, eom+1, strlen(nextline) - eom - 1)
     endwhile
@@ -96,7 +96,7 @@ function! s:RubyBlockDoEndToBrace(_firstline, _lastline)
     let l = substitute(getline(a:_lastline), '\v^\s*end(\.|\s|$)@=', ' }', '')
     let l = substitute(l, '\s*$', '', '')
     let orig = orig . l
-    
+
     "echo orig
     "input(orig)
     let repl = substitute(orig, '\v\s*do\s*(\|[^|]*\|)?', '{\1 ', '')
@@ -120,7 +120,7 @@ function! <SID>RubyBlockSwitchDelimiters() range
 	if braceidx != -1 && (doidx == -1 || braceidx < doidx)
 	    call s:RubyBlockBraceToDoEnd(a:firstline)
 	elseif doidx != -1
-	    execute 'normal /\<do\>' . "\n" . 'V%:call ' . 
+	    execute 'normal /\<do\>' . "\n" . 'V%:call ' .
 			\ s:sid . 'RubyBlockSwitchDelimiters()' . "\n"
 	else
 	    echo "No block found"

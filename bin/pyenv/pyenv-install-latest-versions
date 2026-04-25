@@ -5,7 +5,6 @@ import os
 import re
 import subprocess
 from collections import defaultdict
-from distutils.version import StrictVersion
 
 CONFIGURE_OPTS = [
     "--enable-shared",
@@ -35,9 +34,7 @@ versions = (
 )
 versions = [version.strip() for version in versions]
 
-numeric_versions = [
-    version for version in versions if version_re.match(version)
-]
+numeric_versions = [version for version in versions if version_re.match(version)]
 
 version_by_minor = defaultdict(list)
 for version in numeric_versions:

@@ -69,7 +69,7 @@ def switch_branches(rdoc_dir, version, commit=true, final_rdoc_dir="rdoc")
     # error
     puts "CHECKED OUT gh-pages!"
   end
- 
+
   FileUtils.mkdir(final_rdoc_dir) unless File.exist?(final_rdoc_dir)
   # unpack the rdoc
   Dir.chdir(final_rdoc_dir) do
@@ -97,7 +97,7 @@ end
 
 
 #################################################################
-# MAIN 
+# MAIN
 #################################################################
 
 
@@ -133,4 +133,3 @@ $cbr = get_current_branch
 version = get_version
 regenerate_rdoc(opt[:rdoc_dir], opt[:rdoc_cmd])
 switch_branches(opt[:rdoc_dir], version, opt[:commit])
-

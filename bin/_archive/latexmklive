@@ -15,5 +15,3 @@ real_tex = ARGV.last
 
 system "latexmk-clean", "-pdf", "-xelatex", "-gg", real_tex
 system "execute_on_modify.rb", *ARGV.uniq, "--", "latexmk-clean", "-pdf", "-xelatex", real_tex
-
-

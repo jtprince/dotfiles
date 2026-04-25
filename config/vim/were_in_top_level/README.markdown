@@ -1,28 +1,28 @@
-Frawor is a modular vim framework designed to collect some commonly needed 
+Frawor is a modular vim framework designed to collect some commonly needed
 functions.
 
 To start using the only thing you should do is to add
 
     execute frawor#Setup('0.0', {})
 
-where '0.0' is your plugin version and {} is a dictionary containing plugin 
-dependencies (the core frawor module is added to dependencies automatically). 
+where '0.0' is your plugin version and {} is a dictionary containing plugin
+dependencies (the core frawor module is added to dependencies automatically).
 There are additional rules you should follow:
 
 1. All script-local functions should be anonymous functions:
 
         function s:F.somefunc(args)
 
-    In some plugins you may even end with having no non-anonymous function 
+    In some plugins you may even end with having no non-anonymous function
     definitions.
 
-2. If function cannot be anonymous (because it is is to be used by `sort()`, for 
+2. If function cannot be anonymous (because it is is to be used by `sort()`, for
     example), then its name should be added to `s:_functions` list.
 
-3. If you define a command, its name should go to `s:_commands` list, same for 
+3. If you define a command, its name should go to `s:_commands` list, same for
     autocommand groups (`s:_augroups`).
 
-4. All script-local variables whose name starts with `s:_` are reserved and 
+4. All script-local variables whose name starts with `s:_` are reserved and
     should be used only in a way described in documentation.
 
 Advantages
@@ -42,10 +42,10 @@ Advantages
                 \{'bar': {'lhs': 't', 'rhs': ':Bar<CR>'},
                 \ 'baz': {'lhs': 'T', 'rhs': s:F.baz}},
             \{'leader': '<leader>', 'silent': 1})
-    will define two mappings: `<leader>t` which will call command `:Bar` and 
-    `<leader>T` which will run `s:F.baz` function. Both mappings are silent. Now 
-    pretend that you are the user who does not need to run `s:F.baz` and wants to 
-    launch `:Bar` using `,t`. In this case all he needs is to add the following 
+    will define two mappings: `<leader>t` which will call command `:Bar` and
+    `<leader>T` which will run `s:F.baz` function. Both mappings are silent. Now
+    pretend that you are the user who does not need to run `s:F.baz` and wants to
+    launch `:Bar` using `,t`. In this case all he needs is to add the following
     lines to the vimrc:
 
         let g:frawormap_Foo=','
@@ -53,7 +53,7 @@ Advantages
         let g:frawormap_Foo_bar='t'
         let g:frawormap_Foo_baz=0
 
-    Replacing `','` with `0` here will lead to disabling the whole mapping 
+    Replacing `','` with `0` here will lead to disabling the whole mapping
     group.
 
 3. Options:
@@ -68,9 +68,9 @@ Advantages
         "vimrc:
         let g:foo_columns=78
         autocmd FileType vim  let b:foo_columns=78
-    If you don't want to prefix your options with `foo` (second component after 
-    runtimepath of a path to your plugin), define `s:_oprefix`. Note the 
-    `checker` key: it saves you from writing code for checking user input (but 
+    If you don't want to prefix your options with `foo` (second component after
+    runtimepath of a path to your plugin), define `s:_oprefix`. Note the
+    `checker` key: it saves you from writing code for checking user input (but
     will instead generate an exception for invalid value).
 
 4. Function argument checks:
@@ -85,7 +85,7 @@ Advantages
                                           \'@FWC': ['key formats  '.
                                           \         'range 0 inf', 'check'],})
 
-    Here you can see FWC decorator which uses FWC-to-vimscript compiler where FWC 
+    Here you can see FWC decorator which uses FWC-to-vimscript compiler where FWC
     is a name of the domain-specific language written exclusively for frawor.
 
 5. Complicated command-line arguments handling:
@@ -116,11 +116,11 @@ Advantages
         " Foo nobeatify f html
         " Foo format html beatify c 78
 
-    Note that while command accepts short versions of prefixes, `s:F.run_foo` 
+    Note that while command accepts short versions of prefixes, `s:F.run_foo`
     function will get dictionary with only full names.
 
-6. Portable versions of OS-specific functions: vimscript implementation of some 
+6. Portable versions of OS-specific functions: vimscript implementation of some
     functions from python os module.
 
-7. Vimscript base64 encoder/decoder, fancy table echoing, maparg that returns 
+7. Vimscript base64 encoder/decoder, fancy table echoing, maparg that returns
     dictionary for old vim's and more.

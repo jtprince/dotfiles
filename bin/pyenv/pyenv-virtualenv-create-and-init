@@ -45,9 +45,7 @@ def get_args():
     parser.add_argument(
         "--no-python-version",
         action="store_true",
-        help=str(
-            "do not automatically create and populate " f"the {VERSION_FILE} file"
-        ),
+        help=str(f"do not automatically create and populate the {VERSION_FILE} file"),
     )
     parser.add_argument(
         "--refresh",

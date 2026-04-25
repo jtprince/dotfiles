@@ -5,7 +5,7 @@
 # update
 sudo apt update
 sudo apt install gh
-# if this doesn't work, there are extra steps you can do 
+# if this doesn't work, there are extra steps you can do
 # to mess with gpg and adding the repository manually
 # https://github.com/cli/cli/blob/trunk/docs/install_linux.md
 
@@ -24,7 +24,7 @@ git config user.name "your name"
 sudo apt install curl git-core gcc make zlib1g-dev \
     libbz2-dev libreadline-dev libsqlite3-dev libssl-dev \
     lzma liblzma-dev libbz2-dev libffi-dev
-	
+
 # install pyenv
 curl https://pyenv.run | bash
 
@@ -59,7 +59,7 @@ poetry config virtualenvs.prefer-active-python true
 az login
 az account set --subscription "sub-enveda-data-dev-01"
 
-# ssh 
+# ssh
 # this will generate two Host lines in your ~/.ssh/config file
 az ssh config -n shaurya-dev-vm -g data-science-dev-ncus-rg-01 --prefer-private-ip -f ~/.ssh/config
 

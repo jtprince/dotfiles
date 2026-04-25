@@ -9,7 +9,7 @@ class String
   end
 end
 
-LIMIT = 13 
+LIMIT = 13
 
 TMP_DIR = '/tmp'
 
@@ -97,14 +97,14 @@ songs_chopped = songs[opt[:start],limit]
 num_missing = songs.size - songs_chopped.size
 puts "not using #{num_missing} tracks because reached limit (#{limit})" if num_missing > 0
 
-songs_chopped.each do |song| 
+songs_chopped.each do |song|
   cmd = "youtube-dl -gf 34 --cookies /tmp/cookie.txt '#{song.url}'"
   puts cmd if $VERBOSE
   song.play_url = `#{cmd}`.chomp  # we still need to do this even if dry
 end
 
 # cleanup urls:
-songs = songs.select do |song| 
+songs = songs.select do |song|
   song.play_url.include?('http')
 end
 
@@ -113,7 +113,7 @@ if ARGV[0] =~ /\.v3u$/
   no_video = ""
 end
 
-cmd = "mplayer #{no_video} -cookies -cookies-file /tmp/cookie.txt -loop #{opt[:loop]} " + 
+cmd = "mplayer #{no_video} -cookies -cookies-file /tmp/cookie.txt -loop #{opt[:loop]} " +
   songs.map(&:play_url).map(&:esc).join(" ")
 puts cmd if $VERBOSE
 system cmd unless opt[:dry]

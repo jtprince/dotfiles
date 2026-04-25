@@ -155,8 +155,7 @@ github = 'zsh-users/zsh-syntax-highlighting'
 # using starship which has its own init in zshrc and config
 # [plugins.spaceship]
 # github = "spaceship-prompt/spaceship-prompt"
-# 
+#
 # [plugins.spaceshiconfig]
 # local = "~/.config/zsh/plugins"
 # use = [ "spaceship.zsh" ]
-

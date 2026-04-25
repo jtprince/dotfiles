@@ -270,7 +270,7 @@
  rehash
  pyenv
  pyenv install --list
- pyenv install 
+ pyenv install
  pyenv install  --list | grep 3.13
  nvim ~/.zprofile
  exit
@@ -341,7 +341,7 @@
  pyenv install 3.11.11
  ls
  pyenv global 3.10
- python 
+ python
  python --version
  ls
  pwd
@@ -364,7 +364,7 @@
  ruby --version
  ls
  ls
- vim ~/.zprofile 
+ vim ~/.zprofile
  exit
  exit
  ls
@@ -380,7 +380,7 @@
  ruby --version
  cat ~/.zprofile
  cat ~/.zshrc
- nvim .zprofile 
+ nvim .zprofile
  xit
  exit
  ls
@@ -396,7 +396,7 @@
  rm -rf .vendor/bundle
  ls
  bundle install
- bundle 
+ bundle
  cd .vendor/bundle/
  ls
  cd ..

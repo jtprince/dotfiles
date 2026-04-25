@@ -2,10 +2,10 @@
 " ENVIRONMENT VARIBLES USED:
 "   CT_LINES    Number of lines to show
 "   CT_COLUMNS  Number of columns to show
-"       If you use one of the above number of colors shown is 
+"       If you use one of the above number of colors shown is
 "       CT_LINES*CT_COLUMNS
 "
-"   CT_AUTO     Number of colors to show. Lines and columns are determined 
+"   CT_AUTO     Number of colors to show. Lines and columns are determined
 "               automatically.
 "   CT_TEMP     Name of the image to save file to.
 "   CT_WINNID   Current window number.

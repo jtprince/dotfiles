@@ -22,4 +22,3 @@ Find.find(*paths) do |path|
     end
   end
 end
-

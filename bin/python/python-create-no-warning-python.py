@@ -13,7 +13,7 @@ NO_WARNING_FILENAME = "python-no-warnings"
 
 parser = argparse.ArgumentParser(
     description=str(
-        "creates a python stub for a particular python version" "that silences warnings"
+        "creates a python stub for a particular python versionthat silences warnings"
     )
 )
 parser.add_argument(
@@ -21,7 +21,7 @@ parser.add_argument(
     nargs="?",
     default=current_python,
     help=str(
-        "the python to create a no warnings python for " f"(default {current_python}"
+        f"the python to create a no warnings python for (default {current_python}"
     ),
 )
 args = parser.parse_args()

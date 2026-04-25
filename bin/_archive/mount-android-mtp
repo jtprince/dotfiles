@@ -16,21 +16,16 @@ MOUNTDIR = Path.home() / _MOUNTDIR
 MOUNTDIR.mkdir(exist_ok=True)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("directive", nargs="?", default="mount", choices=["mount", "unmount"])
+parser.add_argument(
+    "directive", nargs="?", default="mount", choices=["mount", "unmount"]
+)
 args = parser.parse_args()
 
 if args.directive == "mount":
-    cmd = [
-        "jmtpfs",
-        str(MOUNTDIR)
-    ]
+    cmd = ["jmtpfs", str(MOUNTDIR)]
     subprocess.run(cmd)
     print(f"Mounted at {str(MOUNTDIR)}")
 
 elif args.directive == "unmount":
-    cmd = [
-        "fusermount",
-        "-u",
-        str(MOUNTDIR)
-    ]
+    cmd = ["fusermount", "-u", str(MOUNTDIR)]
     subprocess.run(cmd)

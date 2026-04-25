@@ -11,11 +11,11 @@ def cmd(string)
 end
 
 def html_docify(fragments, style_code="")
-  %Q{<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />} + 
+  %Q{<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />} +
     %Q{<style type="text/css">} +
     style_code +
     "</style><body>" +
-    fragments.join("\n") + 
+    fragments.join("\n") +
     "</body></html>"
 end
 
@@ -75,7 +75,7 @@ Dir.chdir topdir do |dir|
   html_file = "#{project}.html"
   File.write(html_file, html_docify([tree_html, *html_blocks], DATA.read))
 
-  ### GOING TO bREAK CAUSE NO SYNTAX YET 
+  ### GOING TO bREAK CAUSE NO SYNTAX YET
   cmd "html_to_pdf.rb #{html_file} --nocss"
 
   File.unlink html_file

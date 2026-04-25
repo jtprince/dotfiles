@@ -23,7 +23,7 @@ def display_annotation(annotation)
     [
       (annotation.respond_to?(:subject) ? annotation.subject : annotation.type.nick),
       date(annotation),
-    ].compact.join(" - ") << ":", 
+    ].compact.join(" - ") << ":",
     (text=annotation.contents) ? text.gsub("\r", "\n") : "<no associated text>"
   ].join("\n")
 end

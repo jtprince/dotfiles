@@ -106,7 +106,7 @@ fractions_with_ms2["active_exclusion"] = fractions_with_ms2.msrun_id.apply(
 )
 
 ```warning
-/tmp/ipykernel_372964/1615522823.py:1: SettingWithCopyWarning: 
+/tmp/ipykernel_372964/1615522823.py:1: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame.
 Try using .loc[row_indexer,col_indexer] = value instead
 

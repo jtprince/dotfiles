@@ -4,85 +4,112 @@ import argparse
 import subprocess
 import os
 
-PATH_TO_PASSWORD_FILES = os.path.join(os.getenv("HOME"), "Dropbox", "env", "doba", "passwords", "mysql")
+PATH_TO_PASSWORD_FILES = os.path.join(
+    os.getenv("HOME"), "Dropbox", "env", "doba", "passwords", "mysql"
+)
 
 HOST_TO_FULLY_QUALIFIED = {
-    'web00': 'root@Web00.doba.com',
-    'jtprince': 'root@jtprince.dev.doba.com',
-    'staging': 'root@staging.dev.doba.com',
+    "web00": "root@Web00.doba.com",
+    "jtprince": "root@jtprince.dev.doba.com",
+    "staging": "root@staging.dev.doba.com",
 }
 
 HOST_TO_PASSWORD_FILENAME = {
-    'web00': 'coredb',
-    'jtprince': 'dev',
-    'staging': 'dev',
+    "web00": "coredb",
+    "jtprince": "dev",
+    "staging": "dev",
 }
 
 # hosts that use doba instead of wholemark
-WHOLEMARK_TO_DOBA = ['jtprince', 'staging']
+WHOLEMARK_TO_DOBA = ["jtprince", "staging"]
 
 LOCAL_QUERY_FILE = "/tmp/jtprince-mysqlquery.tmp"
 REMOTE_QUERY_FILE = LOCAL_QUERY_FILE
 
+
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("query", help='the query')
-    parser.add_argument("--use", default='wholemark', help='database to use')
-    parser.add_argument("-n", "--nodb", action='store_true')
-    parser.add_argument("--host", default='web00', help='host (e.g. "jtprince")')
-    parser.add_argument("-j", "--jtprince", action='store_true', help="use host jtprince")
-    parser.add_argument("-s", "--staging", action='store_true', help="use host staging")
-    parser.add_argument("-g", "--vertical", action='store_true', help="mysql output vertical")
-    parser.add_argument("--dry", action='store_true', help="just show the commands")
-    parser.add_argument("-c", "--column", action='store_true', help="interpret the query as a column on which to find info")
-    parser.add_argument("-t", "--table", action='store_true', help="interpret the query as a table on which to find info")
-    parser.add_argument("-l", "--like", action='store_true', help='use LIKE in column/table query')
+    parser.add_argument("query", help="the query")
+    parser.add_argument("--use", default="wholemark", help="database to use")
+    parser.add_argument("-n", "--nodb", action="store_true")
+    parser.add_argument("--host", default="web00", help='host (e.g. "jtprince")')
+    parser.add_argument(
+        "-j", "--jtprince", action="store_true", help="use host jtprince"
+    )
+    parser.add_argument("-s", "--staging", action="store_true", help="use host staging")
+    parser.add_argument(
+        "-g", "--vertical", action="store_true", help="mysql output vertical"
+    )
+    parser.add_argument("--dry", action="store_true", help="just show the commands")
+    parser.add_argument(
+        "-c",
+        "--column",
+        action="store_true",
+        help="interpret the query as a column on which to find info",
+    )
+    parser.add_argument(
+        "-t",
+        "--table",
+        action="store_true",
+        help="interpret the query as a table on which to find info",
+    )
+    parser.add_argument(
+        "-l", "--like", action="store_true", help="use LIKE in column/table query"
+    )
     args = parser.parse_args()
     return args
 
+
 def prepare_host(args):
     if args.jtprince:
-        args.host = 'jtprince'
+        args.host = "jtprince"
     elif args.staging:
-        args.host = 'staging'
+        args.host = "staging"
     args.host_full = HOST_TO_FULLY_QUALIFIED[args.host]
+
 
 def prepare_extra_args(args):
     args.extra_args = []
     if args.vertical:
-        args.extra_args.append('--vertical')
+        args.extra_args.append("--vertical")
+
 
 def prepare_query(args):
     args.query = args.query.strip()
 
     if args.column or args.table:
         type = "column" if args.column else "table"
-        query_type = 'LIKE' if args.like else '='
-        args.query = "SELECT  table_schema,     table_name,      column_name,      data_type,     ordinal_position  FROM  INFORMATION_SCHEMA.COLUMNS WHERE {}_name {} '{}'".format(type, query_type, args.query)
+        query_type = "LIKE" if args.like else "="
+        args.query = "SELECT  table_schema,     table_name,      column_name,      data_type,     ordinal_position  FROM  INFORMATION_SCHEMA.COLUMNS WHERE {}_name {} '{}'".format(
+            type, query_type, args.query
+        )
         args.nodb == True
 
     if not args.nodb:
-        if args.use == 'wholemark' and args.host in WHOLEMARK_TO_DOBA:
-            args.use = 'Doba'
+        if args.use == "wholemark" and args.host in WHOLEMARK_TO_DOBA:
+            args.use = "Doba"
         args.query = "use {}; ".format(args.use) + args.query
 
-    if args.query[-1] != ';':
+    if args.query[-1] != ";":
         args.query += ";"
 
+
 def write_query_file(args):
-    with open(LOCAL_QUERY_FILE, 'w') as outfile:
+    with open(LOCAL_QUERY_FILE, "w") as outfile:
         if args.dry:
             print("<query>: " + '"' + args.query + '"')
         else:
             outfile.write(args.query)
+
 
 def transfer_query_file(args):
     scp_cmd = ["scp", LOCAL_QUERY_FILE, args.host_full + ":" + REMOTE_QUERY_FILE]
     if args.dry:
         print(" ".join(scp_cmd))
     else:
-        with open(os.devnull, 'w') as devnull:
+        with open(os.devnull, "w") as devnull:
             subprocess.call(scp_cmd, stdout=devnull)
+
 
 def prepare_command_string(args):
     cmd_parts = [
@@ -97,21 +124,28 @@ def prepare_command_string(args):
 
     return " ".join(cmd_parts)
 
+
 def run_command(cmd, args):
     if args.dry:
         print(cmd)
     else:
         os.system(cmd)
 
+
 def _get_mysql_connection_string(host):
     mysql_password = _get_password(host)
-    if host == 'web00':
-        return "-hcoredb02.c5v3xfyz81wc.us-west-2.rds.amazonaws.com -udoba_ro -p'{}'".format(mysql_password)
-    elif host in ('jtprince', 'staging'):
+    if host == "web00":
+        return "-hcoredb02.c5v3xfyz81wc.us-west-2.rds.amazonaws.com -udoba_ro -p'{}'".format(
+            mysql_password
+        )
+    elif host in ("jtprince", "staging"):
         return "-uroot -p'{}'".format(mysql_password)
 
+
 def _get_password(host):
-    password_file = os.path.join(PATH_TO_PASSWORD_FILES, HOST_TO_PASSWORD_FILENAME[host])
+    password_file = os.path.join(
+        PATH_TO_PASSWORD_FILES, HOST_TO_PASSWORD_FILENAME[host]
+    )
     with open(password_file) as infile:
         return infile.read().strip()
 

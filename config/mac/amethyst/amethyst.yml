@@ -310,13 +310,13 @@ window-resize-step: 5
 screen-padding-left: -4
 
 # Padding to apply between windows and the right edge of the screen (in px, default 0).
-screen-padding-right: -4 
+screen-padding-right: -4
 
 # Padding to apply between windows and the top edge of the screen (in px, default 0).
-screen-padding-top: -4 
+screen-padding-top: -4
 
 # Padding to apply between windows and the bottom edge of the screen (in px, default 0).
-screen-padding-bottom: -4 
+screen-padding-bottom: -4
 
 # true to maintain layout state across application executions (default true).
 restore-layouts-on-launch: true

@@ -1,33 +1,73 @@
 # dotfiles
 
-## bin
+Personal configuration files and scripts for macOS and Linux (Arch/Manjaro).
 
-Create a softlink your bin dir to your home dir:
-
-```bash
-cd && ln -sf ~/dotfiles/bin
-```
-
-Ensure that you've include bin in your path some where. For example, in
-.profile include a line like this:
+## Quick start
 
 ```bash
-export PATH=$HOME/bin:$HOME/.local/bin:$PATH
-```
+git clone git@github.com:jtprince/dotfiles.git ~/dotfiles
+cd ~/dotfiles
 
-## config
-
-Assuming your bin folder is setup and is in your path:
-
-```
+# Preview symlink changes
 dotfiles-configure --dry
+
+# Apply symlinks
 dotfiles-configure
 ```
 
-The command is idempotent with regards to the results, so you can rerun as
-soon as you update it with no negative consequences.
+`dotfiles-configure` is idempotent — rerun it any time you update the repo.
 
-## scripts
+## Repository layout
 
-These are scripts that might useful again but are more one-off, so do not
-belong on the PATH.
+```
+config/              App configs, symlinked into ~/.config (or ~/)
+  mac/               macOS-only (amethyst, hammerspoon, karabiner, skhd, osascript)
+  linux/             Linux-only (sway, waybar, X11, GTK, audio, etc.)
+  _archive/          Configs for tools no longer in use
+  <name>/            Cross-platform configs (git, kitty, nvim, zsh, …)
+bin/                 Executable scripts, symlinked as ~/bin and on $PATH
+  data/              Data conversion (csv, json, parquet, etc.)
+  docker/            Docker management
+  git/               Git utilities
+  markdown/          Markdown conversion
+  media/             Image, PDF, audio/video conversion
+  python/            Python/Jupyter tooling
+  pyenv/             Pyenv/virtualenv helpers
+  work/              Work-specific scripts
+  aliases/           Shell aliases (short command wrappers)
+  _archive/          Old/unused scripts (kept for reference)
+scripts/             One-off or infrequent scripts (not on $PATH)
+```
+
+## Platform support
+
+Both macOS and Linux are actively supported. `dotfiles-configure` detects the
+platform and creates the appropriate symlinks. Platform-specific options:
+
+- **macOS**: Homebrew, Amethyst, Hammerspoon, Karabiner-Elements
+- **Linux**: Sway/i3, Waybar, PipeWire, X11 resolution profiles
+
+Linux-only flags: `-r/--resolution {4k,hd,mid}`, `-d/--display-server {x11,wayland}`
+
+## Key tools
+
+- **Shell**: zsh with [sheldon](https://github.com/rossmacarthur/sheldon) (plugins) and [starship](https://starship.rs/) (prompt)
+- **Editor**: Neovim (lazy.nvim)
+- **Terminal**: kitty
+- **Linting**: ruff (Python), pre-commit hooks
+
+## Adding a new config
+
+1. Place the config in `config/<name>/` (or `config/mac/` / `config/linux/` if platform-specific)
+2. Add the entry to the appropriate list in `bin/dotfiles-configure`
+3. Run `dotfiles-configure` to create the symlink
+
+## Maintenance
+
+```bash
+# Remove dangling symlinks in ~/.config
+dotfiles-configure --clean-broken
+
+# Run linters before committing
+pre-commit run --all-files
+```

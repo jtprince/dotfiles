@@ -4,4 +4,3 @@ docker_id=`docker images -q | head -n 1`
 echo "USING $docker_id"
 
 docker run -it $docker_id /bin/bash
-

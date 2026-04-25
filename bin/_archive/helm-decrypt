@@ -9,9 +9,13 @@ from pathlib import Path
 base_cmd = ["helm", "secrets", "dec"]
 
 parser = argparse.ArgumentParser()
-parser.add_argument("paths", nargs="+", type=Path, help="decrypt any secrets.*.yaml file")
-parser.add_argument("-f", "--force", action='store_true', help="overwrite existing decrypted files")
-parser.add_argument("--dry", action='store_true', help="show the command and exit")
+parser.add_argument(
+    "paths", nargs="+", type=Path, help="decrypt any secrets.*.yaml file"
+)
+parser.add_argument(
+    "-f", "--force", action="store_true", help="overwrite existing decrypted files"
+)
+parser.add_argument("--dry", action="store_true", help="show the command and exit")
 args = parser.parse_args()
 
 DECRYPTED_SUFFIX = ".dec"

@@ -59,7 +59,7 @@ Gnuplot.open do |gp|
     plot.yrange "[0:*]"
     plot.ylabel "number of votes"
 
-    plot.data = [ 
+    plot.data = [
       Gnuplot::DataSet.new( [x_position, counts, letter] ) do |ds|
         ds.with = "boxes"
         ds.notitle
@@ -69,5 +69,3 @@ Gnuplot.open do |gp|
     ]
   end
 end
-
-

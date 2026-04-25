@@ -42,7 +42,7 @@ if $recurse
   end
   files = new_file_list
 end
-  
+
 (dirs, files) = files.partition {|file| FileTest.directory? file }
 
 if $dirs
@@ -55,14 +55,7 @@ if $files
   end
   if $skip_exec
     (executables, normal_files) = files.partition {|file| File.stat(file).executable? }
-    files = normal_files  
+    files = normal_files
   end
   File.chmod(normal_file_permissions, *files)
 end
-
-
-
-
-
-
-

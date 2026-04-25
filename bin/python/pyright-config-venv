@@ -13,15 +13,14 @@ GITIGNORE_FILENAME = ".gitignore"
 default_dir = Path(".")
 parser = argparse.ArgumentParser(
     description=str(
-        "Creates a pyrightconfig.json file with current venv. "
-        "Run from project root."
+        "Creates a pyrightconfig.json file with current venv. Run from project root."
     )
 )
 parser.add_argument(
     "-f",
     "--force",
     action="store_true",
-    help="write over an existing pyrightconfig.json file"
+    help="write over an existing pyrightconfig.json file",
 )
 parser.add_argument(
     "-i",
@@ -60,7 +59,9 @@ if args.add_to_gitignore:
         if line.strip() in ["pyrightconfig.json", "/pyrightconfig.json"]
     )
     if has_pyrightconfig_line:
-        print(f"{GITIGNORE_FILENAME} already has {PYRIGHT_CONF_FILENAME}, nothing to do.")
+        print(
+            f"{GITIGNORE_FILENAME} already has {PYRIGHT_CONF_FILENAME}, nothing to do."
+        )
     else:
         print(f"appending {PYRIGHT_CONF_FILENAME} into {GITIGNORE_FILENAME}")
         lines.extend(["", "/pyrightconfig.json"])

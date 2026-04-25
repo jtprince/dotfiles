@@ -6,17 +6,11 @@ import json
 from pathlib import Path
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "jsonl_paths", nargs="+", type=Path, help="jsonl file paths"
-)
+parser.add_argument("jsonl_paths", nargs="+", type=Path, help="jsonl file paths")
 args = parser.parse_args()
 
 for path in args.jsonl_paths:
-    rows = [
-        json.loads(line)
-        for line in path.read_text().split("\n")
-        if line.strip()
-    ]
+    rows = [json.loads(line) for line in path.read_text().split("\n") if line.strip()]
     fieldnames = list(rows[0].keys())
     outcsv = path.with_suffix(".csv")
 

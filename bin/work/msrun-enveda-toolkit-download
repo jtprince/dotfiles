@@ -50,6 +50,7 @@ def classify_inputs(inputs: list[str]) -> tuple[list[str], list[str]]:
 # MSB path — resolves via Databricks
 # =============================================================================
 
+
 def resolve_msb_tasks(msb_ids: list[str], outdir: Path, db) -> list[tuple]:
     """Query Databricks for cloud paths and build download tasks for MSB runs."""
     msrun_ids_sql = ", ".join([f"'{id}'" for id in msb_ids])
@@ -81,7 +82,10 @@ def resolve_msb_tasks(msb_ids: list[str], outdir: Path, db) -> list[tuple]:
 # Dot-d path — blob path given directly, no Databricks needed
 # =============================================================================
 
-def resolve_dot_d_tasks(dot_d_paths: list[str], outdir: Path, flat: bool = False) -> list[tuple]:
+
+def resolve_dot_d_tasks(
+    dot_d_paths: list[str], outdir: Path, flat: bool = False
+) -> list[tuple]:
     """Build download tasks for raw blob dot-d paths (no Databricks lookup required)."""
     tasks = []
     for dot_d_path in dot_d_paths:
@@ -90,7 +94,9 @@ def resolve_dot_d_tasks(dot_d_paths: list[str], outdir: Path, flat: bool = False
         if flat:
             outpath = outdir / dot_d_name
         else:
-            outpath = outdir / blob_prefix  # preserves full experiment directory structure
+            outpath = (
+                outdir / blob_prefix
+            )  # preserves full experiment directory structure
         outpath.mkdir(parents=True, exist_ok=True)
         for name in BRUKER_FILES:
             if (outpath / name).exists():
@@ -103,7 +109,10 @@ def resolve_dot_d_tasks(dot_d_paths: list[str], outdir: Path, flat: bool = False
 # Shared download helpers
 # =============================================================================
 
-def azure_cli_cmd(label: str, blob_prefix: str, name: str, outdir: Path, color: bool = False) -> str:
+
+def azure_cli_cmd(
+    label: str, blob_prefix: str, name: str, outdir: Path, color: bool = False
+) -> str:
     """Produce an Azure CLI command for downloading a single blob file."""
     blob = f"{blob_prefix}/{name}"
     local = outdir / name
@@ -148,7 +157,12 @@ parser.add_argument(
     help="MSB run IDs (e.g. MSB12345) and/or blob paths ending in .d "
     "(e.g. Profiling/EXP26000191_SynBio_Profiling_260226/Blank_V-1_1_54941.d)",
 )
-parser.add_argument("--outdir", default=cwd, type=Path, help=f"dir to download to (default: cwd at invocation time)")
+parser.add_argument(
+    "--outdir",
+    default=cwd,
+    type=Path,
+    help="dir to download to (default: cwd at invocation time)",
+)
 parser.add_argument("--workers", type=int, default=4, help="number of download threads")
 parser.add_argument(
     "--flat",
@@ -176,6 +190,7 @@ msb_ids, dot_d_paths = classify_inputs(args.inputs)
 tasks = []
 if msb_ids:
     from enveda_toolkit import get_databricks
+
     db = get_databricks(ENVEDA_ENV)
     tasks += resolve_msb_tasks(msb_ids, args.outdir, db)
 

@@ -4,7 +4,7 @@
 
 % Copyright (c) 1993--2003, Charles S. Zender
 % This program may be distributed and/or modified under the
-% conditions of the LaTeX Project Public License (LPPL), 
+% conditions of the LaTeX Project Public License (LPPL),
 % either version 1.2, or (at your option) any later version.
 % LPPL: http://www.latex-project.org/lppl.txt
 
@@ -17,7 +17,7 @@
 
 % Dependencies: upgreek.sty  (required solely for \uppi)
 % It is important that no packages need to be loaded before csz.sty
-% This ensures that csz.sty may be loaded first to define important 
+% This ensures that csz.sty may be loaded first to define important
 % document-wide settings needed by other packages.
 % Defining \ifpdf in advance of loading graphicx is an example of this
 
@@ -50,7 +50,7 @@
 \g@addto@macro\@twocolumnfalse{\let\iftwocolumn\if@twocolumn}
 
 % \tableline is normally provided by agutex
-\@ifundefined{tableline}{\let\tableline=\hline}{} 
+\@ifundefined{tableline}{\let\tableline=\hline}{}
 % \halfwidth figures out a good width for single column graphics
 \def\minof#1#2{\ifdim#1>#2#2\else#1\fi}
 \def\maxof#1#2{\ifdim#1<#2#2\else#1\fi}
@@ -72,8 +72,8 @@
 % be written in an upright font to emphasize that they are not
 % variables
 % 5. A measurement consisting of a number plus a dimension is an
-% indivisible unit, with a smaller than normal space between them. 
-% The dimension is in an upright font. 
+% indivisible unit, with a smaller than normal space between them.
+% The dimension is in an upright font.
 % Accomplish this in LaTeX by using \, instead of ~ between number and dimension
 % fxm: Applying these conventions to old work will take a long time
 \newcommand{\me}{\mathrm{e}} % [frc] Math e
@@ -115,7 +115,7 @@
           \hbox{$\m@th\mbox{\fontsize\sf@size\z@
                             \selectfont#2}$}}
 
-% \DeclareGraphicsRule commands should be moved into document source 
+% \DeclareGraphicsRule commands should be moved into document source
 % so that csz.sty need not depend on graphicx.
 % Here are the most frequently used \DeclareGraphicsRule commands:
 %\DeclareGraphicsRule{.gif}{eps}{.bb}{`gif2eps #1 -} % Convert GIF files to eps
@@ -196,7 +196,7 @@
 % We use \fmtdfn{text} and \fmtidx{text} for these, respectively
 % Use \fmtprn{text} to print text in appropriate format without indexing it
 
-% When defining a term for the first time use \trmdfn{term} if the 
+% When defining a term for the first time use \trmdfn{term} if the
 % term will appear in the index more than once, and \trmidx{term}
 % if the term will appear only once.
 % \trmdfn places the term in italics and issues a keyword to \index
@@ -204,7 +204,7 @@
 % 20001028: According to hyperref documentation, p. 102,
 % using |keyword to, e.g., boldify entries will confuse makeindex when \hyperref
 % is active since \hyperref attempts to add its own |hyperindex{} text
-% and makeindex only allows one | to be present. 
+% and makeindex only allows one | to be present.
 % Result is that index will build but only non-boldfaced items will
 % have working hyper-index.
 % Jochen Kuepper suggested this combination as a solution
@@ -216,7 +216,7 @@
 % \trmidx places the term in the current font and issues an \index call
 % Argument is printed verbatim and is default for index
 % Optional argument supercedes in-text for indexing
-% Command definition from Donald Arsenau 20010328 
+% Command definition from Donald Arsenau 20010328
 \newcommand{\trmidx}[2][\DefaultOpt]{\def\DefaultOpt{#2}#2\index{#1}} % Verbatim in-term term, optional index term
 \newcommand*{\trmprn}[1]{\string#1} % Print term
 % Define the exact same functionality using slightly different syntax
@@ -345,7 +345,7 @@
 } % end \cszepigraph
 
 % Chemistry macro from KoD95 p. 192
-% This macro keeps chemical subscripts, e.g., O_2 N_2, at same level 
+% This macro keeps chemical subscripts, e.g., O_2 N_2, at same level
 % Usage: \chemical{Fe_2^{2+}Cr_2O_4}
 \newlength{\fntxvi} \newlength{\fntxvii}
 \newcommand{\chemical}[1]
@@ -371,7 +371,7 @@
 % 5 = five = quintus = q; = cinco = c
 % 6 = six = sexus = s; = seis = s
 
-% Abbreviations 
+% Abbreviations
 % fxm: Obsolete abbreviations used only in pre-1997 papers, e.g., PhD
 % fxm: update, standardize, and move from csz.sty to aer.sty, rt.sty
 % fxm: intermediate step: place in oldcommand.sty file
@@ -530,4 +530,3 @@
 \newcommand{\vhnot}{\mbox{$V_\mathrm{H}^0$}}
 \newcommand{\vh}{\mbox{$V_\mathrm{H}$}}
 \newcommand{\wc}{\mbox{$w_\mathrm{c}$}}
-

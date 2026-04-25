@@ -22,7 +22,7 @@ opts = OptionParser.new do |op|
   op.separator "outputs: <file>.txt"
   op.on("-c", "--converter <#{opt[:converter]}>", "ocrad|gocr|tesseract") {|v| opt[:converter] = v }
   op.separator ""
-  # incompatible with --im at the moment  
+  # incompatible with --im at the moment
   op.on("--scripture", "use settings for scanned scripture (tesseract)") {|v| opt[:scripture] = v ; opt[:converter] = 'tesseract' }
   op.on("--im", "run imagemagick (despeckle/blur/threshold)") {|v| opt[:run_imagemagick] = v }
   op.on("-b", "--blur <#{opt[:blur]}>", "blur width") {|v| opt[:blur] = v }
@@ -45,7 +45,7 @@ ARGV.each do |file|
   glob = base + "-*" + ".p*m"
   image_files = Dir[glob].sort
   to_unlink.push(*image_files)
-  newimages = 
+  newimages =
     if opt[:run_imagemagick]
       newimages = image_files.map do |image_file|
         base_image_file = image_file.chomp(File.extname(image_file))
@@ -62,7 +62,7 @@ ARGV.each do |file|
       image_files
     end
   to_unlink.push(*newimages)
-  text = 
+  text =
     case opt[:converter]
     when /ocrad|gocr/
       newimages.map do |image|
@@ -75,5 +75,5 @@ ARGV.each do |file|
       txt_files.map {|f| IO.read(f) }.join("\n")
     end
   File.open(basetxt,'wb') {|out| out.print text }
-  to_unlink.each {|v| File.unlink(v) if File.exist?(v) } 
+  to_unlink.each {|v| File.unlink(v) if File.exist?(v) }
 end

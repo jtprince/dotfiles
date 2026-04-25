@@ -3,7 +3,6 @@
 import argparse
 import subprocess
 from pathlib import Path
-import os
 
 DOWNLOADS_DIR = Path.home() / "Downloads"
 SCREENSHOTS_DIR = Path.home() / "screenshots"

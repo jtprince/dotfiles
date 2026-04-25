@@ -5,14 +5,16 @@ import arrow
 from pathlib import Path
 import argparse
 
-CHECKIN_DIR = Path.home() / "work" / "REPORTING"/ "checkins"
+CHECKIN_DIR = Path.home() / "work" / "REPORTING" / "checkins"
 
 iso_date_re = re.compile(r"\d{4}-\d{2}-\d{2}")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--checkin-dir", default=CHECKIN_DIR)
 parser.add_argument("--suffix", default="-checkin.md")
-parser.add_argument("--force", action='store_true', help="create even if way in the future")
+parser.add_argument(
+    "--force", action="store_true", help="create even if way in the future"
+)
 args = parser.parse_args()
 
 possible_checkins = sorted(args.checkin_dir.glob("*.md"))
@@ -29,7 +31,9 @@ the_next_week = old_datetime.shift(weeks=+1)
 
 now = arrow.utcnow()
 if the_next_week > now.dehumanize("in 4 days"):
-    print(f"New checkin is for {the_next_week.date().isoformat()} which is > 4 days from now")
+    print(
+        f"New checkin is for {the_next_week.date().isoformat()} which is > 4 days from now"
+    )
     print("[quitting for now]")
     exit(1)
 

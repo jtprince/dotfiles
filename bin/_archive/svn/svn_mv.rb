@@ -9,7 +9,7 @@ end
 
 dest = ARGV.pop;
 ARGV.each do |file|
-  call = "svn mv #{file} #{dest}" 
+  call = "svn mv #{file} #{dest}"
   puts call
   system call
 end

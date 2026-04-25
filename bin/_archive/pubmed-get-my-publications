@@ -9,7 +9,7 @@ class String
   def clipboard(clipboard=false)
     registers = %w{primary}
     registers << "clipboard" if clipboard
-    registers.each do |reg| 
+    registers.each do |reg|
       system %Q{echo -n #{Shellwords.escape(self)} | xclip -selection #{reg} }
     end
     puts "copied to #{registers.join(' and ')}"

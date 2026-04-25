@@ -2,7 +2,6 @@
 
 # use at your own risk
 
-import time
 import argparse
 from pathlib import Path
 import struct

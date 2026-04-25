@@ -30,6 +30,3 @@ end
 rows.each do |row|
   puts row[0,2].join(": ")
 end
-
-
-

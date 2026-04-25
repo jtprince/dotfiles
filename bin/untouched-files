@@ -45,7 +45,7 @@ parser.add_argument(
 )
 parser.add_argument("all", type=Path, help=f"all files, made with: {all_files_cmd}")
 parser.add_argument(
-    "--dir", type=Path, default=".", help=f"the directory all mods have to be under"
+    "--dir", type=Path, default=".", help="the directory all mods have to be under"
 )
 args = parser.parse_args()
 

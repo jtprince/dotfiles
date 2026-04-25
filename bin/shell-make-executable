@@ -8,14 +8,17 @@ from pathlib import Path
 
 parser = argparse.ArgumentParser(description="sets the file to executable")
 parser.add_argument("paths", nargs="+", type=Path, help="the file to set as executable")
-parser.add_argument("-r", "--recurse", action='store_true', help="also the level below")
+parser.add_argument("-r", "--recurse", action="store_true", help="also the level below")
 args = parser.parse_args()
+
 
 def make_executable(path):
     path.chmod(path.stat().st_mode | stat.S_IEXEC)
     print(f"Now executable: {str(path)}")
 
-path_re = re.compile(r'line .*?: (/[^:]+): Permission denied')
+
+path_re = re.compile(r"line .*?: (/[^:]+): Permission denied")
+
 
 def get_permission_path(line):
     match = path_re.search(line)
@@ -23,9 +26,12 @@ def get_permission_path(line):
         return Path(match.group(1))
     return None
 
+
 def execute_and_get_new_candidates(path):
     try:
-        subprocess.run(f'"./{str(path)}"', shell=True, text=True, check=True, capture_output=True)
+        subprocess.run(
+            f'"./{str(path)}"', shell=True, text=True, check=True, capture_output=True
+        )
     except subprocess.CalledProcessError as err:
         message = err.stderr.strip()
         print("error message************************")

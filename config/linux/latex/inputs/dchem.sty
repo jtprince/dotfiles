@@ -2,15 +2,15 @@
 %  dchem.sty   Donald Arseneau       asnd@reg.triumf.ca
 %  (under development)  Mar 24, 1998
 %
-%  To typeset chemical equations, use $\ch ...$ or \chm{...} for in-line 
+%  To typeset chemical equations, use $\ch ...$ or \chm{...} for in-line
 %  formulas.
-%  For displays, use any of \begin{reaction} ... \end{reaction}, 
-%  \begin{reaction*} ... \end{reaction*},  \begin{rxnarray} ... 
+%  For displays, use any of \begin{reaction} ... \end{reaction},
+%  \begin{reaction*} ... \end{reaction*},  \begin{rxnarray} ...
 %  \end{rxnarray}, or \begin{rxnarray*} ... \end{rxnarray*}:
 %  these correspond to {equation} {equation*} {eqnarray} and {eqnarray*}.
-%  These environments are numbered as equations unless you define 
-%  "\thereaction" (to change the formatting of the number but use the 
-%  same counter), and/or create the new counter with \newcounter{reaction}, 
+%  These environments are numbered as equations unless you define
+%  "\thereaction" (to change the formatting of the number but use the
+%  same counter), and/or create the new counter with \newcounter{reaction},
 %  in which case they are numbered separately.
 %  e.g.:  \newcommand\thereaction{R\arabic{reaction}}
 %  or     \newcounter{reaction}
@@ -22,17 +22,17 @@
 %    H + O_2 \eqbm^{\ma k\sub{a}}_{\ma k\sub{-a}} HO_2 \qquad \mth{\Delta G}
 %  \end{reaction}
 %  Use \chemistry and \mathematics like \ch or \ma, but \chemistry also
-%  changes the equation numbering to be reaction numbering (if they are 
+%  changes the equation numbering to be reaction numbering (if they are
 %  different).  The long-name versions are for math environments that have
 %  no chemistry analog, or for long portions of documents, or whole documents.
 %
-%  See comments below (at ***) for: Labelled arrows, subscripts (\sub), 
+%  See comments below (at ***) for: Labelled arrows, subscripts (\sub),
 %  units (\un), \degree, \excited, \eV.
 
 \@ifundefined{frozen@everymath}{% Old LaTeX; use \everymath
  \newcommand\ch{\fam\z@\everymath{\fam\z@}}% like \rm but don't have to repeat
  \newcommand\chemistry{\ch\everydisplay{\ch}%
-   \let\theequation\thereaction \let\c@equation\c@reaction 
+   \let\theequation\thereaction \let\c@equation\c@reaction
    \let\p@equation\p@reaction}% declares all math to be chemistry
  \newcommand\ma{\fam\m@ne\everymath{}}% brings back regular math in chem
  \newcommand\mathematics{\ma\everydisplay{}}% declares normal math
@@ -58,9 +58,9 @@
  \fi
  \newcommand\ch{\fam\z@\let\dch@everymath\dch@ch}% like \rm
  \newcommand\chemistry{\ch\let\dch@everydisp\ch
-   \let\theequation\thereaction \let\c@equation\c@reaction 
+   \let\theequation\thereaction \let\c@equation\c@reaction
    \let\p@equation\p@reaction}% all math to be chemistry
- \newcommand\ma{\fam\m@ne\let\dch@everymath\@empty}% restore regular math 
+ \newcommand\ma{\fam\m@ne\let\dch@everymath\@empty}% restore regular math
  \newcommand\mathematics{\ma\let\dch@everydisp\@empty}% declares normal math
 }
 \newcommand\chm[1]{\begingroup\ensuremath{\ch#1}\endgroup}
@@ -78,25 +78,25 @@
 \newcommand\reaction{\chemistry \equation}\let\endreaction\endequation
 \newcommand\reaction*{\chemistry \displaymath}\let\endreaction*\enddisplaymath
 \catcode`\*=12 % make * other again
-% 
+%
 %-------***
 %  Roman subscripts: \sub, for subscript labels like k\sub{H} or k\sub{abs};
 %  also give subscript in text: drink H\sub{2}O
 %
 \def\sub#1{\relax\ifmmode_\bgroup\else$_\bgroup\aftergroup$\fi \ch #1\egroup}
-% 
+%
 %  ====== Labeled Arrows =======***
 %  Chemical relations that take labels above and below.  The labels are typed
 %  as superscripts and/or subscripts.  There are two versions of each: the
 %  smaller fixed size version (\yields) and the larger one that expands to
-%  match its labels (\Yields).  The small versions get smaller in fractions 
+%  match its labels (\Yields).  The small versions get smaller in fractions
 %  and subscripts and their labels are the appropriate relative script-size
 %  (C-down);  the arrow size is determined only by the current math style,
-%  not by its labels.  All the capitalized versions have a default minimum 
-%  length of 1.1 cm, but a different length can be specified as an optional 
+%  not by its labels.  All the capitalized versions have a default minimum
+%  length of 1.1 cm, but a different length can be specified as an optional
 %  argument (\Eqbm[45pt]^{k_{1}}_{k_{-1}}).  This a *minimum* length and
-%  the arrow may get larger to make sure it is longer than its label.  
-%  These larger versions are always in display size with labels in 
+%  the arrow may get larger to make sure it is longer than its label.
+%  These larger versions are always in display size with labels in
 %  text-style.
 %
 %  \yields, \Yields   --->
@@ -150,7 +150,7 @@
 \let\LR@rt\relax
 
 \edef\Labeledrel{\protect\csname Labeledrel \endcsname}
-\@namedef{Labeledrel }#1#2#3{\mathrel\bgroup 
+\@namedef{Labeledrel }#1#2#3{\mathrel\bgroup
   \def\LR@lf{\dch@labelsty#1}\def\LR@rt{#2}%
   \@ifnextchar[{\LabeledreL{#3}}{\LabeledreL{#3}[1.1cm]}}
 \def\LabeledreL#1[#2]{\mathop{\hbox to#2{#1}}\limits\t@StSS}
@@ -202,7 +202,7 @@
   \ht\z@\z@\dp\z@\z@ \mkern\NegFourmu\cleaders\box\z@\hfill \mkern\NegFourmu
   \dual@bar\p@{\mkern\NegFourmu\rightharpoonup}{\mathsm@sh{}-}$}
 
-% The large separation here and in \twowayarrowsfill is because of 
+% The large separation here and in \twowayarrowsfill is because of
 % Knuth's silly change to CM arrows, giving them fat heads.
 \def\twowaY#1#2{%  #1=style, #2=unused (required for \mathpalette)
   \dual@bar{1.7\p@}{\mathsm@sh{#1}-}{#1\leftarrow\mkern\NegFourmu}\!%
@@ -274,16 +274,16 @@
 % \eV      - kerned roman eV
 % \excited - superscipt full-size * (math or text)
 % \saturn  - circle with bar through it
-% 
+%
 \newcommand\degree{\relax\ifmmode^\circ\else $^\circ$\fi}
 \newcommand\excited{\relax \ifmmode^{\textstyle *}\else*\fi}
 \newcommand\eV{\mbox{e\kern-.05emV}}
 \newcommand\saturn{\mathpalette\@barred\circ}
 \def\@barred#1#2{\ooalign{\hfil$#1-$\hfil\cr\hfil$#1#2$\hfil\cr}}
 
-% *** 
+% ***
 % Tags for "structured markup" of miscellaneous notations.  Alternative
-% definitions in document preamble can change output style without changing 
+% definitions in document preamble can change output style without changing
 % the main document.
 
 % \stst   - standard state.  Default is superscript circle; others shown are
@@ -301,7 +301,7 @@
 % \renewcommand\ts{^{+}}
 % \renewcommand\ts{^{\neq}}
 
-% *** 
+% ***
 % Tags for "structured markup" of physical state notations.  Alternative
 % definitions can change output style without changing the document.
 \newcommand{\aq}{(\mkern-1mu\mathit{aq})}
@@ -309,7 +309,7 @@
 \newcommand{\gas}{(\mathit{g})}
 \newcommand{\sol}{(\mkern-.5mu\mathit{s})}
 %
-% Alternative versions -- roman subscripts 
+% Alternative versions -- roman subscripts
 % \newcommand{\aq}{\sub{aq}}
 % \newcommand{\liq}{\sub{\ell}}
 % \newcommand{\gas}{\sub{g}}
@@ -329,7 +329,7 @@
 % \dbond  -  double \bond
 % \tbond  -  tripe \bond
 % \dvbond -  double \vbond
-% 
+%
 % the sizes are parameterized by:
 \def\BondWidth{0.4pt}
 \def\BondLength{0.7em}
@@ -344,12 +344,12 @@
 \def\dch@bond#1{\mkern\@ne mu\vcenter{#1}\mkern\@ne mu}
 
 % ***
-% Unpaired or paired electrons.  These don't look very good because the 
+% Unpaired or paired electrons.  These don't look very good because the
 % positioning is lousy and the separation of double dots is inconsistent.
 %                           in-line      above
 % lone electron             {\cdot}      \dot{X}
 % Pair of electrons         {:}          \ddot{X}
-% 
+%
 % I should probably define commands for these things in the hope of making
 % better output.  Would people actually use more verbose commands??
 
@@ -367,8 +367,8 @@
 \ProcessOptions
 
 % ***
-% Subscript and superscript positions are adjusted so that subscripts 
-% stay at the same height regardless of whether there is a superscipt 
+% Subscript and superscript positions are adjusted so that subscripts
+% stay at the same height regardless of whether there is a superscipt
 % + or -.  Since this positioning applies to both chemistry and math
 % typesetting, it is *not* enabled by default but requires the option
 % [lowersubs] or the command \ChemSubscripts.  The default positioning
@@ -379,13 +379,13 @@
 % Do this by actually comparing H_2 with H_2^+ and adjusting the font's
 % sub-lowering (16, 17) by half the difference and setting the super-
 % raising (13, 14, 15) to the matching position.  The settings (for
-% all three fonts t,s,ss) are determined once per text-font-size and 
+% all three fonts t,s,ss) are determined once per text-font-size and
 % stored in the macro \dch@sizet<size> (e.g. \csname dch@sizet12\endcsname).
 % Since some specific fonts are used in different roles at different
 % text-font-sizes, the original (dvi) settings for each particular font
-% are saved in a macro \dch@size<size> (no "t") before they are changed 
-% for the first time.  When that font appears in a different role for 
-% another text-font size, those original settings are restored first 
+% are saved in a macro \dch@size<size> (no "t") before they are changed
+% for the first time.  When that font appears in a different role for
+% another text-font size, those original settings are restored first
 % before making changes.
 %
 % This procedure sets the positioning each time the font size is changed,
@@ -393,12 +393,12 @@
 % are not restored for regular math.  Two reasons:
 % 1) Having a separate set of values for math and chemistry would mean
 %    you couldn't mix math symbols in with chemistry (no K_{\ch H_2O}
-%    or \yields^{\ma k_a}).  
+%    or \yields^{\ma k_a}).
 % 2) I *like* the modified settings for regular math; I find the regular
-%    subscripts too high often.  Though tastes may vary. 
-% If you do not select the subscript-alignment option, it is still 
-% reasonably easy to avoid ragged placement for the occasional ionic 
-% species as $\ch H_2PO_4{}^{-}$.  
+%    subscripts too high often.  Though tastes may vary.
+% If you do not select the subscript-alignment option, it is still
+% reasonably easy to avoid ragged placement for the occasional ionic
+% species as $\ch H_2PO_4{}^{-}$.
 %
 
 \@ifundefined{every@math@size}{\endinput}{}
@@ -408,7 +408,7 @@
   {\expandafter\dch@set@script\csname dch@sizet\f@size\endcsname}%
   {\csname dch@sizet\f@size\endcsname}}
 
-% textfont done last so it takes precedence in case it is the same as 
+% textfont done last so it takes precedence in case it is the same as
 % another style (like at \tiny)
 % #1 = single-token command name for executing settings
 \def\dch@set@script#1{\begingroup % fontdimen settings are global anyway
@@ -418,7 +418,7 @@
   \dch@set@one\scriptscriptstyle\scriptscriptfont#1\ssf@size
   \dch@set@one\scriptstyle\scriptfont#1\sf@size
   \dch@set@one\textstyle\textfont#1\f@size
-  \endgroup #1} % 
+  \endgroup #1} %
 
 \def\dch@set@one#1#2#3#4{%
   \@ifundefined{dch@size#4}%
@@ -431,11 +431,11 @@
   }{\csname dch@size#4\endcsname}%
   \setbox\z@\hbox{$#1H_2$}\@tempdima\dp\z@
   \setbox\z@\hbox{$#1H_2^{+\vrule \@height 1em}$}%
-%  \message{Depth null: \the\@tempdima, Depth plus: \the\dp\z@, 
+%  \message{Depth null: \the\@tempdima, Depth plus: \the\dp\z@,
 %  Height plus: \the\ht\z@. }%
    \ifdim\@tempdima<\dp\z@
 %     \message{Original: ^^J
-%      \fontdimen13#2\tw@=\the\fontdimen13#2\tw@, 
+%      \fontdimen13#2\tw@=\the\fontdimen13#2\tw@,
 %      \fontdimen14#2\tw@=\the\fontdimen14#2\tw@,
 %      \fontdimen15#2\tw@=\the\fontdimen15#2\tw@,
 %      \fontdimen16#2\tw@=\the\fontdimen16#2\tw@,
@@ -446,20 +446,20 @@
     \advance\@tempdimb\ht\z@ \advance\@tempdimb-1em % new super raising
 %     \message{Super position: \the\@tempdimb, Sub position: \the\@tempdima. }%
     \xdef#3{#3\dch@do@one#2{\the\@tempdimb}{\the\@tempdima}}%
-  \fi} 
+  \fi}
 
 \def\dch@do@one#1#2#3{\fontdimen13#1\tw@#2\relax
   \fontdimen14#1\tw@\fontdimen13#1\tw@ \fontdimen15#1\tw@\fontdimen13#1\tw@
   \fontdimen\sixt@@n#1\tw@#3\fontdimen17#1\tw@\fontdimen\sixt@@n#1\tw@}%
 
 \def\MathSubscripts{\let\dch@scr@hook\relax
-  \ifx\glb@currsize\f@size  
+  \ifx\glb@currsize\f@size
     \csname dch@size\ssf@size\endcsname
     \csname dch@size\sf@size\endcsname
-    \csname dch@size\f@size\endcsname 
+    \csname dch@size\f@size\endcsname
   \fi }
 
-\def\ChemSubscripts{\let\dch@scr@hook\dch@scr@adjust 
+\def\ChemSubscripts{\let\dch@scr@hook\dch@scr@adjust
   \ifx\glb@currsize\f@size \dch@scr@adjust \fi}
 
 \ifx\dch@scr@hook\@empty \let\dch@scr@hook\dch@scr@adjust \fi

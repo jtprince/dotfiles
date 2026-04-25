@@ -35,4 +35,3 @@ if cmd_exists evince ; then
     alias -s pdf='evince'
     alias -s ps='evince'
 fi
-

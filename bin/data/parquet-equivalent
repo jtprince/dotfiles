@@ -3,7 +3,6 @@ import math
 from pathlib import Path
 from typing import Tuple
 
-import numpy as np
 import pandas as pd
 from pandas.util import hash_pandas_object
 
@@ -86,10 +85,17 @@ def parquet_equivalent(
         if not sig_idx1.equals(sig_idx2):
             # quick summary
             # compute total surplus/deficit counts
-            diff_idx = pd.concat([sig_idx1.rename("A"), sig_idx2.rename("B")], axis=1).fillna(0).astype(int)
+            diff_idx = (
+                pd.concat([sig_idx1.rename("A"), sig_idx2.rename("B")], axis=1)
+                .fillna(0)
+                .astype(int)
+            )
             more_in_a = int((diff_idx["A"] - diff_idx["B"]).clip(lower=0).sum())
             more_in_b = int((diff_idx["B"] - diff_idx["A"]).clip(lower=0).sum())
-            return False, f"Not equivalent: index differs ({more_in_a} extra index values in A, {more_in_b} in B)."
+            return (
+                False,
+                f"Not equivalent: index differs ({more_in_a} extra index values in A, {more_in_b} in B).",
+            )
 
     # Continue with data equivalence ignoring index/row order
     df1n = _normalize_df(df1, float_tol=float_tol)
@@ -122,16 +128,26 @@ def parquet_equivalent(
     more_in_a = int((diff["A"] - diff["B"]).clip(lower=0).sum())
     more_in_b = int((diff["B"] - diff["A"]).clip(lower=0).sum())
     extra_idx_note = " (index also compared)" if compare_index else ""
-    return False, f"Not equivalent{extra_idx_note}: {more_in_a} extra rows in A and {more_in_b} extra rows in B."
+    return (
+        False,
+        f"Not equivalent{extra_idx_note}: {more_in_a} extra rows in A and {more_in_b} extra rows in B.",
+    )
 
 
 if __name__ == "__main__":
     import argparse
 
-    p = argparse.ArgumentParser(description="Compare two Parquet files for data equivalence.")
+    p = argparse.ArgumentParser(
+        description="Compare two Parquet files for data equivalence."
+    )
     p.add_argument("file_a")
     p.add_argument("file_b")
-    p.add_argument("--float-tol", type=float, default=None, help="e.g. 1e-6 to allow small float differences")
+    p.add_argument(
+        "--float-tol",
+        type=float,
+        default=None,
+        help="e.g. 1e-6 to allow small float differences",
+    )
     p.add_argument("--engine", default="pyarrow", choices=["pyarrow", "fastparquet"])
     p.add_argument(
         "--compare-index",

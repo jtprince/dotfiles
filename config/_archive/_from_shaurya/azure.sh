@@ -16,16 +16,16 @@ function vmstart() {
         echo "Usage: vmstart <vm-name>"
         return 1
     fi
-    
+
     vm_config="${azure_vms[$1]}"
     if [[ -z "$vm_config" ]]; then
         echo "Unknown VM name: $1"
         return 1
     fi
-    
+
     resource_group="${vm_config%%:*}"
     vm_name="${vm_config#*:}"
-    
+
     # renew certificate
     refresh-azure-cert "$resource_group" "$vm_name"
     # start vm
@@ -37,16 +37,16 @@ function vmstop() {
         echo "Usage: vmstop <vm-name>"
         return 1
     fi
-    
+
     vm_config="${azure_vms[$1]}"
     if [[ -z "$vm_config" ]]; then
         echo "Unknown VM name: $1"
         return 1
     fi
-    
+
     resource_group="${vm_config%%:*}"
     vm_name="${vm_config#*:}"
-    
+
     az vm stop -g "$resource_group" -n "$vm_name" --no-wait
 }
 
@@ -55,16 +55,16 @@ function vminfo() {
         echo "Usage: vminfo <vm-name>"
         return 1
     fi
-    
+
     vm_config="${azure_vms[$1]}"
     if [[ -z "$vm_config" ]]; then
         echo "Unknown VM name: $1"
         return 1
     fi
-    
+
     resource_group="${vm_config%%:*}"
     vm_name="${vm_config#*:}"
-    
+
     az vm get-instance-view -g "$resource_group" -n "$vm_name" --query instanceView.statuses[1].displayStatus
 }
 

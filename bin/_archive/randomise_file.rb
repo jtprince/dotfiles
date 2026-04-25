@@ -11,5 +11,3 @@ lines = IO.readlines(ARGV[0])
 lines.size.times do
   print lines.delete_at(rand(lines.size))
 end
-
-

@@ -33,11 +33,10 @@ def run(cmd):
 
 
 def get_available_pyenv_python_versions(args):
-    """Returns all available pyenv python versions, in ascending order. """
+    """Returns all available pyenv python versions, in ascending order."""
     reply = run(["pyenv", "versions", "--bare"])
     available_ = []
     for line in reply.split("\n"):
-
         chars = line.strip()
         if "/" not in chars:
             if args.miniconda:

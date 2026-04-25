@@ -33,4 +33,3 @@ msrun.intensity_min_value
   sorted, disjunct and strictly increasing
 * Indices can contain:
   slices, ints, floats, Nones, and/or iterables.
-

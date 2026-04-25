@@ -27,7 +27,7 @@ end
 TOP_MARGIN = 18
 RIGHT_MARGIN = 20
 JUSTIFY = :right
-FONT_SIZE = 8 
+FONT_SIZE = 8
 COLOR = '777777'
 
 ARGV.each do |file|
@@ -40,7 +40,7 @@ ARGV.each do |file|
   num_pages = data[/NumberOfPages: (\d+)/,1].to_i
   page_count = 1
 
-  Prawn::Document.generate(stampfile, :right_margin => RIGHT_MARGIN, :top_margin => TOP_MARGIN) do |pdf| 
+  Prawn::Document.generate(stampfile, :right_margin => RIGHT_MARGIN, :top_margin => TOP_MARGIN) do |pdf|
     pdf.fill_color  COLOR
     pdf.stroke_color  COLOR
     loop do

@@ -96,9 +96,7 @@ def cont(img, gray, user_thresh, crop):
             break  # stop if no borders could be detected
 
         ret, thresh = cv2.threshold(gray, user_thresh, 255, cv2.THRESH_BINARY)
-        contours = cv2.findContours(
-            thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE
-        )[0]
+        contours = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
         im_area = im_w * im_h
 
         for cnt in contours:
@@ -176,9 +174,7 @@ def autocrop(params):
     )
     im_h, im_w = img.shape[:2]
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.resize(
-        img, (int(im_w / 6), int(im_h / 6)), interpolation=cv2.INTER_CUBIC
-    )
+    cv2.resize(img, (int(im_w / 6), int(im_h / 6)), interpolation=cv2.INTER_CUBIC)
     found, img = cont(img, gray, thresh, crop)
 
     if found:
@@ -186,9 +182,7 @@ def autocrop(params):
         try:
             if black_bg:
                 img = ~img
-            cv2.imwrite(
-                f"{out_path}/{name}", img, [int(cv2.IMWRITE_JPEG_QUALITY), 100]
-            )
+            cv2.imwrite(f"{out_path}/{name}", img, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
         except:
             None
         # TODO: this is always writing JPEG, no matter what was the input file type, can we detect this?
@@ -201,11 +195,12 @@ def autocrop(params):
         if not os.path.exists(f"{out_path}/failed/"):
             os.makedirs(f"{out_path}/failed/")
 
-        with open(filename, "rb") as in_f, open(
-            f"{out_path}/failed/{name}", "wb"
-        ) as out_f:
+        with (
+            open(filename, "rb") as in_f,
+            open(f"{out_path}/failed/{name}", "wb") as out_f,
+        ):
             while True:
-                buf = in_f.read(1024 ** 2)
+                buf = in_f.read(1024**2)
                 if not buf:
                     break
                 else:
@@ -272,9 +267,9 @@ def main():
     )
     args = parser.parse_args()
 
-    in_path = pathlib.PureWindowsPath(
-        args.i
-    ).as_posix()  # since windows understands posix too: let's convert it to a posix path.
+    in_path = (
+        pathlib.PureWindowsPath(args.i).as_posix()
+    )  # since windows understands posix too: let's convert it to a posix path.
     out_path = pathlib.PureWindowsPath(
         args.o
     ).as_posix()  # (works on all systems and conveniently also removes additional '/' on posix systems)

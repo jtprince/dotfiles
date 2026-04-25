@@ -7,4 +7,3 @@ memory = Memory(os.path.expanduser("~/.cache/python"))
 @memory.cache
 def somefunc():
     ...
-

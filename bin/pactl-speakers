@@ -237,7 +237,7 @@ class Pulse:
         if index > max(indices):
             raise parser.error(f"index cannot be > {max(indices)}")
         if min(indices) < 0:
-            raise parser.error(f"index cannot be < 0")
+            raise parser.error("index cannot be < 0")
 
         sink = [sink for sink in self._sinks if sink.index == index][0]
         self._pulse.default_set(sink.pulse_sink)

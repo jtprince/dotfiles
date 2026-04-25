@@ -28,7 +28,7 @@ IMAGE_EDITOR_OPTS = dict(
     name="satty",
     file_option="--filename",
     outfile_option="--output-filename",
-    extra_opts=["--early-exit"]
+    extra_opts=["--early-exit"],
     # extra_opts=["--early-exit", "--fullscreen"],
 )
 
@@ -152,7 +152,7 @@ class Screenshot:
                 str(self.image_path),
                 IMAGE_EDITOR_OPTS["outfile_option"],
                 str(self.annotated_path),
-                *IMAGE_EDITOR_OPTS["extra_opts"]
+                *IMAGE_EDITOR_OPTS["extra_opts"],
             ]
             subprocess.run(cmd)
 

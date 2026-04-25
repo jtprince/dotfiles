@@ -12,16 +12,23 @@ args = parser.parse_args()
 base_cmd = "ffmpeg"
 
 other_args = [
-# todo: vet these and add overrides to argparse
-    "-c:v", "libx264",
-    "-preset", "veryslow",
-    "-crf", "22",
-    "-c:a", "libmp3lame",
-    "-qscale:a", "2",
-    "-ac", "2",
-    "-ar", "44100",
+    # todo: vet these and add overrides to argparse
+    "-c:v",
+    "libx264",
+    "-preset",
+    "veryslow",
+    "-crf",
+    "22",
+    "-c:a",
+    "libmp3lame",
+    "-qscale:a",
+    "2",
+    "-ac",
+    "2",
+    "-ar",
+    "44100",
 ]
 
 for filename in getattr(args, filename_stub):
-    outfile = str(Path(filename).with_suffix('.mp4'))
+    outfile = str(Path(filename).with_suffix(".mp4"))
     subprocess.run([base_cmd, "-i", filename] + other_args + [outfile])

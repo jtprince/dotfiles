@@ -483,8 +483,9 @@ class set_(Command):
                     self.firstpart + colorscheme
                     for colorscheme in get_all_colorschemes(self.fm)
                 ),
-                "column_ratios": lambda: self.firstpart
-                + ",".join(map(str, settings[name])),
+                "column_ratios": lambda: (
+                    self.firstpart + ",".join(map(str, settings[name]))
+                ),
             }
 
             def default_value_completer():

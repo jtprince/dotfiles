@@ -7,9 +7,7 @@ import subprocess
 # requires sad to be configured
 
 
-parser = argparse.ArgumentParser(
-    description="Looks for two spaces after period."
-)
+parser = argparse.ArgumentParser(description="Looks for two spaces after period.")
 parser.add_argument("paths", nargs="+", help="files to look in (e.g. '**/*.py'")
 parser.add_argument(
     "-k",

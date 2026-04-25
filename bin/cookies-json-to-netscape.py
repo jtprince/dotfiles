@@ -5,7 +5,6 @@ from pathlib import Path
 
 
 import json
-import sys
 
 
 def json_to_netscape(json_file, output_file):

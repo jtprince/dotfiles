@@ -39,4 +39,3 @@ highlight Comment    ctermfg=Blue
 highlight StatusLine ctermfg=blue	ctermbg=white
 highlight Statement  ctermfg=Yellow			cterm=NONE
 highlight Type						cterm=NONE
-

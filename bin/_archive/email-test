@@ -4,20 +4,16 @@ import datetime
 from subprocess import Popen, PIPE
 
 base = "jtprince"
-postfix = '@doba.com'
+postfix = "@doba.com"
 
-timestamp = str(datetime.datetime.now().timestamp()).replace('.','')
+timestamp = str(datetime.datetime.now().timestamp()).replace(".", "")
 
-email = base + '+' + timestamp + postfix
+email = base + "+" + timestamp + postfix
 
 print(email)
 
-pipe = Popen(['xclip'], stdin=PIPE)
+pipe = Popen(["xclip"], stdin=PIPE)
 pipe.communicate(input=bytes(email, "utf-8"))
 
-pipe = Popen(['xclip', '-selection', 'clipboard'], stdin=PIPE)
+pipe = Popen(["xclip", "-selection", "clipboard"], stdin=PIPE)
 pipe.communicate(input=bytes(email, "utf-8"))
-
-
-
-

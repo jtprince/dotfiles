@@ -2,26 +2,47 @@
 
 import argparse
 import subprocess
-from collections import namedtuple
 import sys
 
-parser = argparse.ArgumentParser(description='ours or theirs')
-parser.add_argument("-o", "--ours", action='append', help="take ours for any paths given")
-parser.add_argument("-t", "--theirs", action='append', help="take theirs for any paths given")
-parser.add_argument("unmatched", nargs='?', default=None, choices=['ours', 'theirs'], help='merge for those not matching with ours or theirs')
-parser.add_argument("-c", "--cont", action='store_true', help='runs "git rebase --continue" if no more conflicts')
+parser = argparse.ArgumentParser(description="ours or theirs")
+parser.add_argument(
+    "-o", "--ours", action="append", help="take ours for any paths given"
+)
+parser.add_argument(
+    "-t", "--theirs", action="append", help="take theirs for any paths given"
+)
+parser.add_argument(
+    "unmatched",
+    nargs="?",
+    default=None,
+    choices=["ours", "theirs"],
+    help="merge for those not matching with ours or theirs",
+)
+parser.add_argument(
+    "-c",
+    "--cont",
+    action="store_true",
+    help='runs "git rebase --continue" if no more conflicts',
+)
 
 args = parser.parse_args()
 if len(sys.argv) == 1:
     parser.print_help()
     exit(1)
 
-conflicted_paths = subprocess.check_output(['git-ls-conflicted', 'unresolved']).decode('utf-8').strip().split('\n')
-conflicted_paths = [path[2:] if path.startswith('./') else path for path in conflicted_paths]
+conflicted_paths = (
+    subprocess.check_output(["git-ls-conflicted", "unresolved"])
+    .decode("utf-8")
+    .strip()
+    .split("\n")
+)
+conflicted_paths = [
+    path[2:] if path.startswith("./") else path for path in conflicted_paths
+]
 
 
 def matching(conflicted_paths, pathstubs):
-    """ returns ours and theirs """
+    """returns ours and theirs"""
     matches = []
 
     for conflicted_path in conflicted_paths:
@@ -39,21 +60,21 @@ found = set(ours) & set(theirs)
 no_matches = list(set(conflicted_paths) - found)
 
 
-if args.unmatched == 'ours':
+if args.unmatched == "ours":
     ours.extend(no_matches)
     del no_matches[:]
-elif args.unmatched == 'theirs':
+elif args.unmatched == "theirs":
     theirs.extend(no_matches)
     del no_matches[:]
 
 
-for stage, paths in {'ours': ours, 'theirs': theirs}.items():
+for stage, paths in {"ours": ours, "theirs": theirs}.items():
     for path in paths:
-        cmd = [ 'git', 'checkout', '--' + stage, '--', path ]
+        cmd = ["git", "checkout", "--" + stage, "--", path]
         print("executing: " + " ".join(cmd))
         subprocess.call(cmd)
 
-        cmd = [ 'git', 'add', path ]
+        cmd = ["git", "add", path]
         print("executing: " + " ".join(cmd))
         subprocess.call(cmd)
 
@@ -64,17 +85,22 @@ if no_matches:
 else:
     if args.cont:
         try:
-            output = subprocess.check_output('git rebase --continue', shell=True)
+            output = subprocess.check_output("git rebase --continue", shell=True)
             print(output)
         except subprocess.CalledProcessError as e:
             if "No changes - did you forget to use 'git add'?" in e.output:
                 print(e.output)
                 try:
-                    output = subprocess.check_output('git rebase --skip', shell=True)
+                    output = subprocess.check_output("git rebase --skip", shell=True)
                 except subprocess.CalledProcessError as e:
                     print(e.output)
 
-unresolved = subprocess.check_output("git-ls-conflicted unresolved", shell=True).decode('utf-8').strip().split('\n')
+unresolved = (
+    subprocess.check_output("git-ls-conflicted unresolved", shell=True)
+    .decode("utf-8")
+    .strip()
+    .split("\n")
+)
 
 if len(unresolved):
     print("UNRESOLVED: ")
@@ -83,7 +109,12 @@ if len(unresolved):
 else:
     print("[everything resolved]")
 
-notadded = subprocess.check_output("git-ls-conflicted all", shell=True).decode('utf-8').strip().split('\n')
+notadded = (
+    subprocess.check_output("git-ls-conflicted all", shell=True)
+    .decode("utf-8")
+    .strip()
+    .split("\n")
+)
 
 if len(notadded):
     print("NOT ADDED: ")
@@ -91,4 +122,3 @@ if len(notadded):
         print(notadded)
 else:
     print("[everything added]")
-

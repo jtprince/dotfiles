@@ -11,7 +11,7 @@ end
 SpellingWord = Struct.new(:number, :word, :review_word, :challenge_word) do
   def say(speeds=[130, 80])
     if review_word
-      speak "review word", 180 
+      speak "review word", 180
     end
     if challenge_word
       speak "challenge word", 180

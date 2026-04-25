@@ -15,7 +15,9 @@ class KeyBinding:
     description: Optional[str] = None
 
 
-def parse_amethyst_config(filepath: Path, include_descriptions: bool) -> List[KeyBinding]:
+def parse_amethyst_config(
+    filepath: Path, include_descriptions: bool
+) -> List[KeyBinding]:
     bindings = []
     comment_buffer = []
 
@@ -33,7 +35,9 @@ def parse_amethyst_config(filepath: Path, include_descriptions: bool) -> List[Ke
 
         if re.match(r"^[\w-]+:\s*$", line):
             action = line.rstrip(":").strip()
-            description = " ".join(comment_buffer).strip() if include_descriptions else None
+            description = (
+                " ".join(comment_buffer).strip() if include_descriptions else None
+            )
             comment_buffer = []
 
             # Look ahead for 'mod' and 'key'
@@ -83,10 +87,18 @@ def main():
 
     path = Path.home() / ".config/amethyst/amethyst.yml"
     parser = argparse.ArgumentParser(description="Parse Amethyst config keybindings.")
-    parser.add_argument("--config", type=Path, default=path, help="Path to Amethyst YAML config file.")
-    parser.add_argument("--sort", choices=["none", "alphabetical", "mod", "action"],
-                        default="alphabetical", help="Sorting method for keybindings.")
-    parser.add_argument("--descriptions", action="store_true", help="Include comments/descriptions.")
+    parser.add_argument(
+        "--config", type=Path, default=path, help="Path to Amethyst YAML config file."
+    )
+    parser.add_argument(
+        "--sort",
+        choices=["none", "alphabetical", "mod", "action"],
+        default="alphabetical",
+        help="Sorting method for keybindings.",
+    )
+    parser.add_argument(
+        "--descriptions", action="store_true", help="Include comments/descriptions."
+    )
     args = parser.parse_args()
 
     bindings = parse_amethyst_config(args.config, args.descriptions)

@@ -27,4 +27,3 @@ gcloud compute instances start example-instance-1 example-instance-2
 
 # Stop an instance
 gcloud compute instances stop example-instance-1 example-instance-2
-

@@ -46,5 +46,3 @@ ARGV.each do |file|
 
   puts html.for_sql_insert
 end
-
-

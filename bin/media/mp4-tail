@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-from typing import Callable
 import subprocess
 from pathlib import Path
 from datetime import timedelta
@@ -12,17 +11,17 @@ def trim_video_file(duration, input_file, inplace):
     input_file = Path(input_file)
     output_file = input_file.with_suffix(f".tail-{duration}{input_file.suffix}")
 
-
     duration_str = str(timedelta(seconds=duration))
 
     # Use ffmpeg to trim the video
-    cmd =  [
+    cmd = [
         "ffmpeg",
         "-sseof",
         f"-{duration_str}",
         "-i",
         str(input_file),
-        "-c", "copy",
+        "-c",
+        "copy",
         str(output_file),
     ]
     print(" ".join(cmd))

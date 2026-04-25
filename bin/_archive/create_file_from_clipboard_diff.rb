@@ -67,7 +67,7 @@ stripped_lines.each do |line|
   else
     current_lines << line
   end
-end 
+end
 file_lines << current_lines
 
 new_file_lines = file_lines.select {|lines| lines[1].split.first == 'new' }

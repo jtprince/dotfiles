@@ -3,11 +3,11 @@
 
 from pathlib import Path
 import sys
+
 sys.path.append(str(Path.home() / "dotfiles"))
 
 import argparse
 import subprocess
-from typing import Dict
 
 from dotfiles.ssh.host_to_instance_id import get_ssh_host_to_instance_id
 
@@ -24,9 +24,7 @@ parser.add_argument(
     ),
 )
 parser.add_argument(
-    "--list",
-    action='store_true',
-    help="list ec2 names and ids and exit"
+    "--list", action="store_true", help="list ec2 names and ids and exit"
 )
 parser.add_argument(
     "--ssh_config_path",

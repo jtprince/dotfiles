@@ -5,9 +5,7 @@ import subprocess
 from pathlib import Path
 
 default_quality = 90
-parser = argparse.ArgumentParser(
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter
-)
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("files", nargs="+", type=Path, help="xcf files")
 parser.add_argument("-q", "--quality", default=90, help="quality of the jpg")
 args = parser.parse_args()
@@ -22,6 +20,3 @@ for path in args.files:
         str(jpg_path),
     ]
     subprocess.run(cmd)
-
-
-

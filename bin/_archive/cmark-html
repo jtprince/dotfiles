@@ -10,7 +10,9 @@ if len(sys.argv) == 1:
 usage: {} <file>.md ...
 output: <file>.html ...
 (requires 'cmark' to be system executable)
-        """.format(os.path.basename(__file__), ).strip()
+        """.format(
+            os.path.basename(__file__),
+        ).strip()
     )
     exit(1)
 
@@ -20,7 +22,7 @@ for fname in sys.argv[1:]:
 
     body = subprocess.check_output(["cmark", fname]).decode("utf-8")
 
-    with open(htmlfile, 'w') as htmlout:
+    with open(htmlfile, "w") as htmlout:
         htmlout.write("<html>\n<body>\n")
         htmlout.write(body)
         htmlout.write("\n</body>\n</html>\n")

@@ -47,4 +47,3 @@ on your part.
 Put your own files here:
 
 ~/texmf/tex/latex/<name>/<name>.sty
-

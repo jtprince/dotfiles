@@ -8,8 +8,9 @@ from pathlib import Path
 DEFAULT_OUTFORMAT = "output%d.pdf"
 
 
-def magnitude (value):
-    if (value == 0): return 0
+def magnitude(value):
+    if value == 0:
+        return 0
     return int(math.floor(math.log10(abs(value))))
 
 
@@ -17,7 +18,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("infile", type=Path, help="the pdf input file")
 parser.add_argument(
     # escape the % with a %
-    "outfile_format", nargs="?", default=DEFAULT_OUTFORMAT, help="like output%%d.pdf"
+    "outfile_format",
+    nargs="?",
+    default=DEFAULT_OUTFORMAT,
+    help="like output%%d.pdf",
 )
 parser.add_argument(
     "--no-adjust-padding",
@@ -30,7 +34,7 @@ args = parser.parse_args()
 def get_number_pages(path):
     response = subprocess.check_output(["file", str(path)], text=True)
     parts = response.split()
-    if parts[-1] == 'pages':
+    if parts[-1] == "pages":
         return int(parts[-2])
     else:
         # Hack to get a reasonable doc size if not returned
@@ -50,10 +54,6 @@ if not args.no_adjust_padding:
         outfile_format = new_outfile_format
 
 
-cmd = [
-    "pdfseparate",
-    args.infile,
-    outfile_format
-]
+cmd = ["pdfseparate", args.infile, outfile_format]
 
 subprocess.run(cmd)

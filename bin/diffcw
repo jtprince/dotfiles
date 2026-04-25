@@ -6,8 +6,8 @@ require 'optparse'
 opt = {}
 opts = OptionParser.new do |op|
   op.banner = "usage: #{File.basename(__FILE__)} <file1> <file2>"
-  op.on("-n", "--notation", "preserve diff symbols (--word-diff=plain)") {|v| opt[:notation] = v} 
-  op.on("-c", "--cmd", "just print the command being used") {|v| opt[:cmd] = v} 
+  op.on("-n", "--notation", "preserve diff symbols (--word-diff=plain)") {|v| opt[:notation] = v}
+  op.on("-c", "--cmd", "just print the command being used") {|v| opt[:cmd] = v}
   op.separator ""
   op.separator "(hint: use :AnsiEsc to view in vim)"
 end

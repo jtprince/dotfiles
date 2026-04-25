@@ -73,6 +73,3 @@ ARGV.each do |file|
     File.unlink outfile
   end
 end
-
-
-

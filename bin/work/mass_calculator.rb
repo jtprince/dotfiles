@@ -24,4 +24,3 @@ puts "MF['C2H5', +1]"
 puts "formula.isotope_distribution"
 
 binding.pry
-

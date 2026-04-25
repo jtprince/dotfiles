@@ -61,5 +61,3 @@ time {
 #cpu_temperature 0 {
 #       format = "T: %degrees °C"
 #}
-
-

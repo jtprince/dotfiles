@@ -209,7 +209,9 @@ def join_blob_path(prefix: str | None, suffix: str | None) -> str:
     return "/".join(part for part in parts if part)
 
 
-def infer_local_path(blob_path: str, output_dir: Path, preserve_structure: bool) -> Path:
+def infer_local_path(
+    blob_path: str, output_dir: Path, preserve_structure: bool
+) -> Path:
     if preserve_structure:
         return output_dir / Path(blob_path)
     return output_dir / Path(blob_path).name
@@ -337,7 +339,9 @@ def resolve_inputs(args: argparse.Namespace) -> Tuple[str, List[Tuple[str, str]]
         return args.storage_account, resolved
 
     if not args.container:
-        print("ERROR: --container is required in container/prefix mode.", file=sys.stderr)
+        print(
+            "ERROR: --container is required in container/prefix mode.", file=sys.stderr
+        )
         sys.exit(2)
 
     base_prefix = args.download_dir or ""
@@ -407,7 +411,11 @@ def main() -> None:
 
     downloaded = 0
     for batch_num, batch in enumerate(chunked(targets, args.batch_size), start=1):
-        print("\nBatch {batch_num}: {count} file(s)".format(batch_num=batch_num, count=len(batch)))
+        print(
+            "\nBatch {batch_num}: {count} file(s)".format(
+                batch_num=batch_num, count=len(batch)
+            )
+        )
         for container, blob_path in batch:
             local_file = infer_local_path(
                 blob_path=blob_path,

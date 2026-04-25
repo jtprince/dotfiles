@@ -2,7 +2,6 @@
 
 import awswrangler as wr
 import pandas as pd
-import argparse
 
 # parser = argparse.ArgumentParser()
 # parser.add_argument()

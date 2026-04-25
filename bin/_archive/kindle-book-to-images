@@ -47,4 +47,4 @@ for page_number in range(start, end):
     xdo("key Right")
     time.sleep(args.wait)
 
-print("To continue, run:\n" f"kindle-book-to-images.py --start {end}")
+print(f"To continue, run:\nkindle-book-to-images.py --start {end}")

@@ -54,10 +54,10 @@ parser = OptionParser.new do |op|
   op.on("-s", "--subject <string>", "subject line, def: #{opt.subject}") {|v| opt.subject = v }
   op.on("-b", "--body <string>", "body def: #{opt.body}") {|v| opt.body = v }
   op.on(
-    "-g", "--grade-sheet-as-body", 
-    "grabs <paper>#{GRADESHEET_TXT} and makes body", 
+    "-g", "--grade-sheet-as-body",
+    "grabs <paper>#{GRADESHEET_TXT} and makes body",
     "will also attach <paper>#{GRADESHEET_MP3} if exists"
-  ) do |v| 
+  ) do |v|
     opt.grade_sheet = v
   end
   op.on("-d", "--dry", "don't deliver the message") {|v| opt.dry = v }
@@ -91,15 +91,15 @@ student_files = ARGV.dup
 
 addresses = IO.readlines(addresses_file).map(&:chomp).reject {|address| address.size < 1 }.compact
 
-last_name_to_address = addresses.each_with_object({}) do |address, hash| 
+last_name_to_address = addresses.each_with_object({}) do |address, hash|
   hash[ name_to_lastname( email_address_to_name(address) ) ] = address
 end
 
-basename_to_filename = student_files.each_with_object({}) do |file,hash| 
+basename_to_filename = student_files.each_with_object({}) do |file,hash|
   hash[File.basename(file)] = file
 end
 
-last_name_to_file = basename_to_filename.keys.each_with_object({}) do |basename, hash| 
+last_name_to_file = basename_to_filename.keys.each_with_object({}) do |basename, hash|
   hash[basename_to_lastname(basename)] = basename_to_filename[basename]
 end
 
@@ -130,7 +130,7 @@ last_name_to_file.each do |last_name, filename|
 
   if opt.grade_sheet
     body = IO.read( gradesheet )
-    mail[:body] = body 
+    mail[:body] = body
     if File.exist?(audiofile)
       puts "SOUND ATTACHMENT: #{audiofile}"
       mail.add_file(audiofile)

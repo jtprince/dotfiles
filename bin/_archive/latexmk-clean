@@ -43,4 +43,3 @@ new_files = after - before
 non_pdf = new_files.reject {|file| File.extname(file) == '.pdf' }
 
 FileUtils.mv non_pdf, @auxdir
-

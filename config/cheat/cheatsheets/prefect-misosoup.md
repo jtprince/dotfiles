@@ -25,7 +25,7 @@ prefect flow-run inspect ecb1c9eb-9383-4d18-ad9a-69266a42384e
 # change dev to a new branch
 
 ```
-Go to github misosoup 
+Go to github misosoup
     -> Actions [tab at the top]
     -> All workflows  [ON THE LEFT!!!!]
         -> click [deploy-dev]

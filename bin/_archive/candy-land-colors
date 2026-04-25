@@ -29,4 +29,3 @@ loop do
   gets
   100.times { puts }
 end
-

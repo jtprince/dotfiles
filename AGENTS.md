@@ -11,9 +11,22 @@ behaviour must diverge.
 ## Repository layout
 
 ```
-config/   – App configs, symlinked into ~/.config (or ~/) by dotfiles-configure
-bin/      – Executable scripts, symlinked to ~/bin and expected on $PATH
-scripts/  – One-off or infrequent scripts (not on $PATH)
+config/            App configs, symlinked into ~/.config (or ~/) by dotfiles-configure
+  mac/             macOS-only configs (amethyst, hammerspoon, karabiner, skhd, osascript)
+  linux/           Linux-only configs (sway, waybar, X11, GTK, audio, etc.)
+  _archive/        Archived configs for tools no longer in use
+  <name>/          Cross-platform configs (git, kitty, nvim, zsh, tmux, …)
+bin/               Executable scripts, symlinked to ~/bin and expected on $PATH
+  data/            Data format conversion (csv, json, parquet, etc.)
+  docker/          Docker management
+  git/             Git utilities
+  markdown/        Markdown conversion
+  media/           Image, PDF, audio/video conversion
+  python/          Python/Jupyter tooling
+  work/            Work-specific scripts
+  aliases/         Shell aliases
+  _archive/        Old/unused scripts
+scripts/           One-off or infrequent scripts (not on $PATH)
 ```
 
 - `bin/dotfiles-configure` is a Python script that idempotently creates symlinks
@@ -49,9 +62,9 @@ first.**
 - Package management: `brew` on macOS, `pacman`/`yay` on Arch.
 - Paths like `~/Dropbox/env` may hold secrets or machine-local overrides and are
   **not** checked into this repo.
-- Some configs (Xresources, GTK themes, Sway, Waybar, etc.) are Linux-only.
-  macOS-only configs live under `config/mac/`, `config/hammerspoon/`,
-  `config/karabiner/`, `config/skhd/`, and `config/amethyst/`.
+- Linux-only configs live under `config/linux/` (Xresources, GTK themes, Sway,
+  Waybar, etc.). macOS-only configs live under `config/mac/` (Hammerspoon,
+  Karabiner, Amethyst, skhd, osascript).
 
 ## Testing changes
 

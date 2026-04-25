@@ -77,7 +77,7 @@ puts "looking for student: #{student}"
 oneup = start_dir + "/.."
 twoup = start_dir + "/.."
 
-if [oneup, twoup].any? do |dir| 
+if [oneup, twoup].any? do |dir|
   glob = "#{student}*.pdf"
   search_for_it(dir, seeking_rev, glob)
 end
@@ -85,6 +85,3 @@ end
 else
   puts "failure"
 end
-
-
-

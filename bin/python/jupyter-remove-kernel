@@ -5,12 +5,16 @@ import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument("names", nargs="*", help="names of the kernels to remove")
-parser.add_argument("--list", action='store_true', help="lists available kernels and exits")
+parser.add_argument(
+    "--list", action="store_true", help="lists available kernels and exits"
+)
 args = parser.parse_args()
+
 
 def list_kernels():
     cmd = ["jupyter", "kernelspec", "list"]
     subprocess.run(cmd)
+
 
 if args.list:
     list_kernels()

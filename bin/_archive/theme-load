@@ -10,11 +10,11 @@ if ARGV.size == 0
 end
 
 ARGV.each do |zipfile|
-  archive_name = 
+  archive_name =
     if File.extname(zipfile) =~ %r{.zip$}
       reply = `unzip #{Shellwords.escape(zipfile)}`
       archive_name = nil
-      reply.each_line do |line| 
+      reply.each_line do |line|
         line.chomp!
         if md = line.match(/creating: ([^\/]+)/)
           archive_name = md[1]
@@ -24,13 +24,13 @@ ARGV.each do |zipfile|
     else
       abort 'not handling yet'
     end
-  if archive_name 
-    puts "extracted the theme: #{archive_name}" 
+  if archive_name
+    puts "extracted the theme: #{archive_name}"
   else
     abort 'could not find archive name!'
   end
 
-  cmd = "sudo mv #{Shellwords.escape(archive_name)} #{theme_dir}" 
+  cmd = "sudo mv #{Shellwords.escape(archive_name)} #{theme_dir}"
   puts cmd
   system cmd
 end

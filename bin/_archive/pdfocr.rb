@@ -320,5 +320,3 @@ if deletefiles
   puts "Cleaning up temporary files"
   rmdir(tmp)
 end
-
-

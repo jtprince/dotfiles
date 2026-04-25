@@ -75,7 +75,7 @@ parser.parse!
 
 ### TODO: implement ability to optionally enter filename on open or print (use tmpfile)
 
-filename = ARGV.shift 
+filename = ARGV.shift
 unless filename
   filename = window_to_filename[opt.window]
   opt.timestamp = true

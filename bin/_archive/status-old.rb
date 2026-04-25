@@ -23,7 +23,7 @@ unless have_util?('sar')
   exit
 end
 
-def network_interface(default='eth0') 
+def network_interface(default='eth0')
   lines = `ip link show`.split("\n")
   interface = default
   lines.each_slice(2) do |info, link|
@@ -46,7 +46,7 @@ class SysMonitor
   DEFAULT_WEATHER_CHECK = 600 # seconds
 
   BAR = [
-    ' ', 
+    ' ',
     '▁', # U+2581 lower 1/8
     '▂', # U+2582 lower 1/4
     '▃', # U+2583 lower 3/8
@@ -135,7 +135,7 @@ class SysMonitor
     [mem, swap].map do |line|
       data = line.chomp.split(/\s+/)
       # used / total
-      used = 
+      used =
         if data[5]
           data[2].to_f - data[5].to_f - data[6].to_f
         else
@@ -233,7 +233,7 @@ class StatusBar
   end
 
   def display(&block)
-    Kernel.loop do  
+    Kernel.loop do
       block.call(self)
       puts self.urp
     end

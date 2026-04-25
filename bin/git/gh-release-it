@@ -20,7 +20,9 @@ import subprocess
 import sys
 
 
-def run(cmd: list[str], *, capture: bool = True, check: bool = True) -> subprocess.CompletedProcess:
+def run(
+    cmd: list[str], *, capture: bool = True, check: bool = True
+) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, text=True, capture_output=capture, check=check)
 
 
@@ -56,7 +58,9 @@ def release_exists(tag: str) -> bool:
 
 
 def confirm(version: str, tag: str) -> None:
-    resp = input(f"Proceed with version {version} and tag {tag}? [y/N] ").strip().lower()
+    resp = (
+        input(f"Proceed with version {version} and tag {tag}? [y/N] ").strip().lower()
+    )
     if resp not in {"y", "yes"}:
         raise RuntimeError("aborted by user")
 

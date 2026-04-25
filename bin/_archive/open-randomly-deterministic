@@ -50,7 +50,9 @@ def usage() -> None:
 
 def parse_args(argv: List[str]) -> Tuple[List[str], int, List[str]]:
     args = argv[1:]
-    hinge_index = next((i for i, arg in enumerate(args) if arg.isdigit() and int(arg) > 0), None)
+    hinge_index = next(
+        (i for i, arg in enumerate(args) if arg.isdigit() and int(arg) > 0), None
+    )
 
     if hinge_index is None:
         raise ValueError("NUM_TO_OPEN must be provided as a positive integer.")

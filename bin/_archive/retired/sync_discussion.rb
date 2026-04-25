@@ -39,5 +39,3 @@ else
   cmd = [base, Shellwords.escape(dir), destination + "/"].join(" ")
   run_verify cmd
 end
-
-

@@ -30,7 +30,7 @@ uv python pin --global "$PYV"
 ## Install using uv pip into the global python
 uv pip install --python "$PYTHON_GLOBAL_VENV" pandas
 
-## Create new project	
+## Create new project
 uv init <project>
 
 ## Use private repo in your pyproject.toml
@@ -42,28 +42,28 @@ url = "https://pypi.enveda.io/simple/"
 default = true
 ```
 
-## Install dependencies	
+## Install dependencies
 uv sync
 
 ## Install deps with groups
 uv sync --group dev --group test
 
-## Install all groups	
+## Install all groups
 uv sync --all-groups
 
-## Install with extras	
+## Install with extras
 uv sync --all-extras
 
-## Add dependency	
+## Add dependency
 uv add <package>
 
-## Add dev dependency	
+## Add dev dependency
 uv add --dev <package>
 
-## Add with extras	
+## Add with extras
 uv add <package>[extra1]
 
-## Remove dependency	
+## Remove dependency
 uv remove <package>
 
 ## Update dependencies (all)
@@ -72,18 +72,18 @@ uv lock --upgrade
 ## Update single dependency
 uv lock --upgrade-package <some_package>
 
-## Run command in venv	
+## Run command in venv
 uv run <command>
 
-## Activate shell	
+## Activate shell
 source .venv/bin/activate
 
-## View Installed packages	
-uv pip list 
+## View Installed packages
+uv pip list
 uv tree
 
-## Bump the version of a project	
+## Bump the version of a project
 uv version --bump <major|minor|patch>
 
-## Use a tool e.g. ruff	
+## Use a tool e.g. ruff
 uvx ruff check

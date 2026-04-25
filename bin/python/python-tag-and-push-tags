@@ -15,7 +15,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--dry",
-    action='store_true',
+    action="store_true",
     help="path to setup.py file",
 )
 
@@ -26,10 +26,12 @@ version = subprocess.check_output(
     f"python {args.setup_py} --version", shell=True, text=True
 ).strip()
 
+
 def run(cmd):
     print(cmd)
     if not args.dry:
         subprocess.run(cmd, shell=True)
 
+
 run(f"git tag -a v{version} -m 'version {version}'")
-run(f"git push origin -f --tags")
+run("git push origin -f --tags")

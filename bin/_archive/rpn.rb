@@ -21,4 +21,3 @@ while gets
     puts "error"
   end
 end
-

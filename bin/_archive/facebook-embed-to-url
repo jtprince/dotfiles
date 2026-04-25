@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from urllib.parse import unquote
-import sys
 import subprocess
 import argparse
 
@@ -18,7 +17,4 @@ encoded_url = args.embed_link.split("href=")[1].split("&")[0]
 unquoted_url = unquote(encoded_url)
 print(unquoted_url)
 
-subprocess.run(f"echo \"{unquoted_url}\" | clip", shell=True)
-
-
-
+subprocess.run(f'echo "{unquoted_url}" | clip', shell=True)

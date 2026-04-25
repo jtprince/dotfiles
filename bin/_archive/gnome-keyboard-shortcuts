@@ -7,19 +7,15 @@ import shlex
 import subprocess
 import sys
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Iterable
 
 
 MEDIA_KEYS_SCHEMA = "org.gnome.settings-daemon.plugins.media-keys"
 CUSTOM_LIST_KEY = "custom-keybindings"
-CUSTOM_BINDING_SCHEMA = (
-    "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding"
-)
+CUSTOM_BINDING_SCHEMA = "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding"
 
 MANAGED_PATH_PREFIX = (
-    "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/"
-    "jtp-launchers-"
+    "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/jtp-launchers-"
 )
 MANAGED_NAME_PREFIX = "JTP Launcher: "
 
@@ -188,7 +184,9 @@ def get_custom_binding_paths() -> list[str]:
 
 
 def set_custom_binding_paths(paths: list[str]) -> None:
-    gsettings_set(MEDIA_KEYS_SCHEMA, CUSTOM_LIST_KEY, format_gvariant_string_list(paths))
+    gsettings_set(
+        MEDIA_KEYS_SCHEMA, CUSTOM_LIST_KEY, format_gvariant_string_list(paths)
+    )
 
 
 def get_binding_value(path: str, key: str) -> str | None:
@@ -310,16 +308,21 @@ def apply_launchers(dry_run: bool = False) -> int:
             info(f"applied: {launcher.name} {launcher.binding} -> {launcher.command}")
 
     stale_managed_paths = [
-        path for path in existing_paths
+        path
+        for path in existing_paths
         if is_managed_path(path) and path not in desired_paths
     ]
 
     if stale_managed_paths:
         if dry_run:
             for path in stale_managed_paths:
-                info(f"[dry-run] would remove stale managed binding: {path_summary(path)}")
+                info(
+                    f"[dry-run] would remove stale managed binding: {path_summary(path)}"
+                )
         else:
-            existing_paths = [path for path in existing_paths if path not in stale_managed_paths]
+            existing_paths = [
+                path for path in existing_paths if path not in stale_managed_paths
+            ]
             info("removing stale managed bindings:")
             for path in stale_managed_paths:
                 info(f"  - {path_summary(path)}")
@@ -372,8 +375,7 @@ def print_config() -> None:
     for launcher in LAUNCHERS:
         state = "enabled" if launcher.enabled else "disabled"
         info(
-            f"{launcher.slug:20} | {state:8} | {launcher.binding:22} | "
-            f"{launcher.name}"
+            f"{launcher.slug:20} | {state:8} | {launcher.binding:22} | {launcher.name}"
         )
         info(f"  command: {launcher.command}")
         if launcher.notes:

@@ -15,9 +15,7 @@ parser.add_argument(
     "service_name",
     help="the name of the service (top level file with no .yaml)",
 )
-parser.add_argument(
-    "--api-version", default=DEFAULT_API_VERSION, help="api version"
-)
+parser.add_argument("--api-version", default=DEFAULT_API_VERSION, help="api version")
 parser.add_argument("--dry", action="store_true", help="just show the commands")
 parser.add_argument(
     "--no-cleanup", action="store_true", help="don't delete extra files"

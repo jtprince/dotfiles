@@ -1,7 +1,7 @@
 
 CLI options
 (from https://github.com/koekeishiya/skhd?tab=readme-ov-file#usage)
------------ 
+-----------
 
 ```
 --install-service: Install launchd service file into ~/Library/LaunchAgents/com.koekeishiya.skhd.plist

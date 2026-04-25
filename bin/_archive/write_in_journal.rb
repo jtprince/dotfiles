@@ -8,7 +8,7 @@ PASSWORD = "ptjl"  # <- I only want minimal security for this
 
 def save!
   # encrypt and delete unencrypted
-  Dir.chdir(DIR) do 
+  Dir.chdir(DIR) do
     if File.exist?(FILENAME)
       if system("zip -P #{PASSWORD} #{ZIPNAME} #{FILENAME}") && File.exist?(ZIPNAME)
         File.unlink(FILENAME)

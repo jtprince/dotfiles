@@ -68,7 +68,7 @@ base = "ruby -S mascot_pepxml_to_peptide_hit_qvalues.rb -d"
 act_on = Dir["*.xml"].sort
 ################################################################
 #
-## MULTIFILE: 
+## MULTIFILE:
 pool = Babypool.new(:thread_count => NUM_PROCESSORS)
 
 act_on.each do |file|
@@ -87,4 +87,3 @@ loop do
   end
 end
 =end
-

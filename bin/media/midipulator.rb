@@ -14,7 +14,7 @@ require 'midilib/io/seqwriter'
     balance         => 8,
     pan             => 10,
     expression      => 11,
-    sustain         => 64, 
+    sustain         => 64,
     portamento      => 65,
     sustenuto       => 66,
     soft_pedal      => 67,
@@ -33,7 +33,7 @@ ControllerNums = {
 
 MIDPOINT = 63
 def make_pan(num, spread)
-  start = 
+  start =
     if num % 2 == 0  # even
       (MIDPOINT - (num.to_f/2 - 0.5) * spread).to_i
     else  # odd
@@ -128,7 +128,7 @@ before_argv.each do |file|
             puts "    #{controller}: #{before} => #{newval}" if $MIDVERBOSE
           end
         end
-      when MIDI::ProgramChange 
+      when MIDI::ProgramChange
         if opt[:instrument]
           before = event.program
           event.program = (opt[:instrument][my_track_num] || opt[:instrument].last).to_i
@@ -140,7 +140,7 @@ before_argv.each do |file|
 
   if opt[:see_tempos]
     tempo_events = seq.tracks.first.events.select do |event|
-      event.is_a? MIDI::Tempo 
+      event.is_a? MIDI::Tempo
     end
     puts tempo_events.to_yaml.split("\n").reject {|v| v =~ /\s+is_/ }.join("\n")
   end
@@ -148,9 +148,9 @@ before_argv.each do |file|
   if opt[:trim_last_tempo]
     puts "TRIMMING LAST TEMPO!"
     tempo_events = seq.tracks.first.events.select do |event|
-      event.is_a? MIDI::Tempo 
+      event.is_a? MIDI::Tempo
     end
-    ev = seq.tracks[0].events  
+    ev = seq.tracks[0].events
     ev.delete tempo_events.last
     seq.tracks[0].events = ev
     seq.tracks[0].recalc_times
@@ -158,7 +158,7 @@ before_argv.each do |file|
 
   unless opt[:summary] or opt[:see_tempos]
     outfile = base + opt[:postfix] + ".mid"
-    File.open(outfile, 'wb') {|io| seq.write io } 
+    File.open(outfile, 'wb') {|io| seq.write io }
     puts "WRITING TO: #{outfile}" if $MIDVERBOSE
     sleep 0.5
   end

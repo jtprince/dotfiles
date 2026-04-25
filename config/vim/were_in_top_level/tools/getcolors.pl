@@ -26,12 +26,12 @@ Usage:
             are dimensions of symbols
 
         rows
-            is a number of colored lines (second argument to SetupTable if you 
-            used tools/colortable.vim). You must have used tools/colortable.vim 
+            is a number of colored lines (second argument to SetupTable if you
+            used tools/colortable.vim). You must have used tools/colortable.vim
             if you have chosen three-argument form.
         cols
-            is a number of colored columns (second argument to SetupTable if you 
-            used tools/colortable.vim). You must have used tools/colortable.vim 
+            is a number of colored columns (second argument to SetupTable if you
+            used tools/colortable.vim). You must have used tools/colortable.vim
             if you have chosen three-argument form.
 
         targetFile
@@ -39,7 +39,7 @@ Usage:
         numcolors
             is a number of colors your terminal supports.
 
-        Two-argument form requires you to either have xdotool installed or 
+        Two-argument form requires you to either have xdotool installed or
         manually pointing window where vim was opened. Note: two-argument form
 EOF
     exit 0;

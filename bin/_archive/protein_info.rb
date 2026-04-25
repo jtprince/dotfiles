@@ -21,8 +21,8 @@ end
 # e.g., EC1 => 19819884
 def get_key_to_pmid(entry_node)
   hash = {}
-  entry_node.xpath('./evidence').each do |node| 
-    pubmed_id = 
+  entry_node.xpath('./evidence').each do |node|
+    pubmed_id =
       if att = node['attribute']
         if md = att.match(/^PubMed=(.*)/)
           Integer(md[1])

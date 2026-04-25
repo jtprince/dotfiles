@@ -5,9 +5,9 @@ Use **operators** (`d`, `c`, `y`, `gU`, `gu`, `v`, `!`, etc.) with **text object
 - `i{obj}` = **inner** (contents only)
 - `a{obj}` = **around** (includes delimiters / surrounding space)
 
-Examples:  
-`diw` → delete inner word  
-`va"` → visually select around double quotes  
+Examples:
+`diw` → delete inner word
+`va"` → visually select around double quotes
 `ci(` → change inside parentheses
 
 ---
@@ -72,15 +72,15 @@ Examples:
 ---
 
 ## Notes & Tips
-- **Inner vs Around**  
-  - `i` = content only  
-  - `a` = content + delimiters / spacing  
+- **Inner vs Around**
+  - `i` = content only
+  - `a` = content + delimiters / spacing
 
-- **Counts work**  
-  - `2da"` deletes two quoted regions in sequence (especially with `targets.vim`).  
+- **Counts work**
+  - `2da"` deletes two quoted regions in sequence (especially with `targets.vim`).
 
-- **Pair matching**  
-  - Use `%` to jump between matching pairs before an operator.  
+- **Pair matching**
+  - Use `%` to jump between matching pairs before an operator.
 
-- **Tags**  
-  - `it` / `at` require a tag-aware matcher (`andymass/vim-matchup` or legacy `matchit`).  
+- **Tags**
+  - `it` / `at` require a tag-aware matcher (`andymass/vim-matchup` or legacy `matchit`).

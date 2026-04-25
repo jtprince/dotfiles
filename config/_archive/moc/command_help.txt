@@ -97,4 +97,3 @@ L              Display lyrics of the current song (if available)
 P              Toggle displaying full paths in the playlist
 z              Add (or remove) a file to (from) queue
 Z              Clear the queue
-

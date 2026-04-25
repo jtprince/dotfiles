@@ -31,6 +31,7 @@ from glob import glob
 from itertools import islice
 from pathlib import Path
 
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Upload files to Azure Blob Storage.",

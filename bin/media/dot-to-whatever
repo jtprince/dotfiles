@@ -13,11 +13,5 @@ parser.add_argument("dotfiles", type=Path, nargs="+", help="one or more dot file
 args = parser.parse_args()
 
 for path in args.dotfiles:
-    cmd = [
-        "dot",
-        str(path),
-        f"-T{extension}",
-        "-o",
-        path.with_suffix(f".{extension}")
-    ]
+    cmd = ["dot", str(path), f"-T{extension}", "-o", path.with_suffix(f".{extension}")]
     subprocess.run(cmd)

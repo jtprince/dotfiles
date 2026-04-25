@@ -4,7 +4,7 @@ import subprocess
 import argparse
 
 EMAIL_EXTENSION = "@gmail.com"
-GITHUB_PREFIX = 'git@github.com'
+GITHUB_PREFIX = "git@github.com"
 GITHUB_PREFIX_WITH_COLON = GITHUB_PREFIX + ":"
 
 parser = argparse.ArgumentParser(
@@ -13,15 +13,14 @@ parser = argparse.ArgumentParser(
         "and appends -<name> to git@github.com in remote.origin.url"
     )
 )
-parser.add_argument( "name", help="the new owner/name to use")
+parser.add_argument("name", help="the new owner/name to use")
 parser.add_argument(
     "--email",
     help=str(
-        "use this email "
-        f"(appends a '{EMAIL_EXTENSION}' to <name> if no email supplied)"
-    )
+        f"use this email (appends a '{EMAIL_EXTENSION}' to <name> if no email supplied)"
+    ),
 )
-parser.add_argument("--dry", action='store_true', help="do not actually do anything")
+parser.add_argument("--dry", action="store_true", help="do not actually do anything")
 args = parser.parse_args()
 
 
@@ -49,7 +48,6 @@ def alter_remote_origin(name):
     remote_origin = run("git config --get remote.origin.url")
     new_remote_origin = add_to_remote_origin(name, remote_origin)
     run(f"git config remote.origin.url {new_remote_origin}")
-
 
 
 if not args.email:

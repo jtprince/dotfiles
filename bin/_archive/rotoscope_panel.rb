@@ -65,6 +65,3 @@ end
 sleep(1)
 
 system "cat #{output} | xmacroplay -d 10 :0"
-
-
-

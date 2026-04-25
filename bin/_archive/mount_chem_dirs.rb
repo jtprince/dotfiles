@@ -22,7 +22,7 @@ end
 
 exit if opts[:startup] && !MOUNT_ON_STARTUP_HOSTS.include?(`hostname -s`)
 
-research_base = 
+research_base =
 
 dirs = {
   home: ENV['HOME'] + '/.gvfs/jtprince on faculty.chem.byu.edu',
@@ -34,9 +34,9 @@ mounts = {
   lab: %w(labs research)
 }
 
-to_mount = 
+to_mount =
   if ARGV.first == 'all'
-    mounts.keys 
+    mounts.keys
   else
     ARGV.map(&:to_sym)
   end

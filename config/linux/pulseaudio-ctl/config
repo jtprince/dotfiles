@@ -6,7 +6,7 @@
 # above 100 % but Some users may wish exceed this level. If this describes
 # your use case, uncomment the UPPER_THRESHOLD variable below setting it to
 # the new upper threshold.
-# 
+#
 UPPER_THRESHOLD=150
 
 # Push output through libnotify. Set to any value to enable this feature
@@ -15,4 +15,3 @@ UPPER_THRESHOLD=150
 NOTIFY=no
 
 # BARCHART=yes
-

@@ -78,7 +78,7 @@ function oowriter {
 function nautilusnd {
     local arg
     if [ $# -lt 1 ]
-    then 
+    then
         arg=`pwd`
     else
         arg=$@
@@ -92,7 +92,7 @@ function nautilusnd {
 
 # global environment variables should be defined in .profile
 # so they are accessible before X or bash start
-# select "run command as login shell" in your terminal 
+# select "run command as login shell" in your terminal
 
 # should not be exported because it can interfere with child processes
 PS1="\n\w \u@\h \\$ "

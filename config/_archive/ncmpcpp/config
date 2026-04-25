@@ -66,7 +66,7 @@ visualizer_data_source = "/tmp/mpd.fifo"
 ##
 #
 # (spectrum/wave)
-visualizer_type = "spectrum" 
+visualizer_type = "spectrum"
 #
 # "◆▋"
 visualizer_look = "◆│"
@@ -255,13 +255,13 @@ playlist_shorten_total_times = "yes"
 playlist_separate_albums = "yes"
 #
 #(classic/columns)
-playlist_display_mode = "columns" 
+playlist_display_mode = "columns"
 #
 #(classic/columns)
-browser_display_mode = "columns" 
+browser_display_mode = "columns"
 #
 #(classic/columns)
-search_engine_display_mode = "columns" 
+search_engine_display_mode = "columns"
 #
 # (classic/columns)
 playlist_editor_display_mode = "columns"
@@ -295,7 +295,7 @@ progressbar_look = "■◩□"
 #default_place_to_search_in = "database" (database/playlist)
 #
 #(classic/alternative)
-user_interface = "alternative" 
+user_interface = "alternative"
 #
 #media_library_left_column = "a" (possible values: a,y,g,c,p, legend above)
 #

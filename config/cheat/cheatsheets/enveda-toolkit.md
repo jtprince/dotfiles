@@ -25,7 +25,7 @@ df = dbx.query_df("select * from benchling_raw.bruker_mass_spec_run LIMIT 10")
 ```
 
 ```bash
-enveda-table-manifest ms_8_1       
+enveda-table-manifest ms_8_1
 Tables in enveda_prod.ms_8_1:
   calibration
   centroids

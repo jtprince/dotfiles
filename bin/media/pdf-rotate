@@ -12,4 +12,3 @@ ARGV.each do |file|
   cmd = "pdftk '#{file}' cat 1-endE output '#{base + ".rotated" + ext}'"
   print `#{cmd}`
 end
-

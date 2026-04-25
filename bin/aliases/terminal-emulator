@@ -4,4 +4,3 @@
 
 # Was doing this, now letting each X11 scale this independently
 # WINIT_X11_SCALE_FACTOR=1 /usr/bin/alacritty "$@"
-

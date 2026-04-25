@@ -136,18 +136,18 @@ parser = OptionParser.new do |op|
   op.separator <<~END
     zips up src dirs meeting conditions
         and displays any errors and files generated
-  
+
     valid usage:
       # inside top level action directory, an action directory, or a src dir
       # will do the right thing (zip up the dir or dirs in scope)
           #{progname}
-          
+
       # can also provide paths to action dirs (e.g.)
           #{progname} _my_action_dir _another_action_dir
   END
   op.separator ""
   op.separator "options:"
-      
+
   op.on("--root", "place any zip files two levels up", "from src instead of one leve") {
     options[:dirs_up] = 2
   }

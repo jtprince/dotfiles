@@ -44,7 +44,7 @@ end
 # yields the directory it unzipped to
 def unzip_open_document(file, &block)
   cnt = 0
-  tmpdir = "oogrep_unzip_open_doc.tmp#{cnt}" 
+  tmpdir = "oogrep_unzip_open_doc.tmp#{cnt}"
   while File.exist?(tmpdir)
     tmpdir[-1,1] = cnt.to_s
     cnt += 1
@@ -86,7 +86,7 @@ ooexts_glob = "**/*.{ods,odt,odp,odg}"
 ooexts_glob_upcase = ooexts_glob.upcase
 
 # Having trouble with the File::FNM_CASEFOLD argument giving "invalid byte sequence in UTF-8"
-[ooexts_glob, ooexts_glob_upcase].each do |glob| 
+[ooexts_glob, ooexts_glob_upcase].each do |glob|
   Dir.glob(File.join(dir, glob)).each do |path|
     unzip_open_document(path) do |contents, dir|
       content_file = File.join(dir, "content.xml")

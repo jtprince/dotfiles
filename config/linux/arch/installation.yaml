@@ -459,4 +459,3 @@ texlive-fonts:
   - _post_commands:
     - "sudo ln -s /etc/fonts/conf.avail/09-texlive-fonts.conf /etc/fonts/conf.d/09-texlive-fonts.conf"
     - "sudo fc-cache && sudo mkfontscale && sudo mkfontdir && sudo rm -f fonts.dir fonts.scale"
-

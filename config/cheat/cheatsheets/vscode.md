@@ -3,4 +3,4 @@
 shift + cmd + p
 
 # Hide/show your terminal
-cmd + j 
+cmd + j

@@ -35,4 +35,3 @@ number.times do
   #key 'Escape'
   key 'Down'
 end
-

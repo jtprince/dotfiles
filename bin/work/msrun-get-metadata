@@ -19,8 +19,8 @@ args = parser.parse_args()
 db = get_databricks(ENVEDA_ENV)
 df = db.query_df(
     """
-    SELECT DISTINCT 
-        bmsr.`name$` AS msrun_id, 
+    SELECT DISTINCT
+        bmsr.`name$` AS msrun_id,
         entry.`name` AS experiment_name,
         bmsr.`created_at$` AS msrun_created_at,
         bmsr.`modified_at$` AS msrun_modified_at,

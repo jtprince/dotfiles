@@ -17,7 +17,7 @@ class VCS
     dirs_onedown = Dir[File.join(File.expand_path(top_dir), '*')].select {|f| FileTest.directory?(f) }
     objs_ars = vcs_classes.map do |vcs|
       vcs_dirs = dirs_onedown.select do |path|
-        vcs_file = File.join(path, ".#{vcs.to_s.split('::').last.downcase}") 
+        vcs_file = File.join(path, ".#{vcs.to_s.split('::').last.downcase}")
         File.exist?( vcs_file ) && FileTest.directory?( vcs_file )
       end
       vcs_dirs.map {|dir| vcs.new dir }
@@ -42,7 +42,7 @@ class VCS
     ARGV.clear
     puts "****** #{File.basename(path)} ******"
     if info
-      puts info 
+      puts info
     end
     print(cmd + " ")
     reply = gets.chomp
@@ -67,8 +67,8 @@ class VCS
 
   # removes files that aren't under version control
   def rm
-    un = unknown 
-    Dir.chdir(path) do 
+    un = unknown
+    Dir.chdir(path) do
       FileUtils.rm_rf un
     end
     (ex, noex) = un.partition do |file|
@@ -154,7 +154,7 @@ class VCS
         nil
       end
     end
-    
+
     def unknown
       reply = run(:status)
       ret = []
@@ -181,7 +181,3 @@ objs.each do |obj|
     puts "#{obj}: no changes"
   end
 end
-
-
-
-

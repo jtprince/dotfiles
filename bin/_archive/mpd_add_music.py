@@ -42,7 +42,7 @@ for root, dirs, files in os.walk(".", followlinks=True):
     if filtered:
         # filtered = [for fn in filtered]
         formatted = map(
-            lambda mfile: (os.path.join(root, mfile).lstrip("./") + "\n"), filtered
+            lambda mfile: os.path.join(root, mfile).lstrip("./") + "\n", filtered
         )
         process.stdin.write(codecs.encode("".join(formatted), "utf-8"))
 

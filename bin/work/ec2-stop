@@ -2,11 +2,11 @@
 
 from pathlib import Path
 import sys
+
 sys.path.append(str(Path.home() / "dotfiles"))
 
 import argparse
 import subprocess
-from typing import Dict
 
 from dotfiles.ssh.host_to_instance_id import get_ssh_host_to_instance_id
 

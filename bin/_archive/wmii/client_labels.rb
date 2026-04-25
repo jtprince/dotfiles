@@ -11,4 +11,3 @@ see = %w(label props tags)
     puts(guy + `wmiir read #{guy}`)
   end
 end
-
