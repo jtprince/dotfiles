@@ -35,10 +35,14 @@ def main() -> None:
         usage="mvd [-l] [-d DIR | -t | -s] [COUNT] <dest>",
     )
     parser.add_argument("args", nargs="*", help="[COUNT] <dest>")
-    parser.add_argument("-l", "--list", action="store_true", help="list files, don't move")
+    parser.add_argument(
+        "-l", "--list", action="store_true", help="list files, don't move"
+    )
     parser.add_argument("-d", "--dir", metavar="DIR", help="source directory")
     parser.add_argument("-t", "--tmp", action="store_true", help="use /tmp as source")
-    parser.add_argument("-s", "--screenshots", action="store_true", help="use ~/screenshots as source")
+    parser.add_argument(
+        "-s", "--screenshots", action="store_true", help="use ~/screenshots as source"
+    )
 
     opts = parser.parse_args()
 

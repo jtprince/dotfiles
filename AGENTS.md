@@ -31,8 +31,11 @@ scripts/           One-off or infrequent scripts (not on $PATH)
 
 - `bin/dotfiles-configure` is a Python script that idempotently creates symlinks
   from this repo into the home directory. Run with `--dry` to preview changes.
-- Neovim config lives in `config/nvim/` and uses **lazy.nvim** as the plugin
-  manager.
+- Neovim config lives in `config/nvim/` (Neovim 0.12+). Plugins are managed
+  with the built-in `vim.pack`. Layout: `init.lua` (entry point),
+  `lua/config/*.lua` (editor settings), `lua/plugins/*.lua` (plugin specs +
+  setup), `ftplugin/<ft>.lua` (filetype-specific config). The plugin
+  lockfile is `nvim-pack-lock.json` (auto-managed; tracked in git).
 - Shell config (zsh) lives in `config/zsh/`.
 - Git config lives in `config/git/`.
 
@@ -50,8 +53,12 @@ first.**
   meaningfully improve clarity or safety.
 - **Python scripts**: The repo uses `ruff` for linting/formatting (see
   `.pre-commit-config.yaml`). Follow existing style in the file you are editing.
-- **Neovim/Lua**: Follow the style of the existing `init.lua`. Lazy-load
-  plugins where possible (`ft`, `cmd`, `keys`, `event`).
+- **Neovim/Lua**: Follow the style of the existing modules in
+  `config/nvim/lua/`. `vim.pack` does **not** support lazy-loading
+  (`ft`/`cmd`/`keys`/`event`), so plugins load eagerly — keep setup blocks
+  small, and put filetype-specific keymaps in `ftplugin/<ft>.lua`.
+  Build hooks for plugins go in the `PackChanged` autocmd in
+  `lua/plugins/init.lua`.
 - Keep scripts small and focused. Prefer composable tools over monoliths.
 - Use `pre-commit` hooks (already configured) before committing: `pre-commit run --all-files`.
 
