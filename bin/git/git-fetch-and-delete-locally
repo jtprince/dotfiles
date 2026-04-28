@@ -1,107 +1,58 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
 
 import argparse
 import re
 import subprocess
-from collections import defaultdict
-
-REMOTE_PREFIX = "remotes/origin"
-
+import sys
 
 DEFAULT_MAIN_BRANCH = subprocess.check_output(["git-main-branch"], text=True).strip()
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "-f",
-    "--force",
-    action="store_true",
-    help="force deletion of branches not fully merged",
-)
-parser.add_argument(
-    "-b",
-    "--main-branch",
-    default=DEFAULT_MAIN_BRANCH,
-    help=f"main branch to use, default: {DEFAULT_MAIN_BRANCH}",
-)
+parser.add_argument("-f", "--force", action="store_true", help="force deletion of branches not fully merged")
+parser.add_argument("-b", "--main-branch", default=DEFAULT_MAIN_BRANCH, help=f"main branch to use, default: {DEFAULT_MAIN_BRANCH}")
 args = parser.parse_args()
 
 
-def clean_lines(string, no_leading_star=True, no_leading_space=True):
-    """Returns git star output as a list."""
-    lines = [line.rstrip() for line in string.split("\n")]
-    if no_leading_star:
-        lines = [re.sub(r"^\s*\*", " ", line) for line in lines]
-
-    if no_leading_space:
-        lines = [re.sub(r"^\s+", "", line) for line in lines]
-
-    return lines
-
-
-def is_remote(branch):
-    """Is the the branch remote?"""
-    return branch.startswith(REMOTE_PREFIX)
-
-
-def run(command, print_cmd=False, print_response=False, dry=False):
-    """Run a command in the shell."""
+def run(command, print_cmd=False, print_response=False, check=False):
     if print_cmd:
         print(f"running: {command}")
-    if dry:
-        _response = "<dry run>"
-    else:
-        _response = subprocess.getoutput(command)
+    result = subprocess.run(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    response = result.stdout.rstrip()
+    if check and result.returncode != 0:
+        print(f"error: '{command}' failed:\n{response}", file=sys.stderr)
+        sys.exit(result.returncode)
     if print_response:
-        print(_response)
-    return _response
+        print(response)
+    return response
 
 
-def group_by(func, values) -> dict:
-    """Groups values by func."""
-    groups = defaultdict(list)
-    for value in values:
-        groups[func(value)].append(value)
-    return dict(groups)
+def gone_branches():
+    """Return local branches whose upstream has been deleted (shows ': gone]' in git branch -vv)."""
+    output = run("git branch -vv")
+    branches = []
+    for line in output.split("\n"):
+        line = re.sub(r"^\s*\*\s*", "", line).strip()
+        if ": gone]" in line:
+            branches.append(line.split()[0])
+    return branches
 
 
 run("git fetch -p")
-run(f"git checkout {args.main_branch}")
+run(f"git checkout {args.main_branch}", check=True)
 run("git pull")
 
-branches = clean_lines(run("git branch -a"))
+to_delete = gone_branches()
 
-branch_name_groups = group_by(lambda branch_: branch_.split("/")[-1], branches)
-
-
-deleted = 0
-for _branch_name, branches in branch_name_groups.items():
-    if (len(branches) == 1) and (not is_remote(branches[0])):
-        deleted += 1
-        branch_ = branches[0]
-        delete_opt = "-D" if args.force else "-d"
-        response = run(
-            f"git branch {delete_opt} {branch_}",
-            print_cmd=True,
-            print_response=True,
-        )
-        if "not fully merged" in response:
-            # if it is not merged, then we'll force delete IFF equivalent to
-            # remote master
-            remote = f"origin/{args.main_branch}"
-            response = run(f"git diff {remote}", print_cmd=True, print_response=True)
-            if not response:
-                print(f"No difference between local branch and {remote}")
-                print("So, going to force delete local branch")
-                response = run(
-                    f"git branch -D {branch_}",
-                    print_cmd=True,
-                    print_response=True,
-                )
-    else:
-        ...
-        # print(f"'{branches[0]}' has remote '{branches[-1]}'")
-
-
-if deleted == 0:
+if not to_delete:
     print("<< No local branches without a remote. >>")
+
+for branch in to_delete:
+    delete_opt = "-D" if args.force else "-d"
+    response = run(f"git branch {delete_opt} {branch}", print_cmd=True, print_response=True)
+
+    if "not fully merged" in response:
+        remote = f"origin/{args.main_branch}"
+        diff = run(f"git diff {branch} {remote}", print_cmd=True, print_response=True)
+        if not diff:
+            print(f"No difference between {branch} and {remote}, force deleting")
+            run(f"git branch -D {branch}", print_cmd=True, print_response=True)
