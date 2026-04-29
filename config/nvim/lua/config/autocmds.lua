@@ -53,10 +53,24 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		require("persistence").load()
 		vim.notify("Session: " .. vim.fn.fnamemodify(root, ":~"), vim.log.levels.INFO)
 		-- Re-open files passed on cmdline (session restore wipes them).
+		-- :args restores the arglist so :n/:prev navigate cmdline files;
+		-- subsequent :edit calls load the rest into the buffer list, then
+		-- we switch back to the first file. Mirrors `nvim f1 f2 f3`.
 		if #files > 0 then
 			vim.schedule(function()
+				local escaped = {}
 				for _, f in ipairs(files) do
-					vim.cmd("edit " .. vim.fn.fnameescape(f))
+					escaped[#escaped + 1] = vim.fn.fnameescape(f)
+				end
+				local ok, err = pcall(vim.cmd, "silent! args " .. table.concat(escaped, " "))
+				if not ok then
+					vim.notify("Failed to set arglist: " .. tostring(err), vim.log.levels.WARN)
+				end
+				for i = 2, #escaped do
+					pcall(vim.cmd, "edit " .. escaped[i])
+				end
+				if #escaped > 1 then
+					pcall(vim.cmd, "buffer " .. escaped[1])
 				end
 			end)
 		end
