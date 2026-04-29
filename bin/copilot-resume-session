@@ -1,5 +1,0 @@
-#!/bin/bash
-
-LAST_SESSION_FILE="_copilot_last_session"
-
-copilot `cat $LAST_SESSION_FILE` "$@"

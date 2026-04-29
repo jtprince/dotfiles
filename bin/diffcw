@@ -1,30 +1,30 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
 
-require 'shellwords'
-require 'optparse'
+import argparse
+import shlex
+import subprocess
 
-opt = {}
-opts = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename(__FILE__)} <file1> <file2>"
-  op.on("-n", "--notation", "preserve diff symbols (--word-diff=plain)") {|v| opt[:notation] = v}
-  op.on("-c", "--cmd", "just print the command being used") {|v| opt[:cmd] = v}
-  op.separator ""
-  op.separator "(hint: use :AnsiEsc to view in vim)"
-end
-opts.parse!
+parser = argparse.ArgumentParser(epilog="(hint: use :AnsiEsc to view in vim)")
+parser.add_argument("files", nargs=2, metavar=("file1", "file2"))
+parser.add_argument(
+    "-n",
+    "--notation",
+    action="store_true",
+    help="preserve diff symbols (--word-diff=plain)",
+)
+parser.add_argument(
+    "-c", "--cmd", action="store_true", help="just print the command being used"
+)
 
-if ARGV.size != 2
-  puts opts
-  exit
-end
+args = parser.parse_args()
 
-base = ["git diff --no-index --color-words"]
-base << "--word-diff=plain" if opt[:notation]
-base.push *ARGV.map {|f| Shellwords.escape(f) }
+cmd = (
+    ["git", "diff", "--no-index", "--color-words"]
+    + (["--word-diff=plain"] if args.notation else [])
+    + args.files
+)
 
-cmd = base.join(" ")
-if opt[:cmd]
-  puts cmd
-else
-  system cmd
-end
+if args.cmd:
+    print(shlex.join(cmd))
+else:
+    subprocess.run(cmd)
