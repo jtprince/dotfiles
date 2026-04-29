@@ -6,7 +6,7 @@
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     echo "Usage: fuzzy-file-open [QUERY...]"
     echo ""
-    echo "  No args:    launch fzf interactively, open selection in gvim"
+    echo "  No args:    launch fzf interactively, open selection in nvim"
     echo "  With args:  pre-fill fzf query; auto-open if exactly one match"
     exit 0
 fi
@@ -18,5 +18,5 @@ else
 fi
 
 if [ -n "$response" ]; then
-    gvim "$response"
+    nvim "$response"
 fi

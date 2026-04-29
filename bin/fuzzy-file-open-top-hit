@@ -4,10 +4,12 @@ import subprocess
 import argparse
 
 parser = argparse.ArgumentParser(
-    description="Open the top fzf-matched file(s) in gvim without the interactive UI.",
+    description="Open the top fzf-matched file(s) in nvim without the interactive UI.",
     epilog="Example: fuzzy-file-open-top-hit tests utils -n 3",
 )
-parser.add_argument("fragments", nargs="+", help="search terms joined and passed to fzf --filter")
+parser.add_argument(
+    "fragments", nargs="+", help="search terms joined and passed to fzf --filter"
+)
 parser.add_argument(
     "--num-files",
     "-n",
@@ -22,6 +24,6 @@ cmd = ["fzf", "--filter", " ".join(args.fragments)]
 output = subprocess.check_output(cmd, text=True)
 files = output.split("\n")
 files_to_open = files[0 : args.num_files]
-open_cmd = ["gvim", *files_to_open]
+open_cmd = ["nvim", *files_to_open]
 
 subprocess.run(open_cmd)
