@@ -1,3 +1,0 @@
-#!/bin/bash
-
-chrome-work --new-window https://app.slack.com/client/
