@@ -1,30 +1,17 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
+import argparse
+import gzip
+from pathlib import Path
 
-require 'optparse'
+parser = argparse.ArgumentParser(
+    usage="gzip-many [-k] <file> ...",
+    description="Compress one or more files with gzip.",
+)
+parser.add_argument("files", nargs="+")
+parser.add_argument("-k", "--keep", action="store_true", help="keep the originals")
+args = parser.parse_args()
 
-base = "gzip"
-
-$KEEP = false
-opts = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename(__FILE__)} [-k] <file> ..."
-  op.separator "outputs: <file> ..."
-  op.on("-k", "--keep", "keep the originals") {|v| $KEEP = true }
-end
-
-opts.parse!
-
-if ARGV.size == 0
-  puts opts
-  exit
-end
-
-ARGV.each do |file|
-  cmd =
-    if $KEEP
-      base + " < #{file} > #{file}.gz"
-    else
-      base  + " " + file
-    end
-  reply = `#{cmd}`
-  puts reply if reply =~ /\w/
-end
+for path in map(Path, args.files):
+    Path(str(path) + ".gz").write_bytes(gzip.compress(path.read_bytes(), compresslevel=6))
+    if not args.keep:
+        path.unlink()

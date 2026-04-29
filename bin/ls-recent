@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env python3
+import sys
+from pathlib import Path
 
-find $1 -type f | xargs stat --format '%Y :%y %n' | sort -nr | cut -d: -f2- | head
-
-# for files with whitespace:
-# find $1 -type f -exec stat --format '%Y :%y %n' "{}" \; | sort -nr | cut -d: -f2- | head
+directory = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
+files = sorted(
+    (p for p in directory.rglob("*") if p.is_file()),
+    key=lambda p: p.stat().st_mtime,
+    reverse=True,
+)
+for f in files[:10]:
+    print(f)

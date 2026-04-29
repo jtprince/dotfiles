@@ -1,4 +1,15 @@
 #!/bin/bash
+# Open a file selected via fzf in gvim.
+# With no arguments, launches fzf interactively.
+# With arguments, pre-fills the query and auto-selects if there is exactly one match.
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    echo "Usage: fuzzy-file-open [QUERY...]"
+    echo ""
+    echo "  No args:    launch fzf interactively, open selection in gvim"
+    echo "  With args:  pre-fill fzf query; auto-open if exactly one match"
+    exit 0
+fi
 
 if [ $# -eq 0 ]; then
     response=$(fzf)

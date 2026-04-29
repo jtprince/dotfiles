@@ -24,8 +24,8 @@ for prefix in remove_prefixes:
 if not line:
     raise ValueError("no reasonable file info to work from")
 
-regexs = (  # noqa: W605
-    "^([^\s]+)\s+\d+\s+\d+\s+\d+\%\s+(\d+)-?",  # noqa: W605
+regexs = (
+    r"^([^\s]+)\s+\d+\s+\d+\s+\d+\%\s+(\d+)-?",
     r"^#\d+ (.*)?\((\d+)\):",
     r'E?\s*File "(.*)", line (\d+)',
     r"(.*):(\d+):(\d+):",
@@ -40,8 +40,6 @@ colnum = None
 for regex in regexs:
     matchobj = re.match(regex, line)
     if matchobj:
-        # todo: find better way to do this
-        # filename, linenum, colnum = matchobj.groups()
         captures = matchobj.groups()
         filename = captures[0]
         linenum = captures[1]
@@ -52,9 +50,6 @@ for regex in regexs:
 cmd = ["gvim"]
 
 file_to_call = filename.split(":")[0].strip()
-
-# once we switch top level docker image dir to crux or something else:
-# file_to_call = file_to_call.replace("/crux-api", "/home/jtprince/dev/crux-api")
 
 # Sometimes we get a module path:
 if "/" not in file_to_call:
@@ -72,16 +67,12 @@ if colnum:
 elif linenum:
     nvim_args = ["-c", str(int(linenum))]
 
-# becomes something like: neovide file.py -- -c ':180'
 final_cmd = cmd + [file_to_call, "--"] + nvim_args
 
-final_cmd_str = " ".join(final_cmd)
 print("Running this command:")
-print(final_cmd_str)
+print(" ".join(final_cmd))
 
-subprocess.run(final_cmd_str, shell=True, check=False)
-
-print(f"forking: {final_cmd_str}")
+subprocess.run(final_cmd, check=False)
 
 # Example lines
 

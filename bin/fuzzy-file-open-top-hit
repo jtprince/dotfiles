@@ -3,14 +3,17 @@
 import subprocess
 import argparse
 
-parser = argparse.ArgumentParser(description="open first n fzf files matched")
-parser.add_argument("fragments", nargs="+", help="fragments to match on")
+parser = argparse.ArgumentParser(
+    description="Open the top fzf-matched file(s) in gvim without the interactive UI.",
+    epilog="Example: fuzzy-file-open-top-hit tests utils -n 3",
+)
+parser.add_argument("fragments", nargs="+", help="search terms joined and passed to fzf --filter")
 parser.add_argument(
     "--num-files",
     "-n",
     type=int,
     default=1,
-    help="the number of files to open, default 1",
+    help="number of top matches to open (default: 1)",
 )
 args = parser.parse_args()
 

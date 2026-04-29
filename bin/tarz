@@ -1,53 +1,22 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
+import argparse
+import shutil
+import subprocess
+from pathlib import Path
 
-require 'optparse'
-require 'shellwords'
+parser = argparse.ArgumentParser(description="Create a compressed tar archive from a directory.")
+parser.add_argument("dirs", nargs="+", type=lambda p: Path(p.rstrip("/\\")), metavar="dir")
+parser.add_argument("-d", "--delete", action="store_true", help="delete source dir after archiving")
+parser.add_argument("-j", "--bzip2", action="store_true", help="use bzip2 compression (default: gzip)")
+args = parser.parse_args()
 
-if ARGV.length == 0
-  puts "tarz [-d] dir"
-  puts "outputs: dir.tgz"
-  puts "-d deletes dir"
-  puts "-j uses bzip2 compression"
-  puts "trailing '/' or '\\' is OK"
-  exit
-end
+ext = ".tar.bz2" if args.bzip2 else ".tgz"
+flag = "cjf" if args.bzip2 else "czf"
 
-files = []
-deleteflag = false
-bzipflag = false
-ARGV.each do |arg|
-  if arg[0,1] == '-'
-    if arg.include?('d')
-      deleteflag = true
-    end
-    if arg.include?('j')
-      bzipflag = true
-    end
-  else
-    files.push(arg)
-  end
-end
-
-compression_flag = bzipflag ? 'j' : 'z'
-ext = bzipflag ? '.tar.bz2' : '.tgz'
-
-files.each do |filearg|
-  file = filearg.dup
-
-  file.gsub!(/\/\Z/, '')
-  file.gsub!(/\\\Z/, '')
-
-  tarfile = file + ext
-
-  reply = `tar -c#{compression_flag}f #{Shellwords.escape(tarfile)} #{Shellwords.escape(file)}`
-  puts "CREATING: " + tarfile
-  if reply =~ /\w/
-    puts reply
-  else
-    if deleteflag   # only delete if there was no reply on the tar command!
-      puts "REMOVING: #{file}"
-      system "rm -rf #{Shellwords.escape(file)}"
-    end
-  end
-
-end
+for path in args.dirs:
+    tarfile = Path(str(path) + ext)
+    print(f"creating: {tarfile}")
+    result = subprocess.run(["tar", flag, str(tarfile), str(path)])
+    if result.returncode == 0 and args.delete:
+        print(f"removing: {path}")
+        shutil.rmtree(path)

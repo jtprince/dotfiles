@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+import argparse
+import mimetypes
+import platform
+import plistlib
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+parser = argparse.ArgumentParser(description="Show MIME type handler associations.")
+parser.add_argument("--default", action="store_true", help="show default app per MIME type instead of all handlers")
+args = parser.parse_args()
+
+OS = platform.system()
+
+
+def handlers_linux() -> list[tuple[str, str]]:
+    dirs = [Path("/usr/share/applications"), Path.home() / ".local/share/applications"]
+    results = []
+    for d in dirs:
+        if not d.exists():
+            continue
+        for desktop in sorted(d.glob("*.desktop")):
+            for line in desktop.read_text(errors="ignore").splitlines():
+                if line.startswith("MimeType="):
+                    for mime in line[len("MimeType="):].split(";"):
+                        mime = mime.strip()
+                        if mime:
+                            results.append((desktop.name, mime))
+    return results
+
+
+def handlers_mac() -> list[tuple[str, str]]:
+    results = []
+    seen: set[tuple[str, str]] = set()
+    for app_dir in [Path("/Applications"), Path.home() / "Applications"]:
+        if not app_dir.exists():
+            continue
+        for app in sorted(app_dir.glob("*.app")):
+            plist = app / "Contents/Info.plist"
+            if not plist.exists():
+                continue
+            try:
+                info = plistlib.loads(plist.read_bytes())
+            except Exception:
+                continue
+            for doc_type in info.get("CFBundleDocumentTypes", []):
+                # Map file extensions to MIME types via stdlib
+                mimes = [
+                    m for ext in doc_type.get("CFBundleTypeExtensions", [])
+                    if (m := mimetypes.types_map.get(f".{ext.lower()}"))
+                ]
+                # Fall back to UTType identifiers when no MIME mapping exists
+                if not mimes:
+                    mimes = [u for u in doc_type.get("LSItemContentTypes", []) if u]
+                for mime in mimes:
+                    key = (app.name, mime)
+                    if key not in seen:
+                        seen.add(key)
+                        results.append(key)
+    return results
+
+
+def defaults_linux(mime_types: list[str]) -> list[tuple[str, str]]:
+    results = []
+    for mime in mime_types:
+        out = subprocess.run(
+            ["xdg-mime", "query", "default", mime], capture_output=True, text=True
+        ).stdout.strip()
+        if out:
+            results.append((mime, out))
+    return results
+
+
+def defaults_mac(mime_types: list[str]) -> list[tuple[str, str]]:
+    if not shutil.which("duti"):
+        sys.exit("error: --default on macOS requires duti\n  brew install duti")
+    results = []
+    for mime in mime_types:
+        exts = [e for e, m in mimetypes.types_map.items() if m == mime]
+        if not exts:
+            continue
+        out = subprocess.run(
+            ["duti", "-x", exts[0].lstrip(".")], capture_output=True, text=True
+        ).stdout.splitlines()
+        app = next((l.split()[-1] for l in out if l.strip()), None)
+        if app:
+            results.append((mime, app))
+    return results
+
+
+if args.default:
+    if OS == "Linux":
+        mime_types = sorted({mime for _, mime in handlers_linux()})
+        pairs = defaults_linux(mime_types)
+        hint = "to change: xdg-mime default <desktop-file> <mime-type>"
+    elif OS == "Darwin":
+        mime_types = sorted({mime for _, mime in handlers_mac()})
+        pairs = defaults_mac(mime_types)
+        hint = "to change: duti <bundle-id> <mime-type>"
+    else:
+        sys.exit(f"error: unsupported OS: {OS}")
+
+    col = max((len(mime) for mime, _ in pairs), default=0) + 2
+    for mime, app in pairs:
+        print(f"{mime:<{col}}{app}")
+else:
+    if OS == "Linux":
+        pairs = handlers_linux()
+        hint = "to change: xdg-mime default <desktop-file> <mime-type>"
+    elif OS == "Darwin":
+        pairs = handlers_mac()
+        hint = "to change: duti <bundle-id> <mime-type>"
+    else:
+        sys.exit(f"error: unsupported OS: {OS}")
+
+    col = max((len(app) for app, _ in pairs), default=0) + 2
+    for app, mime in pairs:
+        print(f"{app:<{col}}{mime}")
+
+print(f"\n{hint}")

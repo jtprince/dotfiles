@@ -1,32 +1,20 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
+import argparse
+import re
+from pathlib import Path
 
-require 'optparse'
-require 'fileutils'
-require 'yaml'
+parser = argparse.ArgumentParser(description="Replace spaces with underscores in filenames.")
+parser.add_argument("files", nargs="+", type=Path)
+parser.add_argument("-c", "--close-gaps", action="store_true", help="__ => _, _-_ => -")
+args = parser.parse_args()
 
-opt = {}
-opts = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename(__FILE__)} [OPTS] <file> ..."
-  op.separator "replaces spaces with underscores"
-  op.on("-c", "--close-gaps", "__ => _, _-_ => -") {|v| opt[:close_gaps] = v }
-end
-opts.parse!
-
-if ARGV.size == 0
-  puts opts
-  exit
-end
-
-ARGV.each do |file|
-  newfilename = file.gsub(/\s/, '_')
-  if opt[:close_gaps]
-    newfilename.gsub!(/_+/,'_')
-    newfilename.gsub!('_-_','-')
-  end
-  if newfilename != file
-    FileUtils.mv file, newfilename
-    puts "renaming: #{file} ==> #{newfilename}"
-  else
-    puts "no spaces: #{file}"
-  end
-end
+for path in args.files:
+    name = path.name.replace(" ", "_")
+    if args.close_gaps:
+        name = re.sub(r"_+", "_", name).replace("_-_", "-")
+    dest = path.with_name(name)
+    if dest != path:
+        path.rename(dest)
+        print(f"renaming: {path} ==> {dest}")
+    else:
+        print(f"no spaces: {path}")

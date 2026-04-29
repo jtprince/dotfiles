@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-"""Save 7z password protected .aws and .ssh files to Dropbox."""
+#!/usr/bin/env python3
+"""Save directories as password-protected 7z archives to Dropbox."""
 
 import argparse
 import os
@@ -8,61 +8,41 @@ from contextlib import contextmanager
 from pathlib import Path
 
 home = Path.home()
-
 SAVE_TO = home / "Dropbox/env/passwds_logins/"
-
-SSH_DIR = home / ".ssh"
-AWS_DIR = home / ".aws"
-ALL_DIRS = [SSH_DIR, AWS_DIR]
-_all_dirs_display = " ".join([str(path) for path in ALL_DIRS])
+DEFAULTS = [home / ".ssh"]
 
 
 @contextmanager
-def cd(newdir):
-    prevdir = os.getcwd()
-    os.chdir(os.path.expanduser(newdir))
+def cd(path: Path):
+    prev = os.getcwd()
+    os.chdir(path)
     try:
         yield
     finally:
-        os.chdir(prevdir)
+        os.chdir(prev)
 
 
-def save_path(path):
-    dirname = path.name
-
-    zipname = dirname
-    if zipname.startswith("."):
-        zipname = "dot-" + zipname[1:]
-
+def save_path(path: Path, save_to: Path) -> None:
+    name = path.name
+    zipname = ("dot-" + name[1:]) if name.startswith(".") else name
     secure_name = zipname + ".secure.7z"
 
-    parent = path.parent
-    print(parent)
-
-    with cd(parent):
-        cmd = ["7z", "a", "-p", secure_name, str(dirname)]
-        response = subprocess.run(cmd)
-        if not response.returncode == 0:
-            raise RuntimeError("Something wrong with zip creation! Aborting!")
-
-        rename_to = os.path.join(SAVE_TO, secure_name)
-        print("Moving to:", rename_to)
-        Path(secure_name).rename(rename_to)
+    print(f"Saving {path} ...")
+    with cd(path.parent):
+        result = subprocess.run(["7z", "a", "-p", secure_name, name])
+        if result.returncode != 0:
+            raise RuntimeError(f"7z failed for {path}")
+        dest = save_to / secure_name
+        print(f"Moving to: {dest}")
+        Path(secure_name).rename(dest)
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("dirname", nargs="?", help="path to the dir to be saved")
-parser.add_argument("--save-to", help=f"save to (default: {str(SAVE_TO)})")
-parser.add_argument("--all", action="store_true", help=f"save: {_all_dirs_display}")
+parser = argparse.ArgumentParser(description="Save directories as password-protected 7z archives to Dropbox.")
+parser.add_argument("dirs", nargs="*", metavar="dir", help=f"directories to save (default: {' '.join(str(d) for d in DEFAULTS)})")
+parser.add_argument("--save-to", type=Path, default=SAVE_TO, metavar="DIR", help=f"destination directory (default: {SAVE_TO})")
 args = parser.parse_args()
 
-if args.all:
-    paths = ALL_DIRS
-else:
-    if args.dirname is None:
-        parser.error("Need dirname or --all")
-    path = Path(args.dirname)
-    paths = [path]
+paths = [Path(d) for d in args.dirs] if args.dirs else DEFAULTS
 
 for path in paths:
-    save_path(path)
+    save_path(path, args.save_to)
