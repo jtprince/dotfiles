@@ -58,9 +58,15 @@ hs.hotkey.bind({ "alt", "shift" }, "E", function()
 end)
 
 -- ChatGPT
-hs.hotkey.bind({ "alt" }, "H", function()
-	sh([[open -na "ChatGPT"]])
+hs.hotkey.bind({ "alt", "shift" }, "H", function()
+	sh([[open -a "ChatGPT"]])
 end)
+
+-- Claude
+hs.hotkey.bind({ "alt" }, "H", function()
+	sh([[open -a "Claude"]])
+end)
+
 
 
 -- GUI Editor
