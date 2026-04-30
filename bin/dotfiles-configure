@@ -65,6 +65,7 @@ CONFIG_GENERAL = [
     "starship.toml",
     "uv",
     "zsh",
+    "mpv",
 ]
 
 CONFIG_MAC = [
@@ -74,30 +75,29 @@ CONFIG_MAC = [
 ]
 
 CONFIG_LINUX = [
-    "linux/Xresources.d",
-    "linux/avizo",
-    "linux/dunst",
+    # "linux/Xresources.d",
+    # "linux/avizo",
+    # "linux/dunst",
     "linux/feh",
-    "linux/fontconfig",
-    "linux/goofys",
-    "linux/gtk-3.0",
-    "linux/imv",
+    # "linux/fontconfig",
+    # "linux/goofys",
+    # "linux/gtk-3.0",
+    # "linux/imv",
     "linux/latex",
     "linux/mako",
-    "linux/mimeapps.list",
-    "linux/mpv",
-    "linux/mypy",
-    "linux/npmrc",
-    "linux/pipewire",
-    "linux/pulse",
-    "linux/pulseaudio-ctl",
+    # "linux/mimeapps.list",
+    # "linux/mypy",
+    # "linux/npmrc",
+    # "linux/pipewire",
+    # "linux/pulse",
+    # "linux/pulseaudio-ctl",
     "linux/ranger",
-    "linux/spotify-flags.conf",
-    "linux/sway",
-    "linux/texlive",
-    "linux/tofi",
-    "linux/waybar",
-    "linux/xmodmap",
+    # "linux/spotify-flags.conf",
+    # "linux/sway",
+    # "linux/texlive",
+    # "linux/tofi",
+    # "linux/waybar",
+    # "linux/xmodmap",
 ]
 
 # ---------------------------------------------------------------------------
@@ -105,9 +105,9 @@ CONFIG_LINUX = [
 # ---------------------------------------------------------------------------
 
 HOME_DOTFILES_LINUX = [
-    "linux/xprofile",
-    "linux/xinitrc",
-    "linux/gtkrc-2.0",
+    # "linux/xprofile",
+    # "linux/xinitrc",
+    # "linux/gtkrc-2.0",
 ]
 
 # ---------------------------------------------------------------------------
@@ -184,13 +184,15 @@ def _chrome_flag_links(display_server: str) -> list[Symlink]:
     for app in ["chrome", "electron"]:
         links.append(
             Symlink(
-                REPO_CONFIG / "linux/chrome" / f"{app}-flags.conf-{display_server}",
+                REPO_CONFIG / "linux/chrome" /
+                f"{app}-flags.conf-{display_server}",
                 link=HOME_CONFIG / f"{app}-flags.conf",
             )
         )
     links.append(
         Symlink(
-            REPO_CONFIG / "linux/chrome" / f"electron-flags.conf-{display_server}",
+            REPO_CONFIG / "linux/chrome" /
+            f"electron-flags.conf-{display_server}",
             link=HOME_CONFIG / "electron17-flags.conf",
         )
     )
@@ -233,12 +235,14 @@ class Symlinker:
     def link_into_config(self, names: list[str]) -> None:
         for name in names:
             link_name = Path(name).name
-            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME_CONFIG / link_name))
+            self.ensure_link(Symlink(REPO_CONFIG / name,
+                             link=HOME_CONFIG / link_name))
 
     def link_into_home(self, names: list[str]) -> None:
         for name in names:
             link_name = Path(name).name
-            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME / f".{link_name}"))
+            self.ensure_link(Symlink(REPO_CONFIG / name,
+                             link=HOME / f".{link_name}"))
 
     def ensure_dirs(self, dirs: list[str]) -> None:
         for name in dirs:
@@ -278,7 +282,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Idempotent dotfile symlink manager (macOS + Linux).",
     )
-    parser.add_argument("--dry", action="store_true", help="preview without changes")
+    parser.add_argument("--dry", action="store_true",
+                        help="preview without changes")
     parser.add_argument(
         "--clean-broken",
         action="store_true",

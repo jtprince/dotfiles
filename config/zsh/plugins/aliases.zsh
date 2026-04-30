@@ -29,7 +29,7 @@ alias pdf-cat='pdfunite'
 alias pdf-combine='pdfunite'
 
 # firejail
-alias notrust="firejail --profile=$HOME/dotfiles/config/firejail/notrust.profile"
+alias notrust="firejail --profile=$HOME/dotfiles/config/linux/firejail/notrust.profile"
 
 alias ipython="python3 -m IPython"
 alias ipythonr="python3 -m IPython --profile=autoreload"
