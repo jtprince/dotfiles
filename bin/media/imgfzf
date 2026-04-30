@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if (($# == 0)); then
+  echo "usage: imgfzf IMAGE [IMAGE ...]" >&2
+  exit 2
+fi
+
+open_file() {
+  case "$(uname -s)" in
+    Darwin) open "$1" ;;
+    Linux)  xdg-open "$1" >/dev/null 2>&1 & ;;
+    *)      echo "unsupported platform: $(uname -s)" >&2; return 1 ;;
+  esac
+}
+
+selected="$(
+  printf '%s\n' "$@" |
+    fzf \
+      --preview 'kitty +kitten icat --clear --transfer-mode=stream --stdin=no --scale-up --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@0x0 -- {}' \
+      --preview-window=right:75%
+)"
+
+## [[ -n "${selected:-}" ]] && open_file "$selected"
+[[ -n "${selected:-}" ]] && echo "$selected"

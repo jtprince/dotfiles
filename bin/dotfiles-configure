@@ -120,6 +120,10 @@ EXPLICIT_GENERAL: list[Symlink] = [
     Symlink(REPO_CONFIG / "zsh/dot-zshrc", link=HOME / ".zshrc"),
     Symlink(REPO_CONFIG / "zsh/dot-zprofile", link=HOME / ".zprofile"),
     Symlink(REPO_CONFIG / "pandoc/data_dir", link=DOT_LOCAL / "share/pandoc"),
+    Symlink(
+        REPO_CONFIG / "cavemem/settings.json", link=HOME / ".cavemem/settings.json"
+    ),
+    Symlink(REPO_CONFIG / "claude/settings.json", link=HOME / ".claude/settings.json"),
 ]
 
 EXPLICIT_MAC: list[Symlink] = [
