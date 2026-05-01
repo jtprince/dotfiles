@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+# Note that --engine-magick is required to properly view some pngs 
+# that default Go engine fails to properly read
+# Filed an issue here:
+# https://github.com/kovidgoyal/kitty/issues/9950
+# when resolved, can drop the magick engine stuff
+
 set -euo pipefail
 
 if (($# == 0)); then
@@ -17,9 +23,14 @@ open_file() {
 selected="$(
   printf '%s\n' "$@" |
     fzf \
-      --preview 'kitty +kitten icat --clear --transfer-mode=stream --stdin=no --scale-up --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@0x0 -- {}' \
+	--preview 'kitty +kitten icat --clear --engine=magick --transfer-mode=stream --stdin=no --scale-up --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@0x0 -- {}' \
       --preview-window=right:75%
 )"
 
 ## [[ -n "${selected:-}" ]] && open_file "$selected"
 [[ -n "${selected:-}" ]] && echo "$selected"
+
+
+
+# once the bug is fixed can swap this back in!
+#      --preview 'kitty +kitten icat --clear --transfer-mode=stream --stdin=no --scale-up --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@0x0 -- {}' \

@@ -55,6 +55,7 @@
 [push]
     default = current
     followTags = true
+	autoSetupRemote = true
 [branch "master"]
     remote = origin
     merge = refs/heads/master
