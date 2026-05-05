@@ -1,0 +1,365 @@
+#!/usr/bin/env python3
+"""
+presenterm_to_pptx — convert a presenterm markdown file to Google-Slides-ready .pptx
+
+Usage:
+    presenterm_to_pptx.py presentation.md
+    presenterm_to_pptx.py presentation.md -o slides.pptx
+    presenterm_to_pptx.py presentation.md --font-size 20 --accent 4C72B0
+"""
+import argparse
+import re
+import sys
+from pathlib import Path
+
+try:
+    from pptx import Presentation
+    from pptx.util import Inches, Pt
+    from pptx.dml.color import RGBColor
+    from pptx.enum.text import PP_ALIGN
+except ImportError:
+    sys.exit("python-pptx not installed. Run: uv pip install python-pptx pillow")
+
+try:
+    from PIL import Image as PILImage
+except ImportError:
+    sys.exit("Pillow not installed. Run: uv pip install python-pptx pillow")
+
+
+# ── Defaults ──────────────────────────────────────────────────────────────────
+
+W = Inches(13.33)   # 16:9 widescreen
+H = Inches(7.5)
+
+C_BG      = RGBColor(0xFF, 0xFF, 0xFF)
+C_TITLE   = RGBColor(0x1A, 0x1A, 0x2E)
+C_BODY    = RGBColor(0x2B, 0x2B, 0x2B)
+C_CAPTION = RGBColor(0x55, 0x55, 0x55)
+
+
+def hex_rgb(h: str) -> RGBColor:
+    h = h.lstrip("#")
+    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+
+
+# ── Markdown parser ───────────────────────────────────────────────────────────
+
+FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
+IMAGE_RE        = re.compile(r"!\[image(?::width:(\d+)%)?\]\(([^)]+)\)")
+BULLET_RE       = re.compile(r"^[\*\-]\s+(.*)")
+HEADING_RE      = re.compile(r"^#{1,3}\s+(.*)")
+YAML_KV_RE      = re.compile(r'^(\w+):\s*"?(.*?)"?\s*$')
+
+
+def parse_frontmatter(text: str) -> tuple[dict, str]:
+    m = FRONTMATTER_RE.match(text)
+    if not m:
+        return {}, text
+    meta = {}
+    for line in m.group(1).splitlines():
+        km = YAML_KV_RE.match(line)
+        if km:
+            meta[km.group(1)] = km.group(2)
+    return meta, text[m.end():]
+
+
+def parse_slide_block(block: str, base_dir: Path) -> list[dict]:
+    """Return a list of elements: {type, ...}"""
+    elements = []
+    for line in block.splitlines():
+        line_s = line.strip()
+        if not line_s:
+            continue
+        hm = HEADING_RE.match(line_s)
+        if hm:
+            elements.append({"type": "heading", "text": hm.group(1)})
+            continue
+        im = IMAGE_RE.search(line_s)
+        if im:
+            width_pct = int(im.group(1)) if im.group(1) else 80
+            path = base_dir / im.group(2)
+            elements.append({"type": "image", "path": path, "width_pct": width_pct})
+            continue
+        bm = BULLET_RE.match(line_s)
+        if bm:
+            elements.append({"type": "bullet", "text": bm.group(1)})
+            continue
+        elements.append({"type": "paragraph", "text": line_s})
+    return elements
+
+
+# ── PPTX helpers ──────────────────────────────────────────────────────────────
+
+def new_blank_slide(prs: Presentation, accent: RGBColor) -> object:
+    sl = prs.slides.add_slide(prs.slide_layouts[6])
+    bg = sl.background.fill
+    bg.solid()
+    bg.fore_color.rgb = C_BG
+    return sl
+
+
+def add_title_bar(sl, text: str, accent: RGBColor,
+                  top=Inches(0.35), left=Inches(0.55), width=Inches(12.2)):
+    txb = sl.shapes.add_textbox(left, top, width, Inches(0.7))
+    tf  = txb.text_frame
+    tf.word_wrap = False
+    p   = tf.paragraphs[0]
+    run = p.add_run()
+    run.text = text
+    run.font.bold = True
+    run.font.size = Pt(28)
+    run.font.color.rgb = C_TITLE
+    bar = sl.shapes.add_shape(
+        1, left, top + Inches(0.72), width, Inches(0.04)
+    )
+    bar.fill.solid()
+    bar.fill.fore_color.rgb = accent
+    bar.line.fill.background()
+
+
+_INLINE_RE = re.compile(
+    r"(\*\*[^*]+\*\*"           # **bold**
+    r"|\*[^*]+\*"               # *italic*
+    r"|_[^_]+_"                 # _italic_
+    r"|`[^`]+`"                 # `code`
+    r"|\[[^\]]+\]\([^)]+\))"    # [text](url)
+)
+C_LINK = RGBColor(0x0D, 0x47, 0xA1)
+C_CODE = RGBColor(0x37, 0x47, 0x51)
+
+
+def _inline_runs(p, text: str, size: int, base_color: RGBColor):
+    """Handle **bold**, *italic*/_italic_, `code`, [text](url)."""
+    for part in _INLINE_RE.split(text):
+        if not part:
+            continue
+        run = p.add_run()
+        run.font.size = Pt(size)
+        run.font.color.rgb = base_color
+        if part.startswith("**") and part.endswith("**"):
+            run.text = part[2:-2]
+            run.font.bold = True
+        elif (part.startswith("*") and part.endswith("*")) or \
+             (part.startswith("_") and part.endswith("_")):
+            run.text = part[1:-1]
+            run.font.italic = True
+        elif part.startswith("`") and part.endswith("`"):
+            run.text = part[1:-1]
+            run.font.name = "Courier New"
+            run.font.color.rgb = C_CODE
+        elif part.startswith("["):
+            m = re.match(r"\[([^\]]+)\]\(([^)]+)\)", part)
+            if m:
+                run.text = m.group(1)
+                run.font.color.rgb = C_LINK
+                run.font.underline = True
+                run.hyperlink.address = m.group(2)
+            else:
+                run.text = part
+        else:
+            run.text = part
+
+
+def add_body_text(sl, paragraphs: list[str], top, left=Inches(0.7),
+                  width=Inches(12.0), size=20, color=C_BODY):
+    txb = sl.shapes.add_textbox(left, top, width, Inches(5.8))
+    tf  = txb.text_frame
+    tf.word_wrap = True
+    for i, text in enumerate(paragraphs):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.space_before = Pt(4)
+        _inline_runs(p, text, size, color)
+
+
+def add_bullets(sl, items: list[str], top, accent: RGBColor,
+                left=Inches(0.7), width=Inches(12.0), size=19):
+    txb = sl.shapes.add_textbox(left, top, width, Inches(5.8))
+    tf  = txb.text_frame
+    tf.word_wrap = True
+    for i, text in enumerate(items):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.space_before = Pt(8)
+        rb = p.add_run()
+        rb.text = "•  "
+        rb.font.size = Pt(size)
+        rb.font.bold = True
+        rb.font.color.rgb = accent
+        _inline_runs(p, text, size, C_BODY)
+
+
+def add_image(sl, path: Path, top, left, max_w, max_h) -> tuple[float, float]:
+    img = PILImage.open(path)
+    iw, ih = img.size
+    aspect = iw / ih
+    w = min(max_w, max_h * aspect)
+    h = w / aspect
+    cx = left + (max_w - w) / 2
+    sl.shapes.add_picture(str(path), cx, top, w, h)
+    return w, h
+
+
+def add_caption(sl, text: str, top, size=17):
+    txb = sl.shapes.add_textbox(Inches(0.7), top, Inches(11.9), Inches(0.9))
+    tf  = txb.text_frame
+    tf.word_wrap = True
+    p   = tf.paragraphs[0]
+    _inline_runs(p, text, size, C_CAPTION)
+
+
+# ── Slide renderers ───────────────────────────────────────────────────────────
+
+CONTENT_TOP   = Inches(1.2)
+CAPTION_TOP   = Inches(6.45)
+IMG_MAX_H_FULL = Inches(5.2)
+IMG_MAX_H_SPLIT = Inches(5.6)
+
+
+def render_title_slide(prs, meta: dict, accent: RGBColor):
+    sl = new_blank_slide(prs, accent)
+    # accent stripe
+    bar = sl.shapes.add_shape(1, 0, 0, W, Inches(0.12))
+    bar.fill.solid(); bar.fill.fore_color.rgb = accent; bar.line.fill.background()
+
+    def centered_text(top, height, text, size, bold=False, italic=False, color=C_TITLE):
+        txb = sl.shapes.add_textbox(Inches(1.2), top, Inches(10.9), height)
+        tf  = txb.text_frame; tf.word_wrap = True
+        p   = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
+        run = p.add_run()
+        run.text = text; run.font.size = Pt(size)
+        run.font.bold = bold; run.font.italic = italic
+        run.font.color.rgb = color
+
+    centered_text(Inches(1.9), Inches(1.3), meta.get("title", "Untitled"), 44, bold=True)
+    if meta.get("sub_title"):
+        centered_text(Inches(3.35), Inches(0.8), meta["sub_title"], 24, italic=True, color=C_CAPTION)
+
+    rule = sl.shapes.add_shape(1, Inches(3.5), Inches(4.25), Inches(6.33), Inches(0.04))
+    rule.fill.solid(); rule.fill.fore_color.rgb = accent; rule.line.fill.background()
+
+    if meta.get("author"):
+        centered_text(Inches(4.45), Inches(0.5), meta["author"], 20, color=C_BODY)
+
+
+def render_image_full(sl, heading: str, images: list, texts: list,
+                      bullets: list, accent: RGBColor):
+    """Single image centered, optional caption below."""
+    add_title_bar(sl, heading, accent)
+    img_el = images[0]
+    caption_items = texts + bullets
+
+    if caption_items:
+        img_max_h = Inches(5.15)
+        _, ih = add_image(sl, img_el["path"], CONTENT_TOP,
+                          Inches(0.55), Inches(12.2), img_max_h)
+        caption = "  ".join(caption_items)
+        add_caption(sl, caption, CAPTION_TOP)
+    else:
+        add_image(sl, img_el["path"], CONTENT_TOP,
+                  Inches(0.55), Inches(12.2), Inches(6.05))
+
+
+def render_text_image(sl, heading: str, images: list, texts: list,
+                      bullets: list, accent: RGBColor):
+    """Text/bullets on left, image on right."""
+    add_title_bar(sl, heading, accent)
+    TEXT_W  = Inches(5.6)
+    IMG_L   = Inches(6.5)
+    IMG_W   = Inches(6.6)
+
+    cur_top = CONTENT_TOP
+    if texts:
+        add_body_text(sl, texts, cur_top, left=Inches(0.7), width=TEXT_W)
+        cur_top += Inches(0.45 * len(texts)) + Inches(0.5)
+    if bullets:
+        add_bullets(sl, bullets, cur_top, accent, left=Inches(0.7), width=TEXT_W)
+
+    add_image(sl, images[0]["path"], CONTENT_TOP, IMG_L, IMG_W, IMG_MAX_H_SPLIT)
+
+
+def render_text_only(sl, heading: str, texts: list, bullets: list, accent: RGBColor):
+    add_title_bar(sl, heading, accent)
+    cur_top = CONTENT_TOP
+    if texts:
+        add_body_text(sl, texts, cur_top, size=21)
+        cur_top += Inches(0.5 * len(texts)) + Inches(0.4)
+    if bullets:
+        add_bullets(sl, bullets, cur_top, accent)
+
+
+def render_slide(prs, elements: list, accent: RGBColor):
+    heading = next((e["text"] for e in elements if e["type"] == "heading"), "")
+    images  = [e for e in elements if e["type"] == "image"]
+    bullets = [e["text"] for e in elements if e["type"] == "bullet"]
+
+    # paragraphs: split pre-image (body) vs post-image (caption)
+    pre, post = [], []
+    seen_img = False
+    for e in elements:
+        if e["type"] == "image":
+            seen_img = True
+        elif e["type"] == "paragraph":
+            (post if seen_img else pre).append(e["text"])
+
+    sl = new_blank_slide(prs, accent)
+
+    if not images:
+        render_text_only(sl, heading, pre + post, bullets, accent)
+        return
+
+    # image present — decide layout
+    has_left_content = bool(pre or bullets)
+    # short post-only captions → full image layout
+    if not has_left_content:
+        render_image_full(sl, heading, images, post, [], accent)
+    else:
+        render_text_image(sl, heading, images, pre, bullets, accent)
+        if post:
+            add_caption(sl, "  ".join(post), CAPTION_TOP)
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def main():
+    ap = argparse.ArgumentParser(description="Convert presenterm markdown → .pptx")
+    ap.add_argument("input", type=Path, help="Presenterm .md file")
+    ap.add_argument("-o", "--output", type=Path, help="Output .pptx path (default: <input>.pptx)")
+    ap.add_argument("--accent", default="4C72B0",
+                    help="Accent colour hex, no # (default: 4C72B0)")
+    args = ap.parse_args()
+
+    if not args.input.exists():
+        sys.exit(f"File not found: {args.input}")
+
+    accent  = hex_rgb(args.accent)
+    out     = args.output or args.input.with_suffix(".pptx")
+    base    = args.input.parent
+    text    = args.input.read_text()
+
+    meta, body = parse_frontmatter(text)
+
+    # remove HTML comments, split on end_slide
+    body = re.sub(r"<!--.*?-->", "", body, flags=re.DOTALL)
+    raw_slides = [s.strip() for s in body.split("\n\n") if s.strip()]
+    # re-join: split on double blank lines first, then on the sentinel we already removed
+    # Better: re-split original on the sentinel
+    _, body2 = parse_frontmatter(text)
+    blocks_raw = re.split(r"<!--\s*end_slide\s*-->", body2)
+    blocks = [b.strip() for b in blocks_raw if b.strip()]
+
+    prs = Presentation()
+    prs.slide_width  = W
+    prs.slide_height = H
+
+    render_title_slide(prs, meta, accent)
+    for block in blocks:
+        elements = parse_slide_block(block, base)
+        if not elements:
+            continue
+        render_slide(prs, elements, accent)
+
+    prs.save(out)
+    print(f"Saved → {out}  ({len(prs.slides)} slides)")
+
+
+if __name__ == "__main__":
+    main()

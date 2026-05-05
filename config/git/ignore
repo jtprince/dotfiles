@@ -17,3 +17,5 @@ __pycache__
 .google-*creds*
 .python-version
 pyrightconfig.json
+
+**/.claude/settings.local.json
