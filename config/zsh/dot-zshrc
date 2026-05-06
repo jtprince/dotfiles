@@ -2,11 +2,33 @@
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-if command -v rbenv &> /dev/null; then
-    eval "$(rbenv init - zsh)"
+# Cached eval helper. Regenerates the cache when its source binary/config is
+# newer than the cache, otherwise just sources the cache (fast path).
+#   _cached_eval <cache-file> <invalidator-path> <command...>
+_cached_eval() {
+  local cache=$1 invalidator=$2; shift 2
+  if [[ ! -s $cache || $invalidator -nt $cache ]]; then
+    mkdir -p ${cache:h}
+    "$@" > $cache
+  fi
+  source $cache
+}
+
+_zsh_cache_dir="$HOME/.cache/zsh-init"
+
+if command -v rbenv &>/dev/null; then
+  _cached_eval "$_zsh_cache_dir/rbenv.zsh" "$(command -v rbenv)" rbenv init - zsh
 fi
 
-# Load sheldon plugins (interactive-only; PATH is set by .zprofile)
-eval "$(sheldon source)"
+# Sheldon plugins (interactive-only; PATH is set by .zprofile).
+# Invalidate when plugins.toml changes.
+_cached_eval "$_zsh_cache_dir/sheldon.zsh" \
+  "${SHELDON_CONFIG_DIR:-$HOME/.config/sheldon}/plugins.toml" sheldon source
 
-eval "$(starship init zsh)"
+# Starship prompt.
+if command -v starship &>/dev/null; then
+  _cached_eval "$_zsh_cache_dir/starship.zsh" "$(command -v starship)" starship init zsh
+fi
+
+unfunction _cached_eval
+unset _zsh_cache_dir

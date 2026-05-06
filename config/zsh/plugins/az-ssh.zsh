@@ -257,7 +257,6 @@ Also check for non-sshd idle killers such as:
 EOF
 }
 
-autoload -Uz compinit
-compinit
+# compinit is centralized in sheldon plugins.toml `__init_completion`.
 compdef _ssh az-ssh
 compdef _scp az-scp

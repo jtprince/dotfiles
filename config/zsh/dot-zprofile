@@ -7,7 +7,14 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	export PATH="/opt/homebrew/opt/perl/bin:$PATH"
 	export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 	if [[ -x /opt/homebrew/bin/brew ]]; then
-		eval "$(/opt/homebrew/bin/brew shellenv)"
+		# Cache `brew shellenv` — saves a brew subprocess on every login shell.
+		_brew_cache="$HOME/.cache/zsh-init/brew-shellenv.zsh"
+		if [[ ! -s $_brew_cache || /opt/homebrew/bin/brew -nt $_brew_cache ]]; then
+			mkdir -p ${_brew_cache:h}
+			/opt/homebrew/bin/brew shellenv > $_brew_cache
+		fi
+		source $_brew_cache
+		unset _brew_cache
 	fi
 fi
 

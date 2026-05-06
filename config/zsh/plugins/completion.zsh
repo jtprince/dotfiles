@@ -8,9 +8,8 @@ fpath=($ZDOTDIR/completion $fpath)
 # Remove broken path to missing _brew_services completion
 fpath=("${(@f)fpath:#*site-functions/_brew_services}")
 
-# Load the modern completion system safely
-autoload -Uz compinit
-compinit -i  # '-i' ignores insecure or missing completions (like _brew_services)
+# compinit is centralized in sheldon plugins.toml `__init_completion`.
+# This file only configures completion behavior (zstyles below).
 
 # =============================
 # Completion UI & Behavior Tweaks

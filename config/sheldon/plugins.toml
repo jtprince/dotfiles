@@ -26,21 +26,38 @@ shell = "zsh"
 
 [plugins.__init_completion]
 inline = '''
-# put custom completion scripts ahead of defaults (optional)
+# Custom completion scripts ahead of defaults.
 fpath=("$HOME/.config/zsh/completion" $fpath)
 
-# zsh native completion
+# zsh native completion — fast-path compinit.
+# Skip security check (-C) and reuse the dump unless older than 24h.
 autoload -Uz compinit
-compinit -i
+_zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+if [[ -n $_zcompdump(#qNmh-24) ]]; then
+  compinit -C -i -d $_zcompdump
+else
+  compinit -i -d $_zcompdump
+fi
+# Byte-compile the dump for faster loads next shell.
+if [[ -s $_zcompdump && ( ! -s $_zcompdump.zwc || $_zcompdump -nt $_zcompdump.zwc ) ]]; then
+  zcompile $_zcompdump
+fi
+unset _zcompdump
 
-# bridge for bash-style completers (argcomplete)
+# Bash-completion bridge (argcomplete uses it).
 autoload -U bashcompinit
 bashcompinit
 
-# register argcomplete for `cheat` if available on PATH
+# register-python-argcomplete cheat — cache the eval (python subprocess is slow).
+_cheat_cache="${HOME}/.cache/cheat-argcomplete.zsh"
 if command -v register-python-argcomplete >/dev/null 2>&1 && command -v cheat >/dev/null 2>&1; then
-  eval "$(register-python-argcomplete cheat)"
+  if [[ ! -s $_cheat_cache || $(command -v cheat) -nt $_cheat_cache ]]; then
+    mkdir -p ${_cheat_cache:h}
+    register-python-argcomplete cheat > $_cheat_cache 2>/dev/null
+  fi
+  source $_cheat_cache
 fi
+unset _cheat_cache
 '''
 
 [plugins.cmd_exists]
