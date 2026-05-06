@@ -27,8 +27,9 @@ import argparse
 import json
 import subprocess
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from glob import glob
-from itertools import islice
 from pathlib import Path
 
 
@@ -73,10 +74,16 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "--batch-size",
+        "--workers",
         type=int,
-        default=250,
-        help="Number of files to process per batch for progress reporting (default: 250).",
+        default=16,
+        metavar="N",
+        help="Concurrent upload workers (default: 16). Use 1 for sequential.",
+    )
+    parser.add_argument(
+        "--skip-existing",
+        action="store_true",
+        help="Skip files already present in the target prefix (name-based, no content check).",
     )
     parser.add_argument(
         "files",
@@ -179,10 +186,30 @@ def resolve_input_files(args: argparse.Namespace) -> list[Path]:
     return resolved
 
 
-def chunked(seq: list[Path], size: int):
-    it = iter(seq)
-    while batch := list(islice(it, size)):
-        yield batch
+def list_existing_blobs(storage_account: str, container: str, prefix: str) -> set[str]:
+    """Return set of blob names under prefix (used for --skip-existing)."""
+    try:
+        proc = subprocess.run(
+            [
+                "az", "storage", "blob", "list",
+                "--account-name", storage_account,
+                "--container-name", container,
+                "--prefix", prefix,
+                "--auth-mode", "login",
+                "--output", "json",
+                "--query", "[].name",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        msg = "ERROR: failed to list existing blobs."
+        if exc.stderr:
+            msg += f"\n{exc.stderr.strip()}"
+        print(msg, file=sys.stderr)
+        sys.exit(1)
+    return set(json.loads(proc.stdout))
 
 
 def upload_blob(
@@ -219,40 +246,64 @@ def upload_blob(
             text=True,
         )
     except subprocess.CalledProcessError as exc:
-        print(f"ERROR: failed to upload {local_file.name}.", file=sys.stderr)
+        msg = f"ERROR: failed to upload {local_file.name}."
         if exc.stderr:
-            print(exc.stderr.strip(), file=sys.stderr)
-        sys.exit(1)
+            msg += f"\n{exc.stderr.strip()}"
+        raise RuntimeError(msg) from exc
     return f"az://{container}/{blob_name}"
 
 
 def main() -> None:
     args = parse_args()
 
-    if args.batch_size < 1:
-        print("ERROR: --batch-size must be >= 1", file=sys.stderr)
+    if args.workers < 1:
+        print("ERROR: --workers must be >= 1", file=sys.stderr)
         sys.exit(2)
 
     verify_subscription(args.subscription)
     files = resolve_input_files(args)
 
+    existing: set[str] = set()
+    if args.skip_existing:
+        print(f"Checking existing blobs under {args.storage_account}/{args.container}/{args.upload_dir} …")
+        existing = list_existing_blobs(args.storage_account, args.container, args.upload_dir)
+        skip_count = sum(1 for f in files if f"{args.upload_dir}/{f.name}" in existing)
+        if skip_count:
+            print(f"Skipping {skip_count} already-uploaded file(s).")
+        files = [f for f in files if f"{args.upload_dir}/{f.name}" not in existing]
+        if not files:
+            print("All files already uploaded. Nothing to do.")
+            return
+
     print(
         f"Uploading {len(files)} file(s) to "
-        f"{args.storage_account}/{args.container}/{args.upload_dir}"
+        f"{args.storage_account}/{args.container}/{args.upload_dir} "
+        f"({args.workers} worker{'s' if args.workers != 1 else ''})"
     )
 
     uploaded = 0
-    for batch_num, batch in enumerate(chunked(files, args.batch_size), start=1):
-        print(f"\nBatch {batch_num}: {len(batch)} file(s)")
-        for local_file in batch:
-            blob_path = upload_blob(
-                local_file=local_file,
-                storage_account=args.storage_account,
-                container=args.container,
-                target_path=args.upload_dir,
-            )
-            uploaded += 1
-            print(f"[{uploaded}/{len(files)}] ✓ {local_file.name} → {blob_path}")
+    lock = threading.Lock()
+
+    def upload_one(local_file: Path) -> tuple[Path, str]:
+        blob_path = upload_blob(
+            local_file=local_file,
+            storage_account=args.storage_account,
+            container=args.container,
+            target_path=args.upload_dir,
+        )
+        return local_file, blob_path
+
+    try:
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
+            futures = {pool.submit(upload_one, f): f for f in files}
+            for future in as_completed(futures):
+                local_file, blob_path = future.result()
+                with lock:
+                    uploaded += 1
+                    print(f"[{uploaded}/{len(files)}] ✓ {local_file.name} → {blob_path}")
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(1)
 
     print(f"\nDone: uploaded {uploaded} file(s).")
 

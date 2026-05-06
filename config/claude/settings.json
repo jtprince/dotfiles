@@ -71,6 +71,7 @@
       }
     }
   },
+  "promptSuggestionEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "verbose": true,
   "skipAutoPermissionPrompt": true,
@@ -81,5 +82,6 @@
         "mcp"
       ]
     }
-  }
+  },
+  "remoteControlAtStartup": true
 }

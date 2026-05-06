@@ -1,75 +1,293 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python3
+"""Print a github.com URL for a file in the current repo.
 
-# TODO: rewrite in python and fix this up (currently broken)
+Leans on `gh browse --no-browser` for remote/repo resolution, then
+post-processes the URL for raw/lines/plain/etc. Falls back to a manual
+URL builder for github.com only when `gh` is unavailable.
+"""
 
-require 'pathname'
-require 'optparse'
+from __future__ import annotations
 
-BASE_URL = "https://github.com"
-GOOGLE_VIEWER_LINK = "https://docs.google.com/viewer?url="
-GITHUB_HTML_PREVIEW_LINK = "https://cdn.rawgit.com"
+import argparse
+import re
+import shutil
+import subprocess
+import sys
+from dataclasses import dataclass
+from pathlib import Path
 
-opts = {
-  filetype: "raw",
-}
-parser = OptionParser.new do |op|
-  op.banner = "usage: #{File.basename(__FILE__)} <file>"
-  op.separator "output: the github url of the file"
-  op.on("-b", "--blob", "use the blob instead of raw") {|v| opts[:filetype] = "blob"}
-  op.on("-m", "--main", "use the main branch instead of current version") {|v| opts[:branch] = "main" }
-  op.on("--branch", "use specific branch instead of current version") {|v| opts[:branch] = v }
-  op.on("--pdf-view", "make a raw pdf viewable") {|v| opts[:view_pdf] = v }
-  op.on("--html-view", "make a raw html doc viewable") {|v| opts[:view_html] = v; opts[:filetype] = nil }
-  op.on("--base", "return the repo base link") {|v| opts[:repo_base] = v }
-end
-parser.parse!
 
-if ARGV.size == 0
-  puts parser
-  exit
-end
+def run(cmd: list[str], **kw) -> str:
+    return subprocess.run(
+        cmd, capture_output=True, text=True, check=True, **kw
+    ).stdout.strip()
 
-filepath = ARGV.first
 
-pathname = Pathname.new(File.absolute_path(filepath))
-dir =
-if pathname.directory?
-  pathname
-else
-  pathname.dirname
-end
+def try_run(cmd: list[str]) -> tuple[bool, str, str]:
+    p = subprocess.run(cmd, capture_output=True, text=True)
+    return p.returncode == 0, p.stdout.strip(), p.stderr.strip()
 
-hash, topdir, url = Dir.chdir(dir) do
-  [
-    `git rev-parse HEAD`.chomp,
-    `git rev-parse --show-toplevel`.chomp,
-    `git remote show origin 2>/dev/null`.split("\n").map do |line|
-      line[/Push\s+URL: (.*)/, 1]
-    end.compact.first
-  ]
-end
 
-repo_path = Pathname.new(topdir)
-relative_path = pathname.relative_path_from(repo_path)
+def warn(msg: str) -> None:
+    print(f"github-link: {msg}", file=sys.stderr)
 
-user, repo = url.split(":", 2).last.split(".git").first.split("/")
 
-def assemble_github_url(user, repo, relative_path, version_specifier, filetype, base_url)
-  [base_url, user, repo, filetype, version_specifier, relative_path].compact.join("/")
-end
+def die(msg: str, code: int = 1) -> None:
+    warn(msg)
+    sys.exit(code)
 
-final_url =
-if opts[:repo_base]
-  [BASE_URL, user, repo].join("/")
-else
-  github_url = assemble_github_url(user, repo, relative_path.to_s, opts[:branch] || hash, opts[:filetype], opts[:view_html] ? GITHUB_HTML_PREVIEW_LINK : BASE_URL)
-  viewer =
-    if opts[:view_pdf]
-      GOOGLE_VIEWER_LINK
-    else
-      ""
-    end
-  final_url = viewer + github_url
-end
 
-puts final_url
+@dataclass
+class Ref:
+    kind: str  # "commit" | "branch" | "head"
+    value: str | None  # SHA for commit, name for branch, None for head
+
+
+def split_path_lines(arg: str) -> tuple[str, tuple[int, int] | None]:
+    """`foo.py:10-20` -> (`foo.py`, (10, 20)). `foo.py:10` -> (`foo.py`, (10, 10))."""
+    m = re.match(r"^(.+?)(?::(\d+)(?:-(\d+))?)?$", arg)
+    if not m:
+        return arg, None
+    path = m.group(1)
+    if m.group(2) is None:
+        return path, None
+    start = int(m.group(2))
+    end = int(m.group(3)) if m.group(3) else start
+    return path, (start, end)
+
+
+def resolve_path(arg_path: str) -> tuple[Path, Path]:
+    """Return (repo_root, relpath). Errors if path outside repo."""
+    abspath = Path(arg_path).resolve()
+    try:
+        root = Path(run(["git", "-C", str(abspath.parent if not abspath.is_dir() else abspath),
+                         "rev-parse", "--show-toplevel"]))
+    except subprocess.CalledProcessError:
+        die(f"{arg_path}: not inside a git repository")
+    try:
+        rel = abspath.relative_to(root)
+    except ValueError:
+        die(f"{arg_path}: not inside repo root {root}")
+    return root, rel
+
+
+def commit_sha(cwd: Path) -> str:
+    return run(["git", "-C", str(cwd), "rev-parse", "HEAD"])
+
+
+def is_pushed(cwd: Path, sha: str) -> bool:
+    ok, out, _ = try_run(["git", "-C", str(cwd), "branch", "--remotes", "--contains", sha])
+    return ok and bool(out)
+
+
+def gh_repo_base(cwd: Path) -> str:
+    """Get `https://<host>/<owner>/<repo>` via `gh browse` (no args)."""
+    p = subprocess.run(
+        ["gh", "browse", "--no-browser"],
+        capture_output=True, text=True, cwd=str(cwd),
+    )
+    if p.returncode != 0:
+        raise RuntimeError(p.stderr.strip() or "gh browse failed")
+    return p.stdout.strip().rstrip("/")
+
+
+def gh_open(path: Path | None, cwd: Path, ref: Ref, blame: bool) -> None:
+    """Open in browser via gh. Used only for --open."""
+    cmd = ["gh", "browse"]
+    if blame:
+        cmd.append("--blame")
+    # gh browse can't combine a path positional with --commit (v2.92), so we
+    # always use --branch (which accepts arbitrary refs including SHAs).
+    if ref.kind == "commit" and ref.value:
+        cmd += ["--branch", ref.value]
+    elif ref.kind == "branch" and ref.value:
+        cmd += ["--branch", ref.value]
+    if path is not None:
+        cmd.append(str(path))
+    p = subprocess.run(cmd, cwd=str(cwd))
+    if p.returncode != 0:
+        raise RuntimeError("gh browse failed")
+
+
+def manual_repo_base(cwd: Path) -> str:
+    """Fallback when gh unavailable: parse `git remote get-url`. github.com only."""
+    remote = None
+    for name in ("upstream", "origin"):
+        ok, out, _ = try_run(["git", "-C", str(cwd), "remote", "get-url", name])
+        if ok:
+            remote = out
+            break
+    if not remote:
+        die("no git remote found")
+    m = re.match(r"^(?:git@|https?://|ssh://git@)([^:/]+)[:/]([^/]+)/([^/]+?)(?:\.git)?/?$", remote)
+    if not m:
+        die(f"could not parse remote URL: {remote}")
+    host, owner, repo = m.group(1), m.group(2), m.group(3)
+    return f"https://{host}/{owner}/{repo}"
+
+
+def build_file_url(base: str, relpath: Path, ref: Ref, blame: bool, raw: bool, cwd: Path) -> str:
+    """Construct {base}/{blob|raw|blame}/{ref}/{path}."""
+    if ref.kind == "commit":
+        ref_str = ref.value
+    elif ref.kind == "branch":
+        ref_str = ref.value
+    else:  # head
+        ref_str = run(["git", "-C", str(cwd), "rev-parse", "--abbrev-ref", "HEAD"])
+    if blame:
+        section = "blame"
+    elif raw:
+        section = "raw"
+    else:
+        section = "blob"
+    return f"{base}/{section}/{ref_str}/{relpath}"
+
+
+def add_suffixes(url: str, lines: tuple[int, int] | None, plain: bool) -> str:
+    if plain:
+        sep = "&" if "?" in url else "?"
+        url += f"{sep}plain=1"
+    if lines:
+        a, b = lines
+        url += f"#L{a}" + (f"-L{b}" if b != a else "")
+    return url
+
+
+def repo_base(cwd: Path) -> str:
+    try:
+        return gh_repo_base(cwd)
+    except (RuntimeError, FileNotFoundError):
+        return manual_repo_base(cwd)
+
+
+def clipboard_cmd() -> list[str] | None:
+    """pbcopy on macOS, wl-copy on Linux (Wayland). None if unavailable."""
+    if sys.platform == "darwin" and shutil.which("pbcopy"):
+        return ["pbcopy"]
+    if sys.platform.startswith("linux") and shutil.which("wl-copy"):
+        return ["wl-copy"]
+    return None
+
+
+def copy_to_clipboard(text: str) -> bool:
+    cmd = clipboard_cmd()
+    if cmd is None:
+        return False
+    p = subprocess.run(cmd, input=text, text=True)
+    return p.returncode == 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog="github-link",
+        description="Print a github.com URL for a file in the current repo.",
+    )
+    p.add_argument("path", nargs="?", help="file path, optionally with :LINE or :L1-L2")
+
+    fmt = p.add_mutually_exclusive_group()
+    fmt.add_argument("--blob", action="store_true", help="blob URL (default)")
+    fmt.add_argument("--raw", action="store_true", help="raw URL (direct file bytes)")
+
+    ref = p.add_mutually_exclusive_group()
+    ref.add_argument("-m", "--main", action="store_true", help="pin to main branch")
+    ref.add_argument("--branch", metavar="BRANCH", help="pin to specific branch")
+    ref.add_argument("--head", action="store_true",
+                     help="use current branch HEAD (less stable than commit SHA)")
+
+    p.add_argument("--lines", metavar="L|L1-L2",
+                   help="line or line range; appended as #L1-L2")
+    p.add_argument("--blame", action="store_true", help="open blame view")
+    p.add_argument("--plain", action="store_true",
+                   help="append ?plain=1 (raw source view of MD/IPYNB)")
+    p.add_argument("--base", action="store_true", help="just print repo base URL")
+    p.add_argument("--open", dest="open_", action="store_true",
+                   help="open in browser instead of printing")
+    p.add_argument("--no-clipboard", "-n", dest="clipboard",
+                   action="store_false", default=True,
+                   help="do not copy URL to clipboard (default: copy via pbcopy/wl-copy)")
+    p.add_argument("--md", "--markdown", dest="md", action="store_true",
+                   help="wrap output as [basename](url) markdown link")
+    return p
+
+
+def md_wrap(url: str, label: str) -> str:
+    return f"[{label}]({url})"
+
+
+def parse_lines(s: str | None) -> tuple[int, int] | None:
+    if not s:
+        return None
+    m = re.match(r"^(\d+)(?:-(\d+))?$", s)
+    if not m:
+        die(f"--lines: invalid value {s!r}")
+    a = int(m.group(1))
+    b = int(m.group(2)) if m.group(2) else a
+    return (a, b)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+
+    cwd = Path.cwd()
+
+    # --base or no path: print repo home
+    if args.base or args.path is None:
+        if args.open_:
+            subprocess.run(["gh", "browse"], cwd=str(cwd))
+            return 0
+        url = repo_base(cwd)
+        if args.md:
+            url = md_wrap(url, url.rstrip("/").rsplit("/", 1)[-1])
+        _emit(url, args.clipboard)
+        return 0
+
+    # Parse path:line syntax (only if --lines not given explicitly)
+    raw_path, inline_lines = split_path_lines(args.path)
+    lines = parse_lines(args.lines) if args.lines else inline_lines
+
+    root, relpath = resolve_path(raw_path)
+
+    # Resolve ref
+    if args.main:
+        ref = Ref("branch", "main")
+    elif args.branch:
+        ref = Ref("branch", args.branch)
+    elif args.head:
+        ref = Ref("head", None)
+    else:
+        sha = commit_sha(root)
+        ref = Ref("commit", sha)
+        if not is_pushed(root, sha):
+            warn(f"warning: commit {sha[:12]} not pushed to any remote")
+
+    if args.open_:
+        try:
+            gh_open(relpath, root, ref, args.blame)
+        except (RuntimeError, FileNotFoundError) as e:
+            die(f"--open requires gh: {e}")
+        return 0
+
+    # Get repo base, then build URL ourselves (avoids gh browse positional limits).
+    try:
+        base = gh_repo_base(root)
+    except (RuntimeError, FileNotFoundError) as e:
+        warn(f"gh unavailable ({e}); using git remote fallback")
+        base = manual_repo_base(root)
+
+    url = build_file_url(base, relpath, ref, args.blame, args.raw, root)
+    url = add_suffixes(url, lines, args.plain)
+    if args.md:
+        url = md_wrap(url, relpath.name)
+    _emit(url, args.clipboard)
+    return 0
+
+
+def _emit(text: str, clipboard: bool) -> None:
+    if clipboard:
+        if not copy_to_clipboard(text):
+            warn("clipboard unavailable; printing only")
+    print(text)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
