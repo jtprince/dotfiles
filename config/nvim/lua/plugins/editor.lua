@@ -9,20 +9,8 @@ require("gitsigns").setup()
 
 require("rainbow_csv").setup()
 
-require("persistence").setup({
-	dir = vim.fn.stdpath("state") .. "/sessions/",
-	need = 1,
-	branch = true,
-})
-
-vim.keymap.set("n", "<leader>qs", function() require("persistence").load() end,
-	{ desc = "Session load (cwd)" })
-vim.keymap.set("n", "<leader>qS", function() require("persistence").select() end,
-	{ desc = "Session select" })
-vim.keymap.set("n", "<leader>ql", function() require("persistence").load({ last = true }) end,
-	{ desc = "Session load (last)" })
-vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end,
-	{ desc = "Session stop saving" })
+-- persistence: setup + keymaps live in plugins/persistence.lua so they run at
+-- startup (config/autocmds.lua VimEnter calls persistence.load()).
 
 require("trouble").setup()
 for _, m in ipairs({

@@ -60,10 +60,44 @@ vim.pack.add({
 	"https://github.com/folke/lazydev.nvim",
 })
 
--- Per-plugin setup, in load order.
+-- ----------------------------------------------------------------------
+-- Lazy-load orchestration.
+--
+-- Only `plugins.ui` (theme + oil + icons) loads synchronously — everything
+-- else is deferred to keep startup fast. Triggers:
+--
+--   UIEnter/VimEnter+schedule: editor utilities, treesitter, telescope (once)
+--   InsertEnter / CmdlineEnter : nvim-cmp + LuaSnip
+--   FileType (any)   : LSP stack (mason, lspconfig, lazydev)
+--   FileType=markdown: markdown plugins
+-- ----------------------------------------------------------------------
+
 require("plugins.ui")
-require("plugins.editor")
-require("plugins.treesitter")
-require("plugins.telescope")
-require("plugins.markdown")
-require("plugins.lsp")
+require("plugins.persistence")
+
+local group = vim.api.nvim_create_augroup("user_lazy_plugins", { clear = true })
+
+local function once(event, opts, cb)
+	opts = vim.tbl_extend("force", { group = group, once = true, callback = cb }, opts or {})
+	vim.api.nvim_create_autocmd(event, opts)
+end
+
+once({ "UIEnter", "VimEnter" }, {}, function()
+	vim.schedule(function()
+		require("plugins.editor")
+		require("plugins.treesitter")
+		require("plugins.telescope")
+	end)
+end)
+
+once({ "InsertEnter", "CmdlineEnter" }, {}, function()
+	require("plugins.cmp")
+end)
+
+once("FileType", {}, function()
+	require("plugins.lsp")
+end)
+
+once("FileType", { pattern = "markdown" }, function()
+	require("plugins.markdown")
+end)
