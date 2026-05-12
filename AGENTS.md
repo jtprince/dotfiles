@@ -53,6 +53,10 @@ first.**
   meaningfully improve clarity or safety.
 - **Python scripts**: The repo uses `ruff` for linting/formatting (see
   `.pre-commit-config.yaml`). Follow existing style in the file you are editing.
+- **Rust scripts**: Some `bin/` scripts use `rust-script` (shebang
+  `#!/usr/bin/env rust-script`) with an inline `//! \`\`\`cargo` deps block.
+  Install once per machine: `cargo install rust-script`. First run compiles and
+  caches; subsequent runs are instant. No Cargo project or build step needed.
 - **Neovim/Lua**: Follow the style of the existing modules in
   `config/nvim/lua/`. `vim.pack` does **not** support lazy-loading
   (`ft`/`cmd`/`keys`/`event`), so plugins load eagerly — keep setup blocks

@@ -1,64 +1,209 @@
-#!/usr/bin/env python
+#!/usr/bin/env rust-script
+//! ```cargo
+//! [dependencies]
+//! clap = { version = "4", features = ["derive"] }
+//! parquet = "53"
+//! arrow = "53"
+//! serde_json = "1"
+//! ```
 
-import argparse
-from pathlib import Path
-import pandas as pd
+use std::fs::File;
+use std::path::PathBuf;
 
+use arrow::util::display::{ArrayFormatter, FormatOptions};
+use clap::Parser;
+use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 
-pd.set_option("display.max_columns", None)
+const MAX_CELL_CHARS: usize = 50;
 
-parser = argparse.ArgumentParser(
-    description="prints headers and first rows of each dataframe"
-)
-parser.add_argument("parquet_files", type=Path, nargs="+")
-parser.add_argument(
-    "-n", "--num-rows", type=int, default=5, help="print this number of rows"
-)
+#[derive(Parser)]
+#[command(about = "prints headers and first rows of each parquet file")]
+struct Args {
+    #[arg(num_args = 1..)]
+    parquet_files: Vec<PathBuf>,
+    #[arg(short = 'n', long, default_value = "5", help = "number of rows to print")]
+    num_rows: usize,
+    #[arg(long, help = "don't print shape at the end")]
+    no_shape: bool,
+    #[arg(long, help = "don't print file metadata even if it exists")]
+    no_attrs: bool,
+    #[arg(short = 'r', long, help = "display all rows, not just the head")]
+    all_rows: bool,
+    #[arg(short = 'c', long, help = "don't break columns up with newline")]
+    all_cols: bool,
+}
 
-parser.add_argument(
-    "--no-shape", action="store_true", help="don't print shape at the end"
-)
-parser.add_argument(
-    "--no-attrs", action="store_true", help="don't print df.attrs even if they exist"
-)
+fn truncate(s: &str, max: usize) -> String {
+    if s.chars().count() <= max {
+        s.to_string()
+    } else {
+        let t: String = s.chars().take(max - 3).collect();
+        format!("{t}...")
+    }
+}
 
-parser.add_argument(
-    "-r",
-    "--all-rows",
-    action="store_true",
-    help="display all rows, not just the head",
-)
+fn terminal_width() -> usize {
+    std::env::var("COLUMNS")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(120usize)
+}
 
-parser.add_argument(
-    "-c",
-    "--all-cols",
-    action="store_true",
-    help="don't break columns up with newline",
-)
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::parse();
+    let fmt_opts = FormatOptions::default();
 
+    for path in &args.parquet_files {
+        println!("{}", path.display());
 
-args = parser.parse_args()
+        let file = File::open(path)?;
+        let builder = ParquetRecordBatchReaderBuilder::try_new(file)?;
+        let file_meta = builder.metadata().file_metadata();
 
-if args.all_rows:
-    pd.set_option("display.max_rows", None)
+        if !args.no_attrs {
+            if let Some(kvs) = file_meta.key_value_metadata() {
+                let mut entries: Vec<String> = Vec::new();
 
-if args.all_cols:
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.width", None)
-    pd.set_option("display.max_colwidth", None)
+                if let Some(kv) = kvs.iter().find(|kv| kv.key == "PANDAS_ATTRS") {
+                    if let Some(ref v) = kv.value {
+                        if let Ok(serde_json::Value::Object(map)) = serde_json::from_str(v) {
+                            for (k, val) in &map {
+                                let display = match val {
+                                    serde_json::Value::String(s) => s.clone(),
+                                    other => other.to_string(),
+                                };
+                                entries.push(format!("{k}: {display}"));
+                            }
+                        }
+                    }
+                }
 
+                for kv in kvs {
+                    if kv.key == "pandas"
+                        || kv.key.starts_with("ARROW:")
+                        || kv.key == "PANDAS_ATTRS"
+                    {
+                        continue;
+                    }
+                    let display = match &kv.value {
+                        Some(v) => format!("{}: {}", kv.key, v),
+                        None => kv.key.clone(),
+                    };
+                    entries.push(display);
+                }
 
-for path in args.parquet_files:
-    print(str(path))
-    df = pd.read_parquet(path)
+                if !entries.is_empty() {
+                    println!("attrs: {{{}}}", entries.join(", "));
+                }
+            }
+        }
 
-    if df.attrs and not args.no_attrs:
-        print("attrs:", df.attrs)
+        let total_rows = file_meta.num_rows() as usize;
+        let num_cols = builder.schema().fields().len();
+        let limit = if args.all_rows { total_rows } else { args.num_rows };
 
-    if args.all_rows:
-        print(df)
-    else:
-        head = df.head(args.num_rows)
-        print(head)
-    if not args.no_shape:
-        print("\nshape:", df.shape)
+        let reader = builder.build()?;
+
+        let mut batches = Vec::new();
+        let mut collected = 0usize;
+        for batch_result in reader {
+            if collected >= limit {
+                break;
+            }
+            let batch = batch_result?;
+            let take = (limit - collected).min(batch.num_rows());
+            batches.push(batch.slice(0, take));
+            collected += take;
+        }
+
+        if !batches.is_empty() {
+            let schema = batches[0].schema();
+            let ncols = schema.fields().len();
+
+            // stringify all cells upfront
+            let mut all_rows: Vec<Vec<String>> = Vec::new();
+            for batch in &batches {
+                let formatters: Vec<ArrayFormatter> = batch
+                    .columns()
+                    .iter()
+                    .map(|col| ArrayFormatter::try_new(col.as_ref(), &fmt_opts))
+                    .collect::<Result<Vec<_>, _>>()?;
+                for row in 0..batch.num_rows() {
+                    all_rows.push(formatters.iter().map(|f| f.value(row).to_string()).collect());
+                }
+            }
+
+            let max_cell = if args.all_cols { usize::MAX } else { MAX_CELL_CHARS };
+
+            // compute display width per column: max of header name vs (capped) cell content
+            let mut col_widths: Vec<usize> = schema
+                .fields()
+                .iter()
+                .map(|f| f.name().chars().count())
+                .collect();
+            for row in &all_rows {
+                for (ci, cell) in row.iter().enumerate() {
+                    col_widths[ci] = col_widths[ci].max(cell.chars().count().min(max_cell));
+                }
+            }
+
+            let idx_width = all_rows.len().saturating_sub(1).to_string().len().max(1);
+
+            // group columns into blocks that fit terminal width
+            let groups: Vec<Vec<usize>> = if args.all_cols {
+                vec![(0..ncols).collect()]
+            } else {
+                let term_w = terminal_width();
+                let mut groups: Vec<Vec<usize>> = Vec::new();
+                let mut cur: Vec<usize> = Vec::new();
+                // idx col + 2-space gap
+                let mut w = idx_width + 2;
+                for ci in 0..ncols {
+                    let col_w = col_widths[ci] + 2;
+                    if !cur.is_empty() && w + col_w > term_w {
+                        groups.push(std::mem::take(&mut cur));
+                        w = idx_width + 2;
+                    }
+                    cur.push(ci);
+                    w += col_w;
+                }
+                if !cur.is_empty() {
+                    groups.push(cur);
+                }
+                groups
+            };
+
+            for (gi, group) in groups.iter().enumerate() {
+                let is_last = gi == groups.len() - 1;
+                let cont = if is_last { "" } else { " \\" };
+
+                // header row
+                print!("{:>idx_width$}  ", "");
+                for &ci in group {
+                    print!("{:<width$}  ", schema.field(ci).name(), width = col_widths[ci]);
+                }
+                println!("{cont}");
+
+                // data rows
+                for (ri, row) in all_rows.iter().enumerate() {
+                    print!("{:>idx_width$}  ", ri);
+                    for &ci in group {
+                        let cell = truncate(&row[ci], max_cell);
+                        print!("{:<width$}  ", cell, width = col_widths[ci]);
+                    }
+                    println!("{cont}");
+                }
+
+                if !is_last {
+                    println!();
+                }
+            }
+        }
+
+        if !args.no_shape {
+            println!("\nshape: ({}, {})", total_rows, num_cols);
+        }
+    }
+
+    Ok(())
+}

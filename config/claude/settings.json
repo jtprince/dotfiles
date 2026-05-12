@@ -8,7 +8,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/opt/homebrew/lib/node_modules/cavemem/dist/index.js hook run session-start --ide claude-code"
+            "command": "cavemem hook run session-start --ide claude-code"
           }
         ]
       }
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/opt/homebrew/lib/node_modules/cavemem/dist/index.js hook run user-prompt-submit --ide claude-code"
+            "command": "cavemem hook run user-prompt-submit --ide claude-code"
           }
         ]
       }
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/opt/homebrew/lib/node_modules/cavemem/dist/index.js hook run post-tool-use --ide claude-code"
+            "command": "cavemem hook run post-tool-use --ide claude-code"
           }
         ]
       }
@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/opt/homebrew/lib/node_modules/cavemem/dist/index.js hook run stop --ide claude-code"
+            "command": "cavemem hook run stop --ide claude-code"
           }
         ]
       }
@@ -48,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/opt/homebrew/lib/node_modules/cavemem/dist/index.js hook run session-end --ide claude-code"
+            "command": "cavemem hook run session-end --ide claude-code"
           }
         ]
       }
@@ -74,14 +74,15 @@
   "promptSuggestionEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "verbose": true,
+  "remoteControlAtStartup": true,
   "skipAutoPermissionPrompt": true,
   "mcpServers": {
     "cavemem": {
-      "command": "/opt/homebrew/lib/node_modules/cavemem/dist/index.js",
+      "command": "cavemem",
       "args": [
         "mcp"
       ]
     }
   },
-  "remoteControlAtStartup": true
+  "model": "sonnet"
 }
