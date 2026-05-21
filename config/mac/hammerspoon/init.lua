@@ -88,20 +88,65 @@ end)
 -- 🎵 Media Controls  (via your run-osascript helpers)
 ----------------------------------------------------------------------
 
--- Spotify
+local SPOTIFY = "/opt/homebrew/bin/spotify_player"
+
+local function sp(cmd)
+	hs.execute(SPOTIFY .. " playback " .. cmd)
+end
+
+-- Play / Pause (Alt + P)
 hs.hotkey.bind({ "alt" }, "P", function()
-	run_osascript("spotify-playpause")
+	print("ALT+P fired")
+	sp("play-pause")
 end)
 
--- Previous track
-hs.hotkey.bind({ "alt" }, 0x21, function()
-	run_osascript("spotify-prev-track")
-end)
-
--- Next track
+-- Next track (your right bracket keycode)
 hs.hotkey.bind({ "alt" }, 0x1E, function()
-	run_osascript("spotify-next-track")
+	sp("next")
 end)
+
+-- Previous track (your left bracket keycode)
+hs.hotkey.bind({ "alt" }, 0x21, function()
+	sp("previous")
+end)
+
+-- -- Shuffle toggle (Alt + Shift + S)
+-- hs.hotkey.bind({ "alt", "shift" }, "S", function()
+-- 	sp("shuffle")
+-- end)
+--
+-- -- Repeat cycle (Alt + Shift + R)
+-- hs.hotkey.bind({ "alt", "shift" }, "R", function()
+-- 	sp("repeat")
+-- end)
+
+-- -- Volume up (Alt + =)
+-- hs.hotkey.bind({ "alt" }, "=", function()
+-- 	sp("volume 5")
+-- end)
+--
+-- -- Volume down (Alt + -)
+-- hs.hotkey.bind({ "alt" }, "-", function()
+-- 	sp("volume -5")
+-- end)
+
+
+
+
+-- -- Spotify
+-- hs.hotkey.bind({ "alt" }, "P", function()
+-- 	run_osascript("spotify-playpause")
+-- end)
+--
+-- -- Previous track
+-- hs.hotkey.bind({ "alt" }, 0x21, function()
+-- 	run_osascript("spotify-prev-track")
+-- end)
+--
+-- -- Next track
+-- hs.hotkey.bind({ "alt" }, 0x1E, function()
+-- 	run_osascript("spotify-next-track")
+-- end)
 
 -- Volume down
 hs.hotkey.bind({ "alt" }, 0x19, function()
