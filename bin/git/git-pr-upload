@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+
+import argparse
+import re
+import subprocess
+import sys
+
+
+def parse_pr(s):
+    if s.isdigit():
+        return s
+    m = re.search(r"/pull/(\d+)", s)
+    if m:
+        return m.group(1)
+    raise SystemExit(f"cannot parse PR number from: {s}")
+
+
+def detect_pr():
+    r = subprocess.run(
+        ["gh", "pr", "view", "--json", "number", "-q", ".number"],
+        capture_output=True, text=True,
+    )
+    if r.returncode != 0 or not r.stdout.strip():
+        raise SystemExit("no PR found for current branch; pass PR number or URL")
+    return r.stdout.strip()
+
+
+def read_clipboard():
+    if sys.platform == "darwin":
+        return subprocess.check_output(["pbpaste"], text=True)
+    for cmd in (["wl-paste"], ["xclip", "-selection", "clipboard", "-o"], ["xsel", "-b"]):
+        try:
+            return subprocess.check_output(cmd, text=True)
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            continue
+    raise SystemExit("no clipboard tool found")
+
+
+parser = argparse.ArgumentParser(description="upload markdown content as PR body")
+parser.add_argument("file", nargs="?", help="markdown file ('-' for stdin)")
+parser.add_argument("--pr", help="PR number or URL (autodetect from current branch if omitted)")
+src = parser.add_mutually_exclusive_group()
+src.add_argument("--stdin", action="store_true", help="read body from stdin")
+src.add_argument("-c", "--clipboard", action="store_true", help="read body from clipboard")
+parser.add_argument("--repo", help="owner/repo (passed to gh)")
+args = parser.parse_args()
+
+if args.clipboard:
+    body = read_clipboard()
+elif args.stdin or args.file == "-":
+    body = sys.stdin.read()
+elif args.file:
+    with open(args.file) as f:
+        body = f.read()
+else:
+    raise SystemExit("provide filename, --stdin, or --clipboard")
+
+pr = parse_pr(args.pr) if args.pr else detect_pr()
+
+cmd = ["gh", "pr", "edit", pr, "--body", body]
+if args.repo:
+    cmd += ["--repo", args.repo]
+
+subprocess.run(cmd, check=True)
