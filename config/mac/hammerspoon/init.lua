@@ -88,27 +88,35 @@ end)
 -- 🎵 Media Controls  (via your run-osascript helpers)
 ----------------------------------------------------------------------
 
-local SPOTIFY = "/opt/homebrew/bin/spotify_player"
-
-local function sp(cmd)
-	hs.execute(SPOTIFY .. " playback " .. cmd)
-end
-
--- Play / Pause (Alt + P)
-hs.hotkey.bind({ "alt" }, "P", function()
-	print("ALT+P fired")
-	sp("play-pause")
-end)
-
--- Next track (your right bracket keycode)
-hs.hotkey.bind({ "alt" }, 0x1E, function()
-	sp("next")
-end)
-
--- Previous track (your left bracket keycode)
-hs.hotkey.bind({ "alt" }, 0x21, function()
-	sp("previous")
-end)
+-- local SPOTIFY = "/opt/homebrew/bin/spotify_player"
+--
+-- local function sp_playback(cmd)
+-- 	hs.execute(SPOTIFY .. " playback " .. cmd)
+-- end
+--
+-- local function sp(cmd)
+-- 	hs.execute(SPOTIFY .. " " .. cmd)
+-- end
+--
+-- -- Play / Pause (Alt + P)
+-- hs.hotkey.bind({ "alt" }, "P", function()
+-- 	sp_playback("play-pause")
+-- end)
+--
+-- -- Next track (your right bracket keycode)
+-- hs.hotkey.bind({ "alt" }, 0x1E, function()
+-- 	sp_playback("next")
+-- end)
+--
+-- -- Previous track (your left bracket keycode)
+-- hs.hotkey.bind({ "alt" }, 0x21, function()
+-- 	sp_playback("previous")
+-- end)
+--
+-- -- toggle like/un
+-- hs.hotkey.bind({ "alt" }, "L", function()
+-- 	sp("like")
+-- end)
 
 -- -- Shuffle toggle (Alt + Shift + S)
 -- hs.hotkey.bind({ "alt", "shift" }, "S", function()
@@ -130,23 +138,24 @@ end)
 -- 	sp("volume -5")
 -- end)
 
+-- SPOTIFY
 
+-- Spotify
+hs.hotkey.bind({ "alt" }, "P", function()
+	run_osascript("spotify-playpause")
+end)
 
+-- Previous track
+hs.hotkey.bind({ "alt" }, 0x21, function()
+	run_osascript("spotify-prev-track")
+end)
 
--- -- Spotify
--- hs.hotkey.bind({ "alt" }, "P", function()
--- 	run_osascript("spotify-playpause")
--- end)
---
--- -- Previous track
--- hs.hotkey.bind({ "alt" }, 0x21, function()
--- 	run_osascript("spotify-prev-track")
--- end)
---
--- -- Next track
--- hs.hotkey.bind({ "alt" }, 0x1E, function()
--- 	run_osascript("spotify-next-track")
--- end)
+-- Next track
+hs.hotkey.bind({ "alt" }, 0x1E, function()
+	run_osascript("spotify-next-track")
+end)
+
+-- VOLUME
 
 -- Volume down
 hs.hotkey.bind({ "alt" }, 0x19, function()
