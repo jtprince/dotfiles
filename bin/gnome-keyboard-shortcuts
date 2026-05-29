@@ -13,6 +13,7 @@ from typing import Iterable
 MEDIA_KEYS_SCHEMA = "org.gnome.settings-daemon.plugins.media-keys"
 CUSTOM_LIST_KEY = "custom-keybindings"
 CUSTOM_BINDING_SCHEMA = "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding"
+CHROME = "google-chrome-stable"
 
 MANAGED_PATH_PREFIX = (
     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/jtp-launchers-"
@@ -31,6 +32,9 @@ class Launcher:
 
 
 LAUNCHERS: list[Launcher] = [
+    ##########################
+    # LIFE/DEATH
+    ##########################
     Launcher(
         slug="system-reboot",
         name="System Reboot",
@@ -43,6 +47,9 @@ LAUNCHERS: list[Launcher] = [
         command="systemctl poweroff",
         binding="<Ctrl><Shift><Super>P",
     ),
+    ##########################
+    # Launchers
+    ##########################
     Launcher(
         slug="terminal-alacritty",
         name="Alacritty",
@@ -82,48 +89,87 @@ LAUNCHERS: list[Launcher] = [
     Launcher(
         slug="chrome",
         name="Google Chrome",
-        command='sh -lc "nohup google-chrome >/dev/null 2>&1 &"',
+        command=f'sh -lc "nohup {CHROME} >/dev/null 2>&1 &"',
         binding="<Shift><Super>I",
-        notes="May need chromium, google-chrome-stable, or another binary name.",
+        notes="Need google-chrome-stable.",
     ),
     Launcher(
         slug="chrome-calendar",
         name="Google Chrome Calendar",
-        command=(
-            'sh -lc "nohup google-chrome --new-window '
+        command=str(
+            f'sh -lc "nohup {CHROME} --new-window '
             'https://calendar.google.com/calendar/ >/dev/null 2>&1 &"'
         ),
         binding="<Ctrl><Shift><Super>C",
-        notes="May need chromium or google-chrome-stable.",
+        notes="Need google-chrome-stable.",
     ),
     Launcher(
         slug="chrome-mail",
         name="Google Chrome Mail",
-        command=(
-            'sh -lc "nohup google-chrome --new-window '
+        command=str(
+            f'sh -lc "nohup {CHROME} --new-window '
             'https://mail.google.com/mail/ >/dev/null 2>&1 &"'
         ),
         binding="<Shift><Super>E",
-        notes="May need chromium or google-chrome-stable.",
+        notes="Need google-chrome-stable.",
     ),
-    # Linux equivalent not obvious; enable and edit if desired.
     Launcher(
         slug="chatgpt",
         name="ChatGPT",
-        command='sh -lc "nohup chatgpt >/dev/null 2>&1 &"',
+        command=str(
+            'sh -lc "nohup {CHROME} --new-window'
+            'https://chatgpt.com/ >/dev/null 2>&1 &"'
+        ),
         binding="<Super>H",
         enabled=False,
-        notes="Stub. Replace with desktop app command or a browser URL launcher.",
+        notes=f"Requires {CHROME}",
     ),
-    # VimR is macOS-specific; this is a stub.
     Launcher(
         slug="gui-editor",
-        name="GUI Editor",
-        command='sh -lc "nohup gvim >/dev/null 2>&1 &"',
+        name="Neovim (Kitty)",
+        command='sh -lc "nohup kitty --directory ~ nvim >/dev/null 2>&1 &"',
         binding="<Super>G",
-        enabled=False,
-        notes="Stub. Replace with gvim, nvim-qt, code, etc.",
     ),
+    ##########################
+    # MEDIA
+    ##########################
+    Launcher(
+        slug="media-play-pause",
+        name="Media Play/Pause",
+        command="playerctl play-pause",
+        binding="<Super>p",
+    ),
+    Launcher(
+        slug="media-next",
+        name="Media Next",
+        command="playerctl next",
+        binding="<Super>bracketright",
+    ),
+    Launcher(
+        slug="media-previous",
+        name="Media Previous",
+        command="playerctl previous",
+        binding="<Super>bracketleft",
+    ),
+    Launcher(
+        slug="media-volume-up",
+        name="Media Volume Up",
+        command="playerctl volume 0.05+",
+        binding="<Super>equal",
+    ),
+    Launcher(
+        slug="media-volume-down",
+        name="Media Volume Down",
+        command="playerctl volume 0.05-",
+        binding="<Super>minus",
+    ),
+    Launcher(
+        slug="media-volume-mute",
+        name="Media Volume Mute",
+        command="playerctl volume 0",
+        binding="<Super>0",
+    ),
+
 ]
 
 
@@ -167,14 +213,16 @@ def parse_gvariant_string_list(raw: str) -> list[str]:
     try:
         value = ast.literal_eval(raw)
     except Exception as exc:
-        raise GSettingsError(f"Could not parse gsettings list value: {raw}") from exc
+        raise GSettingsError(
+            f"Could not parse gsettings list value: {raw}") from exc
     if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
         raise GSettingsError(f"Unexpected list format from gsettings: {raw}")
     return value
 
 
 def format_gvariant_string_list(items: Iterable[str]) -> str:
-    escaped = [item.replace("\\", "\\\\").replace("'", "\\'") for item in items]
+    escaped = [item.replace("\\", "\\\\").replace("'", "\\'")
+               for item in items]
     return "[" + ", ".join(f"'{item}'" for item in escaped) + "]"
 
 
@@ -280,7 +328,8 @@ def apply_launchers(dry_run: bool = False) -> int:
             warn("")
             warn("=" * 78)
             warn(
-                f"Refusing to assign {launcher.binding!r} to {launcher.name!r}: "
+                f"Refusing to assign {launcher.binding!r} to {
+                    launcher.name!r}: "
                 "that binding is already owned by unmanaged GNOME custom shortcut(s)."
             )
             for conflict in unmanaged_conflicts:
@@ -305,7 +354,8 @@ def apply_launchers(dry_run: bool = False) -> int:
                 command=launcher.command,
                 binding=launcher.binding,
             )
-            info(f"applied: {launcher.name} {launcher.binding} -> {launcher.command}")
+            info(f"applied: {launcher.name} {
+                 launcher.binding} -> {launcher.command}")
 
     stale_managed_paths = [
         path
@@ -317,7 +367,8 @@ def apply_launchers(dry_run: bool = False) -> int:
         if dry_run:
             for path in stale_managed_paths:
                 info(
-                    f"[dry-run] would remove stale managed binding: {path_summary(path)}"
+                    f"[dry-run] would remove stale managed binding: {
+                        path_summary(path)}"
                 )
         else:
             existing_paths = [
@@ -375,7 +426,8 @@ def print_config() -> None:
     for launcher in LAUNCHERS:
         state = "enabled" if launcher.enabled else "disabled"
         info(
-            f"{launcher.slug:20} | {state:8} | {launcher.binding:22} | {launcher.name}"
+            f"{launcher.slug:20} | {state:8} | {
+                launcher.binding:22} | {launcher.name}"
         )
         info(f"  command: {launcher.command}")
         if launcher.notes:
