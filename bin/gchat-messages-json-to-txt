@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+from pathlib import Path
+
+
+def convert_messages(json_file: Path) -> Path:
+    with json_file.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    output_file = json_file.with_suffix(json_file.suffix + ".txt")
+
+    with output_file.open("w", encoding="utf-8") as out:
+        for message in data.get("messages", []):
+            dates = {
+                "created": message.get("created_date"),
+                "updated": message.get("updated_date"),
+            }
+            dates = {kind: value for kind, value in dates.items() if value}
+            creator = message.get("creator", {})
+            name = creator.get("name", "Unknown")
+            text = message.get("text", "")
+
+            date_str = "; ".join(
+                f"{kind}: {val}" for kind, val in dates.items())
+            out.write(f"{name} {date_str}\n")
+            out.write(f"{text}\n\n")
+
+    return output_file
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Convert Google Hangouts-style message JSON to plain text."
+    )
+    parser.add_argument(
+        "json_file",
+        help="Input JSON file containing messages"
+    )
+
+    args = parser.parse_args()
+
+    json_file = Path(args.json_file)
+
+    if not json_file.exists():
+        parser.error(f"File not found: {json_file}")
+
+    output_file = convert_messages(json_file)
+    print(f"Wrote {output_file}")
+
+
+if __name__ == "__main__":
+    main()
