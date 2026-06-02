@@ -55,3 +55,7 @@ jobs:
 
 Trigger: create a GitHub release → workflow builds & uploads automatically.
 Index refreshes on a ~10 min cron cycle after upload.
+
+To force the index to rebuild:
+
+`gh workflow run build-python-package-index.yml --repo enveda/enveda-pypi`

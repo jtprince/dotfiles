@@ -4,8 +4,8 @@ if [ -z $HISTFILE ]; then
     HISTFILE=~/.cache/.zsh_history
     #HISTFILE=$HOME/.zsh_history
 fi
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=1000000
+SAVEHIST=1000000
 
 setopt append_history
 setopt extended_history
