@@ -125,6 +125,8 @@ EXPLICIT_GENERAL: list[Symlink] = [
         REPO_CONFIG / "claude/skills/link-check",
         link=HOME / ".claude/skills/link-check",
     ),
+    Symlink(REPO_CONFIG / "claude/hooks", link=HOME / ".claude/hooks"),
+    Symlink(REPO_CONFIG / "claude/CLAUDE.md", link=HOME / ".claude/CLAUDE.md"),
 ]
 
 EXPLICIT_MAC: list[Symlink] = [
