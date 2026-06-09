@@ -26,3 +26,5 @@ lazy-lock.json
 /config/kitty/kitty.conf
 
 /_ai_last_session
+
+/.serena/

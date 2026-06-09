@@ -1,13 +1,13 @@
 {
   "permissions": {
-    "defaultMode": "auto",
     "ask": [
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(gh pr create:*)",
       "Bash(gh pr merge:*)",
       "Bash(gh release create:*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "hooks": {
     "PreToolUse": [
@@ -19,6 +19,24 @@
             "command": "$HOME/.claude/hooks/no-blanket-git-add.sh"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks remind --client=claude-code"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__serena__*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks auto-approve --client=claude-code"
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -27,6 +45,15 @@
           {
             "type": "command",
             "command": "cavemem hook run session-start --ide claude-code"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks activate --client=claude-code"
           }
         ]
       }
@@ -69,12 +96,30 @@
             "command": "cavemem hook run session-end --ide claude-code"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks cleanup --client=claude-code"
+          }
+        ]
       }
     ]
   },
   "enabledPlugins": {
     "caveman@caveman": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "enveda-databricks@enveda-ai-plugin-marketplace": true,
+    "enveda-python@enveda-ai-plugin-marketplace": true,
+    "enveda-prefect@enveda-ai-plugin-marketplace": true,
+    "enveda-documentation@enveda-ai-plugin-marketplace": true,
+    "enveda-kr-posts@enveda-ai-plugin-marketplace": true,
+    "enveda-reusable-workflows@enveda-ai-plugin-marketplace": true,
+    "code-review@claude-plugins-official": true,
+    "enveda-ui-ux@enveda-ai-plugin-marketplace": true,
+    "enveda-vibe-coding@enveda-ai-plugin-marketplace": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
