@@ -9,10 +9,6 @@ Usage:
     dotfiles-configure              # apply links for current platform
     dotfiles-configure --dry        # preview without changing anything
     dotfiles-configure --clean-broken  # remove dangling symlinks in ~/.config
-
-Linux-only flags (ignored on macOS):
-    -r/--resolution {4k,hd,mid}     # X11 resolution profile
-    -d/--display-server {x11,wayland}
 """
 
 from __future__ import annotations
@@ -36,8 +32,6 @@ CLOUD_ENV = HOME / "Dropbox" / "env"
 
 IS_MAC = platform.system() == "Darwin"
 IS_LINUX = platform.system() == "Linux"
-
-CURRENT_RESOLUTION_MODE = HOME_CONFIG / "current-resolution-mode"
 
 # ---------------------------------------------------------------------------
 # Data model
@@ -134,7 +128,8 @@ EXPLICIT_MAC: list[Symlink] = [
     Symlink(
         REPO_CONFIG / "cavemem/settings.json", link=HOME / ".cavemem/settings.json"
     ),
-    Symlink(REPO_CONFIG / "claude/settings.json", link=HOME / ".claude/settings.json"),
+    Symlink(REPO_CONFIG / "claude/settings.json",
+            link=HOME / ".claude/settings.json"),
 ]
 
 EXPLICIT_LINUX: list[Symlink] = [
@@ -142,10 +137,6 @@ EXPLICIT_LINUX: list[Symlink] = [
     Symlink(
         REPO_CONFIG / "linux/mimeapps.list",
         link=DOT_LOCAL / "share/applications/mimeapps.list",
-    ),
-    Symlink(
-        REPO_CONFIG / "linux/applications/google-chrome-wayland-newwindow.desktop",
-        link=DOT_LOCAL / "share/applications/google-chrome.desktop",
     ),
 ]
 
@@ -159,50 +150,6 @@ ENSURE_DIRS_LINUX = [
     "npm",
     ".local/share/applications",
 ]
-
-# ---------------------------------------------------------------------------
-# Linux-only: resolution-dependent links
-# ---------------------------------------------------------------------------
-
-
-def _resolution_links(resolution: str) -> list[Symlink]:
-    xresources = REPO_CONFIG / f"linux/Xresources-{resolution}"
-    return [
-        Symlink(xresources, link=HOME / ".Xresources"),
-        Symlink(xresources, link=HOME / ".Xdefaults"),
-        Symlink(
-            REPO_CONFIG / f"linux/gtkrc-2.0-{resolution}",
-            link=HOME / ".gtkrc-2.0-local",
-        ),
-        Symlink(
-            REPO_CONFIG / f"linux/x11-scale-factor-{resolution}",
-            link=HOME_CONFIG / "x11-scale-factor",
-        ),
-    ]
-
-
-# ---------------------------------------------------------------------------
-# Linux-only: display-server-dependent links (Chrome/Electron flags)
-# ---------------------------------------------------------------------------
-
-
-def _chrome_flag_links(display_server: str) -> list[Symlink]:
-    links: list[Symlink] = []
-    for app in ["chrome", "electron"]:
-        links.append(
-            Symlink(
-                REPO_CONFIG / "linux/chrome" / f"{app}-flags.conf-{display_server}",
-                link=HOME_CONFIG / f"{app}-flags.conf",
-            )
-        )
-    links.append(
-        Symlink(
-            REPO_CONFIG / "linux/chrome" / f"electron-flags.conf-{display_server}",
-            link=HOME_CONFIG / "electron17-flags.conf",
-        )
-    )
-    return links
-
 
 # ---------------------------------------------------------------------------
 # Symlinker
@@ -231,6 +178,7 @@ class Symlinker:
 
         print(f"  → ln -s {symlink.destination} {symlink.link}")
         if not self.dry:
+            symlink.link.parent.mkdir(parents=True, exist_ok=True)
             symlink.link.symlink_to(symlink.destination)
 
     def ensure_links(self, symlinks: list[Symlink]) -> None:
@@ -240,12 +188,14 @@ class Symlinker:
     def link_into_config(self, names: list[str]) -> None:
         for name in names:
             link_name = Path(name).name
-            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME_CONFIG / link_name))
+            self.ensure_link(Symlink(REPO_CONFIG / name,
+                             link=HOME_CONFIG / link_name))
 
     def link_into_home(self, names: list[str]) -> None:
         for name in names:
             link_name = Path(name).name
-            self.ensure_link(Symlink(REPO_CONFIG / name, link=HOME / f".{link_name}"))
+            self.ensure_link(Symlink(REPO_CONFIG / name,
+                             link=HOME / f".{link_name}"))
 
     def ensure_dirs(self, dirs: list[str]) -> None:
         for name in dirs:
@@ -278,34 +228,17 @@ def clean_broken_symlinks(dry: bool = False) -> None:
 # CLI
 # ---------------------------------------------------------------------------
 
-RESOLUTIONS = ["4k", "hd", "mid"]
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Idempotent dotfile symlink manager (macOS + Linux).",
     )
-    parser.add_argument("--dry", action="store_true", help="preview without changes")
+    parser.add_argument("--dry", action="store_true",
+                        help="preview without changes")
     parser.add_argument(
         "--clean-broken",
         action="store_true",
         help="remove dangling symlinks in ~/.config",
     )
-
-    if IS_LINUX:
-        parser.add_argument(
-            "-r",
-            "--resolution",
-            choices=RESOLUTIONS,
-            help="X11 resolution profile (default: read from previous run)",
-        )
-        parser.add_argument(
-            "-d",
-            "--display-server",
-            choices=["x11", "wayland"],
-            default="wayland",
-            help="display server (default: wayland)",
-        )
 
     return parser
 
@@ -357,29 +290,6 @@ def main() -> None:
 
     print(f"\n{prefix}Explicit symlinks …")
     linker.ensure_links(explicit)
-
-    # -- Linux-only: resolution & display-server links ----------------------
-    if IS_LINUX:
-        resolution = getattr(args, "resolution", None)
-        if resolution is None:
-            try:
-                resolution = CURRENT_RESOLUTION_MODE.read_text().strip()
-                print(f"\nUsing saved resolution: {resolution}")
-            except FileNotFoundError:
-                print("\nNo resolution specified and none saved — skipping.")
-                resolution = None
-
-        if resolution:
-            print(f"\n{prefix}Resolution-dependent links ({resolution}) …")
-            linker.ensure_links(_resolution_links(resolution))
-            if not args.dry:
-                CURRENT_RESOLUTION_MODE.write_text(resolution)
-
-        display_server = getattr(args, "display_server", "wayland")
-        print(f"\n{prefix}Display-server links ({display_server}) …")
-        linker.ensure_links(_chrome_flag_links(display_server))
-
-    print(f"\n{prefix}Done.")
 
 
 if __name__ == "__main__":

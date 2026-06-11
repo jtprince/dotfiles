@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Default values
+PYTHON_VERSION=""
+PREFIX_BASE="$HOME/.local/uv-global"
+LINK_PATH="$HOME/.local/uv-global"
+PIN_GLOBAL=true
+INSTALL_PKGS=true
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [options] [<python_version>]
+
+Set up a global Python virtual environment using uv.
+
+Arguments:
+  python_version        Python version (e.g., 3.12). Required if -v is not used.
+
+Options:
+  -v, --version <ver>   Python version (e.g., 3.12)
+  -p, --prefix <path>   Base path for the venv (default: $HOME/.local/uv-global)
+  --no-pin              Do not pin this version as the global uv default
+  --skip-pkgs           Skip installing common packages (pip, setuptools, wheel, argcomplete)
+  -h, --help            Show this help message
+
+Example:
+  $(basename "$0") 3.12
+EOF
+}
+
+# Simple argument parsing
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -v|--version)
+      PYTHON_VERSION="$2"
+      shift 2
+      ;;
+    -p|--prefix)
+      PREFIX_BASE="$2"
+      shift 2
+      ;;
+    --no-pin)
+      PIN_GLOBAL=false
+      shift
+      ;;
+    --skip-pkgs)
+      INSTALL_PKGS=false
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      if [[ -z "$PYTHON_VERSION" ]]; then
+        PYTHON_VERSION="$1"
+        shift
+      else
+        echo "Error: Unknown argument $1"
+        usage
+        exit 1
+      fi
+      ;;
+  esac
+done
+
+if [[ -z "$PYTHON_VERSION" ]]; then
+  echo "Error: Python version is required."
+  usage
+  exit 1
+fi
+
+if ! command -v uv &> /dev/null; then
+  echo "Error: 'uv' is not installed or not in PATH."
+  exit 1
+fi
+
+PREFIX="${PREFIX_BASE}-${PYTHON_VERSION}"
+
+echo "==> Installing Python ${PYTHON_VERSION} via uv..."
+uv python install "${PYTHON_VERSION}"
+
+echo "==> Creating virtual environment at ${PREFIX}..."
+uv venv -p "${PYTHON_VERSION}" "${PREFIX}"
+
+if [[ "$INSTALL_PKGS" == "true" ]]; then
+  echo "==> Installing common packages (pip, setuptools, wheel, argcomplete)..."
+  # Using uv pip to install into the new venv
+  uv pip install --python "${PREFIX}/bin/python" -U pip setuptools wheel argcomplete
+fi
+
+echo "==> Symlinking ${PREFIX} to ${LINK_PATH}..."
+mkdir -p "$(dirname "$LINK_PATH")"
+ln -sfn "${PREFIX}" "${LINK_PATH}"
+
+if [[ "$PIN_GLOBAL" == "true" ]]; then
+  echo "==> Pinning Python ${PYTHON_VERSION} as global default..."
+  uv python pin --global "${PYTHON_VERSION}"
+fi
+
+echo "==> Done! Global Python venv is ready at ${LINK_PATH}"
+echo "    Python version: $(${LINK_PATH}/bin/python --version)"
