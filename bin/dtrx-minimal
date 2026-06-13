@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+"""
+dtrx-minimal.py: A minimal version of dtrx -n.
+gemini rewrite/minimalization of:
+https://github.com/dtrx-py/dtrx/blob/master/dtrx/dtrx.py
+"""
+
+import os
+import sys
+import subprocess
+import shutil
+import tempfile
+import re
+
+# Mapping of file extensions to their extraction commands.
+# Based on dtrx.py logic but simplified.
+# (Command, IsContainer)
+EXTRACTORS = [
+    (r'.*\.(tar\.gz|tgz)$', (['tar', '-xzf'], True)),
+    (r'.*\.(tar\.bz2|tbz2)$', (['tar', '-xjf'], True)),
+    (r'.*\.(tar\.xz|txz)$', (['tar', '-xJf'], True)),
+    (r'.*\.(tar\.zst)$', (['tar', '--zstd', '-xf'], True)),
+    (r'.*\.tar$', (['tar', '-xf'], True)),
+    (r'.*\.zip$', (['unzip', '-q'], True)),
+    (r'.*\.7z$', (['7z', 'x', '-bb0', '-bd'], True)),
+    (r'.*\.rar$', (['unrar', 'x', '-inul'], True)),
+    # Single file compression
+    (r'.*\.gz$', (['gunzip', '-c'], False)),
+    (r'.*\.bz2$', (['bunzip2', '-c'], False)),
+    (r'.*\.xz$', (['unxz', '-c'], False)),
+    (r'.*\.zst$', (['unzstd', '-c'], False)),
+]
+
+
+def get_extractor(filename):
+    for pattern, (cmd, is_container) in EXTRACTORS:
+        if re.match(pattern, filename, re.IGNORECASE):
+            return cmd, is_container
+    return None, None
+
+
+def get_basename(filename):
+    # Strip common archive extensions
+    name = os.path.basename(filename)
+    for ext in ['.tar.gz', '.tgz', '.tar.bz2', '.tbz2', '.tar.xz', '.txz', '.tar.zst',
+                '.tar', '.zip', '.7z', '.rar', '.gz', '.bz2', '.xz', '.zst']:
+        if name.lower().endswith(ext):
+            return name[:-len(ext)]
+    return name
+
+
+def get_unused_name(base, is_dir=True):
+    for suffix in [''] + ['.%d' % i for i in range(1, 10)]:
+        name = base + suffix
+        if not os.path.exists(name):
+            return name
+    return tempfile.mkdtemp(prefix=base + '.', dir='.') if is_dir else tempfile.mktemp(prefix=base + '.', dir='.')
+
+
+def extract_file(filename):
+    cmd_base, is_container = get_extractor(filename)
+    if not cmd_base:
+        print(
+            f"dtrx-minimal: {filename}: unrecognized archive type", file=sys.stderr)
+        return False
+
+    abs_filename = os.path.abspath(filename)
+    basename = get_basename(filename)
+
+    if not is_container:
+        # Compression only: extract to a single file
+        target = get_unused_name(basename, is_dir=False)
+        print(f"Extracting {filename} to {target}...")
+        try:
+            with open(target, 'wb') as f:
+                subprocess.run(cmd_base + [abs_filename], stdout=f, check=True)
+            return True
+        except Exception as e:
+            print(f"Error extracting {filename}: {e}", file=sys.stderr)
+            if os.path.exists(target):
+                os.unlink(target)
+            return False
+
+    # Container: extract to a temp dir, then decide final layout
+    tmp_dir = tempfile.mkdtemp(prefix='.dtrx-')
+    try:
+        # Some commands (like tar) can take the filename as last arg,
+        # others (unzip, 7z, unrar) also usually work this way or need flags.
+        # dtrx uses specific logic per extractor; we'll try to be general.
+        subprocess.run(cmd_base + [abs_filename], cwd=tmp_dir, check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+
+        contents = os.listdir(tmp_dir)
+        if not contents:
+            print(
+                f"dtrx-minimal: {filename}: archive is empty", file=sys.stderr)
+            return True
+
+        # dtrx -n logic:
+        # 1. If 1 item and it matches the archive name, move that item here.
+        # 2. Otherwise, wrap in a directory named after the archive.
+
+        target_name = get_unused_name(basename, is_dir=True)
+
+        if len(contents) == 1:
+            item = contents[0]
+            # If it's the same name as what we'd call the directory, just move it
+            if item == basename:
+                # We already calculated target_name using get_unused_name(basename)
+                shutil.move(os.path.join(tmp_dir, item), target_name)
+                print(f"Extracted {filename} to ./{target_name}")
+            else:
+                # Wrap it (dtrx -n default for single entry)
+                os.makedirs(target_name)
+                shutil.move(os.path.join(tmp_dir, item), target_name)
+                print(f"Extracted {filename} to {target_name}/")
+        else:
+            # Bomb: move the whole temp dir contents to target_name
+            os.makedirs(target_name)
+            for item in contents:
+                shutil.move(os.path.join(tmp_dir, item), target_name)
+            print(f"Extracted {filename} to {target_name}/")
+
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Error extracting {filename}: {
+              e.stderr.decode().strip()}", file=sys.stderr)
+        return False
+    except Exception as e:
+        print(f"Error extracting {filename}: {e}", file=sys.stderr)
+        return False
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: dtrx-minimal.py archive [archive2 ...]", file=sys.stderr)
+        sys.exit(1)
+
+    success = True
+    for arg in sys.argv[1:]:
+        if not extract_file(arg):
+            success = False
+
+    sys.exit(0 if success else 1)
+
+
+if __name__ == "__main__":
+    main()

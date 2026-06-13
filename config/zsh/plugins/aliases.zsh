@@ -1,11 +1,11 @@
 
 # extraction & compression
-alias utar='dtrx -n'
+alias utar='dtrx-minimal'
 # compression (see ~/bin/tarz)
 alias bunzip='bunzip2'
 alias bzip='bzip2'
 
-alias paru="arch-update-system"
+alias yay="paru"
 
 # fuzzy find open
 alias ff='fuzzy-file-open'
