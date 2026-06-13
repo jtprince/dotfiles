@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 # yay -S unrpa
+# uv tool install unrpa
 
 for file in "$@"; do
     unrpa -mp "${file%.rpa}" "$file"

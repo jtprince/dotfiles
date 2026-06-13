@@ -5,3 +5,5 @@
 
 # See `cheat uv` for robust user-wide setup details
 export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global"
+
+export EDITOR="nvim"
