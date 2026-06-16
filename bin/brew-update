@@ -1,4 +1,8 @@
 #!/bin/bash
-
 brew update
 brew upgrade
+
+echo "forcing node@22 for cavemem. Eventually want to upgrade that."
+brew link --overwrite --force node@22   # re-assert LTS as default `node`
+node -p 'process.versions.modules' | grep -qx 127 \
+	|| echo "⚠️  node ABI != 127 — cavemem may need: (cd /opt/homebrew/lib/node_modules/cavemem && npm rebuild better-sqlite3)"
