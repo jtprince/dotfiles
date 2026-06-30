@@ -2,7 +2,7 @@
 """Work with R/tidyverse-style hexagon stickers (The Stickers Standard).
 
 Subcommands:
-  spec            print the sticker spec in English (exact dimensions)
+  spec            print the sticker spec in English (exact dimensions) w example urls
   spec --ai       print instructions to steer an AI image generator toward the spec
   verify FILE     check whether an SVG or PNG conforms to the spec
   fit FILE        force an SVG or PNG into the spec (hexagon mask + exact size)
@@ -66,12 +66,12 @@ def hex_points(width: float, height: float, x0: float = 0.0, y0: float = 0.0):
     """
     w, h = width, height
     return [
-        (x0 + w / 2, y0),            # top vertex
-        (x0 + w, y0 + h / 4),        # upper right
-        (x0 + w, y0 + 3 * h / 4),    # lower right
-        (x0 + w / 2, y0 + h),        # bottom vertex
-        (x0, y0 + 3 * h / 4),        # lower left
-        (x0, y0 + h / 4),            # upper left
+        (x0 + w / 2, y0),  # top vertex
+        (x0 + w, y0 + h / 4),  # upper right
+        (x0 + w, y0 + 3 * h / 4),  # lower right
+        (x0 + w / 2, y0 + h),  # bottom vertex
+        (x0, y0 + 3 * h / 4),  # lower left
+        (x0, y0 + h / 4),  # upper left
     ]
 
 
@@ -98,6 +98,10 @@ Hexagon sticker spec (The Stickers Standard)
 The standard fixes geometry only. Border, colour, DPI and file format are
 conventions. A common raster default is 300 DPI -> {round(s.diagonal_mm / 25.4 * 300 * s.aspect_ratio)} x \
 {round(s.diagonal_mm / 25.4 * 300)} px (w x h).
+
+References
+  standard  https://sticker.how/
+  examples  https://github.com/rstudio/hex-stickers
 """
 
 
@@ -145,7 +149,9 @@ def fit_svg(src: Path, out: Path, border: tuple[float, str] | None) -> None:
     w, h = SPEC.width_mm, SPEC.diagonal_mm
 
     # Re-root the source as a nested <svg> that scales to fill the hexagon box.
-    view = inner.get("viewBox") or f"0 0 {inner.get('width', w)} {inner.get('height', h)}"
+    view = (
+        inner.get("viewBox") or f"0 0 {inner.get('width', w)} {inner.get('height', h)}"
+    )
     inner.set("viewBox", view)
     inner.set("width", str(w))
     inner.set("height", str(h))
@@ -215,17 +221,46 @@ def fit_png(src: Path, out: Path, dpi: int, border: tuple[float, str] | None) ->
 
     args = [
         # source: scale to cover the box, centre-crop to exact size
-        "(", str(src), "-resize", f"{box}^", "-gravity", "center", "-extent", box, ")",
+        "(",
+        str(src),
+        "-resize",
+        f"{box}^",
+        "-gravity",
+        "center",
+        "-extent",
+        box,
+        ")",
         # hexagon mask: white shape on black
-        "(", "-size", box, "xc:black", "-fill", "white", "-draw", f"polygon {pts}", ")",
-        "-alpha", "off", "-compose", "CopyOpacity", "-composite",
-        "-units", "PixelsPerInch", "-density", str(dpi),
+        "(",
+        "-size",
+        box,
+        "xc:black",
+        "-fill",
+        "white",
+        "-draw",
+        f"polygon {pts}",
+        ")",
+        "-alpha",
+        "off",
+        "-compose",
+        "CopyOpacity",
+        "-composite",
+        "-units",
+        "PixelsPerInch",
+        "-density",
+        str(dpi),
     ]
     if border:
         bw, color = border
         args += [
-            "-fill", "none", "-stroke", color, "-strokewidth", f"{bw:g}",
-            "-draw", f"polygon {pts}",
+            "-fill",
+            "none",
+            "-stroke",
+            color,
+            "-strokewidth",
+            f"{bw:g}",
+            "-draw",
+            f"polygon {pts}",
         ]
     args.append(str(out))
     _magick(*args)
@@ -238,7 +273,10 @@ def _alpha_at(path: Path, x: int, y: int) -> float:
 def verify_png(path: Path) -> list[tuple[str, bool, str]]:
     w, h = (int(v) for v in _magick("identify", "-format", "%w %h", str(path)).split())
     aspect = w / h
-    corners = [_alpha_at(path, x, y) for x, y in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1))]
+    corners = [
+        _alpha_at(path, x, y)
+        for x, y in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1))
+    ]
     return [
         (
             f"aspect ratio {SPEC.aspect_ratio:.4f}",
@@ -308,13 +346,17 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_spec = sub.add_parser("spec", help="print the sticker spec")
-    p_spec.add_argument("--ai", action="store_true", help="print AI-art instructions instead")
+    p_spec.add_argument(
+        "--ai", action="store_true", help="print AI-art instructions instead"
+    )
     p_spec.set_defaults(func=cmd_spec)
 
     p_fit = sub.add_parser("fit", help="force an SVG/PNG into the spec")
     p_fit.add_argument("file")
     p_fit.add_argument("-o", "--output", help="output path (default <name>.hex.<ext>)")
-    p_fit.add_argument("--dpi", type=int, default=300, help="raster resolution (default 300)")
+    p_fit.add_argument(
+        "--dpi", type=int, default=300, help="raster resolution (default 300)"
+    )
     p_fit.add_argument("--border", help="draw outline: WIDTH[,COLOR]")
     p_fit.set_defaults(func=cmd_fit)
 
