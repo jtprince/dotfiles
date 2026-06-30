@@ -1,0 +1,334 @@
+#!/usr/bin/env python3
+"""Work with R/tidyverse-style hexagon stickers (The Stickers Standard).
+
+Subcommands:
+  spec            print the sticker spec in English (exact dimensions)
+  spec --ai       print instructions to steer an AI image generator toward the spec
+  verify FILE     check whether an SVG or PNG conforms to the spec
+  fit FILE        force an SVG or PNG into the spec (hexagon mask + exact size)
+
+The standard (terinjokes/StickerConstructorSpec, rendered at sticker.how) fixes
+the geometry only: a regular hexagon, vertex at top, largest diagonal 5.08 cm
+(+/- 1 mm). Border, colour, DPI and file format are conventions, not requirements.
+
+SVG handling is pure stdlib. PNG handling shells out to ImageMagick (`magick`).
+"""
+
+from __future__ import annotations
+
+import argparse
+import math
+import shutil
+import subprocess
+import sys
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass
+from pathlib import Path
+
+SVG_NS = "http://www.w3.org/2000/svg"
+
+
+# --------------------------------------------------------------------------- #
+# Spec model
+# --------------------------------------------------------------------------- #
+@dataclass(frozen=True)
+class HexSpec:
+    """The hexagon sticker spec. Numbers derive from the diagonal."""
+
+    diagonal_mm: float = 50.8  # largest diagonal, point-to-point (the 2" height)
+    tolerance_mm: float = 1.0
+
+    @property
+    def width_mm(self) -> float:
+        # across the flats, horizontal: height * sqrt(3)/2
+        return self.diagonal_mm * math.sqrt(3) / 2
+
+    @property
+    def edge_mm(self) -> float:
+        return self.diagonal_mm / 2
+
+    @property
+    def aspect_ratio(self) -> float:
+        # width : height
+        return self.width_mm / self.diagonal_mm
+
+
+SPEC = HexSpec()
+
+
+# --------------------------------------------------------------------------- #
+# Geometry (single source of truth for the hexagon shape)
+# --------------------------------------------------------------------------- #
+def hex_points(width: float, height: float, x0: float = 0.0, y0: float = 0.0):
+    """Six vertices of a pointy-top hexagon inscribed in the width x height box.
+
+    Image/SVG coordinates (y increases downward). Clockwise from the top vertex.
+    """
+    w, h = width, height
+    return [
+        (x0 + w / 2, y0),            # top vertex
+        (x0 + w, y0 + h / 4),        # upper right
+        (x0 + w, y0 + 3 * h / 4),    # lower right
+        (x0 + w / 2, y0 + h),        # bottom vertex
+        (x0, y0 + 3 * h / 4),        # lower left
+        (x0, y0 + h / 4),            # upper left
+    ]
+
+
+def points_attr(points) -> str:
+    """Format points for an SVG `points` attribute or ImageMagick `polygon`."""
+    return " ".join(f"{x:g},{y:g}" for x, y in points)
+
+
+# --------------------------------------------------------------------------- #
+# Spec text
+# --------------------------------------------------------------------------- #
+def spec_text() -> str:
+    s = SPEC
+    return f"""\
+Hexagon sticker spec (The Stickers Standard)
+
+  Shape         regular hexagon, pointy-top (a vertex at the top and bottom)
+  Height        {s.diagonal_mm:.1f} mm  ({s.diagonal_mm / 25.4:.2f} in)   largest diagonal, point-to-point
+  Width         {s.width_mm:.1f} mm  ({s.width_mm / 25.4:.3f} in)  across the flats (height * sqrt(3)/2)
+  Edge length   {s.edge_mm:.1f} mm  ({s.edge_mm / 25.4:.2f} in)
+  Aspect (w:h)  {s.aspect_ratio:.4f}  (sqrt(3)/2)
+  Tolerance     +/- {s.tolerance_mm:.0f} mm on the diagonal
+
+The standard fixes geometry only. Border, colour, DPI and file format are
+conventions. A common raster default is 300 DPI -> {round(s.diagonal_mm / 25.4 * 300 * s.aspect_ratio)} x \
+{round(s.diagonal_mm / 25.4 * 300)} px (w x h).
+"""
+
+
+def spec_ai_text() -> str:
+    s = SPEC
+    return f"""\
+Instructions for an AI image generator (hexagon sticker artwork):
+
+- Compose the image as a REGULAR HEXAGON in POINTY-TOP orientation: a single
+  point at the very top and a single point at the very bottom, with straight
+  vertical edges on the left and right.
+- Use a tall aspect ratio of exactly {s.aspect_ratio:.3f} : 1 (width : height) -- the
+  hexagon is slightly taller than it is wide ({s.width_mm:.1f} mm wide by \
+{s.diagonal_mm:.1f} mm tall).
+- Let the artwork bleed all the way to the six edges of the hexagon. Keep the
+  four outer corners of the canvas empty / transparent -- they sit outside the
+  hexagon and will be cut away.
+- Keep important subjects and any text centred and clear of the top and bottom
+  points, which taper to a single pixel.
+- Produce a flat, icon-like, single-focal-point design that reads at ~2 inches.
+  No drop shadows that extend past the hexagon edge.
+- Deliver on a transparent background, square or {s.aspect_ratio:.3f}:1 canvas, high
+  resolution (>= 1000 px tall).
+"""
+
+
+# --------------------------------------------------------------------------- #
+# SVG operations (stdlib)
+# --------------------------------------------------------------------------- #
+def _length_to_mm(value: str) -> float:
+    """Convert an SVG length (with optional unit) to millimetres."""
+    value = value.strip()
+    for unit, factor in (("mm", 1.0), ("cm", 10.0), ("in", 25.4), ("pt", 25.4 / 72)):
+        if value.endswith(unit):
+            return float(value[: -len(unit)]) * factor
+    # bare number or px: SVG user units are 96 px / inch
+    value = value.removesuffix("px")
+    return float(value) / 96 * 25.4
+
+
+def fit_svg(src: Path, out: Path, border: tuple[float, str] | None) -> None:
+    ET.register_namespace("", SVG_NS)
+    inner = ET.parse(src).getroot()
+
+    w, h = SPEC.width_mm, SPEC.diagonal_mm
+
+    # Re-root the source as a nested <svg> that scales to fill the hexagon box.
+    view = inner.get("viewBox") or f"0 0 {inner.get('width', w)} {inner.get('height', h)}"
+    inner.set("viewBox", view)
+    inner.set("width", str(w))
+    inner.set("height", str(h))
+    inner.set("preserveAspectRatio", "xMidYMid slice")
+    inner.set("x", "0")
+    inner.set("y", "0")
+    inner_xml = ET.tostring(inner, encoding="unicode")
+
+    pts = points_attr(hex_points(w, h))
+    border_xml = ""
+    if border:
+        bw, color = border
+        border_xml = (
+            f'  <polygon points="{pts}" fill="none" '
+            f'stroke="{color}" stroke-width="{bw:g}"/>\n'
+        )
+
+    out.write_text(
+        f'<svg xmlns="{SVG_NS}" width="{w:g}mm" height="{h:g}mm" '
+        f'viewBox="0 0 {w:g} {h:g}">\n'
+        f'  <defs><clipPath id="hex"><polygon points="{pts}"/></clipPath></defs>\n'
+        f'  <g clip-path="url(#hex)">\n    {inner_xml}\n  </g>\n'
+        f"{border_xml}"
+        f"</svg>\n"
+    )
+
+
+def verify_svg(path: Path) -> list[tuple[str, bool, str]]:
+    root = ET.parse(path).getroot()
+    width = root.get("width")
+    height = root.get("height")
+    if not width or not height:
+        return [("dimensions present", False, "root <svg> lacks width/height")]
+
+    w_mm, h_mm = _length_to_mm(width), _length_to_mm(height)
+    aspect = w_mm / h_mm
+    return [
+        (
+            f"diagonal {SPEC.diagonal_mm:.1f} mm +/- {SPEC.tolerance_mm:.0f}",
+            abs(h_mm - SPEC.diagonal_mm) <= SPEC.tolerance_mm,
+            f"height = {h_mm:.2f} mm",
+        ),
+        (
+            f"aspect ratio {SPEC.aspect_ratio:.4f}",
+            abs(aspect - SPEC.aspect_ratio) <= 0.01,
+            f"width:height = {aspect:.4f} ({w_mm:.2f} x {h_mm:.2f} mm)",
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------- #
+# Raster operations (ImageMagick subprocess)
+# --------------------------------------------------------------------------- #
+def _magick(*args: str) -> str:
+    if not shutil.which("magick"):
+        sys.exit("error: ImageMagick (`magick`) is required for PNG files")
+    return subprocess.run(
+        ["magick", *args], check=True, capture_output=True, text=True
+    ).stdout.strip()
+
+
+def fit_png(src: Path, out: Path, dpi: int, border: tuple[float, str] | None) -> None:
+    h = round(SPEC.diagonal_mm / 25.4 * dpi)
+    w = round(h * SPEC.aspect_ratio)
+    pts = points_attr(hex_points(w, h))
+    box = f"{w}x{h}"
+
+    args = [
+        # source: scale to cover the box, centre-crop to exact size
+        "(", str(src), "-resize", f"{box}^", "-gravity", "center", "-extent", box, ")",
+        # hexagon mask: white shape on black
+        "(", "-size", box, "xc:black", "-fill", "white", "-draw", f"polygon {pts}", ")",
+        "-alpha", "off", "-compose", "CopyOpacity", "-composite",
+        "-units", "PixelsPerInch", "-density", str(dpi),
+    ]
+    if border:
+        bw, color = border
+        args += [
+            "-fill", "none", "-stroke", color, "-strokewidth", f"{bw:g}",
+            "-draw", f"polygon {pts}",
+        ]
+    args.append(str(out))
+    _magick(*args)
+
+
+def _alpha_at(path: Path, x: int, y: int) -> float:
+    return float(_magick(f"{path}[1x1+{x}+{y}]", "-format", "%[fx:a]", "info:"))
+
+
+def verify_png(path: Path) -> list[tuple[str, bool, str]]:
+    w, h = (int(v) for v in _magick("identify", "-format", "%w %h", str(path)).split())
+    aspect = w / h
+    corners = [_alpha_at(path, x, y) for x, y in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1))]
+    return [
+        (
+            f"aspect ratio {SPEC.aspect_ratio:.4f}",
+            abs(aspect - SPEC.aspect_ratio) <= 0.01,
+            f"width:height = {aspect:.4f} ({w} x {h} px)",
+        ),
+        (
+            "corners transparent (hexagon mask)",
+            all(a == 0 for a in corners),
+            f"corner alphas = {[round(a, 2) for a in corners]}; orientation check is approximate",
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------- #
+# CLI
+# --------------------------------------------------------------------------- #
+def _border(value: str | None) -> tuple[float, str] | None:
+    """Parse --border WIDTH[,COLOR]."""
+    if value is None:
+        return None
+    width, _, color = value.partition(",")
+    return float(width), color or "black"
+
+
+def _default_out(src: Path) -> Path:
+    return src.with_suffix(f".hex{src.suffix}")
+
+
+def cmd_spec(args: argparse.Namespace) -> int:
+    print(spec_ai_text() if args.ai else spec_text(), end="")
+    return 0
+
+
+def _existing(file: str) -> Path:
+    path = Path(file)
+    if not path.is_file():
+        sys.exit(f"error: no such file: {file}")
+    return path
+
+
+def cmd_fit(args: argparse.Namespace) -> int:
+    src = _existing(args.file)
+    out = Path(args.output) if args.output else _default_out(src)
+    border = _border(args.border)
+    if src.suffix.lower() == ".svg":
+        fit_svg(src, out, border)
+    else:
+        fit_png(src, out, args.dpi, border)
+    print(f"wrote {out}")
+    return 0
+
+
+def cmd_verify(args: argparse.Namespace) -> int:
+    path = _existing(args.file)
+    results = verify_svg(path) if path.suffix.lower() == ".svg" else verify_png(path)
+    ok = True
+    for rule, passed, detail in results:
+        ok &= passed
+        print(f"  [{'PASS' if passed else 'FAIL'}] {rule}  --  {detail}")
+    print("conforms" if ok else "does NOT conform")
+    return 0 if ok else 1
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p_spec = sub.add_parser("spec", help="print the sticker spec")
+    p_spec.add_argument("--ai", action="store_true", help="print AI-art instructions instead")
+    p_spec.set_defaults(func=cmd_spec)
+
+    p_fit = sub.add_parser("fit", help="force an SVG/PNG into the spec")
+    p_fit.add_argument("file")
+    p_fit.add_argument("-o", "--output", help="output path (default <name>.hex.<ext>)")
+    p_fit.add_argument("--dpi", type=int, default=300, help="raster resolution (default 300)")
+    p_fit.add_argument("--border", help="draw outline: WIDTH[,COLOR]")
+    p_fit.set_defaults(func=cmd_fit)
+
+    p_verify = sub.add_parser("verify", help="check an SVG/PNG against the spec")
+    p_verify.add_argument("file")
+    p_verify.set_defaults(func=cmd_verify)
+
+    return parser
+
+
+def main() -> int:
+    args = build_parser().parse_args()
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
