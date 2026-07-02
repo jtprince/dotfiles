@@ -50,7 +50,9 @@ class Symlink:
 
 CONFIG_GENERAL = [
     "cheat",
+    "cmux",
     "cursor-agent",
+    "ghostty",
     "git",
     "ipython",
     "kitty",

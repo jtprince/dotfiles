@@ -147,5 +147,6 @@
         "mcp"
       ]
     }
-  }
+  },
+  "tui": "fullscreen"
 }

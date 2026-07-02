@@ -1,0 +1,76 @@
+{
+  "$schema": "https://raw.githubusercontent.com/manaflow-ai/cmux/main/web/data/cmux.schema.json",
+  "schemaVersion": 1,
+
+  // cmux config — the app *behavior* + *keybinding* layer, mimicking ~/.config/kitty.
+  // JSONC: // comments allowed. Any key omitted falls back to the value saved in the
+  // Settings GUI. Reload live with `cmux reload-config`; validate with `cmux config validate`.
+  //
+  // IMPORTANT — terminal appearance is NOT here.
+  // cmux renders terminals with Ghostty, so font, colors, cursor, opacity, scrollback,
+  // selection and terminal-level keybinds (copy/paste/scroll/font-zoom) live in
+  // ../ghostty/config. This file only controls the cmux app shell.
+  //
+  // Concept mapping (kitty -> cmux): kitty "window" (split pane) -> cmux SURFACE / split;
+  // kitty "tab" -> cmux WORKSPACE (the vertical sidebar entries). Bindings below follow it.
+
+  "app": {
+    "appearance": "dark",                      // match kitty's black background
+    "confirmQuit": "always",
+    "workspaceInheritWorkingDirectory": true
+  },
+
+  "terminal": {
+    "copyOnSelect": true,                       // kitty copy_on_select yes
+    "scrollSpeed": 3.0,                         // closest to kitty wheel_scroll_multiplier 5 (max 3.0)
+    "showScrollBar": true,
+    "autoResumeAgentSessions": true
+  },
+
+  "sidebarAppearance": {
+    "matchTerminalBackground": true             // tie sidebar to the black terminal bg
+  },
+
+  // Light theming toward kitty accents (orange cursor #FF7F00, green active border #00ff00).
+  // These name the workspace-tag palette; terminal colors are in ../ghostty/config.
+  "workspaceColors": {
+    "colors": {
+      "Orange": "#FF7F00",
+      "Green": "#00ff00"
+    }
+  },
+
+  // Keybindings remapped to kitty muscle-memory (ctrl+shift). Only overrides are listed;
+  // every other action keeps its cmux default (cmd-based). Setting a value REPLACES the
+  // default accelerator for that action.
+  //
+  // Kept at cmux defaults (kitty had no equivalent):
+  //   focusUp/Down/Left/Right = cmd+opt+arrows  (kitty had no directional pane focus)
+  //   commandPalette = cmd+shift+p, toggleSidebar = cmd+b, goToWorkspace = cmd+p, browser binds
+  //
+  // NOTE: nextSidebarTab/prevSidebarTab is the closest analog to kitty tab-cycling; the
+  // action<->workspace mapping is approximate. Run `cmux config validate` to confirm names.
+  "shortcuts": {
+    "bindings": {
+      "splitRight": "ctrl+shift+\\",            // kitty launch --location=split
+      "splitDown": "ctrl+shift+-",              // (kitty had no down-split)
+      "nextSurface": "ctrl+shift+]",            // kitty next_window
+      "prevSurface": "ctrl+shift+[",            // kitty previous_window
+      "selectSurfaceByNumber": "ctrl+shift+1",  // kitty first..tenth_window (ctrl+shift+1..0)
+      "newSurface": "ctrl+shift+t",             // kitty new_tab
+      "closeTab": "ctrl+shift+w",               // kitty close_window (close pane)
+      "closeWorkspace": "ctrl+shift+q",         // kitty close_tab
+      "newWindow": "ctrl+shift+n",              // kitty new_os_window
+      "nextSidebarTab": "ctrl+shift+→",         // kitty next_tab (approx)
+      "prevSidebarTab": "ctrl+shift+←",         // kitty previous_tab (approx)
+      "renameWorkspace": "ctrl+shift+opt+t",    // kitty set_tab_title
+      "toggleSplitZoom": "ctrl+shift+return",   // kitty toggle_maximized (zoom)
+      "toggleFullScreen": "ctrl+shift+f11",     // kitty toggle_fullscreen
+      "reloadConfiguration": "ctrl+shift+escape" // kitty load_config_file
+    }
+  }
+
+  // Non-portable kitty features (no cmux/Ghostty equivalent): mega-hints.py (Rails/file
+  // -> gvim/tmux kitten), URL/path hint kittens, unicode_input, live opacity keys,
+  // external-pager scrollback. See ../ghostty/config for the terminal-side notes.
+}

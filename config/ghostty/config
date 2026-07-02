@@ -1,0 +1,87 @@
+# Ghostty config — the terminal *appearance* layer for cmux.
+#
+# cmux (/Applications/cmux.app) is a Ghostty-based GUI multiplexer for AI agents.
+# It renders terminals with Ghostty, so font/colors/cursor/selection/scrollback and
+# terminal-level keybinds live HERE — cmux.json has no appearance settings at all.
+# App behavior + window/pane/tab shortcuts live in ../cmux/cmux.json.
+#
+# This file mirrors ~/.config/kitty (config/kitty/kitty.common.conf) where an
+# equivalent exists. Kitty-only features with no Ghostty analog are noted inline.
+# Docs: https://ghostty.org/docs/config
+
+# ── Font ──────────────────────────────────────────────────────────────────────
+# kitty used generic "monospace" (system-resolved). Ghostty wants a real face;
+# leave commented to use Ghostty's default monospace, or set your preferred family.
+# font-family = "..."
+font-size = 12
+
+# ── Colors (kitty foreground/background) ────────────────────────────────────────
+foreground = #dddddd
+background = #000000
+background-opacity = 0.83
+# kitty dynamic_background_opacity + live opacity keys (ctrl+shift+a>m/l/1/d) have
+# no Ghostty equivalent — background-opacity is static. (kitty-only feature.)
+
+# ── Cursor (kitty cursor #FF7F00, block, no blink) ──────────────────────────────
+cursor-color = #FF7F00
+cursor-text = #000000
+cursor-style = block
+cursor-style-blink = false
+
+# ── Selection (kitty selection_foreground/background) ───────────────────────────
+selection-foreground = #000000
+selection-background = #fffacd
+
+# ── 16-color ANSI palette (kitty color0..15) ────────────────────────────────────
+palette = 0=#000000
+palette = 8=#767676
+palette = 1=#cc0403
+palette = 9=#f2201f
+palette = 2=#19cb00
+palette = 10=#23fd00
+palette = 3=#cecb00
+palette = 11=#fffd00
+palette = 4=#0d73cc
+palette = 12=#1a8fff
+palette = 5=#cb1ed1
+palette = 13=#fd28ff
+palette = 6=#0dcdcd
+palette = 14=#14ffff
+palette = 7=#dddddd
+palette = 15=#ffffff
+
+# ── Window / behavior ───────────────────────────────────────────────────────────
+window-padding-x = 2           # kitty window_padding_width 2
+window-padding-y = 2
+macos-option-as-alt = false    # kitty macos_option_as_alt no
+link-url = true                # detect_urls yes (kitty url_color/url_style curly not configurable in Ghostty)
+copy-on-select = clipboard     # kitty copy_on_select yes (cmux.json terminal.copyOnSelect mirrors this inside cmux)
+
+# ── Scrollback ──────────────────────────────────────────────────────────────────
+# kitty scrollback_lines is a LINE count (99999); Ghostty scrollback-limit is BYTES.
+# ~100 MB approximates "effectively unlimited".
+scrollback-limit = 100000000
+# kitty wheel_scroll_multiplier 5 has no Ghostty analog; cmux caps its own scrollSpeed
+# at 3.0 (set in ../cmux/cmux.json terminal.scrollSpeed).
+
+# ── Terminal-level keybinds (kitty ctrl+shift muscle memory) ────────────────────
+# These are terminal actions Ghostty owns. Pane/tab/window actions are cmux app
+# shortcuts and live in ../cmux/cmux.json instead.
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = ctrl+shift+page_up=scroll_page_up
+keybind = ctrl+shift+page_down=scroll_page_down
+keybind = ctrl+shift+home=scroll_to_top
+keybind = ctrl+shift+end=scroll_to_bottom
+keybind = ctrl+shift+equal=increase_font_size:2      # kitty change_font_size +2
+keybind = ctrl+shift+minus=decrease_font_size:2      # kitty change_font_size -2
+keybind = ctrl+shift+backspace=reset_font_size       # kitty change_font_size 0
+keybind = ctrl+shift+delete=clear_screen             # kitty clear_terminal
+
+# ── Kitty features with NO cmux/Ghostty equivalent (documented, not portable) ───
+#   ctrl+shift+h  show_scrollback   → Ghostty has no external-pager scrollback kitten
+#   ctrl+shift+u  unicode_input     → no Ghostty unicode-input overlay
+#   ctrl+shift+e / ctrl+shift+p>*   → hints/URL-hint kittens: no Ghostty equivalent
+#   ctrl+shift+f  mega-hints.py     → the Rails/file→gvim/tmux custom kitten does NOT port
+#   ctrl+shift+a>*  live opacity    → background-opacity is static (see above)
+#   audio/visual bell, window decorations → owned by the cmux app shell, not Ghostty
