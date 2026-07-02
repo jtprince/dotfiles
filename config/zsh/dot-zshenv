@@ -7,3 +7,12 @@
 export PYTHON_GLOBAL_VENV="$HOME/.local/uv-global"
 
 export EDITOR="nvim"
+
+# ── Homebrew hardening (see `cheat brew` for the trust model + rationale) ──
+export HOMEBREW_NO_ANALYTICS=1              # no telemetry
+export HOMEBREW_NO_INSECURE_REDIRECT=1      # refuse https→http redirects (MITM)
+export HOMEBREW_REQUIRE_TAP_TRUST=1         # explicit: pin the 6.0 default (survives config drift)
+export HOMEBREW_VERIFY_ATTESTATIONS=1       # verify homebrew/core bottle build provenance (needs `gh` authed)
+# Opt-in: blocks casks with `sha256 :no_check`, but also blocks legit version:latest/font
+# casks. Uncomment only if you accept that:
+# export HOMEBREW_CASK_OPTS="--require-sha"

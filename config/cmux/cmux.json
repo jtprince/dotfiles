@@ -65,7 +65,7 @@
       "prevSidebarTab": "ctrl+shift+←",         // kitty previous_tab (approx)
       "renameWorkspace": "ctrl+shift+opt+t",    // kitty set_tab_title
       "toggleSplitZoom": "ctrl+shift+return",   // kitty toggle_maximized (zoom)
-      "toggleFullScreen": "ctrl+shift+f11",     // kitty toggle_fullscreen
+      "toggleFullScreen": "ctrl+shift+f",     // kitty toggle_fullscreen
       "reloadConfiguration": "ctrl+shift+escape" // kitty load_config_file
     }
   }
