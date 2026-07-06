@@ -27,6 +27,9 @@ cursor-color = #FF7F00
 cursor-text = #000000
 cursor-style = block
 cursor-style-blink = false
+# Stop shell integration from overriding the block cursor with a beam
+# (kitty equivalent: shell_integration no-cursor).
+shell-integration-features = no-cursor
 
 # ── Selection (kitty selection_foreground/background) ───────────────────────────
 selection-foreground = #000000

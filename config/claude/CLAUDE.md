@@ -21,3 +21,5 @@ approval to commit or push.
 
 Stage **explicit paths** (`git add <file> …`). Never `git add -A` / `--all` / `.` / `:/` —
 blanket staging sweeps in untracked files. (A PreToolUse hook guards this and will prompt.)
+
+@RTK.md

@@ -37,6 +37,15 @@
             "command": "serena-hooks auto-approve --client=claude-code"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -54,6 +63,14 @@
           {
             "type": "command",
             "command": "serena-hooks activate --client=claude-code"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"/Users/johnprince/.claude/hooks/context-mode-cache-heal.mjs\""
           }
         ]
       }
@@ -119,7 +136,8 @@
     "enveda-reusable-workflows@enveda-ai-plugin-marketplace": true,
     "code-review@claude-plugins-official": true,
     "enveda-ui-ux@enveda-ai-plugin-marketplace": true,
-    "enveda-vibe-coding@enveda-ai-plugin-marketplace": true
+    "enveda-vibe-coding@enveda-ai-plugin-marketplace": true,
+    "context-mode@context-mode": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -133,9 +151,16 @@
         "source": "github",
         "repo": "juliusbrussee/cavekit"
       }
+    },
+    "context-mode": {
+      "source": {
+        "source": "github",
+        "repo": "mksglu/context-mode"
+      }
     }
   },
   "promptSuggestionEnabled": false,
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "verbose": true,
   "remoteControlAtStartup": true,
@@ -147,6 +172,5 @@
         "mcp"
       ]
     }
-  },
-  "tui": "fullscreen"
+  }
 }

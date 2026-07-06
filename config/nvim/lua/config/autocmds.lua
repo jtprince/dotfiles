@@ -77,6 +77,21 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	end,
 })
 
+-- Disable swapfile under Dropbox. GUI/embedded nvim (Neovide, VS Code) can't
+-- render the E325 "swap file exists" prompt, so opening a Dropbox-synced file
+-- with a stale swap hangs silently. Match both the ~/Dropbox symlink and the
+-- resolved ~/Library/CloudStorage/Dropbox path.
+vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
+	group = aug,
+	pattern = { "*/Dropbox/*", "*/CloudStorage/Dropbox/*" },
+	callback = function(args)
+		local real = vim.uv.fs_realpath(args.file) or args.file
+		if real:find("/Dropbox/", 1, true) then
+			vim.bo.swapfile = false
+		end
+	end,
+})
+
 -- Auto-format Lua on save (LSP).
 vim.api.nvim_create_autocmd("BufWritePre", {
 	group = aug,
