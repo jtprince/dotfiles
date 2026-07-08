@@ -126,3 +126,5 @@ alias tree='tree -I "__pycache__|.git|.mypy_cache" --prune'
 alias qview="open -a qview"
 
 alias ack="rg"
+
+alias claude="headroom wrap claude"

@@ -37,15 +37,6 @@
             "command": "serena-hooks auto-approve --client=claude-code"
           }
         ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "rtk hook claude"
-          }
-        ]
       }
     ],
     "SessionStart": [
