@@ -52,6 +52,8 @@ import argparse
 import json
 import subprocess
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Iterable, List, Tuple, TypeVar
 from urllib.parse import urlparse
@@ -103,6 +105,13 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=250,
         help="Number of files to process per batch for progress reporting (default: 250).",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=16,
+        metavar="N",
+        help="Concurrent download workers for --recursive (default: 16). Use 1 for sequential.",
     )
     parser.add_argument(
         "--list-accounts",
@@ -259,40 +268,31 @@ def download_blob(
         sys.exit(1)
 
 
-def download_recursive(
-    *,
-    storage_account: str,
-    container: str,
-    prefix: str,
-    output_dir: Path,
-) -> None:
-    output_dir.mkdir(parents=True, exist_ok=True)
-    pattern = "{prefix}/*".format(prefix=prefix.rstrip("/")) if prefix else "*"
-
+def list_blobs_under_prefix(storage_account: str, container: str, prefix: str) -> List[str]:
     try:
-        run_az(
+        proc = run_az(
             [
                 "storage",
                 "blob",
-                "download-batch",
+                "list",
                 "--account-name",
                 storage_account,
-                "--source",
+                "--container-name",
                 container,
-                "--destination",
-                str(output_dir),
-                "--pattern",
-                pattern,
+                "--prefix",
+                prefix,
                 "--auth-mode",
                 "login",
-                "--only-show-errors",
                 "--output",
-                "none",
-            ]
+                "json",
+                "--query",
+                "[].name",
+            ],
+            capture_output=True,
         )
     except subprocess.CalledProcessError as exc:
         print(
-            "ERROR: failed recursive download from az://{container}/{prefix}".format(
+            "ERROR: failed to list blobs under az://{container}/{prefix}".format(
                 container=container,
                 prefix=prefix,
             ),
@@ -301,6 +301,60 @@ def download_recursive(
         if exc.stderr:
             print(exc.stderr.strip(), file=sys.stderr)
         sys.exit(1)
+    return json.loads(proc.stdout)
+
+
+def download_recursive(
+    *,
+    storage_account: str,
+    container: str,
+    prefix: str,
+    output_dir: Path,
+    workers: int,
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    blob_names = list_blobs_under_prefix(storage_account, container, prefix)
+
+    # Blob storage has a flat namespace: Bruker .d/.m subfolders get uploaded
+    # with a zero-byte placeholder blob literally named e.g. "8562.m/" in
+    # addition to the real blobs under "8562.m/...". Downloading the
+    # placeholder would try to materialize a file at a path where a
+    # directory is needed, so skip anything that is itself a folder marker.
+    real_blobs = [name for name in blob_names if not name.endswith("/")]
+    skipped = len(blob_names) - len(real_blobs)
+    if skipped:
+        print(f"Skipping {skipped} folder-marker blob(s).")
+
+    if not real_blobs:
+        print("No blobs to download.")
+        return
+
+    stripped_prefix = prefix.strip("/")
+    total = len(real_blobs)
+    print(f"Downloading {total} file(s) ({workers} worker{'s' if workers != 1 else ''})")
+
+    downloaded = 0
+    lock = threading.Lock()
+
+    def download_one(blob_name: str) -> str:
+        rel_path = blob_name[len(stripped_prefix):].lstrip("/") if stripped_prefix else blob_name
+        output_file = output_dir / rel_path
+        download_blob(
+            storage_account=storage_account,
+            container=container,
+            blob_path=blob_name,
+            output_file=output_file,
+        )
+        return blob_name
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(download_one, name): name for name in real_blobs}
+        for future in as_completed(futures):
+            blob_name = future.result()
+            with lock:
+                downloaded += 1
+                print(f"[{downloaded}/{total}] ✓ az://{container}/{blob_name}")
 
 
 def chunked(items: List[T], size: int) -> Iterable[List[T]]:
@@ -402,6 +456,7 @@ def main() -> None:
             container=container,
             prefix=prefix,
             output_dir=local_dir,
+            workers=args.workers,
         )
         print("Done.")
         return

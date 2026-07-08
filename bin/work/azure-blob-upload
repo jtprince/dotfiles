@@ -32,6 +32,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from glob import glob
 from pathlib import Path
 
+# NOTE: no --recursive/directory-tree upload today (files are flattened to
+# basename in upload_blob()), so this can't create or choke on zero-byte
+# Azure folder-marker blobs (trailing "/" names). If recursive upload is
+# ever added here, filter those out the way azure-blob-download's
+# download_recursive() does (skip names ending in "/") — that function's
+# git history has the bug this guards against.
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
