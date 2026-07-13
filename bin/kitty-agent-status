@@ -9,5 +9,7 @@ for os_win in json.load(sys.stdin):
     for tab in os_win.get("tabs", []):
         for win in tab.get("windows", []):
             if win.get("user_vars", {}).get("agent_attention") == "1":
-                print(f"id:{win[\"id\"]}\t{win.get(\"title\", \"\")}")
+                win_id = win.get("id")
+                title = win.get("title", "")
+                print(f"id:{win_id}\t{title}")
 '
