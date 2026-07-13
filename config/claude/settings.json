@@ -103,6 +103,24 @@
             "command": "cavemem hook run stop --ide claude-code"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kitty-agent-attention"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kitty-agent-attention"
+          }
+        ]
       }
     ],
     "SessionEnd": [

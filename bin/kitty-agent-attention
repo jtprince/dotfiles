@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Signal that the AI agent in this Kitty window needs user attention: emits
+# one bell and marks the window for a persistent visual alert (background
+# highlight), cleared automatically by agent_attention_watcher.py on focus.
+set -euo pipefail
+
+if [[ -z "${KITTY_WINDOW_ID:-}" ]]; then
+  echo "kitty-agent-attention: not running inside a kitty window (KITTY_WINDOW_ID unset), skipping" >&2
+  exit 0
+fi
+
+if [[ -e /dev/tty ]]; then
+  printf '\a' > /dev/tty 2>/dev/null || true
+fi
+
+if ! kitty @ set-user-vars --match "id:${KITTY_WINDOW_ID}" agent_attention=1 >/dev/null 2>&1; then
+  echo "kitty-agent-attention: remote control call failed (is allow_remote_control/listen_on configured in kitty.conf?)" >&2
+  exit 1
+fi

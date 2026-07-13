@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Manually clear the agent-attention alert on a Kitty window (defaults to
+# the current window). Normally the watcher does this automatically on focus.
+set -euo pipefail
+
+target="${1:-${KITTY_WINDOW_ID:-}}"
+if [[ -z "$target" ]]; then
+  echo "kitty-agent-clear: no window id given and KITTY_WINDOW_ID unset" >&2
+  exit 1
+fi
+
+kitty @ set-user-vars --match "id:${target}" agent_attention

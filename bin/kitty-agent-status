@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# List all Kitty windows currently flagged as waiting for attention.
+set -euo pipefail
+
+kitty @ ls | python3 -c '
+import json, sys
+
+for os_win in json.load(sys.stdin):
+    for tab in os_win.get("tabs", []):
+        for win in tab.get("windows", []):
+            if win.get("user_vars", {}).get("agent_attention") == "1":
+                print(f"id:{win[\"id\"]}\t{win.get(\"title\", \"\")}")
+'
