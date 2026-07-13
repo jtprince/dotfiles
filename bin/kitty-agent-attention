@@ -10,7 +10,15 @@ if [[ -z "${KITTY_WINDOW_ID:-}" ]]; then
 fi
 
 if [[ -e /dev/tty ]]; then
-  printf '\a' > /dev/tty 2>/dev/null || true
+  { printf '\a' > /dev/tty; } 2>/dev/null || true
+fi
+
+msg="agent waiting in $(basename "$PWD")"
+msg=${msg//\"/}
+if command -v notify-send >/dev/null 2>&1; then
+  notify-send "Kitty agent needs attention" "$msg" 2>/dev/null || true
+elif command -v osascript >/dev/null 2>&1; then
+  osascript -e "display notification \"$msg\" with title \"Kitty agent needs attention\"" >/dev/null 2>&1 || true
 fi
 
 if ! kitty @ set-user-vars --match "id:${KITTY_WINDOW_ID}" agent_attention=1 >/dev/null 2>&1; then

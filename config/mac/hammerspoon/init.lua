@@ -77,11 +77,11 @@ end)
 
 -- Terminals
 hs.hotkey.bind({ "alt" }, "X", function()
-	sh([[open -a "cmux"]])
+	sh([[open -a "kitty"]])
 end)
 
 hs.hotkey.bind({ "alt", "shift" }, "X", function()
-	sh([[open -na "cmux"]])
+	sh([[open -na "kitty"]])
 end)
 
 ----------------------------------------------------------------------
