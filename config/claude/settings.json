@@ -44,6 +44,14 @@
         "hooks": [
           {
             "type": "command",
+            "command": "$HOME/.claude/hooks/strip-rtk-hook.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "cavemem hook run session-start --ide claude-code"
           }
         ]
