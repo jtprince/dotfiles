@@ -53,6 +53,7 @@ import json
 import subprocess
 import sys
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Iterable, List, Tuple, TypeVar
@@ -226,49 +227,126 @@ def infer_local_path(
     return output_dir / Path(blob_path).name
 
 
-def download_blob(
-    *,
-    storage_account: str,
-    container: str,
-    blob_path: str,
-    output_file: Path,
-) -> None:
-    output_file.parent.mkdir(parents=True, exist_ok=True)
+class DownloadError(Exception):
+    """A blob failed to download after exhausting all retries."""
+
+
+DEFAULT_RETRIES = 4
+
+
+def get_blob_size(storage_account: str, container: str, blob_path: str) -> int | None:
+    """Return the blob's Content-Length in bytes, or None if it can't be read.
+
+    Used to decide whether a local file is already a complete copy so we can
+    skip re-downloading it (idempotent resume). Best-effort: any failure just
+    means "unknown", and the caller will re-download.
+    """
     try:
-        run_az(
+        proc = run_az(
             [
                 "storage",
                 "blob",
-                "download",
+                "show",
                 "--account-name",
                 storage_account,
                 "--container-name",
                 container,
                 "--name",
                 blob_path,
-                "--file",
-                str(output_file),
                 "--auth-mode",
                 "login",
-                "--only-show-errors",
+                "--query",
+                "properties.contentLength",
                 "--output",
-                "none",
-            ]
+                "tsv",
+            ],
+            capture_output=True,
         )
-    except subprocess.CalledProcessError as exc:
-        print(
-            "ERROR: failed to download az://{container}/{blob_path}".format(
-                container=container,
-                blob_path=blob_path,
-            ),
-            file=sys.stderr,
-        )
-        if exc.stderr:
-            print(exc.stderr.strip(), file=sys.stderr)
-        sys.exit(1)
+    except subprocess.CalledProcessError:
+        return None
+    value = proc.stdout.strip()
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 
-def list_blobs_under_prefix(storage_account: str, container: str, prefix: str) -> List[str]:
+def local_is_complete(output_file: Path, expected_size: int | None) -> bool:
+    """True when output_file already exists with exactly expected_size bytes.
+
+    Conservative: if the expected size is unknown (None) we report incomplete
+    so the caller downloads rather than trusting a possibly-partial file.
+    """
+    if expected_size is None:
+        return False
+    try:
+        return output_file.is_file() and output_file.stat().st_size == expected_size
+    except OSError:
+        return False
+
+
+def download_blob(
+    *,
+    storage_account: str,
+    container: str,
+    blob_path: str,
+    output_file: Path,
+    retries: int = DEFAULT_RETRIES,
+) -> None:
+    """Download a single blob, retrying transient failures with backoff.
+
+    Raises DownloadError after exhausting retries instead of killing the
+    process, so callers can keep the rest of a batch/pool going and aggregate
+    failures at the end (a single flaky blob shouldn't abort a 150 GB pull).
+    """
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    last_stderr = ""
+    for attempt in range(1, retries + 1):
+        try:
+            run_az(
+                [
+                    "storage",
+                    "blob",
+                    "download",
+                    "--account-name",
+                    storage_account,
+                    "--container-name",
+                    container,
+                    "--name",
+                    blob_path,
+                    "--file",
+                    str(output_file),
+                    "--auth-mode",
+                    "login",
+                    "--overwrite",
+                    "true",
+                    "--only-show-errors",
+                    "--output",
+                    "none",
+                ]
+            )
+            return
+        except subprocess.CalledProcessError as exc:
+            last_stderr = (exc.stderr or "").strip()
+            if attempt < retries:
+                backoff = min(2 ** attempt, 30)
+                print(
+                    "  transient error on az://{c}/{b} "
+                    "(attempt {a}/{r}); retrying in {s}s".format(
+                        c=container, b=blob_path, a=attempt, r=retries, s=backoff
+                    ),
+                    file=sys.stderr,
+                )
+                time.sleep(backoff)
+    raise DownloadError(
+        "az://{c}/{b}: {e}".format(c=container, b=blob_path, e=last_stderr)
+    )
+
+
+def list_blobs_under_prefix(
+    storage_account: str, container: str, prefix: str
+) -> List[dict]:
+    """List blobs under prefix as [{"name": str, "size": int | None}, ...]."""
     try:
         proc = run_az(
             [
@@ -286,7 +364,7 @@ def list_blobs_under_prefix(storage_account: str, container: str, prefix: str) -
                 "--output",
                 "json",
                 "--query",
-                "[].name",
+                "[].{name:name, size:properties.contentLength}",
             ],
             capture_output=True,
         )
@@ -314,17 +392,17 @@ def download_recursive(
 ) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    blob_names = list_blobs_under_prefix(storage_account, container, prefix)
+    blobs = list_blobs_under_prefix(storage_account, container, prefix)
 
     # Blob storage has a flat namespace: Bruker .d/.m subfolders get uploaded
     # with a zero-byte placeholder blob literally named e.g. "8562.m/" in
     # addition to the real blobs under "8562.m/...". Downloading the
     # placeholder would try to materialize a file at a path where a
     # directory is needed, so skip anything that is itself a folder marker.
-    real_blobs = [name for name in blob_names if not name.endswith("/")]
-    skipped = len(blob_names) - len(real_blobs)
-    if skipped:
-        print(f"Skipping {skipped} folder-marker blob(s).")
+    real_blobs = [b for b in blobs if not b["name"].endswith("/")]
+    markers = len(blobs) - len(real_blobs)
+    if markers:
+        print(f"Skipping {markers} folder-marker blob(s).")
 
     if not real_blobs:
         print("No blobs to download.")
@@ -334,27 +412,58 @@ def download_recursive(
     total = len(real_blobs)
     print(f"Downloading {total} file(s) ({workers} worker{'s' if workers != 1 else ''})")
 
-    downloaded = 0
+    counts = {"downloaded": 0, "skipped": 0}
+    failures: List[str] = []
+    processed = 0
     lock = threading.Lock()
 
-    def download_one(blob_name: str) -> str:
-        rel_path = blob_name[len(stripped_prefix):].lstrip("/") if stripped_prefix else blob_name
-        output_file = output_dir / rel_path
-        download_blob(
-            storage_account=storage_account,
-            container=container,
-            blob_path=blob_name,
-            output_file=output_file,
+    def handle_one(blob: dict) -> Tuple[str, str]:
+        blob_name = blob["name"]
+        rel_path = (
+            blob_name[len(stripped_prefix):].lstrip("/")
+            if stripped_prefix
+            else blob_name
         )
-        return blob_name
+        output_file = output_dir / rel_path
+        # Idempotent resume: a re-run over a partly-downloaded tree skips files
+        # already present at their full size instead of re-fetching them.
+        if local_is_complete(output_file, blob.get("size")):
+            return "skipped", blob_name
+        try:
+            download_blob(
+                storage_account=storage_account,
+                container=container,
+                blob_path=blob_name,
+                output_file=output_file,
+            )
+        except DownloadError as exc:
+            return "failed", str(exc)
+        return "downloaded", blob_name
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(download_one, name): name for name in real_blobs}
+        futures = {pool.submit(handle_one, b): b for b in real_blobs}
         for future in as_completed(futures):
-            blob_name = future.result()
+            status, detail = future.result()
             with lock:
-                downloaded += 1
-                print(f"[{downloaded}/{total}] ✓ az://{container}/{blob_name}")
+                processed += 1
+                if status == "failed":
+                    failures.append(detail)
+                    print(f"[{processed}/{total}] ✗ {detail}", file=sys.stderr)
+                else:
+                    counts[status] += 1
+                    label = "= (exists)" if status == "skipped" else "✓"
+                    print(f"[{processed}/{total}] {label} az://{container}/{detail}")
+
+    print(
+        "Recursive done: {d} downloaded, {s} skipped, {f} failed.".format(
+            d=counts["downloaded"], s=counts["skipped"], f=len(failures)
+        )
+    )
+    if failures:
+        print("Failures:", file=sys.stderr)
+        for msg in failures:
+            print(f"  {msg}", file=sys.stderr)
+        sys.exit(1)
 
 
 def chunked(items: List[T], size: int) -> Iterable[List[T]]:
@@ -465,6 +574,9 @@ def main() -> None:
     print("Downloading {total} file(s) from Azure Blob Storage".format(total=total))
 
     downloaded = 0
+    skipped = 0
+    failures: List[str] = []
+    processed = 0
     for batch_num, batch in enumerate(chunked(targets, args.batch_size), start=1):
         print(
             "\nBatch {batch_num}: {count} file(s)".format(
@@ -477,24 +589,47 @@ def main() -> None:
                 output_dir=args.output_dir,
                 preserve_structure=False,
             )
-            download_blob(
-                storage_account=storage_account,
-                container=container,
-                blob_path=blob_path,
-                output_file=local_file,
-            )
-            downloaded += 1
-            print(
-                "[{downloaded}/{total}] ✓ az://{container}/{blob_path} -> {local_file}".format(
-                    downloaded=downloaded,
-                    total=total,
+            processed += 1
+            # Idempotent resume: only pay for a `blob show` size check when a
+            # local file already exists; skip it when already complete.
+            if local_file.is_file() and local_is_complete(
+                local_file, get_blob_size(storage_account, container, blob_path)
+            ):
+                skipped += 1
+                print(
+                    "[{p}/{t}] = (exists) az://{c}/{b}".format(
+                        p=processed, t=total, c=container, b=blob_path
+                    )
+                )
+                continue
+            try:
+                download_blob(
+                    storage_account=storage_account,
                     container=container,
                     blob_path=blob_path,
-                    local_file=local_file,
+                    output_file=local_file,
+                )
+            except DownloadError as exc:
+                failures.append(str(exc))
+                print(f"[{processed}/{total}] ✗ {exc}", file=sys.stderr)
+                continue
+            downloaded += 1
+            print(
+                "[{p}/{t}] ✓ az://{c}/{b} -> {f}".format(
+                    p=processed, t=total, c=container, b=blob_path, f=local_file
                 )
             )
 
-    print("\nDone: downloaded {count} file(s).".format(count=downloaded))
+    print(
+        "\nDone: {d} downloaded, {s} skipped, {f} failed.".format(
+            d=downloaded, s=skipped, f=len(failures)
+        )
+    )
+    if failures:
+        print("Failures:", file=sys.stderr)
+        for msg in failures:
+            print(f"  {msg}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
