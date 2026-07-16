@@ -1,12 +1,5 @@
 {
   "permissions": {
-    "ask": [
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(gh pr create:*)",
-      "Bash(gh pr merge:*)",
-      "Bash(gh release create:*)"
-    ],
     "defaultMode": "auto"
   },
   "hooks": {
@@ -189,5 +182,6 @@
         "mcp"
       ]
     }
-  }
+  },
+  "agentPushNotifEnabled": true
 }

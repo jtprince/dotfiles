@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # --- Config ---
-DEFAULT_VM_NAME="johnprince-dev"
+DEFAULT_VM_NAME="jtprince-32-256"
 RESOURCE_GROUP="data-science-dev-ncus-rg-01"
 
 VM_NAME="${2:-$DEFAULT_VM_NAME}"

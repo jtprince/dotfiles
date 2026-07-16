@@ -1,6 +1,4 @@
-**tmux auto-attach setup (your case)**
-- New SSH shell → attaches to `default` session if exists
-- Otherwise → creates `default`
+New session: `tmux new -s default`
 
 *Core prefix*
 - `Ctrl-b` (default)
