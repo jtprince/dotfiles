@@ -1,0 +1,67 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cavemem hook run session-start --ide codex"
+          },
+          {
+            "type": "command",
+            "command": "serena-hooks activate --client=codex"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks remind --client=codex"
+          }
+        ]
+      },
+      {
+        "matcher": "^mcp__serena__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks auto-approve --client=codex"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cavemem hook run user-prompt-submit --ide codex"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cavemem hook run post-tool-use --ide codex"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cavemem hook run stop --ide codex"
+          }
+        ]
+      }
+    ]
+  }
+}

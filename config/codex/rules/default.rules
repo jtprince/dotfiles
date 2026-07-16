@@ -1,0 +1,33 @@
+# Git history and outward publishing require explicit user approval.
+prefix_rule(
+    pattern = ["git", ["commit", "push"]],
+    decision = "prompt",
+    justification = "Commit or push only after explicit user approval.",
+    match = ["git commit -m message", "git push origin main"],
+    not_match = ["git status", "git add src/app.py"],
+)
+
+prefix_rule(
+    pattern = ["gh", "pr", ["create", "merge"]],
+    decision = "prompt",
+    justification = "Creating or merging a PR publishes changes and requires explicit approval.",
+    match = ["gh pr create --draft", "gh pr merge 42"],
+    not_match = ["gh pr view 42", "gh pr checks 42"],
+)
+
+prefix_rule(
+    pattern = ["gh", "release", "create"],
+    decision = "prompt",
+    justification = "Creating a release publishes artifacts and requires explicit approval.",
+    match = ["gh release create v1.0.0"],
+    not_match = ["gh release view v1.0.0"],
+)
+
+# Blanket staging can sweep untracked files into a commit.
+prefix_rule(
+    pattern = ["git", "add", ["-A", "--all", ".", ":/"]],
+    decision = "prompt",
+    justification = "Prefer explicit paths; blanket git add can stage unrelated untracked files.",
+    match = ["git add -A", "git add --all", "git add .", "git add :/"],
+    not_match = ["git add src/app.py", "git add -u", "git add -p"],
+)

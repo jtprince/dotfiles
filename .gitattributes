@@ -1,1 +1,2 @@
 config/claude/settings.json filter=claude-settings
+config/codex/config.toml filter=codex-config

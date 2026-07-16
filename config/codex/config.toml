@@ -1,0 +1,51 @@
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+notify = ["kitty-agent-attention"]
+
+[features]
+hooks = true
+
+[sandbox_workspace_write]
+network_access = false
+
+[tui]
+alternate_screen = "always"
+notifications = ["approval-requested"]
+notification_condition = "unfocused"
+[mcp_servers.serena]
+command = "serena"
+args = ["start-mcp-server", "--context=codex", "--project-from-cwd"]
+
+[mcp_servers.headroom]
+command = "headroom"
+args = ["mcp", "serve"]
+
+[mcp_servers.tokensave]
+command = "tokensave"
+args = ["serve"]
+
+[mcp_servers.cavemem]
+command = "cavemem"
+args = ["mcp"]
+[hooks.state]
+
+[hooks.state."/Users/johnprince/.codex/hooks.json:pre_tool_use:0:0"]
+trusted_hash = "sha256:bea71cca907bce2402e937b1fe3755c78bc3fca577f087add2cb4c50c09a502a"
+
+[hooks.state."/Users/johnprince/.codex/hooks.json:pre_tool_use:1:0"]
+trusted_hash = "sha256:b08e205fa95a40a6b715535d53969e340a404b9236d1479ab57e5576cc1443cc"
+
+[hooks.state."/Users/johnprince/.codex/hooks.json:post_tool_use:0:0"]
+trusted_hash = "sha256:3d0b842466277c5dfae6119b09ec8fea169a3522b838834d6f4511f190a58de2"
+
+[hooks.state."/Users/johnprince/.codex/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:f5dbbee78a673210ce4eae740c7507adbab7983eef7054f049f19fd3fb4a6a5b"
+
+[hooks.state."/Users/johnprince/.codex/hooks.json:session_start:0:1"]
+trusted_hash = "sha256:01a21acadcbd06488387cb1d14311fac33d4cff9f74403cdffb929e570ef4185"
+
+[hooks.state."/Users/johnprince/.codex/hooks.json:user_prompt_submit:0:0"]
+trusted_hash = "sha256:fa2e373bd4c1b638932d1dddb3347e1a80e48a379f98b87c3ff981b15a2db688"
+
+[hooks.state."/Users/johnprince/.codex/hooks.json:stop:0:0"]
+trusted_hash = "sha256:796f32fb9e92b518227970f44e98a51c15f875bb0921af2b68300bf25637956b"
