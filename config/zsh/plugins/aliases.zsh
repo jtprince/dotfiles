@@ -119,7 +119,7 @@ alias icat="kitty +kitten icat"
 
 alias scocr="sc -b --dir /home/jtprince/screenshots --timestamp box --ocr"
 
-CHEATDIR="$HOME/dotfiles/config/cheat/cheatsheets/personal"
+CHEATDIR="$HOME/dotfiles/config/cheat/cheatsheets"
 
 alias tree='tree -I "__pycache__|.git|.mypy_cache" --prune'
 

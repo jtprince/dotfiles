@@ -31,3 +31,7 @@ prefix_rule(
     match = ["git add -A", "git add --all", "git add .", "git add :/"],
     not_match = ["git add src/app.py", "git add -u", "git add -p"],
 )
+prefix_rule(pattern=["uv", "run", "pytest"], decision="allow")
+prefix_rule(pattern=["uv", "run", "ruff"], decision="allow")
+prefix_rule(pattern=["uv", "run", "create-zip-archive"], decision="allow")
+prefix_rule(pattern=["git", "add"], decision="allow")
