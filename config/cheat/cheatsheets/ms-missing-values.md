@@ -18,7 +18,7 @@ Notation used throughout:
 
 ## 1. The missingness taxonomy (Rubin) -- decide this FIRST
 
-English: everything downstream hinges on WHY a value is missing. Let Y split
+Everything downstream hinges on WHY a value is missing. Let Y split
 into observed part Y_obs and missing part Y_mis, and R = which entries are
 observed. Three mechanisms:
 
@@ -45,7 +45,7 @@ GRADUALLY with intensity, it is not a clean cliff. So neither "impute" nor
 
 ## 2. Baseline: complete-case analysis (drop missing)
 
-English: run the t-test / limma only on samples where the feature was
+Run the t-test / limma only on samples where the feature was
 detected. Unbiased ONLY under MCAR. Under MNAR it throws away the fact that
 "missing = low", losing power and biasing group means upward (you only keep
 the high, detected values).
@@ -58,7 +58,7 @@ mean_g_hat = mean of observed y  ->  biased HIGH under MNAR (drops the lows)
 
 ## 3. Naive substitution (what makes you nervous -- rightly)
 
-English: replace every missing with one fixed low number. Fast, ubiquitous,
+Replace every missing with one fixed low number. Fast, ubiquitous,
 statistically dangerous: it fabricates zero-variance clumps, shrinks the
 within-group variance, and inflates false positives (or kills power).
 
@@ -75,7 +75,7 @@ Failure mode: k missing in a group all get the SAME value
 
 ## 4. MNAR-aware imputation (better, still imputation)
 
-English: instead of one constant, draw each missing value from a low,
+Instead of one constant, draw each missing value from a low,
 left-truncated distribution so the imputed cloud has realistic spread. Still
 invents data, but respects "missing = low and variable". Use when a
 downstream tool NEEDS a complete matrix (PCA, clustering, ML).
@@ -101,7 +101,7 @@ Contrast with MCAR/MAR imputers (kNN, SVD, BPCA/PPCA, randomForest):
 
 ## 5. Detection-probability / selection models  (NO imputation)  *** best fit ***
 
-English: the modern answer. Don't fill anything in. Instead write the
+The modern answer. Don't fill anything in. Instead write the
 probability that a feature is DETECTED as an explicit function of its own
 (unobserved) true intensity, and fold that term into the likelihood used for
 differential testing. Missingness becomes informative data, not a hole.
@@ -118,7 +118,7 @@ values AND the pattern of which values are missing.
 
 ### 5a. Li & Smyth (2023) "Neither random nor censored" -- protDP  [the paper Corey liked]
 
-English: models the Detection Probability Curve (DPC): detection is
+Models the Detection Probability Curve (DPC): detection is
 logit-linear in the underlying log-intensity, with an asymptote cap < 100%
 to allow a small rate of intensity-unrelated (MAR) misses. Fit by a zero-
 truncated binomial likelihood over replicates. Once beta0, beta1 are known,
@@ -154,7 +154,7 @@ hard left-censoring (step function). Real data sits in between.
 
 ### 5b. Karpievitch et al. (2009) -- foundational, DAnTE
 
-English: first model-based treatment for label-free/label-based proteomics.
+First model-based treatment for label-free/label-based proteomics.
 A mixture missingness model (some misses random, some censored below LOD) fit
 by maximum likelihood / EM, giving protein-level abundances + variances and
 handling peptide->protein rollup. Beat complete-case ANOVA and mean-imputation
@@ -171,7 +171,7 @@ censored/random mixture).
 
 ### 5c. O'Brien et al. (2018), Ann. Appl. Stat. -- Bayesian probit selection
 
-English: same selection idea, fully Bayesian, with a probit detection link.
+Same selection idea, fully Bayesian, with a probit detection link.
 Puts priors on everything and samples the posterior of differential abundance
 while the missingness model runs jointly.
 
@@ -183,7 +183,7 @@ while the missingness model runs jointly.
 
 ## 6. Censored-likelihood (Tobit / AFT) models  (NO imputation)
 
-English: the strict-MNAR cousin of section 5. Treat every missing value as
+The strict-MNAR cousin of section 5. Treat every missing value as
 KNOWN to be below the threshold c = LOD (left-censored) rather than unknown.
 An observed value contributes its normal density; a censored value contributes
 only the probability mass below c. No number is substituted. This is a Tobit
@@ -207,7 +207,7 @@ left-censoring); detection-probability models allow a SOFT, gradual cliff
 
 ## 7. Bayesian hierarchical joint models
 
-English: generalize 5c -- one big hierarchical model where the probability of
+Generalize 5c -- one big hierarchical model where the probability of
 a missing intensity depends on both the unknown abundance AND observable
 covariates (e.g. m/z), with informative priors, all sampled together by
 MCMC (Gibbs / Hamiltonian). Most flexible, most expensive; gives full
