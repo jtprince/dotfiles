@@ -11,11 +11,9 @@ approval to commit or push.
 - Staging explicit paths, `git diff`, `git status`, `git log`, branching, and reading
   history are fine without asking.
 - When the work is ready, **stop and propose** commit / push / PR as an explicit step and
-  let the user decide. A `permissions.ask` rule in `settings.json` also enforces this —
-  treat its confirmation prompt as expected, not an error to work around.
-- This applies to aliases and env-prefixed forms too (e.g. `gc`, `GIT_EDITOR=… git commit`),
-  which the literal permission rules may not catch — don't use them to commit/push around
-  the gate.
+  let the user decide.
+- This applies to aliases and env-prefixed forms too (e.g. `gc`, `GIT_EDITOR=… git commit`) —
+  don't use them to commit/push around the gate.
 
 ## Git staging
 
