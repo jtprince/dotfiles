@@ -18,6 +18,9 @@ notification_condition = "unfocused"
 command = "serena"
 args = ["start-mcp-server", "--context=codex", "--project-from-cwd"]
 
+[mcp_servers.serena.tools.write_memory]
+approval_mode = "approve"
+
 [mcp_servers.headroom]
 command = "headroom"
 args = ["mcp", "serve"]
@@ -84,7 +87,7 @@ source_type = "local"
 source = "/Users/johnprince/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-07-20T17:45:14Z"
+last_updated = "2026-07-27T22:25:17Z"
 source_type = "local"
 source = "/Users/johnprince/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
