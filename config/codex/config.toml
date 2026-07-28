@@ -44,13 +44,11 @@ NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_n
 NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
 NODE_REPL_TRUSTED_CODE_PATHS = "/Users/johnprince/.codex"
 CODEX_HOME = "/Users/johnprince/.codex"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,d0b55a8f9e8e7e9c88421416ea4ce9542c302abf43aa7fc871be4553ea70dd26"
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.715.72359"
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
 [mcp_servers.computer-use]
@@ -58,36 +56,11 @@ command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.
 args = ["mcp"]
 cwd = "."
 enabled = false
-[hooks.state]
-
-[hooks.state."/Users/johnprince/.codex/hooks.json:pre_tool_use:0:0"]
-trusted_hash = "sha256:bea71cca907bce2402e937b1fe3755c78bc3fca577f087add2cb4c50c09a502a"
-
-[hooks.state."/Users/johnprince/.codex/hooks.json:pre_tool_use:1:0"]
-trusted_hash = "sha256:b08e205fa95a40a6b715535d53969e340a404b9236d1479ab57e5576cc1443cc"
-
-[hooks.state."/Users/johnprince/.codex/hooks.json:post_tool_use:0:0"]
-trusted_hash = "sha256:3d0b842466277c5dfae6119b09ec8fea169a3522b838834d6f4511f190a58de2"
-
-[hooks.state."/Users/johnprince/.codex/hooks.json:session_start:0:0"]
-trusted_hash = "sha256:f5dbbee78a673210ce4eae740c7507adbab7983eef7054f049f19fd3fb4a6a5b"
-
-[hooks.state."/Users/johnprince/.codex/hooks.json:session_start:0:1"]
-trusted_hash = "sha256:01a21acadcbd06488387cb1d14311fac33d4cff9f74403cdffb929e570ef4185"
-
-[hooks.state."/Users/johnprince/.codex/hooks.json:user_prompt_submit:0:0"]
-trusted_hash = "sha256:fa2e373bd4c1b638932d1dddb3347e1a80e48a379f98b87c3ff981b15a2db688"
-
-[hooks.state."/Users/johnprince/.codex/hooks.json:stop:0:0"]
-trusted_hash = "sha256:796f32fb9e92b518227970f44e98a51c15f875bb0921af2b68300bf25637956b"
-
 [marketplaces.openai-bundled]
-last_updated = "2026-07-23T17:16:55Z"
 source_type = "local"
 source = "/Users/johnprince/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-07-27T22:25:17Z"
 source_type = "local"
 source = "/Users/johnprince/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
@@ -123,7 +96,6 @@ enabled = true
 
 [shell_environment_policy.set]
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,d0b55a8f9e8e7e9c88421416ea4ce9542c302abf43aa7fc871be4553ea70dd26"
 NODE_REPL_TRUSTED_CODE_PATHS = "/Users/johnprince/.codex"
 
 [desktop]
