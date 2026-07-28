@@ -32,3 +32,10 @@ fi
 
 unfunction _cached_eval
 unset _zsh_cache_dir
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/jtprince/.local/bin:$PATH"
+
+# opencode
+export PATH=/home/jtprince/.opencode/bin:$PATH
