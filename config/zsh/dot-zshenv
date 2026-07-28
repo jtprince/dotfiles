@@ -16,3 +16,4 @@ export HOMEBREW_VERIFY_ATTESTATIONS=1       # verify homebrew/core bottle build 
 # Opt-in: blocks casks with `sha256 :no_check`, but also blocks legit version:latest/font
 # casks. Uncomment only if you accept that:
 # export HOMEBREW_CASK_OPTS="--require-sha"
+. "$HOME/.cargo/env"
