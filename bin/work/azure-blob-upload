@@ -50,7 +50,10 @@ def parse_args() -> argparse.Namespace:
         "-s",
         "--subscription",
         required=True,
-        help="Expected Azure subscription name or id (checked via `az account show`).",
+        help=(
+            "Azure subscription name or id to use; switched via `az account set` "
+            "if it isn't already active."
+        ),
     )
     parser.add_argument(
         "-a",
@@ -101,19 +104,27 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def run_az(cmd: list[str], capture_output: bool = False) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["az"] + cmd,
+        check=True,
+        capture_output=capture_output,
+        text=True,
+    )
+
+
 def get_active_subscription() -> dict[str, str]:
     try:
-        proc = subprocess.run(
-            ["az", "account", "show", "-o", "json"],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        proc = run_az(["account", "show", "-o", "json"], capture_output=True)
     except FileNotFoundError:
         print("ERROR: `az` CLI not found in PATH.", file=sys.stderr)
         sys.exit(2)
     except subprocess.CalledProcessError as exc:
-        print("ERROR: failed to run `az account show`.", file=sys.stderr)
+        print(
+            "ERROR: failed to run `az account show` (likely not logged in).\n"
+            "Run `az login`, or `az-login dev|prod`, and retry.",
+            file=sys.stderr,
+        )
         if exc.stderr:
             print(exc.stderr.strip(), file=sys.stderr)
         sys.exit(2)
@@ -130,17 +141,45 @@ def get_active_subscription() -> dict[str, str]:
     }
 
 
-def verify_subscription(expected: str) -> None:
+def ensure_subscription(expected: str) -> None:
+    """Make `expected` the active subscription, switching without a login if possible."""
     active = get_active_subscription()
-    if expected not in {active["name"], active["id"]}:
+    if expected in {active["name"], active["id"]}:
+        return
+
+    # Same trick as bin/work/az-login: a cached refresh token can usually mint an
+    # access token for another subscription, so no interactive login is needed.
+    try:
+        run_az(
+            ["account", "get-access-token", "--subscription", expected],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
         print(
-            "ERROR: active Azure subscription does not match.\n"
-            f"  expected: {expected}\n"
+            "ERROR: cannot switch to the requested Azure subscription without logging in.\n"
+            f"  requested:   {expected}\n"
             f"  active name: {active['name']}\n"
-            f"  active id:   {active['id']}",
+            f"  active id:   {active['id']}\n"
+            f"Run `az login` (then `az account set --subscription {expected}`), "
+            "or use `az-login dev|prod`, and retry.",
             file=sys.stderr,
         )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
         sys.exit(2)
+
+    try:
+        run_az(["account", "set", "--subscription", expected], capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        print(
+            f"ERROR: `az account set --subscription {expected}` failed.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    print(f"switched active Azure subscription: {active['name']} -> {expected}")
 
 
 def resolve_input_files(args: argparse.Namespace) -> list[Path]:
@@ -198,13 +237,22 @@ def list_existing_blobs(storage_account: str, container: str, prefix: str) -> se
     try:
         proc = subprocess.run(
             [
-                "az", "storage", "blob", "list",
-                "--account-name", storage_account,
-                "--container-name", container,
-                "--prefix", prefix,
-                "--auth-mode", "login",
-                "--output", "json",
-                "--query", "[].name",
+                "az",
+                "storage",
+                "blob",
+                "list",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--prefix",
+                prefix,
+                "--auth-mode",
+                "login",
+                "--output",
+                "json",
+                "--query",
+                "[].name",
             ],
             check=True,
             capture_output=True,
@@ -267,13 +315,17 @@ def main() -> None:
         print("ERROR: --workers must be >= 1", file=sys.stderr)
         sys.exit(2)
 
-    verify_subscription(args.subscription)
+    ensure_subscription(args.subscription)
     files = resolve_input_files(args)
 
     existing: set[str] = set()
     if args.skip_existing:
-        print(f"Checking existing blobs under {args.storage_account}/{args.container}/{args.upload_dir} …")
-        existing = list_existing_blobs(args.storage_account, args.container, args.upload_dir)
+        print(
+            f"Checking existing blobs under {args.storage_account}/{args.container}/{args.upload_dir} …"
+        )
+        existing = list_existing_blobs(
+            args.storage_account, args.container, args.upload_dir
+        )
         skip_count = sum(1 for f in files if f"{args.upload_dir}/{f.name}" in existing)
         if skip_count:
             print(f"Skipping {skip_count} already-uploaded file(s).")
@@ -307,7 +359,9 @@ def main() -> None:
                 local_file, blob_path = future.result()
                 with lock:
                     uploaded += 1
-                    print(f"[{uploaded}/{len(files)}] ✓ {local_file.name} → {blob_path}")
+                    print(
+                        f"[{uploaded}/{len(files)}] ✓ {local_file.name} → {blob_path}"
+                    )
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         sys.exit(1)

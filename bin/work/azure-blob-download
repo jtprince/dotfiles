@@ -36,7 +36,7 @@ Examples:
         --download-dir ckrettle/datamoat/enamine-release/output/test-tiny \
         --recursive
 
-    # verify active subscription first
+    # select/switch subscription first (no login needed if token cache is warm)
     uv run azure-blob-download \
         --subscription sub-enveda-data-dev-01 \
         --storage-account miscdevncus01 \
@@ -71,7 +71,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-s",
         "--subscription",
-        help="Expected Azure subscription name or id (checked via `az account show`).",
+        help=(
+            "Azure subscription name or id to use; switched via `az account set` "
+            "if it isn't already active."
+        ),
     )
     parser.add_argument(
         "-a",
@@ -147,7 +150,11 @@ def get_active_subscription() -> dict:
         print("ERROR: `az` CLI not found in PATH.", file=sys.stderr)
         sys.exit(2)
     except subprocess.CalledProcessError as exc:
-        print("ERROR: failed to run `az account show`.", file=sys.stderr)
+        print(
+            "ERROR: failed to run `az account show` (likely not logged in).\n"
+            "Run `az login`, or `az-login dev|prod`, and retry.",
+            file=sys.stderr,
+        )
         if exc.stderr:
             print(exc.stderr.strip(), file=sys.stderr)
         sys.exit(2)
@@ -164,21 +171,45 @@ def get_active_subscription() -> dict:
     }
 
 
-def verify_subscription(expected: str) -> None:
+def ensure_subscription(expected: str) -> None:
+    """Make `expected` the active subscription, switching without a login if possible."""
     active = get_active_subscription()
-    if expected not in {active["name"], active["id"]}:
+    if expected in {active["name"], active["id"]}:
+        return
+
+    # Same trick as bin/work/az-login: a cached refresh token can usually mint an
+    # access token for another subscription, so no interactive login is needed.
+    try:
+        run_az(
+            ["account", "get-access-token", "--subscription", expected],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
         print(
-            "ERROR: active Azure subscription does not match.\n"
-            "  expected: {expected}\n"
-            "  active name: {name}\n"
-            "  active id:   {id}".format(
-                expected=expected,
-                name=active["name"],
-                id=active["id"],
-            ),
+            "ERROR: cannot switch to the requested Azure subscription without logging in.\n"
+            f"  requested:   {expected}\n"
+            f"  active name: {active['name']}\n"
+            f"  active id:   {active['id']}\n"
+            f"Run `az login` (then `az account set --subscription {expected}`), "
+            "or use `az-login dev|prod`, and retry.",
             file=sys.stderr,
         )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
         sys.exit(2)
+
+    try:
+        run_az(["account", "set", "--subscription", expected], capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        print(
+            f"ERROR: `az account set --subscription {expected}` failed.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    print(f"switched active Azure subscription: {active['name']} -> {expected}")
 
 
 def list_accounts() -> None:
@@ -329,7 +360,7 @@ def download_blob(
         except subprocess.CalledProcessError as exc:
             last_stderr = (exc.stderr or "").strip()
             if attempt < retries:
-                backoff = min(2 ** attempt, 30)
+                backoff = min(2**attempt, 30)
                 print(
                     "  transient error on az://{c}/{b} "
                     "(attempt {a}/{r}); retrying in {s}s".format(
@@ -410,7 +441,9 @@ def download_recursive(
 
     stripped_prefix = prefix.strip("/")
     total = len(real_blobs)
-    print(f"Downloading {total} file(s) ({workers} worker{'s' if workers != 1 else ''})")
+    print(
+        f"Downloading {total} file(s) ({workers} worker{'s' if workers != 1 else ''})"
+    )
 
     counts = {"downloaded": 0, "skipped": 0}
     failures: List[str] = []
@@ -420,7 +453,7 @@ def download_recursive(
     def handle_one(blob: dict) -> Tuple[str, str]:
         blob_name = blob["name"]
         rel_path = (
-            blob_name[len(stripped_prefix):].lstrip("/")
+            blob_name[len(stripped_prefix) :].lstrip("/")
             if stripped_prefix
             else blob_name
         )
@@ -536,7 +569,7 @@ def main() -> None:
         sys.exit(2)
 
     if args.subscription:
-        verify_subscription(args.subscription)
+        ensure_subscription(args.subscription)
 
     storage_account, targets = resolve_inputs(args)
     args.output_dir.mkdir(parents=True, exist_ok=True)
