@@ -1,4 +1,4 @@
-New session: `tmux new -s default`
+New (or join) session: `tmux new -As default`
 
 *Core prefix*
 - `Ctrl-b` (default)
