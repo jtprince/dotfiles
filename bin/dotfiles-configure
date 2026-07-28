@@ -179,6 +179,11 @@ ENSURE_DIRS_LINUX = [
 GIT_FILTERS: dict[str, str] = {
     "claude-settings.clean": 'jq "del(.model)"',
     "codex-config.clean": "python3 config/codex/clean-config.py",
+    # `required` guards the clean side so machine-local state can never slip
+    # into the object store silently. It also makes git refuse to smudge unless
+    # a command exists, which breaks any checkout/merge touching config.toml —
+    # so declare an explicit pass-through for the smudge direction.
+    "codex-config.smudge": "cat",
     "codex-config.required": "true",
 }
 
