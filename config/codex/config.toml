@@ -2,6 +2,7 @@ approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 
 notify = ["/Users/johnprince/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended", "--previous-notify", "[\"kitty-agent-attention\"]"]
+model_reasoning_effort = "xhigh"
 
 [features]
 hooks = true

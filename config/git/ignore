@@ -19,3 +19,6 @@ __pycache__
 pyrightconfig.json
 
 **/.claude/settings.local.json
+
+.serena
+.tokensave

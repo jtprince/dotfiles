@@ -7,9 +7,10 @@ Protect work first: `tmux new -As work`
 - Note the exact message and elapsed time
 
 *Client*
-- Connect: `vm-manage ssh john-highmem`
-- Keepalives: `ServerAliveInterval=30`, `ServerAliveCountMax=6`, `TCPKeepAlive=yes`
-- Debug once: add `-vvv` after the `az ssh vm ... --`
+- Connect: `az-ssh john-highmem`
+- Kitty terminfo on connect: `az-ssh --inject-kitty-terminfo john-highmem`
+- Keepalives: `ServerAliveInterval=60`, `ServerAliveCountMax=120` (see `AZ_SSH_SERVER_ALIVE_INTERVAL`/`AZ_SSH_SERVER_ALIVE_COUNT_MAX`)
+- Debug once: add `-vvv` after the host, e.g. `az-ssh john-highmem -vvv`
 - Keepalives prevent idle expiry; they cannot survive a TCP reset
 
 *Remote: inspect after reconnect*

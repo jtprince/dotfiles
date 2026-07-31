@@ -285,8 +285,26 @@ _az_refresh_cfg() {
 }
 
 az-ssh() {
-  local host cfg
-  host="$(_az_extract_ssh_host "$@")" || {
+  local host cfg use_kitty=0 kitty_forced=""
+  local -a args
+  args=("$@")
+
+  if (( ${args[(I)--inject-kitty-terminfo]} )); then
+    kitty_forced=1
+    args=("${(@)args:#--inject-kitty-terminfo}")
+  elif (( ${args[(I)--no-kitty-terminfo]} )); then
+    kitty_forced=0
+    args=("${(@)args:#--no-kitty-terminfo}")
+  fi
+
+  if [[ -n "$kitty_forced" ]]; then
+    use_kitty=$kitty_forced
+  elif [[ -n "$KITTY_WINDOW_ID" && -t 0 ]] && command -v kitty >/dev/null 2>&1; then
+    # Already inside an interactive kitty window: inject terminfo by default.
+    use_kitty=1
+  fi
+
+  host="$(_az_extract_ssh_host "${args[@]}")" || {
     printf 'az-ssh: could not determine host\n' >&2
     return 2
   }
@@ -298,12 +316,27 @@ az-ssh() {
   }
 
   cfg="$(_az_refresh_cfg "$host")" || return 1
-  command ssh \
-    -o IdentitiesOnly=yes \
-    -o ServerAliveInterval="${_az_ssh_keepalive_interval}" \
-    -o ServerAliveCountMax="${_az_ssh_keepalive_countmax}" \
-    -F "$cfg" \
-    "$@"
+
+  if (( use_kitty )); then
+    command -v kitty >/dev/null 2>&1 || {
+      printf 'az-ssh: kitty not found on PATH\n' >&2
+      return 127
+    }
+    [[ -n "$KITTY_WINDOW_ID" ]] || printf 'az-ssh: warning: not inside a kitty window; terminfo injection needs the local terminal to be kitty\n' >&2
+    kitty +kitten ssh \
+      -o IdentitiesOnly=yes \
+      -o ServerAliveInterval="${_az_ssh_keepalive_interval}" \
+      -o ServerAliveCountMax="${_az_ssh_keepalive_countmax}" \
+      -F "$cfg" \
+      "${args[@]}"
+  else
+    command ssh \
+      -o IdentitiesOnly=yes \
+      -o ServerAliveInterval="${_az_ssh_keepalive_interval}" \
+      -o ServerAliveCountMax="${_az_ssh_keepalive_countmax}" \
+      -F "$cfg" \
+      "${args[@]}"
+  fi
 }
 
 az-scp() {
