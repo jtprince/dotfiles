@@ -12,6 +12,13 @@ import shutil
 import tempfile
 import re
 
+
+def get_utar_cache_dir():
+    xdg_cache = os.environ.get('XDG_CACHE_HOME', os.path.expanduser('~/.cache'))
+    utar_cache = os.path.join(xdg_cache, 'utar')
+    os.makedirs(utar_cache, exist_ok=True)
+    return utar_cache
+
 # Mapping of file extensions to their extraction commands.
 # Based on dtrx.py logic but simplified.
 # (Command, IsContainer)
@@ -82,7 +89,7 @@ def extract_file(filename):
             return False
 
     # Container: extract to a temp dir, then decide final layout
-    tmp_dir = tempfile.mkdtemp(prefix='.dtrx-')
+    tmp_dir = tempfile.mkdtemp(prefix='.dtrx-', dir=get_utar_cache_dir())
     try:
         # Some commands (like tar) can take the filename as last arg,
         # others (unzip, 7z, unrar) also usually work this way or need flags.
