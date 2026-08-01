@@ -62,7 +62,6 @@ CONFIG_GENERAL = [
     "sheldon",
     "spotify-player",
     "starship.toml",
-    "uv",
     "zsh",
     "mpv",
 ]
@@ -71,6 +70,7 @@ CONFIG_MAC = [
     "mac/amethyst",
     "mac/karabiner",
     "mac/osascript",
+    "mac/uv",
 ]
 
 CONFIG_LINUX = [
@@ -97,6 +97,7 @@ CONFIG_LINUX = [
     # "linux/tofi",
     # "linux/waybar",
     # "linux/xmodmap",
+    "linux/uv",
 ]
 
 # ---------------------------------------------------------------------------
