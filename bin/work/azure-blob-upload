@@ -71,7 +71,10 @@ def parse_args() -> argparse.Namespace:
         "-d",
         "--upload-dir",
         required=True,
-        help="Remote path prefix in the container, e.g. input/batch01-ms1-context-only",
+        help=(
+            "Remote path prefix in the container, e.g. input/batch01-ms1-context-only. "
+            "Leading/trailing/repeated slashes are ignored."
+        ),
     )
     parser.add_argument(
         "--glob",
@@ -182,6 +185,23 @@ def ensure_subscription(expected: str) -> None:
     print(f"switched active Azure subscription: {active['name']} -> {expected}")
 
 
+def normalize_prefix(upload_dir: str) -> str:
+    """Drop empty path segments from the remote prefix.
+
+    Blob names are opaque strings, not filesystem paths: a trailing slash on
+    --upload-dir yields "prefix//name", which is a *different* blob from
+    "prefix/name" and shows up as an empty directory level in most tooling.
+    Tab-completing a local directory name makes that trailing slash easy to
+    pass by accident, so normalize instead of trusting the input.
+    """
+    return "/".join(part for part in upload_dir.split("/") if part)
+
+
+def blob_name_for(prefix: str, local_file: Path) -> str:
+    """Remote blob name for a local file; uploads are flattened to basename."""
+    return f"{prefix}/{local_file.name}" if prefix else local_file.name
+
+
 def resolve_input_files(args: argparse.Namespace) -> list[Path]:
     resolved: list[Path] = []
     errors: list[str] = []
@@ -274,7 +294,7 @@ def upload_blob(
     target_path: str,
 ) -> str:
     """Upload a single file to Azure Blob Storage using the az CLI."""
-    blob_name = f"{target_path}/{local_file.name}"
+    blob_name = blob_name_for(target_path, local_file)
     try:
         subprocess.run(
             [
@@ -315,6 +335,8 @@ def main() -> None:
         print("ERROR: --workers must be >= 1", file=sys.stderr)
         sys.exit(2)
 
+    args.upload_dir = normalize_prefix(args.upload_dir)
+
     ensure_subscription(args.subscription)
     files = resolve_input_files(args)
 
@@ -326,10 +348,12 @@ def main() -> None:
         existing = list_existing_blobs(
             args.storage_account, args.container, args.upload_dir
         )
-        skip_count = sum(1 for f in files if f"{args.upload_dir}/{f.name}" in existing)
+        skip_count = sum(
+            1 for f in files if blob_name_for(args.upload_dir, f) in existing
+        )
         if skip_count:
             print(f"Skipping {skip_count} already-uploaded file(s).")
-        files = [f for f in files if f"{args.upload_dir}/{f.name}" not in existing]
+        files = [f for f in files if blob_name_for(args.upload_dir, f) not in existing]
         if not files:
             print("All files already uploaded. Nothing to do.")
             return
