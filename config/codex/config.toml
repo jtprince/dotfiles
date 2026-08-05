@@ -43,7 +43,6 @@ startup_timeout_sec = 120
 NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
 NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
 NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
-NODE_REPL_TRUSTED_CODE_PATHS = "/Users/johnprince/.codex"
 CODEX_HOME = "/Users/johnprince/.codex"
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
@@ -97,7 +96,6 @@ enabled = true
 
 [shell_environment_policy.set]
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
-NODE_REPL_TRUSTED_CODE_PATHS = "/Users/johnprince/.codex"
 
 [desktop]
 conversationDetailMode = "STEPS_COMMANDS"
