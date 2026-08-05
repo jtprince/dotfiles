@@ -4,6 +4,7 @@ set -euo pipefail
 # --- Config ---
 DEFAULT_VM_NAME="jtprince-32-256"
 RESOURCE_GROUP="data-science-dev-ncus-rg-01"
+SUBSCRIPTION="${VM_MANAGE_SUBSCRIPTION:-sub-enveda-data-dev-01}"
 
 VM_NAME="${2:-$DEFAULT_VM_NAME}"
 
@@ -22,6 +23,7 @@ power_state() {
   az vm get-instance-view \
     --resource-group "$RESOURCE_GROUP" \
     --name "$VM_NAME" \
+    --subscription "$SUBSCRIPTION" \
     --query "instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus | [0]" \
     -o tsv 2>/dev/null || true
 }
@@ -81,26 +83,26 @@ fi
 case "${1:-}" in
   start)
     log "Starting VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    az vm start --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
+    az vm start --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --subscription "$SUBSCRIPTION" >/dev/null
     wait_for_state "VM running" 600
     ;;
 
   stop)
     log "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
     # 'deallocate' is enough; it transitions to 'VM deallocated'
-    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
+    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --subscription "$SUBSCRIPTION" >/dev/null
     wait_for_state "VM deallocated" 900
     ;;
 
   stop-only)
     log "Powering off (NOT deallocating) VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
-    az vm stop --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
+    az vm stop --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --subscription "$SUBSCRIPTION" >/dev/null
     wait_for_state "VM stopped" 600
     ;;
 
   deallocate)
     log "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
-    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" >/dev/null
+    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --subscription "$SUBSCRIPTION" >/dev/null
     wait_for_state "VM deallocated" 900
     ;;
 
@@ -109,11 +111,13 @@ case "${1:-}" in
     az vm get-instance-view \
       --resource-group "$RESOURCE_GROUP" \
       --name "$VM_NAME" \
+      --subscription "$SUBSCRIPTION" \
       --query "instanceView.statuses[?code!='ProvisioningState/succeeded'].{Status:displayStatus}" \
       --output table
     az vm list-ip-addresses \
       --resource-group "$RESOURCE_GROUP" \
       --name "$VM_NAME" \
+      --subscription "$SUBSCRIPTION" \
       --query "[].{PublicIP:virtualMachine.network.publicIpAddresses[0].ipAddress, PrivateIP:virtualMachine.network.privateIpAddresses[0]}" \
       --output table
     ;;
