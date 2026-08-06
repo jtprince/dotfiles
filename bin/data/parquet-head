@@ -3,7 +3,7 @@
 //! [dependencies]
 //! clap = { version = "4", features = ["derive"] }
 //! parquet = "53"
-//! arrow = "53"
+//! arrow = { version = "53", features = ["chrono-tz"] }
 //! serde_json = "1"
 //! ```
 
