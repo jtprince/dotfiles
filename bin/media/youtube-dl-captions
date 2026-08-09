@@ -6,7 +6,13 @@ import subprocess
 import re
 
 # pip install webvtt-py
-import webvtt
+try:
+    import webvtt
+except ModuleNotFoundError:
+    print("Couldn't find webvtt")
+    print("pip install webvtt-py")
+    print('uv pip install --python "$PYTHON_GLOBAL_VENV" pandas')
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("url", help="The YouTube URL")
