@@ -2,6 +2,9 @@
 
 require 'shellwords'
 
+# a place to start for errors:
+# yay -S texlive-fontsrecommended texlive-latexrecommended texlive-pictures texlive-binextra
+
 templates_dir = "#{Dir.home}/.local/share/pandoc/templates"
 tex_header = "#{templates_dir}/head.tex"
 
