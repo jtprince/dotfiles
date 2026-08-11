@@ -2,8 +2,39 @@
 
 require 'shellwords'
 
-# a place to start for errors:
-# yay -S texlive-fontsrecommended texlive-latexrecommended texlive-pictures texlive-binextra
+# =============================================================================
+# markdown-to-pdf: render markdown to PDF via pandoc + xelatex.
+#
+# The output is intended to look IDENTICAL on macOS and Linux, so the same
+# font files are used on both platforms (same OTF/TTF, same rendering).
+# The macOS system fonts (Helvetica Neue, Menlo) are NOT used, because they
+# do not exist on Linux and would silently change the look there.
+#
+# Fonts used:
+#   main  -> STIX Two Text
+#   sans  -> Liberation Sans
+#   mono  -> DejaVu Sans Mono
+#
+# Packages needed on each platform:
+#
+#   Linux (Arch/Manjaro):
+#     yay -S otf-stix ttf-liberation ttf-dejavu
+#     yay -S texlive-bin texlive-basic texlive-latex texlive-latexrecommended \
+#            texlive-fontsrecommended texlive-pictures
+#     yay -S texlive-latexextra     # provides tcolorbox.sty (head.tex dep)
+######################################## WARNING ########################################
+#     texlive-latexextra is ~118MB installed. tcolorbox is needed by head.tex.
+##########################################################################################
+#
+#   macOS (Homebrew):
+#     brew tap homebrew/cask-fonts
+#     brew install --cask font-stix-two-text font-liberation font-dejavu
+#     brew install --cask mactex      # provides xelatex (or basictex + xetex)
+#     if using basictex: tlmgr install latexmk fontspec tcolorbox newunicodechar
+#     if using full mactex, tcolorbox is included.
+#
+# xelatex must be on PATH. Test with:  fc-list | grep -i stix
+# =============================================================================
 
 templates_dir = "#{Dir.home}/.local/share/pandoc/templates"
 tex_header = "#{templates_dir}/head.tex"
@@ -11,7 +42,11 @@ tex_header = "#{templates_dir}/head.tex"
 # --smart gets me proper curly quotes and apostrophes!
 # but they will not look right unless --standalone is also used
 
-default_options = "-f markdown+smart --standalone -H #{tex_header} -V geometry:margin=1.25in -V fontsize=12pt -V mainfont='STIX Two Text' -V sansfont='Helvetica Neue' -V monofont='Menlo' --variable urlcolor=NavyBlue --pdf-engine=xelatex"
+mainfont = "STIX Two Text"
+sansfont = "Liberation Sans"
+monofont = "DejaVu Sans Mono"
+
+default_options = "-f markdown+smart --standalone -H #{tex_header} -V geometry:margin=1.25in -V fontsize=12pt -V mainfont='#{mainfont}' -V sansfont='#{sansfont}' -V monofont='#{monofont}' --variable urlcolor=NavyBlue --pdf-engine=xelatex"
 # default_options = "-f markdown+smart --standalone -H #{tex_header} -V geometry:margin=1.25in -V fontsize=12pt --variable urlcolor=NavyBlue --pdf-engine=xelatex"
 # default_options = "-f markdown+smart --standalone -H #{tex_header} -V geometry:margin=1.25in -V fontsize=12pt --variable urlcolor=NavyBlue --pdf-engine=xelatex --toc --toc-depth=2 --verbose"
 
