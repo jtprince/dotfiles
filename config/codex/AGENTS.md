@@ -1,5 +1,12 @@
 # Global directives
 
+## Slack-formatted Markdown
+
+- When producing Slack-flavored Markdown, format links as standard Markdown:
+  `[descriptive English text](URL)`.
+- Never use angle-bracket link syntax such as `<URL>` or `<URL|label>`.
+- Use a bare URL only when displaying the URL itself is useful.
+
 ## Git write policy
 
 Do **not** run `git commit`, `git push`, or outward publishing (`gh pr create`,
