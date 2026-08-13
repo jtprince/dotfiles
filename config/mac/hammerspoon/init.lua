@@ -73,12 +73,6 @@ end)
 
 
 
--- GUI Editor
-hs.hotkey.bind(alt, "G", function()
-	hs.alert.show("Opening Vimr")
-	sh([[open -a VimR]])
-end)
-
 -- Terminals
 hs.hotkey.bind(alt, "X", function()
 	sh([[open -a "kitty"]])
@@ -88,95 +82,167 @@ hs.hotkey.bind(alt_shift, "X", function()
 	sh([[open -na "kitty"]])
 end)
 
--- Quick TODO overlay
-local TODO_OVERLAY_TITLE = "TODO Overlay"
-local ALACRITTY_BIN = "/Applications/Alacritty.app/Contents/MacOS/alacritty"
-local ALACRITTY_BUNDLE_ID = "org.alacritty"
+----------------------------------------------------------------------
+-- 🪟 Floating overlay apps (toggle-able, positioned scratch windows)
+----------------------------------------------------------------------
+--
+-- Uses a dedicated Alacritty clone (~/Applications/AlacrittyFloat.app,
+-- bundle id "org.alacritty.floating") so that ONLY windows launched
+-- through this helper float in Amethyst — regular Alacritty windows
+-- keep tiling normally. See amethyst.yml's `floating:` list, which
+-- whitelists "org.alacritty.floating" (not "org.alacritty").
 local NVIM_BIN = "/opt/homebrew/bin/nvim"
-local todoOverlayTask
-local todoOverlayWindowRef
+local ALACRITTY_FLOAT_BIN = home .. "/Applications/AlacrittyFloat.app/Contents/MacOS/alacritty"
+local ALACRITTY_FLOAT_BUNDLE_ID = "org.alacritty.floating"
 
-local function todoOverlayWindow()
-	if todoOverlayWindowRef and todoOverlayWindowRef:title() == TODO_OVERLAY_TITLE then
-		return todoOverlayWindowRef
-	end
+-- Builds a toggle function for a floating scratch terminal running a single
+-- command, identified by its (unique) window title. Each call returns an
+-- independent toggler with its own window/task state, so you can bind many
+-- of these to different hotkeys.
+--
+-- opts, one of:
+--   title, args   (string, table)  static window title + alacritty CLI args,
+--                                  e.g. args = {"-e", NVIM_BIN, file}
+--   launch()      (function)      called fresh each time a NEW window needs
+--                                  to be created (not on show/hide of an
+--                                  existing one); must return title, args.
+--                                  Use this when each cold-launch should get
+--                                  distinct state (e.g. a new dated file).
+--
+-- plus, either way:
+--   widthFrac   (number)  fraction of screen width  (default 0.4)
+--   heightFrac  (number)  fraction of screen height (default 0.6)
+--   yOffset     (number)  px from top of screen, below menu bar (default 20)
+local function makeFloatingOverlayToggle(opts)
+	local widthFrac = opts.widthFrac or 0.4
+	local heightFrac = opts.heightFrac or 0.6
+	local yOffset = opts.yOffset or 20
 
-	-- Alacritty's process name is lowercase ("alacritty"), so match by
-	-- bundle ID instead of app name (window filters key off app name).
-	for _, app in ipairs(hs.application.applicationsForBundleID(ALACRITTY_BUNDLE_ID)) do
-		for _, window in ipairs(app:allWindows()) do
-			if window:title() == TODO_OVERLAY_TITLE then
-				return window
+	local task
+	local windowRef
+	local currentTitle = opts.title
+
+	local function findWindow()
+		if not currentTitle then
+			return nil
+		end
+		if windowRef and windowRef:title() == currentTitle then
+			return windowRef
+		end
+
+		-- Match by bundle ID, not app/process name: Alacritty's process
+		-- name is lowercase ("alacritty"), and window filters key off name.
+		for _, app in ipairs(hs.application.applicationsForBundleID(ALACRITTY_FLOAT_BUNDLE_ID)) do
+			for _, window in ipairs(app:allWindows()) do
+				if window:title() == currentTitle then
+					return window
+				end
 			end
 		end
 	end
-end
 
-local function positionTodoOverlay(window)
-	local screen = window:screen()
-	local frame = screen:frame()
+	local function positionWindow(window)
+		local frame = window:screen():frame()
+		local width = math.floor(frame.w * widthFrac)
+		local height = math.floor(frame.h * heightFrac)
 
-	local width = math.floor(frame.w * 0.4)
-	local height = math.floor(frame.h * 0.6)
+		window:setFrame({
+			x = frame.x + math.floor((frame.w - width) / 2),
+			y = frame.y + yOffset,
+			w = width,
+			h = height,
+		})
+	end
 
-	window:setFrame({
-		x = frame.x + math.floor((frame.w - width) / 2),
-		-- right below the menu bar with a little buffer (20)
-		y = frame.y + 20,
-		w = width,
-		h = height,
-	})
-end
+	return function()
+		local window = findWindow()
+		if window then
+			if window:isVisible() then
+				window:application():hide()
+			else
+				window:application():unhide()
+				window:focus()
+			end
+			return
+		end
 
-local function toggleTodoOverlay()
-	local window = todoOverlayWindow()
-	if window then
-		if window:isVisible() then
-			window:application():hide()
+		local title, args
+		if opts.launch then
+			title, args = opts.launch()
 		else
-			window:application():unhide()
-			window:focus()
+			title, args = opts.title, opts.args
 		end
-		return
-	end
+		currentTitle = title
 
-	local todoFile = home .. "/work/TODO.md"
-	todoOverlayTask = hs.task.new(ALACRITTY_BIN, nil, {
-		"--title",
-		TODO_OVERLAY_TITLE,
-		"-o",
-		"window.dynamic_title=false",
-		"-e",
-		NVIM_BIN,
-		todoFile,
-	})
-	todoOverlayTask:start()
+		task = hs.task.new(ALACRITTY_FLOAT_BIN, nil, {
+			"--title",
+			title,
+			"-o",
+			"window.dynamic_title=false",
+			table.unpack(args),
+		})
+		task:start()
 
-	-- Alacritty starts asynchronously; poll briefly for its new window.
-	local attempts = 0
-	local timer
-	timer = hs.timer.doEvery(0.1, function()
-		attempts = attempts + 1
-		local newWindow = todoOverlayWindow()
-		if not newWindow and todoOverlayTask then
-			local application = hs.application.get(todoOverlayTask:pid())
-			if application then
-				newWindow = application:allWindows()[1]
+		-- Alacritty starts asynchronously; poll briefly for its new window.
+		local attempts = 0
+		local timer
+		timer = hs.timer.doEvery(0.1, function()
+			attempts = attempts + 1
+			local newWindow = findWindow()
+			if not newWindow and task then
+				local application = hs.application.get(task:pid())
+				if application then
+					newWindow = application:allWindows()[1]
+				end
 			end
-		end
-		if newWindow then
-			todoOverlayWindowRef = newWindow
-			timer:stop()
-			positionTodoOverlay(newWindow)
-			newWindow:focus()
-		end
-		if attempts >= 20 then
-			timer:stop()
-		end
-	end)
+			if newWindow then
+				windowRef = newWindow
+				timer:stop()
+				positionWindow(newWindow)
+				newWindow:focus()
+			end
+			if attempts >= 20 then
+				timer:stop()
+			end
+		end)
+	end
 end
+
+-- Quick TODO overlay (Alt+T)
+local toggleTodoOverlay = makeFloatingOverlayToggle({
+	title = "TODO Overlay",
+	args = { "-e", NVIM_BIN, home .. "/work/TODO.md" },
+	widthFrac = 0.4,
+	heightFrac = 0.6,
+	yOffset = 20,
+})
 
 hs.hotkey.bind(alt, "T", toggleTodoOverlay)
+
+-- Scratch pad overlay (Alt+G): each cold-launch creates a fresh, timestamped
+-- markdown file so old scratch sessions are never overwritten and stay
+-- around to refer back to later.
+local SCRATCH_DIR = home .. "/tmp/scratch"
+
+local function newScratchFile()
+	hs.execute(string.format("/bin/mkdir -p '%s'", SCRATCH_DIR))
+	local stamp = hs.execute("/bin/date '+%Y-%m-%dT%H-%M-%S'"):gsub("%s+$", "")
+	local path = SCRATCH_DIR .. "/" .. stamp .. "-scratch.md"
+	hs.execute(string.format("/usr/bin/touch '%s'", path))
+	return stamp .. "-scratch.md", path
+end
+
+local toggleScratchOverlay = makeFloatingOverlayToggle({
+	launch = function()
+		local title, path = newScratchFile()
+		return title, { "-e", NVIM_BIN, path }
+	end,
+	widthFrac = 0.5,
+	heightFrac = 0.7,
+	yOffset = 20,
+})
+
+hs.hotkey.bind(alt, "G", toggleScratchOverlay)
 
 ----------------------------------------------------------------------
 -- 🎵 Media Controls  (via your run-osascript helpers)
