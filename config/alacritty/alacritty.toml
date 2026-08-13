@@ -7,7 +7,7 @@ cursor = "#FF7F00"
 text = "#2c2c2c"
 
 [font]
-size = 13.0
+size = 17.0
 
 [font.normal]
 family = "MesloLGS Nerd Font"

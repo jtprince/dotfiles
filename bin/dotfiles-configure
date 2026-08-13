@@ -51,6 +51,7 @@ class Symlink:
 # ---------------------------------------------------------------------------
 
 CONFIG_GENERAL = [
+    "alacritty",
     "cheat",
     "cmux",
     "cursor-agent",

@@ -113,14 +113,16 @@ local function todoOverlayWindow()
 end
 
 local function positionTodoOverlay(window)
-	local screen = hs.mouse.getCurrentScreen()
+	local screen = window:screen()
 	local frame = screen:frame()
-	local width = math.floor(frame.w * 0.8)
-	local height = math.floor(frame.h * 0.8)
+
+	local width = math.floor(frame.w * 0.4)
+	local height = math.floor(frame.h * 0.6)
 
 	window:setFrame({
 		x = frame.x + math.floor((frame.w - width) / 2),
-		y = frame.y + math.floor((frame.h - height) / 2),
+		-- right below the menu bar with a little buffer (20)
+		y = frame.y + 20,
 		w = width,
 		h = height,
 	})
@@ -273,7 +275,7 @@ hs.hotkey.bind(hyper_shift, "K", function()
 	run_gvim(home .. "/dotfiles/config/hammerspoon/init.lua")
 end)
 
--- Formerly "Restart skhd" – now: reload Hammerspoon
+-- reload Hammerspoon
 hs.hotkey.bind(alt_shift, "U", function()
 	hs.reload()
 end)
