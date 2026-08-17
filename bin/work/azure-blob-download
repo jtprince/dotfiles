@@ -44,6 +44,9 @@ Examples:
 
     # just list visible storage accounts
     uv run azure-blob-download --list-accounts
+
+To test against real Azure without risk, use the sandbox location and
+worked examples documented in bin/work/azure-testing.md.
 """
 
 from __future__ import annotations

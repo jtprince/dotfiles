@@ -25,6 +25,9 @@ Examples:
         --subscription sub-enveda-data-dev-01 \
         --storage-account miscdevncus01 \
         "az://user-junk-365d-delete/ckrettle/"
+
+To test against real Azure without risk, use the sandbox location and
+worked examples documented in bin/work/azure-testing.md.
 """
 
 from __future__ import annotations

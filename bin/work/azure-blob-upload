@@ -19,6 +19,9 @@ Examples:
         --upload-dir input/batch01-ms1-context-only \
         ~/projects/prism2-data-prepper/output/MSB104409_MSB104410.prism2input.parquet \
         ~/projects/prism2-data-prepper/output/MSB104401_MSB104402.prism2input.parquet
+
+To test against real Azure without risk, use the sandbox location and
+worked examples documented in bin/work/azure-testing.md.
 """
 
 from __future__ import annotations

@@ -1,0 +1,462 @@
+#!/usr/bin/env python3
+"""Rename (copy + verify + delete) blobs in Azure Blob Storage.
+
+There is no atomic rename in blob storage, so this does a server-side copy,
+polls until it completes, verifies the destination size matches the source,
+and only then deletes the source. A source blob is never deleted unless its
+destination copy is proven complete and byte-identical in size.
+
+To test against real Azure without risk, use the sandbox location and
+worked examples documented in bin/work/azure-testing.md.
+
+Input is pairs of `az://...` URLs, one pair per line, space separated:
+
+    az://container/path/to/a.ext az://container2/path/to/b.ext
+
+Blank lines and lines starting with `#` are ignored. Read from a file
+argument, or from stdin if no file is given.
+
+Examples:
+
+    # from a file
+    uv run azure-blob-rename \
+        --subscription sub-enveda-data-dev-01 \
+        --storage-account miscdevncus01 \
+        pairs.txt
+
+    # from stdin
+    echo "az://user-junk-365d-delete/a.txt az://user-junk-365d-delete/b.txt" | \
+        uv run azure-blob-rename --storage-account miscdevncus01
+
+    # preview only, no Azure calls
+    uv run azure-blob-rename --storage-account miscdevncus01 --dry-run pairs.txt
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from urllib.parse import urlparse
+
+DEFAULT_POLL_ATTEMPTS = 30
+POLL_INITIAL_DELAY = 1.0
+POLL_MAX_DELAY = 10.0
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Rename blobs in Azure Blob Storage (copy, verify, then delete source).",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument(
+        "-s",
+        "--subscription",
+        help=(
+            "Azure subscription name or id to use; switched via `az account set` "
+            "if it isn't already active."
+        ),
+    )
+    parser.add_argument(
+        "-a",
+        "--storage-account",
+        required=True,
+        help="Azure storage account name. Both sides of every rename live in this account.",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=8,
+        metavar="N",
+        help="Concurrent rename workers (default: 8). Use 1 for sequential.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Parse and validate pairs, print the planned renames, and exit. No Azure calls.",
+    )
+    parser.add_argument(
+        "file",
+        nargs="?",
+        type=Path,
+        help="File of 'pathA pathB' pairs, one per line. Reads stdin if omitted.",
+    )
+    return parser.parse_args()
+
+
+def run_az(cmd: list[str], capture_output: bool = False) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["az"] + cmd,
+        check=True,
+        capture_output=capture_output,
+        text=True,
+    )
+
+
+def get_active_subscription() -> dict[str, str]:
+    try:
+        proc = run_az(["account", "show", "-o", "json"], capture_output=True)
+    except FileNotFoundError:
+        print("ERROR: `az` CLI not found in PATH.", file=sys.stderr)
+        sys.exit(2)
+    except subprocess.CalledProcessError as exc:
+        print(
+            "ERROR: failed to run `az account show` (likely not logged in).\n"
+            "Run `az login`, or `az-login dev|prod`, and retry.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        print("ERROR: could not parse output from `az account show`.", file=sys.stderr)
+        sys.exit(2)
+
+    return {
+        "name": str(data.get("name", "")),
+        "id": str(data.get("id", "")),
+    }
+
+
+def ensure_subscription(expected: str) -> None:
+    """Make `expected` the active subscription, switching without a login if possible."""
+    active = get_active_subscription()
+    if expected in {active["name"], active["id"]}:
+        return
+
+    try:
+        run_az(
+            ["account", "get-access-token", "--subscription", expected],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(
+            "ERROR: cannot switch to the requested Azure subscription without logging in.\n"
+            f"  requested:   {expected}\n"
+            f"  active name: {active['name']}\n"
+            f"  active id:   {active['id']}\n"
+            f"Run `az login` (then `az account set --subscription {expected}`), "
+            "or use `az-login dev|prod`, and retry.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        run_az(["account", "set", "--subscription", expected], capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        print(
+            f"ERROR: `az account set --subscription {expected}` failed.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    print(f"switched active Azure subscription: {active['name']} -> {expected}")
+
+
+def is_az_url(value: str) -> bool:
+    return value.startswith("az://")
+
+
+def parse_az_url(url: str) -> tuple[str, str]:
+    parsed = urlparse(url)
+    if parsed.scheme != "az":
+        raise ValueError(f"expected az:// URL, got: {url}")
+    container = parsed.netloc
+    blob_path = parsed.path.lstrip("/")
+    if not container:
+        raise ValueError(f"missing container in URL: {url}")
+    if not blob_path:
+        raise ValueError(f"missing blob path in URL: {url}")
+    return container, blob_path
+
+
+class RenamePair:
+    __slots__ = ("line_no", "src_url", "dst_url", "src_container", "src_blob", "dst_container", "dst_blob")
+
+    def __init__(self, line_no: int, src_url: str, dst_url: str) -> None:
+        self.line_no = line_no
+        self.src_url = src_url
+        self.dst_url = dst_url
+        self.src_container, self.src_blob = parse_az_url(src_url)
+        self.dst_container, self.dst_blob = parse_az_url(dst_url)
+
+
+def parse_pairs(lines: list[str]) -> list[RenamePair]:
+    pairs: list[RenamePair] = []
+    errors: list[str] = []
+    for line_no, raw in enumerate(lines, start=1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split()
+        if len(parts) != 2:
+            errors.append(f"line {line_no}: expected 'pathA pathB', got: {raw!r}")
+            continue
+        src_url, dst_url = parts
+        if not is_az_url(src_url) or not is_az_url(dst_url):
+            errors.append(f"line {line_no}: both paths must be az:// URLs: {raw!r}")
+            continue
+        if src_url == dst_url:
+            errors.append(f"line {line_no}: source and destination are identical: {src_url}")
+            continue
+        try:
+            pairs.append(RenamePair(line_no, src_url, dst_url))
+        except ValueError as exc:
+            errors.append(f"line {line_no}: {exc}")
+
+    if errors:
+        for error in errors:
+            print(f"ERROR: {error}", file=sys.stderr)
+        sys.exit(2)
+
+    if not pairs:
+        print("ERROR: no rename pairs to process.", file=sys.stderr)
+        sys.exit(1)
+
+    return pairs
+
+
+def read_input_lines(file: Path | None) -> list[str]:
+    if file is None:
+        return sys.stdin.readlines()
+    try:
+        return file.read_text().splitlines()
+    except OSError as exc:
+        print(f"ERROR: could not read {file}: {exc}", file=sys.stderr)
+        sys.exit(2)
+
+
+class RenameError(Exception):
+    pass
+
+
+def blob_size(storage_account: str, container: str, blob_path: str) -> int | None:
+    """Return contentLength for a blob, or None if it doesn't exist."""
+    try:
+        proc = run_az(
+            [
+                "storage",
+                "blob",
+                "show",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--name",
+                blob_path,
+                "--auth-mode",
+                "login",
+                "--query",
+                "properties.contentLength",
+                "--output",
+                "tsv",
+            ],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError:
+        return None
+    value = proc.stdout.strip()
+    if not value:
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+
+def start_copy(storage_account: str, pair: RenamePair) -> None:
+    try:
+        run_az(
+            [
+                "storage",
+                "blob",
+                "copy",
+                "start",
+                "--account-name",
+                storage_account,
+                "--source-container",
+                pair.src_container,
+                "--source-blob",
+                pair.src_blob,
+                "--destination-container",
+                pair.dst_container,
+                "--destination-blob",
+                pair.dst_blob,
+                "--auth-mode",
+                "login",
+                "--output",
+                "none",
+            ],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        msg = f"failed to start copy {pair.src_url} -> {pair.dst_url}"
+        if exc.stderr:
+            msg += f"\n{exc.stderr.strip()}"
+        raise RenameError(msg) from exc
+
+
+def poll_copy_status(storage_account: str, pair: RenamePair) -> None:
+    """Poll destination copyStatus until success/failed/aborted, with backoff."""
+    delay = POLL_INITIAL_DELAY
+    for _ in range(DEFAULT_POLL_ATTEMPTS):
+        try:
+            proc = run_az(
+                [
+                    "storage",
+                    "blob",
+                    "show",
+                    "--account-name",
+                    storage_account,
+                    "--container-name",
+                    pair.dst_container,
+                    "--name",
+                    pair.dst_blob,
+                    "--auth-mode",
+                    "login",
+                    "--query",
+                    "properties.copy.status",
+                    "--output",
+                    "tsv",
+                ],
+                capture_output=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            msg = f"failed to poll copy status for {pair.dst_url}"
+            if exc.stderr:
+                msg += f"\n{exc.stderr.strip()}"
+            raise RenameError(msg) from exc
+
+        status = proc.stdout.strip()
+        if status == "success":
+            return
+        if status in {"failed", "aborted"}:
+            raise RenameError(f"copy {pair.src_url} -> {pair.dst_url} reported status: {status}")
+
+        time.sleep(delay)
+        delay = min(delay * 2, POLL_MAX_DELAY)
+
+    raise RenameError(
+        f"copy {pair.src_url} -> {pair.dst_url} did not complete after "
+        f"{DEFAULT_POLL_ATTEMPTS} polls"
+    )
+
+
+def delete_blob(storage_account: str, container: str, blob_path: str) -> None:
+    try:
+        run_az(
+            [
+                "storage",
+                "blob",
+                "delete",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--name",
+                blob_path,
+                "--auth-mode",
+                "login",
+                "--output",
+                "none",
+            ],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        msg = f"copy verified but failed to delete source {container}/{blob_path}"
+        if exc.stderr:
+            msg += f"\n{exc.stderr.strip()}"
+        raise RenameError(msg) from exc
+
+
+def rename_one(storage_account: str, pair: RenamePair) -> str:
+    """Copy, verify, then delete source. Never deletes unless copy is verified complete."""
+    src_size = blob_size(storage_account, pair.src_container, pair.src_blob)
+    if src_size is None:
+        raise RenameError(f"source not found: {pair.src_url}")
+
+    start_copy(storage_account, pair)
+    poll_copy_status(storage_account, pair)
+
+    dst_size = blob_size(storage_account, pair.dst_container, pair.dst_blob)
+    if dst_size != src_size:
+        raise RenameError(
+            f"size mismatch after copy {pair.src_url} -> {pair.dst_url}: "
+            f"source={src_size} dest={dst_size}. Source left in place."
+        )
+
+    # Only reachable once the destination is verified complete and correctly
+    # sized — this is the sole path that deletes the source blob.
+    delete_blob(storage_account, pair.src_container, pair.src_blob)
+    return f"{pair.src_url} -> {pair.dst_url}"
+
+
+def main() -> None:
+    args = parse_args()
+
+    if args.workers < 1:
+        print("ERROR: --workers must be >= 1", file=sys.stderr)
+        sys.exit(2)
+
+    lines = read_input_lines(args.file)
+    pairs = parse_pairs(lines)
+
+    if args.dry_run:
+        print(f"Dry run: {len(pairs)} rename(s) planned")
+        for pair in pairs:
+            print(f"  {pair.src_url} -> {pair.dst_url}")
+        return
+
+    if args.subscription:
+        ensure_subscription(args.subscription)
+
+    print(
+        f"Renaming {len(pairs)} blob(s) in {args.storage_account} "
+        f"({args.workers} worker{'s' if args.workers != 1 else ''})"
+    )
+
+    completed = 0
+    failures: list[str] = []
+    lock = threading.Lock()
+
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        futures = {pool.submit(rename_one, args.storage_account, pair): pair for pair in pairs}
+        for future in as_completed(futures):
+            pair = futures[future]
+            try:
+                result = future.result()
+            except RenameError as exc:
+                with lock:
+                    completed += 1
+                    failures.append(str(exc))
+                    print(f"[{completed}/{len(pairs)}] ✗ {pair.src_url}: {exc}", file=sys.stderr)
+                continue
+            with lock:
+                completed += 1
+                print(f"[{completed}/{len(pairs)}] ✓ {result}")
+
+    renamed = len(pairs) - len(failures)
+    print(f"\nDone: renamed {renamed} file(s), {len(failures)} failed.")
+
+    if failures:
+        print("Failures:", file=sys.stderr)
+        for msg in failures:
+            print(f"  {msg}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
