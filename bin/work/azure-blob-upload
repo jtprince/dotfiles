@@ -30,14 +30,11 @@ import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from glob import glob
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
-# NOTE: no --recursive/directory-tree upload today (files are flattened to
-# basename in upload_blob()), so this can't create or choke on zero-byte
-# Azure folder-marker blobs (trailing "/" names). If recursive upload is
-# ever added here, filter those out the way azure-blob-download's
-# download_recursive() does (skip names ending in "/") — that function's
-# git history has the bug this guards against.
+# Directory args are walked recursively and their relative structure (rooted
+# at the directory's own name) is preserved in the blob name. Explicit files
+# and --glob matches are still flattened to basename, matching prior behavior.
 
 
 def parse_args() -> argparse.Namespace:
@@ -102,7 +99,7 @@ def parse_args() -> argparse.Namespace:
         "files",
         nargs="*",
         type=Path,
-        help="Explicit local files to upload.",
+        help="Local files and/or directories to upload (directories are uploaded recursively).",
     )
     return parser.parse_args()
 
@@ -197,21 +194,42 @@ def normalize_prefix(upload_dir: str) -> str:
     return "/".join(part for part in upload_dir.split("/") if part)
 
 
-def blob_name_for(prefix: str, local_file: Path) -> str:
-    """Remote blob name for a local file; uploads are flattened to basename."""
-    return f"{prefix}/{local_file.name}" if prefix else local_file.name
+def blob_name_for(prefix: str, name: str) -> str:
+    """Remote blob name for a given relative name under prefix."""
+    return f"{prefix}/{name}" if prefix else name
 
 
-def resolve_input_files(args: argparse.Namespace) -> list[Path]:
-    resolved: list[Path] = []
+def _walk_directory(directory: Path) -> list[tuple[Path, str]]:
+    """Recursively collect files under directory, keeping its own name as root
+    of the relative path so the directory shows up as a subtree remotely."""
+    out: list[tuple[Path, str]] = []
+    for path in sorted(directory.rglob("*")):
+        if path.is_file():
+            rel = PurePosixPath(directory.name, *path.relative_to(directory).parts)
+            out.append((path.resolve(), str(rel)))
+    return out
+
+
+def resolve_input_files(args: argparse.Namespace) -> list[tuple[Path, str]]:
+    resolved: list[tuple[Path, str]] = []
     errors: list[str] = []
     seen: set[Path] = set()
 
-    # explicit files
+    # explicit files and directories
     for file_path in args.files:
         path = file_path.expanduser()
         if not path.exists():
-            errors.append(f"file not found: {path}")
+            errors.append(f"path not found: {path}")
+            continue
+        if path.is_dir():
+            entries = _walk_directory(path)
+            if not entries:
+                errors.append(f"directory has no files: {path}")
+                continue
+            for norm, name in entries:
+                if norm not in seen:
+                    seen.add(norm)
+                    resolved.append((norm, name))
             continue
         if not path.is_file():
             errors.append(f"not a file: {path}")
@@ -219,7 +237,7 @@ def resolve_input_files(args: argparse.Namespace) -> list[Path]:
         norm = path.resolve()
         if norm not in seen:
             seen.add(norm)
-            resolved.append(norm)
+            resolved.append((norm, norm.name))
 
     # glob patterns expanded in Python
     for pattern in args.globs:
@@ -235,7 +253,7 @@ def resolve_input_files(args: argparse.Namespace) -> list[Path]:
                 continue
             if match not in seen:
                 seen.add(match)
-                resolved.append(match)
+                resolved.append((match, match.name))
 
     if errors:
         for error in errors:
@@ -244,7 +262,7 @@ def resolve_input_files(args: argparse.Namespace) -> list[Path]:
 
     if not resolved:
         print(
-            "ERROR: no files to upload. Provide explicit files and/or one or more --glob patterns.",
+            "ERROR: no files to upload. Provide explicit files/directories and/or one or more --glob patterns.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -289,12 +307,13 @@ def list_existing_blobs(storage_account: str, container: str, prefix: str) -> se
 
 def upload_blob(
     local_file: Path,
+    name: str,
     storage_account: str,
     container: str,
     target_path: str,
 ) -> str:
     """Upload a single file to Azure Blob Storage using the az CLI."""
-    blob_name = blob_name_for(target_path, local_file)
+    blob_name = blob_name_for(target_path, name)
     try:
         subprocess.run(
             [
@@ -349,11 +368,15 @@ def main() -> None:
             args.storage_account, args.container, args.upload_dir
         )
         skip_count = sum(
-            1 for f in files if blob_name_for(args.upload_dir, f) in existing
+            1 for _, name in files if blob_name_for(args.upload_dir, name) in existing
         )
         if skip_count:
             print(f"Skipping {skip_count} already-uploaded file(s).")
-        files = [f for f in files if blob_name_for(args.upload_dir, f) not in existing]
+        files = [
+            (f, name)
+            for f, name in files
+            if blob_name_for(args.upload_dir, name) not in existing
+        ]
         if not files:
             print("All files already uploaded. Nothing to do.")
             return
@@ -367,9 +390,10 @@ def main() -> None:
     uploaded = 0
     lock = threading.Lock()
 
-    def upload_one(local_file: Path) -> tuple[Path, str]:
+    def upload_one(local_file: Path, name: str) -> tuple[Path, str]:
         blob_path = upload_blob(
             local_file=local_file,
+            name=name,
             storage_account=args.storage_account,
             container=args.container,
             target_path=args.upload_dir,
@@ -378,7 +402,9 @@ def main() -> None:
 
     try:
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
-            futures = {pool.submit(upload_one, f): f for f in files}
+            futures = {
+                pool.submit(upload_one, f, name): f for f, name in files
+            }
             for future in as_completed(futures):
                 local_file, blob_path = future.result()
                 with lock:
