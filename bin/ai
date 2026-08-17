@@ -1,0 +1,226 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import shutil
+import subprocess
+import sys
+
+
+# Edit these defaults as models change.
+# Environment variables override them:
+#   ASK_GEMINI_FAST_MODEL=...
+#   ASK_OLLAMA_SLOW_MODEL=...
+MODEL_CONFIG = {
+    "codex": {
+        "fast": os.getenv("ASK_CODEX_FAST_MODEL", "gpt-5.6-luna"),
+        "slow": os.getenv("ASK_CODEX_SLOW_MODEL", "gpt-5.6-sol"),
+    },
+    "claude": {
+        "fast": os.getenv("ASK_CLAUDE_FAST_MODEL", "haiku"),
+        "slow": os.getenv("ASK_CLAUDE_SLOW_MODEL", "sonnet"),
+    },
+    "opencode": {
+        "fast": os.getenv("ASK_OPENCODE_FAST_MODEL"),
+        "slow": os.getenv("ASK_OPENCODE_SLOW_MODEL"),
+    },
+    "gemini": {
+        "fast": os.getenv(
+            "ASK_GEMINI_FAST_MODEL",
+            "gemini-3.1-flash-lite-preview",
+        ),
+        "slow": os.getenv(
+            "ASK_GEMINI_SLOW_MODEL",
+            "gemini-3-pro-preview",
+        ),
+    },
+    "ollama": {
+        "fast": os.getenv("ASK_OLLAMA_FAST_MODEL", "qwen3:4b"),
+        "slow": os.getenv("ASK_OLLAMA_SLOW_MODEL", "qwen3:8b"),
+    },
+}
+
+
+def exists(command):
+    return shutil.which(command) is not None
+
+
+def build_command(engine, query, mode):
+    model = MODEL_CONFIG[engine][mode]
+
+    if engine == "codex":
+        cmd = ["codex", "exec", "--ephemeral"]
+
+        if model:
+            cmd.extend(["-m", model])
+
+        cmd.append(query)
+        return cmd
+
+    if engine == "claude":
+        cmd = ["claude", "-p"]
+
+        # Avoid unnecessary agentic turns for quick questions.
+        if mode == "fast":
+            cmd.extend(["--max-turns", "1"])
+
+        if model:
+            cmd.extend(["--model", model])
+
+        cmd.append(query)
+        return cmd
+
+    if engine == "opencode":
+        cmd = ["opencode", "run"]
+
+        if model:
+            cmd.extend(["-m", model])
+
+        cmd.append(query)
+        return cmd
+
+    if engine == "gemini":
+        cmd = ["gemini"]
+
+        if model:
+            cmd.extend(["-m", model])
+
+        cmd.extend(["-p", query])
+        return cmd
+
+    if engine == "ollama":
+        if not model:
+            raise ValueError("Ollama requires a configured model")
+
+        return ["ollama", "run", model, query]
+
+    raise ValueError(f"Unsupported engine: {engine}")
+
+
+def ask(engine, query, mode, timeout):
+    cmd = build_command(engine, query, mode)
+    executable = cmd[0]
+
+    if not exists(executable):
+        raise FileNotFoundError(f"{executable!r} not found")
+
+    try:
+        result = subprocess.run(
+            cmd,
+            text=True,
+            capture_output=True,
+            timeout=timeout,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise RuntimeError(f"{engine} timed out after {timeout} seconds") from error
+    except OSError as error:
+        raise RuntimeError(f"Could not start {engine}: {error}") from error
+
+    if result.returncode != 0:
+        error = result.stderr.strip() or result.stdout.strip()
+        raise RuntimeError(
+            f"{engine} failed with exit code "
+            f"{result.returncode}: {error or 'unknown error'}"
+        )
+
+    answer = result.stdout.strip()
+
+    if not answer:
+        raise RuntimeError(f"{engine} returned an empty response")
+
+    return answer
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Ask an installed AI CLI a quick question."
+    )
+
+    parser.add_argument(
+        "query",
+        nargs="*",
+        help="the question to ask",
+    )
+
+    parser.add_argument(
+        "-e",
+        "--engine",
+        choices=list(MODEL_CONFIG),
+        help="which AI engine to use",
+    )
+
+    parser.add_argument(
+        "-s",
+        "--slow",
+        action="store_true",
+        help="use the normal/slower model instead of the fast default",
+    )
+
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=180,
+        help="timeout in seconds; default: 180",
+    )
+
+    parser.add_argument(
+        "--list-engines",
+        action="store_true",
+        help="list installed engines and exit",
+    )
+
+    parser.add_argument(
+        "--show-config",
+        action="store_true",
+        help="show configured fast and slow models and exit",
+    )
+
+    args = parser.parse_args()
+
+    if args.list_engines:
+        for engine in MODEL_CONFIG:
+            status = "✅" if exists(engine) else "❌"
+            print(f"{engine:10} {status}")
+        return
+
+    if args.show_config:
+        for engine, modes in MODEL_CONFIG.items():
+            print(f"{engine}:")
+            print(f"  fast: {modes['fast'] or '(provider default)'}")
+            print(f"  slow: {modes['slow'] or '(provider default)'}")
+        return
+
+    if not args.query:
+        parser.error("Need a query.")
+
+    if args.timeout <= 0:
+        parser.error("--timeout must be greater than zero.")
+
+    query = " ".join(args.query)
+    mode = "slow" if args.slow else "fast"
+
+    if args.engine:
+        try:
+            print(ask(args.engine, query, mode, args.timeout))
+        except Exception as error:
+            parser.error(str(error))
+        return
+
+    # Automatic fallback: use the first installed engine that works.
+    for engine in MODEL_CONFIG:
+        if not exists(engine):
+            continue
+
+        try:
+            print(ask(engine, query, mode, args.timeout))
+            return
+        except Exception as error:
+            print(f"{engine} failed: {error}", file=sys.stderr)
+
+    parser.error("No working AI engine found.")
+
+
+if __name__ == "__main__":
+    main()
+
