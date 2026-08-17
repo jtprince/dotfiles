@@ -219,7 +219,7 @@ def list_blobs_under_prefix(
     return json.loads(proc.stdout)
 
 
-def list_one_level(blobs: list[dict], prefix: str) -> None:
+def list_one_level(blobs: list[dict], prefix: str, label: str) -> None:
     real_blobs = [b for b in blobs if not b["name"].endswith("/")]
     prefix_norm = prefix.strip("/")
 
@@ -237,7 +237,7 @@ def list_one_level(blobs: list[dict], prefix: str) -> None:
             files.append(head)
 
     if not dirs and not files:
-        print(f"Nothing found under az://{prefix_norm or '(root)'}")
+        print(f"Nothing found under {label}")
         return
 
     for name in sorted(dirs):
@@ -286,16 +286,17 @@ def main() -> None:
     container, prefix = resolve_input(args)
     blobs = list_blobs_under_prefix(args.storage_account, container, prefix)
 
-    print(f"az://{container}/{prefix}".rstrip("/"))
+    label = f"az://{container}/{prefix.strip('/')}".rstrip("/")
+    print(label)
 
     if args.recursive:
         tree = build_tree(blobs, prefix)
         if not tree:
-            print("Nothing found.")
+            print(f"Nothing found under {label}")
         else:
             print_tree(tree)
     else:
-        list_one_level(blobs, prefix)
+        list_one_level(blobs, prefix, label)
 
 
 if __name__ == "__main__":
