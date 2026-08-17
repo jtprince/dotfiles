@@ -1,0 +1,302 @@
+#!/usr/bin/env python3
+"""List directories/files under a location in Azure Blob Storage.
+
+Examples:
+
+    # one-level listing, az:// URL mode
+    uv run azure-blob-ls \
+        --storage-account miscdevncus01 \
+        "az://user-junk-365d-delete/ckrettle/datamoat/enamine-release/output/"
+
+    # one-level listing, explicit container/prefix mode
+    uv run azure-blob-ls \
+        --storage-account miscdevncus01 \
+        --container user-junk-365d-delete \
+        ckrettle/datamoat/enamine-release/output
+
+    # recursive tree
+    uv run azure-blob-ls \
+        --storage-account miscdevncus01 \
+        --recursive \
+        "az://user-junk-365d-delete/ckrettle/datamoat/enamine-release/output/"
+
+    # select/switch subscription first (no login needed if token cache warm)
+    uv run azure-blob-ls \
+        --subscription sub-enveda-data-dev-01 \
+        --storage-account miscdevncus01 \
+        "az://user-junk-365d-delete/ckrettle/"
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from urllib.parse import urlparse
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="List directories/files under an Azure Blob Storage location.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument(
+        "-s",
+        "--subscription",
+        help=(
+            "Azure subscription name or id to use; switched via `az account set` "
+            "if it isn't already active."
+        ),
+    )
+    parser.add_argument(
+        "-a",
+        "--storage-account",
+        required=True,
+        help="Azure storage account name.",
+    )
+    parser.add_argument(
+        "-c",
+        "--container",
+        help="Blob container name. Required unless `path` is an az:// URL.",
+    )
+    parser.add_argument(
+        "-r",
+        "--recursive",
+        action="store_true",
+        help="List the full tree under the prefix instead of one level.",
+    )
+    parser.add_argument(
+        "path",
+        help="Either an az:// URL, or a prefix relative to --container.",
+    )
+    return parser.parse_args()
+
+
+def run_az(cmd: list[str], capture_output: bool = False) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["az"] + cmd,
+        check=True,
+        capture_output=capture_output,
+        text=True,
+    )
+
+
+def get_active_subscription() -> dict[str, str]:
+    try:
+        proc = run_az(["account", "show", "-o", "json"], capture_output=True)
+    except FileNotFoundError:
+        print("ERROR: `az` CLI not found in PATH.", file=sys.stderr)
+        sys.exit(2)
+    except subprocess.CalledProcessError as exc:
+        print(
+            "ERROR: failed to run `az account show` (likely not logged in).\n"
+            "Run `az login`, or `az-login dev|prod`, and retry.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        print("ERROR: could not parse output from `az account show`.", file=sys.stderr)
+        sys.exit(2)
+
+    return {
+        "name": str(data.get("name", "")),
+        "id": str(data.get("id", "")),
+    }
+
+
+def ensure_subscription(expected: str) -> None:
+    """Make `expected` the active subscription, switching without a login if possible."""
+    active = get_active_subscription()
+    if expected in {active["name"], active["id"]}:
+        return
+
+    try:
+        run_az(
+            ["account", "get-access-token", "--subscription", expected],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(
+            "ERROR: cannot switch to the requested Azure subscription without logging in.\n"
+            f"  requested:   {expected}\n"
+            f"  active name: {active['name']}\n"
+            f"  active id:   {active['id']}\n"
+            f"Run `az login` (then `az account set --subscription {expected}`), "
+            "or use `az-login dev|prod`, and retry.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        run_az(["account", "set", "--subscription", expected], capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        print(
+            f"ERROR: `az account set --subscription {expected}` failed.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    print(f"switched active Azure subscription: {active['name']} -> {expected}")
+
+
+def is_az_url(value: str) -> bool:
+    return value.startswith("az://")
+
+
+def parse_az_url(url: str) -> tuple[str, str]:
+    parsed = urlparse(url)
+    if parsed.scheme != "az":
+        raise ValueError(f"expected az:// URL, got: {url}")
+    container = parsed.netloc
+    blob_path = parsed.path.lstrip("/")
+    if not container:
+        raise ValueError(f"missing container in URL: {url}")
+    return container, blob_path
+
+
+def resolve_input(args: argparse.Namespace) -> tuple[str, str]:
+    if is_az_url(args.path):
+        try:
+            container, prefix = parse_az_url(args.path)
+        except ValueError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            sys.exit(2)
+        return container, prefix
+
+    if not args.container:
+        print(
+            "ERROR: --container is required unless `path` is an az:// URL.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+    return args.container, args.path.strip("/")
+
+
+def list_blobs_under_prefix(
+    storage_account: str, container: str, prefix: str
+) -> list[dict]:
+    """List blobs under prefix -> [{"name": str, "size": int | None}, ...]."""
+    try:
+        proc = run_az(
+            [
+                "storage",
+                "blob",
+                "list",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--prefix",
+                prefix,
+                "--auth-mode",
+                "login",
+                "--output",
+                "json",
+                "--query",
+                "[].{name:name, size:properties.contentLength}",
+            ],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(
+            f"ERROR: failed to list blobs under az://{container}/{prefix}",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(1)
+    return json.loads(proc.stdout)
+
+
+def list_one_level(blobs: list[dict], prefix: str) -> None:
+    real_blobs = [b for b in blobs if not b["name"].endswith("/")]
+    prefix_norm = prefix.strip("/")
+
+    dirs: set[str] = set()
+    files: list[str] = []
+    for blob in real_blobs:
+        name = blob["name"]
+        rest = name[len(prefix_norm) :].lstrip("/") if prefix_norm else name
+        if not rest:
+            continue
+        head, sep, tail = rest.partition("/")
+        if sep:
+            dirs.add(head)
+        else:
+            files.append(head)
+
+    if not dirs and not files:
+        print(f"Nothing found under az://{prefix_norm or '(root)'}")
+        return
+
+    for name in sorted(dirs):
+        print(f"{name}/")
+    for name in sorted(files):
+        print(name)
+
+
+def build_tree(blobs: list[dict], prefix: str) -> dict:
+    real_blobs = [b for b in blobs if not b["name"].endswith("/")]
+    prefix_norm = prefix.strip("/")
+    root: dict = {}
+    for blob in real_blobs:
+        name = blob["name"]
+        rest = name[len(prefix_norm) :].lstrip("/") if prefix_norm else name
+        if not rest:
+            continue
+        parts = rest.split("/")
+        node = root
+        for part in parts[:-1]:
+            node = node.setdefault(part, {})
+        node.setdefault(parts[-1], None)
+    return root
+
+
+def print_tree(node: dict, indent: str = "") -> None:
+    dirs = sorted(k for k, v in node.items() if v is not None)
+    files = sorted(k for k, v in node.items() if v is None)
+    entries = [(d, True) for d in dirs] + [(f, False) for f in files]
+
+    for i, (name, is_dir) in enumerate(entries):
+        is_last = i == len(entries) - 1
+        connector = "└── " if is_last else "├── "
+        print(f"{indent}{connector}{name}{'/' if is_dir else ''}")
+        if is_dir:
+            extension = "    " if is_last else "│   "
+            print_tree(node[name], indent + extension)
+
+
+def main() -> None:
+    args = parse_args()
+
+    if args.subscription:
+        ensure_subscription(args.subscription)
+
+    container, prefix = resolve_input(args)
+    blobs = list_blobs_under_prefix(args.storage_account, container, prefix)
+
+    print(f"az://{container}/{prefix}".rstrip("/"))
+
+    if args.recursive:
+        tree = build_tree(blobs, prefix)
+        if not tree:
+            print("Nothing found.")
+        else:
+            print_tree(tree)
+    else:
+        list_one_level(blobs, prefix)
+
+
+if __name__ == "__main__":
+    main()
