@@ -27,9 +27,8 @@ require 'shellwords'
 ##########################################################################################
 #
 #   macOS (Homebrew):
-#     brew tap homebrew/cask-fonts
 #     brew install --cask font-stix-two-text font-liberation font-dejavu
-#     brew install --cask mactex      # provides xelatex (or basictex + xetex)
+#     brew install --cask basictex 
 #     if using basictex: tlmgr install latexmk fontspec tcolorbox newunicodechar
 #     if using full mactex, tcolorbox is included.
 #

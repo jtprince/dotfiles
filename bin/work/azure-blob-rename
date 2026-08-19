@@ -13,22 +13,29 @@ Input is pairs of `az://...` URLs, one pair per line, space separated:
 
     az://container/path/to/a.ext az://container2/path/to/b.ext
 
-Blank lines and lines starting with `#` are ignored. Read from a file
+A pair where BOTH sides end in `/` is a directory rename: every blob under
+the source prefix is renamed recursively, preserving its relative path under
+the destination prefix. Mixing a trailing slash on only one side is an
+error. Blank lines and lines starting with `#` are ignored. Read from a file
 argument, or from stdin if no file is given.
 
 Examples:
 
-    # from a file
+    # from a file, single files
     uv run azure-blob-rename \
         --subscription sub-enveda-data-dev-01 \
         --storage-account miscdevncus01 \
         pairs.txt
 
-    # from stdin
-    echo "az://user-junk-365d-delete/a.txt az://user-junk-365d-delete/b.txt" | \
+    # directory rename, recursive by default
+    echo "az://user-junk-365d-delete/old-dir/ az://user-junk-365d-delete/new-dir/" | \
         uv run azure-blob-rename --storage-account miscdevncus01
 
-    # preview only, no Azure calls
+    # keep the originals instead of deleting them (copy, verify, don't delete)
+    uv run azure-blob-rename --storage-account miscdevncus01 --keep-source pairs.txt
+
+    # preview only, no Azure calls for file pairs; directory pairs still list
+    # remotely so the preview reflects what would actually be renamed
     uv run azure-blob-rename --storage-account miscdevncus01 --dry-run pairs.txt
 """
 
@@ -77,9 +84,17 @@ def parse_args() -> argparse.Namespace:
         help="Concurrent rename workers (default: 8). Use 1 for sequential.",
     )
     parser.add_argument(
+        "--keep-source",
+        action="store_true",
+        help="Copy and verify but do not delete the source (leaves both copies in place).",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Parse and validate pairs, print the planned renames, and exit. No Azure calls.",
+        help=(
+            "Print the planned renames and exit without copying or deleting. Directory "
+            "pairs are still listed remotely so the preview is accurate."
+        ),
     )
     parser.add_argument(
         "file",
@@ -175,7 +190,7 @@ def parse_az_url(url: str) -> tuple[str, str]:
     if parsed.scheme != "az":
         raise ValueError(f"expected az:// URL, got: {url}")
     container = parsed.netloc
-    blob_path = parsed.path.lstrip("/")
+    blob_path = parsed.path.lstrip("/").rstrip("/")
     if not container:
         raise ValueError(f"missing container in URL: {url}")
     if not blob_path:
@@ -184,18 +199,33 @@ def parse_az_url(url: str) -> tuple[str, str]:
 
 
 class RenamePair:
-    __slots__ = ("line_no", "src_url", "dst_url", "src_container", "src_blob", "dst_container", "dst_blob")
+    __slots__ = ("src_url", "dst_url", "src_container", "src_blob", "dst_container", "dst_blob")
+
+    def __init__(self, src_url: str, dst_url: str, src_container: str, src_blob: str, dst_container: str, dst_blob: str) -> None:
+        self.src_url = src_url
+        self.dst_url = dst_url
+        self.src_container = src_container
+        self.src_blob = src_blob
+        self.dst_container = dst_container
+        self.dst_blob = dst_blob
+
+
+class RawPair:
+    """One parsed input line, before directory prefixes are expanded to blobs."""
+
+    __slots__ = ("line_no", "src_url", "dst_url", "is_dir", "src_container", "src_prefix", "dst_container", "dst_prefix")
 
     def __init__(self, line_no: int, src_url: str, dst_url: str) -> None:
         self.line_no = line_no
         self.src_url = src_url
         self.dst_url = dst_url
-        self.src_container, self.src_blob = parse_az_url(src_url)
-        self.dst_container, self.dst_blob = parse_az_url(dst_url)
+        self.is_dir = src_url.endswith("/")
+        self.src_container, self.src_prefix = parse_az_url(src_url)
+        self.dst_container, self.dst_prefix = parse_az_url(dst_url)
 
 
-def parse_pairs(lines: list[str]) -> list[RenamePair]:
-    pairs: list[RenamePair] = []
+def parse_pairs(lines: list[str]) -> list[RawPair]:
+    pairs: list[RawPair] = []
     errors: list[str] = []
     for line_no, raw in enumerate(lines, start=1):
         line = raw.strip()
@@ -209,11 +239,17 @@ def parse_pairs(lines: list[str]) -> list[RenamePair]:
         if not is_az_url(src_url) or not is_az_url(dst_url):
             errors.append(f"line {line_no}: both paths must be az:// URLs: {raw!r}")
             continue
+        if src_url.endswith("/") != dst_url.endswith("/"):
+            errors.append(
+                f"line {line_no}: both paths must be directories (trailing '/') or "
+                f"both files: {raw!r}"
+            )
+            continue
         if src_url == dst_url:
             errors.append(f"line {line_no}: source and destination are identical: {src_url}")
             continue
         try:
-            pairs.append(RenamePair(line_no, src_url, dst_url))
+            pairs.append(RawPair(line_no, src_url, dst_url))
         except ValueError as exc:
             errors.append(f"line {line_no}: {exc}")
 
@@ -241,6 +277,105 @@ def read_input_lines(file: Path | None) -> list[str]:
 
 class RenameError(Exception):
     pass
+
+
+def list_blobs_under_prefix(storage_account: str, container: str, prefix: str) -> list[dict]:
+    """List blobs under prefix: [{"name": str, "size": int | None}, ...].
+
+    Excludes directory-marker blobs: on hierarchical-namespace (ADLS Gen2)
+    accounts a "folder" is itself a real zero-byte blob tagged with
+    metadata `hdi_isfolder: true` (no trailing slash in its name).
+    """
+    try:
+        proc = run_az(
+            [
+                "storage",
+                "blob",
+                "list",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--prefix",
+                prefix,
+                "--auth-mode",
+                "login",
+                "--include",
+                "m",
+                "--output",
+                "json",
+                "--query",
+                "[].{name:name, size:properties.contentLength, isFolder:metadata.hdi_isfolder}",
+            ],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        msg = f"failed to list blobs under az://{container}/{prefix}"
+        if exc.stderr:
+            msg += f"\n{exc.stderr.strip()}"
+        raise RenameError(msg) from exc
+    blobs = json.loads(proc.stdout)
+    return [b for b in blobs if not b["name"].endswith("/") and b.get("isFolder") != "true"]
+
+
+def expand_pairs(storage_account: str, raw_pairs: list[RawPair]) -> list[RenamePair]:
+    """Turn each RawPair into one or more concrete file-to-file RenamePairs.
+
+    Directory pairs (trailing '/' on both sides) are expanded by listing every
+    real blob under the source prefix and mapping it to the same relative path
+    under the destination prefix.
+    """
+    expanded: list[RenamePair] = []
+    errors: list[str] = []
+
+    for raw in raw_pairs:
+        if not raw.is_dir:
+            expanded.append(
+                RenamePair(
+                    raw.src_url,
+                    raw.dst_url,
+                    raw.src_container,
+                    raw.src_prefix,
+                    raw.dst_container,
+                    raw.dst_prefix,
+                )
+            )
+            continue
+
+        try:
+            blobs = list_blobs_under_prefix(storage_account, raw.src_container, raw.src_prefix)
+        except RenameError as exc:
+            errors.append(f"line {raw.line_no}: {exc}")
+            continue
+
+        real_blobs = [b for b in blobs if not b["name"].endswith("/")]
+        if not real_blobs:
+            errors.append(f"line {raw.line_no}: nothing found under {raw.src_url}")
+            continue
+
+        for blob in real_blobs:
+            name = blob["name"]
+            rel = name[len(raw.src_prefix):].lstrip("/")
+            if not rel:
+                continue
+            dst_blob = f"{raw.dst_prefix}/{rel}" if raw.dst_prefix else rel
+            expanded.append(
+                RenamePair(
+                    f"az://{raw.src_container}/{name}",
+                    f"az://{raw.dst_container}/{dst_blob}",
+                    raw.src_container,
+                    name,
+                    raw.dst_container,
+                    dst_blob,
+                )
+            )
+
+    if errors:
+        for error in errors:
+            print(f"ERROR: {error}", file=sys.stderr)
+        sys.exit(1)
+
+    return expanded
 
 
 def blob_size(storage_account: str, container: str, blob_path: str) -> int | None:
@@ -310,7 +445,7 @@ def start_copy(storage_account: str, pair: RenamePair) -> None:
 
 
 def poll_copy_status(storage_account: str, pair: RenamePair) -> None:
-    """Poll destination copyStatus until success/failed/aborted, with backoff."""
+    """Poll destination copy status until success/failed/aborted, with backoff."""
     delay = POLL_INITIAL_DELAY
     for _ in range(DEFAULT_POLL_ATTEMPTS):
         try:
@@ -382,7 +517,7 @@ def delete_blob(storage_account: str, container: str, blob_path: str) -> None:
         raise RenameError(msg) from exc
 
 
-def rename_one(storage_account: str, pair: RenamePair) -> str:
+def rename_one(storage_account: str, pair: RenamePair, keep_source: bool) -> str:
     """Copy, verify, then delete source. Never deletes unless copy is verified complete."""
     src_size = blob_size(storage_account, pair.src_container, pair.src_blob)
     if src_size is None:
@@ -398,6 +533,9 @@ def rename_one(storage_account: str, pair: RenamePair) -> str:
             f"source={src_size} dest={dst_size}. Source left in place."
         )
 
+    if keep_source:
+        return f"{pair.src_url} -> {pair.dst_url} (source kept)"
+
     # Only reachable once the destination is verified complete and correctly
     # sized — this is the sole path that deletes the source blob.
     delete_blob(storage_account, pair.src_container, pair.src_blob)
@@ -411,8 +549,16 @@ def main() -> None:
         print("ERROR: --workers must be >= 1", file=sys.stderr)
         sys.exit(2)
 
+    if args.subscription:
+        ensure_subscription(args.subscription)
+
     lines = read_input_lines(args.file)
-    pairs = parse_pairs(lines)
+    raw_pairs = parse_pairs(lines)
+    pairs = expand_pairs(args.storage_account, raw_pairs)
+
+    if not pairs:
+        print("ERROR: no rename pairs to process.", file=sys.stderr)
+        sys.exit(1)
 
     if args.dry_run:
         print(f"Dry run: {len(pairs)} rename(s) planned")
@@ -420,11 +566,9 @@ def main() -> None:
             print(f"  {pair.src_url} -> {pair.dst_url}")
         return
 
-    if args.subscription:
-        ensure_subscription(args.subscription)
-
+    verb = "Copying (keeping source)" if args.keep_source else "Renaming"
     print(
-        f"Renaming {len(pairs)} blob(s) in {args.storage_account} "
+        f"{verb} {len(pairs)} blob(s) in {args.storage_account} "
         f"({args.workers} worker{'s' if args.workers != 1 else ''})"
     )
 
@@ -433,7 +577,10 @@ def main() -> None:
     lock = threading.Lock()
 
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = {pool.submit(rename_one, args.storage_account, pair): pair for pair in pairs}
+        futures = {
+            pool.submit(rename_one, args.storage_account, pair, args.keep_source): pair
+            for pair in pairs
+        }
         for future in as_completed(futures):
             pair = futures[future]
             try:

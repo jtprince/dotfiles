@@ -189,7 +189,15 @@ def resolve_input(args: argparse.Namespace) -> tuple[str, str]:
 def list_blobs_under_prefix(
     storage_account: str, container: str, prefix: str
 ) -> list[dict]:
-    """List blobs under prefix -> [{"name": str, "size": int | None}, ...]."""
+    """List blobs under prefix -> [{"name": str, "size": int | None}, ...].
+
+    Excludes directory-marker blobs: on hierarchical-namespace (ADLS Gen2)
+    accounts, a "folder" is itself a real zero-byte blob tagged with
+    metadata `hdi_isfolder: true` (no trailing slash in its name), distinct
+    from the flat-namespace convention of a folder marker literally named
+    with a trailing slash. Both are stripped here so callers only see real
+    file blobs.
+    """
     try:
         proc = run_az(
             [
@@ -204,10 +212,12 @@ def list_blobs_under_prefix(
                 prefix,
                 "--auth-mode",
                 "login",
+                "--include",
+                "m",
                 "--output",
                 "json",
                 "--query",
-                "[].{name:name, size:properties.contentLength}",
+                "[].{name:name, size:properties.contentLength, isFolder:metadata.hdi_isfolder}",
             ],
             capture_output=True,
         )
@@ -219,11 +229,12 @@ def list_blobs_under_prefix(
         if exc.stderr:
             print(exc.stderr.strip(), file=sys.stderr)
         sys.exit(1)
-    return json.loads(proc.stdout)
+    blobs = json.loads(proc.stdout)
+    return [b for b in blobs if not b["name"].endswith("/") and b.get("isFolder") != "true"]
 
 
 def list_one_level(blobs: list[dict], prefix: str, label: str) -> None:
-    real_blobs = [b for b in blobs if not b["name"].endswith("/")]
+    real_blobs = blobs
     prefix_norm = prefix.strip("/")
 
     dirs: set[str] = set()

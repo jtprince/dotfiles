@@ -380,7 +380,12 @@ def download_blob(
 def list_blobs_under_prefix(
     storage_account: str, container: str, prefix: str
 ) -> List[dict]:
-    """List blobs under prefix as [{"name": str, "size": int | None}, ...]."""
+    """List blobs under prefix as [{"name": str, "size": int | None}, ...].
+
+    Excludes directory-marker blobs: on hierarchical-namespace (ADLS Gen2)
+    accounts a "folder" is itself a real zero-byte blob tagged with
+    metadata `hdi_isfolder: true` (no trailing slash in its name).
+    """
     try:
         proc = run_az(
             [
@@ -395,10 +400,12 @@ def list_blobs_under_prefix(
                 prefix,
                 "--auth-mode",
                 "login",
+                "--include",
+                "m",
                 "--output",
                 "json",
                 "--query",
-                "[].{name:name, size:properties.contentLength}",
+                "[].{name:name, size:properties.contentLength, isFolder:metadata.hdi_isfolder}",
             ],
             capture_output=True,
         )
@@ -413,7 +420,8 @@ def list_blobs_under_prefix(
         if exc.stderr:
             print(exc.stderr.strip(), file=sys.stderr)
         sys.exit(1)
-    return json.loads(proc.stdout)
+    blobs = json.loads(proc.stdout)
+    return [b for b in blobs if not b["name"].endswith("/") and b.get("isFolder") != "true"]
 
 
 def download_recursive(

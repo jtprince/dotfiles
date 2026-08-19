@@ -1,0 +1,397 @@
+#!/usr/bin/env python3
+"""Delete blobs in Azure Blob Storage, rm-like.
+
+To test against real Azure without risk, use the sandbox location and
+worked examples documented in bin/work/azure-testing.md.
+
+A path ending in `/` is a directory (prefix): deleting it requires
+`-r/--recursive` and removes every blob under that prefix. A path with no
+trailing slash is treated as a single exact blob, regardless of -r.
+
+`-f/--force` suppresses "not found" errors (missing paths are silently
+skipped, like `rm -f`). It does NOT suppress real delete failures (e.g.
+permission errors) — a wrapper around a network delete shouldn't swallow
+those silently.
+
+Examples:
+
+    # delete one file
+    uv run azure-blob-rm --storage-account miscdevncus01 \
+        "az://user-junk-365d-delete/jtprince/scratch/a.txt"
+
+    # delete a directory recursively
+    uv run azure-blob-rm --storage-account miscdevncus01 -r \
+        "az://user-junk-365d-delete/jtprince/scratch/"
+
+    # rm -rf style: recursive, ignore missing
+    uv run azure-blob-rm --storage-account miscdevncus01 -rf \
+        "az://user-junk-365d-delete/jtprince/scratch/"
+
+    # preview only, no deletes
+    uv run azure-blob-rm --storage-account miscdevncus01 -r --dry-run \
+        "az://user-junk-365d-delete/jtprince/scratch/"
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from urllib.parse import urlparse
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Delete blobs in Azure Blob Storage.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument(
+        "-s",
+        "--subscription",
+        help=(
+            "Azure subscription name or id to use; switched via `az account set` "
+            "if it isn't already active."
+        ),
+    )
+    parser.add_argument(
+        "-a",
+        "--storage-account",
+        required=True,
+        help="Azure storage account name.",
+    )
+    parser.add_argument(
+        "-r",
+        "--recursive",
+        action="store_true",
+        help="Required to delete a directory (path ending in '/').",
+    )
+    parser.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="Ignore missing paths instead of erroring (does not suppress delete failures).",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=16,
+        metavar="N",
+        help="Concurrent delete workers (default: 16). Use 1 for sequential.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="List what would be deleted and exit without deleting anything.",
+    )
+    parser.add_argument(
+        "paths",
+        nargs="+",
+        help="One or more az:// URLs. Trailing '/' means a directory (needs -r).",
+    )
+    return parser.parse_args()
+
+
+def run_az(cmd: list[str], capture_output: bool = False) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["az"] + cmd,
+        check=True,
+        capture_output=capture_output,
+        text=True,
+    )
+
+
+def get_active_subscription() -> dict[str, str]:
+    try:
+        proc = run_az(["account", "show", "-o", "json"], capture_output=True)
+    except FileNotFoundError:
+        print("ERROR: `az` CLI not found in PATH.", file=sys.stderr)
+        sys.exit(2)
+    except subprocess.CalledProcessError as exc:
+        print(
+            "ERROR: failed to run `az account show` (likely not logged in).\n"
+            "Run `az login`, or `az-login dev|prod`, and retry.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        print("ERROR: could not parse output from `az account show`.", file=sys.stderr)
+        sys.exit(2)
+
+    return {
+        "name": str(data.get("name", "")),
+        "id": str(data.get("id", "")),
+    }
+
+
+def ensure_subscription(expected: str) -> None:
+    """Make `expected` the active subscription, switching without a login if possible."""
+    active = get_active_subscription()
+    if expected in {active["name"], active["id"]}:
+        return
+
+    try:
+        run_az(
+            ["account", "get-access-token", "--subscription", expected],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(
+            "ERROR: cannot switch to the requested Azure subscription without logging in.\n"
+            f"  requested:   {expected}\n"
+            f"  active name: {active['name']}\n"
+            f"  active id:   {active['id']}\n"
+            f"Run `az login` (then `az account set --subscription {expected}`), "
+            "or use `az-login dev|prod`, and retry.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        run_az(["account", "set", "--subscription", expected], capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        print(
+            f"ERROR: `az account set --subscription {expected}` failed.",
+            file=sys.stderr,
+        )
+        if exc.stderr:
+            print(exc.stderr.strip(), file=sys.stderr)
+        sys.exit(2)
+
+    print(f"switched active Azure subscription: {active['name']} -> {expected}")
+
+
+def parse_az_url(url: str) -> tuple[str, str]:
+    parsed = urlparse(url)
+    if parsed.scheme != "az":
+        raise ValueError(f"expected az:// URL, got: {url}")
+    container = parsed.netloc
+    blob_path = parsed.path.lstrip("/").rstrip("/")
+    if not container:
+        raise ValueError(f"missing container in URL: {url}")
+    if not blob_path:
+        raise ValueError(f"missing blob path in URL: {url}")
+    return container, blob_path
+
+
+class RmError(Exception):
+    pass
+
+
+def list_blobs_under_prefix(storage_account: str, container: str, prefix: str) -> list[str]:
+    """List every blob name under prefix, including directory-marker blobs.
+
+    A recursive delete should remove the whole subtree: on hierarchical-
+    namespace (ADLS Gen2) accounts a "folder" is itself a real zero-byte
+    blob tagged with metadata `hdi_isfolder: true` (no trailing slash in
+    its name), and it should be deleted along with everything under it —
+    unlike rename/download, which must skip these when copying real files.
+    """
+    try:
+        proc = run_az(
+            [
+                "storage",
+                "blob",
+                "list",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--prefix",
+                prefix,
+                "--auth-mode",
+                "login",
+                "--output",
+                "json",
+                "--query",
+                "[].name",
+            ],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        msg = f"failed to list blobs under az://{container}/{prefix}"
+        if exc.stderr:
+            msg += f"\n{exc.stderr.strip()}"
+        raise RmError(msg) from exc
+    return json.loads(proc.stdout)
+
+
+def blob_exists(storage_account: str, container: str, blob_path: str) -> bool:
+    try:
+        run_az(
+            [
+                "storage",
+                "blob",
+                "show",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--name",
+                blob_path,
+                "--auth-mode",
+                "login",
+                "--output",
+                "none",
+            ],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError:
+        return False
+    return True
+
+
+def resolve_targets(args: argparse.Namespace) -> list[tuple[str, str, str]]:
+    """Return [(container, blob_path, display_url), ...] to delete."""
+    targets: list[tuple[str, str, str]] = []
+    errors: list[str] = []
+
+    for raw_path in args.paths:
+        is_dir = raw_path.endswith("/")
+        try:
+            container, blob_path = parse_az_url(raw_path)
+        except ValueError as exc:
+            errors.append(str(exc))
+            continue
+
+        if is_dir:
+            if not args.recursive:
+                errors.append(f"{raw_path}: is a directory (use -r/--recursive)")
+                continue
+            try:
+                names = list_blobs_under_prefix(args.storage_account, container, blob_path)
+            except RmError as exc:
+                errors.append(str(exc))
+                continue
+            if not names:
+                if not args.force:
+                    errors.append(f"{raw_path}: not found")
+                continue
+            for name in names:
+                targets.append((container, name, f"az://{container}/{name}"))
+        else:
+            if not blob_exists(args.storage_account, container, blob_path):
+                if not args.force:
+                    errors.append(f"{raw_path}: not found")
+                continue
+            targets.append((container, blob_path, f"az://{container}/{blob_path}"))
+
+    if errors:
+        for error in errors:
+            print(f"ERROR: {error}", file=sys.stderr)
+        sys.exit(1)
+
+    return targets
+
+
+def delete_blob(storage_account: str, container: str, blob_path: str, display_url: str) -> str:
+    try:
+        run_az(
+            [
+                "storage",
+                "blob",
+                "delete",
+                "--account-name",
+                storage_account,
+                "--container-name",
+                container,
+                "--name",
+                blob_path,
+                "--auth-mode",
+                "login",
+                "--output",
+                "none",
+            ],
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        msg = f"failed to delete {display_url}"
+        if exc.stderr:
+            msg += f"\n{exc.stderr.strip()}"
+        raise RmError(msg) from exc
+    return display_url
+
+
+def main() -> None:
+    args = parse_args()
+
+    if args.workers < 1:
+        print("ERROR: --workers must be >= 1", file=sys.stderr)
+        sys.exit(2)
+
+    if args.subscription:
+        ensure_subscription(args.subscription)
+
+    targets = resolve_targets(args)
+
+    if not targets:
+        print("Nothing to delete.")
+        return
+
+    if args.dry_run:
+        print(f"Dry run: {len(targets)} blob(s) would be deleted")
+        for _, _, display_url in targets:
+            print(f"  {display_url}")
+        return
+
+    print(
+        f"Deleting {len(targets)} blob(s) from {args.storage_account} "
+        f"({args.workers} worker{'s' if args.workers != 1 else ''})"
+    )
+
+    # HNS (ADLS Gen2) directory-marker blobs reject deletion while they still
+    # have children ("Failed Precondition"). Deleting deepest paths first —
+    # in waves by path depth, each wave run concurrently — guarantees every
+    # blob under a directory marker is gone before the marker itself is
+    # attempted, without needing to know which targets are markers.
+    waves: dict[int, list[tuple[str, str, str]]] = {}
+    for container, blob_path, display_url in targets:
+        waves.setdefault(blob_path.count("/"), []).append((container, blob_path, display_url))
+
+    completed = 0
+    failures: list[str] = []
+    lock = threading.Lock()
+
+    for depth in sorted(waves, reverse=True):
+        wave = waves[depth]
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
+            futures = {
+                pool.submit(delete_blob, args.storage_account, container, blob_path, display_url): display_url
+                for container, blob_path, display_url in wave
+            }
+            for future in as_completed(futures):
+                display_url = futures[future]
+                try:
+                    result = future.result()
+                except RmError as exc:
+                    with lock:
+                        completed += 1
+                        failures.append(str(exc))
+                        print(f"[{completed}/{len(targets)}] ✗ {display_url}: {exc}", file=sys.stderr)
+                    continue
+                with lock:
+                    completed += 1
+                    print(f"[{completed}/{len(targets)}] ✓ deleted {result}")
+
+    deleted = len(targets) - len(failures)
+    print(f"\nDone: deleted {deleted} blob(s), {len(failures)} failed.")
+
+    if failures:
+        print("Failures:", file=sys.stderr)
+        for msg in failures:
+            print(f"  {msg}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

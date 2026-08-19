@@ -49,7 +49,7 @@ def build_command(engine, query, mode):
     model = MODEL_CONFIG[engine][mode]
 
     if engine == "codex":
-        cmd = ["codex", "exec", "--ephemeral"]
+        cmd = ["codex", "exec", "--ephemeral", "--skip-git-repo-check"]
 
         if model:
             cmd.extend(["-m", model])
@@ -223,4 +223,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
