@@ -1,23 +1,201 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
 
-require "open3"
+"""Convert markdown files to standalone HTML with pandoc.
 
-options = [
-  "--from=markdown+implicit_figures+smart",
-  "--standalone",
-  "--to=html5",
-  "--variable=header-includes=<style>body{max-width:1200px;margin:auto;padding:0 2rem}</style>"
-]
+Rendering knobs (width, fonts, theme, etc.) are injected as a <style> block
+via pandoc's header-includes variable.
+"""
 
-if ARGV.empty?
-  warn "usage: #{File.basename(__FILE__)} <file>.md ..."
-  exit 1
-end
+import shutil
+import subprocess
+import sys
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from pathlib import Path
 
-ARGV.each do |file|
-  outfile = file.sub(/\.[^.]+\z/, "") + ".html"
-  html, error, status = Open3.capture3("pandoc", *options, file)
+DEFAULT_WIDTH = 800
+DEFAULT_FONT_SIZE = "16px"
+DEFAULT_LINE_HEIGHT = "1.6"
+DEFAULT_PADDING = "0 2rem"
 
-  abort error unless status.success?
-  File.write(outfile, html)
-end
+FONT_STACKS = {
+    "sans": '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
+    "serif": 'Georgia, Cambria, "Times New Roman", Times, serif',
+    "mono": 'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace',
+}
+
+THEMES = {
+    "light": {"fg": "#1a1a1a", "bg": "#ffffff", "link": "#0645ad", "code_bg": "#f5f5f5", "rule": "#dddddd"},
+    "dark": {"fg": "#e8e6e3", "bg": "#1b1b1b", "link": "#7aa7ff", "code_bg": "#2a2a2a", "rule": "#3a3a3a"},
+}
+
+
+def build_css(args):
+    width = "none" if args.width in (0, None) else f"{args.width}px"
+    font = FONT_STACKS.get(args.font, args.font)
+
+    rules = [
+        f"body{{max-width:{width};margin:auto;padding:{args.padding};"
+        f"font-family:{font};font-size:{args.font_size};line-height:{args.line_height};"
+        "word-wrap:break-word}",
+        "img,video,svg{max-width:100%;height:auto}",
+        "pre{overflow-x:auto}",
+        "table{border-collapse:collapse}",
+        "figure{margin:1.5em 0}figcaption{font-size:0.9em;opacity:0.75;text-align:center}",
+    ]
+
+    if args.justify:
+        rules.append("p{text-align:justify;hyphens:auto}")
+
+    if args.theme != "none":
+        light, dark = THEMES["light"], THEMES["dark"]
+
+        def palette(c):
+            return (
+                f"body{{color:{c['fg']};background:{c['bg']}}}"
+                f"a{{color:{c['link']}}}"
+                f"code,pre{{background:{c['code_bg']}}}"
+                f"hr,th,td{{border-color:{c['rule']}}}"
+                f"blockquote{{border-left:4px solid {c['rule']};margin-left:0;padding-left:1em}}"
+            )
+
+        if args.theme == "light":
+            rules.append(palette(light))
+        elif args.theme == "dark":
+            rules.append(palette(dark))
+        else:  # auto
+            rules.append(palette(light))
+            rules.append(f"@media(prefers-color-scheme:dark){{{palette(dark)}}}")
+
+    rules.extend(args.css or [])
+    return "".join(rules)
+
+
+def pandoc_options(args):
+    extensions = "+implicit_figures"
+    if args.smart:
+        extensions += "+smart"
+
+    options = [
+        f"--from=markdown{extensions}",
+        "--standalone",
+        "--to=html5",
+        f"--variable=header-includes=<style>{build_css(args)}</style>",
+        f"--highlight-style={args.highlight_style}",
+    ]
+
+    if args.toc:
+        options += ["--toc", f"--toc-depth={args.toc_depth}"]
+    if args.number_sections:
+        options.append("--number-sections")
+    if args.embed:
+        options.append("--embed-resources")
+    if args.stylesheet:
+        options.append(f"--css={args.stylesheet}")
+    if args.title:
+        options.append(f"--metadata=title:{args.title}")
+    if args.math:
+        options.append(f"--{args.math}")
+    options.extend(args.pandoc_arg or [])
+    return options
+
+
+def parse_width(value):
+    text = str(value).strip().lower().removesuffix("px")
+    if text in ("none", "full", "0"):
+        return 0
+    if not text.isdigit():
+        raise ValueError(f"invalid width: {value!r} (expected pixels or 'none')")
+    return int(text)
+
+
+def main(argv=None):
+    parser = ArgumentParser(
+        prog=Path(sys.argv[0]).name,
+        description="Convert markdown to standalone HTML via pandoc.",
+        epilog="examples:\n"
+        "  markdown-to-html notes.md\n"
+        "  markdown-to-html --width 1200 --theme auto notes.md\n"
+        "  markdown-to-html --width none --toc --font serif notes.md\n"
+        "  markdown-to-html --stdout notes.md > out.html",
+        formatter_class=RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("files", nargs="+", metavar="FILE.md", help="markdown file(s) to convert")
+
+    layout = parser.add_argument_group("layout")
+    layout.add_argument(
+        "--width",
+        type=parse_width,
+        default=DEFAULT_WIDTH,
+        metavar="PX",
+        help=f"body max-width in px, or 'none' for full width (default: {DEFAULT_WIDTH})",
+    )
+    layout.add_argument("--padding", default=DEFAULT_PADDING, help=f"body padding (default: {DEFAULT_PADDING!r})")
+    layout.add_argument("--justify", action="store_true", help="justify paragraph text")
+
+    typo = parser.add_argument_group("typography")
+    typo.add_argument(
+        "--font",
+        default="sans",
+        help=f"font stack: {', '.join(FONT_STACKS)}, or a literal CSS font-family (default: sans)",
+    )
+    typo.add_argument("--font-size", default=DEFAULT_FONT_SIZE, help=f"base font size (default: {DEFAULT_FONT_SIZE})")
+    typo.add_argument("--line-height", default=DEFAULT_LINE_HEIGHT, help=f"default: {DEFAULT_LINE_HEIGHT}")
+
+    style = parser.add_argument_group("style")
+    style.add_argument(
+        "--theme",
+        choices=["auto", "light", "dark", "none"],
+        default="none",
+        help="color scheme; 'auto' follows the reader's OS setting, 'none' leaves colors to the browser (default: none)",
+    )
+    style.add_argument("--highlight-style", default="pygments", help="pandoc code highlight style (default: pygments)")
+    style.add_argument("--css", action="append", metavar="RULES", help="extra CSS appended to the inline style block (repeatable)")
+    style.add_argument("--stylesheet", metavar="URL", help="link an external stylesheet instead of relying only on inline CSS")
+
+    content = parser.add_argument_group("content")
+    content.add_argument("--toc", action="store_true", help="include a table of contents")
+    content.add_argument("--toc-depth", type=int, default=3, help="default: 3")
+    content.add_argument("--number-sections", action="store_true", help="number headings")
+    content.add_argument("--title", help="document title (otherwise taken from the file's metadata)")
+    content.add_argument("--math", choices=["katex", "mathjax", "mathml"], help="math rendering backend")
+    content.add_argument("--no-smart", dest="smart", action="store_false", help="disable smart quotes/dashes")
+    content.add_argument("--embed", action="store_true", help="embed images and other resources in the HTML")
+
+    output = parser.add_argument_group("output")
+    output.add_argument("-o", "--output", help="output path (single input file only)")
+    output.add_argument("--stdout", action="store_true", help="write HTML to stdout instead of a file")
+    output.add_argument("--pandoc-arg", action="append", metavar="ARG", help="pass an extra argument to pandoc (repeatable)")
+
+    args = parser.parse_args(argv)
+
+    if not shutil.which("pandoc"):
+        parser.error("pandoc not found on PATH")
+    if args.output and len(args.files) > 1:
+        parser.error("--output takes a single input file")
+    if args.output and args.stdout:
+        parser.error("--output and --stdout are mutually exclusive")
+
+    options = pandoc_options(args)
+
+    for file in args.files:
+        source = Path(file)
+        if not source.is_file():
+            sys.exit(f"no such file: {file}")
+
+        result = subprocess.run(
+            ["pandoc", *options, str(source)],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            sys.exit(result.stderr.strip() or f"pandoc failed on {file}")
+
+        if args.stdout:
+            sys.stdout.write(result.stdout)
+        else:
+            outfile = Path(args.output) if args.output else source.with_suffix(".html")
+            outfile.write_text(result.stdout)
+
+
+if __name__ == "__main__":
+    main()
