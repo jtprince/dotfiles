@@ -10,9 +10,15 @@
 #
 # Hook contract (Claude Code PreToolUse):
 #   - stdin: JSON with .tool_name and .tool_input.command
+#   - stdin: JSON also carries .permission_mode
 #   - stdout (this hook): JSON with hookSpecificOutput.permissionDecision="ask"
 #     to force a confirmation prompt; exit 0.
 #   - exit 0 with no output: allow silently.
+#
+# Bypass carve-out: --dangerously-skip-permissions skips permission *rules* but
+# still runs hooks, and an "ask" from a hook prompts in every mode. That stalls
+# unattended overnight runs, which is the opposite of what bypass mode is for --
+# so under permission_mode=bypassPermissions this hook allows silently.
 
 set -uo pipefail
 
@@ -23,10 +29,16 @@ input="$(cat)"
 if command -v jq >/dev/null 2>&1; then
   tool="$(printf '%s' "$input" | jq -r '.tool_name // empty')"
   cmd="$(printf '%s' "$input" | jq -r '.tool_input.command // empty')"
+  mode="$(printf '%s' "$input" | jq -r '.permission_mode // empty')"
 else
   tool="$(printf '%s' "$input" | sed -n 's/.*"tool_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
   cmd="$(printf '%s' "$input" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/p')"
+  mode="$(printf '%s' "$input" | sed -n 's/.*"permission_mode"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
 fi
+
+# Bypass mode is an explicit "never ask me anything" contract -- honor it.
+# Any other/absent mode falls through to the guard (fail-safe).
+[[ "$mode" == "bypassPermissions" ]] && exit 0
 
 # Only guard Bash calls with a non-empty command.
 [[ "$tool" != "Bash" && -n "$tool" ]] && exit 0
