@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Fetch the live JSON metadata matrix from OpenRouter's official API models catalog
+DATA=$(curl -s "https://openrouter.ai/api/v1/models")
+
+# Check if the human-readable flag was provided
+if [[ "$1" == "-h" || "$1" == "--human" ]]; then
+    # Output custom format: "Human Name (free): developer/slug:free"
+    echo "$DATA" | jq -r '.data[] | select((.pricing.prompt | tonumber) == 0) | "\(.name) (free): \(.id)"'
+else
+    # Output raw dev slugs for easy plugging straight into CLI commands
+    echo "$DATA" | jq -r '.data[] | select((.pricing.prompt | tonumber) == 0) | .id'
+fi
+
