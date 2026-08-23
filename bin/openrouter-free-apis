@@ -1,14 +1,199 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 
-# Fetch the live JSON metadata matrix from OpenRouter's official API models catalog
-DATA=$(curl -s "https://openrouter.ai/api/v1/models")
+import argparse
+import json
+import re
+import urllib.request
 
-# Check if the human-readable flag was provided
-if [[ "$1" == "-h" || "$1" == "--human" ]]; then
-    # Output custom format: "Human Name (free): developer/slug:free"
-    echo "$DATA" | jq -r '.data[] | select((.pricing.prompt | tonumber) == 0) | "\(.name) (free): \(.id)"'
-else
-    # Output raw dev slugs for easy plugging straight into CLI commands
-    echo "$DATA" | jq -r '.data[] | select((.pricing.prompt | tonumber) == 0) | .id'
-fi
+# ---------------------------------------------------------------------------
+# Rank-order priority list — models here that are free are placed first,
+# in this exact order, before any remaining free models.
+# ---------------------------------------------------------------------------
+PRIORITY_LIST = [
+    "stealth/ox-alpha:free",
+    "poolside/laguna-s-2.1:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "z-ai/glm-5.2:free",
+    "cohere/north-mini-code:free",
+    "nvidia/nemotron-3.5-lightning:free",
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "poolside/laguna-xs-2.1:free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "nvidia/nemotron-3-nano-30b-a3b:free",
+    "thinkingmachines/inkling:free",
+    "nvidia/nemotron-nano-9b-v2:free",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "nvidia/nemotron-nano-12b-v2-vl:free",
+    "thinkingmachines/inkling-small:free",
+    "liquid/lfm-2.5-2.6b:free",
+]
 
+# ---------------------------------------------------------------------------
+# Blocklist — these models are excluded by default.
+# ---------------------------------------------------------------------------
+BLOCKLIST = [
+    "dots-studio/dots-3-note-preview:free",
+    "nvidia/nemotron-3.5-content-safety:free",
+    "google/lyria-3-pro-preview",
+    "google/lyria-3-clip-preview",
+]
+
+# ---------------------------------------------------------------------------
+# Regex filters — model slugs matching these are excluded by default unless
+# --include-blocklist is given.
+# ---------------------------------------------------------------------------
+RE_AUDIO_GENERATION = re.compile(
+    r"(?:^|/)(?:lyria|music|audio)[^/]*(?:audio|music|lyria)[^/:]*"
+    r"|(?:^|/)(?:lyria)[^/:]*",
+    re.IGNORECASE,
+)
+
+RE_SAFETY_MODERATION = re.compile(
+    r"(?:^|/)[^/]*(?:content[-_ ]?safety|safety[-_ ]?(?:classifier|model)"
+    r"|moderation|moderator|guard|toxicity|hate[-_ ]?speech|jailbreak)"
+    r"[^/:]*",
+    re.IGNORECASE,
+)
+
+RE_SPECIALIZED_NON_CODING = re.compile(
+    r"(?:^|/)[^/]*(?:"
+    r"tts|text[-_]?to[-_]?speech|speech[-_]?to[-_]?text|stt|"
+    r"embedding|embed|rerank|re[-_]?rank|"
+    r"image[-_]?gen|image[-_]?generation|"
+    r"video[-_]?gen|video[-_]?generation|"
+    r"audio[-_]?gen|music[-_]?gen|"
+    r"ocr|classifier|classification"
+    r")[^/:]*",
+    re.IGNORECASE,
+)
+
+RE_NON_PROGRAMMING_PREVIEW = re.compile(
+    r"(?:^|/)(?:"
+    r"lyria[^/:]*"
+    r"|dots[^/:]*(?:note|audio|music)[^/:]*"
+    r")[^/:]*",
+    re.IGNORECASE,
+)
+
+OBVIOUSLY_INAPPROPRIATE_FILTERS = {
+    "audio_generation": RE_AUDIO_GENERATION,
+    "safety_moderation": RE_SAFETY_MODERATION,
+    "specialized_non_coding": RE_SPECIALIZED_NON_CODING,
+    "non_programming_preview": RE_NON_PROGRAMMING_PREVIEW,
+}
+
+RE_MULTIMODAL_VISION = re.compile(
+    r"(?:^|/)[^/]*(?:[-_](?:vl|vision|visual)|[-_](?:omni)"
+    r"|(?:^|/)omni[-_])[^/:]*",
+    re.IGNORECASE,
+)
+
+RE_TOO_SMALL_FOR_SERIOUS_CODING = re.compile(
+    r"(?:^|/)[^/]*(?:"
+    r"(?:^|[-_])(?:0\.[0-9]+|1|2|3)B(?:[-_:]|$)"
+    r"|(?:^|[-_])(?:1|2|3)[-_]?[Bb](?:[-_:]|$)"
+    r"|nano[-_]?2b"
+    r"|nano[-_]?3b"
+    r")[^/:]*",
+    re.IGNORECASE,
+)
+
+
+def is_obviously_inappropriate(slug: str) -> bool:
+    return any(regex.search(slug) for regex in OBVIOUSLY_INAPPROPRIATE_FILTERS.values())
+
+
+def is_multimodal_specialist(slug: str) -> bool:
+    return bool(RE_MULTIMODAL_VISION.search(slug))
+
+
+def is_too_small_for_serious_coding(slug: str) -> bool:
+    return bool(RE_TOO_SMALL_FOR_SERIOUS_CODING.search(slug))
+
+
+def fetch_free_models():
+    url = "https://openrouter.ai/api/v1/models"
+    with urllib.request.urlopen(url) as resp:
+        data = json.loads(resp.read())
+    free = [m for m in data.get("data", []) if float(m.get("pricing", {}).get("prompt", 1)) == 0]
+    return free
+
+
+def rank_models(models, include_blocked: bool) -> list[str]:
+    """Return ranked list of model IDs: priority first, then rest alphabetically.
+
+    Non-priority models are deprioritized further: multimodal/vision and
+    too-small models are pushed to the end of the remaining section.
+    """
+    ids = [m["id"] for m in models]
+
+    if not include_blocked:
+        ids = [
+            id_
+            for id_ in ids
+            if id_ not in BLOCKLIST and not is_obviously_inappropriate(id_)
+        ]
+
+    # Priority models first (in PRIORITY_LIST order, filtered to those that exist).
+    priority = [id_ for id_ in PRIORITY_LIST if id_ in ids]
+    priority_set = set(priority)
+
+    remaining = [id_ for id_ in ids if id_ not in priority_set]
+
+    # Among remaining, sort: normal models first, then deprioritized ones.
+    normal = sorted(
+        id_ for id_ in remaining if not is_multimodal_specialist(id_) and not is_too_small_for_serious_coding(id_)
+    )
+    deprioritized = sorted(
+        id_ for id_ in remaining if is_multimodal_specialist(id_) or is_too_small_for_serious_coding(id_)
+    )
+
+    return priority + normal + deprioritized
+
+
+def load_names_map(models) -> dict[str, str]:
+    return {m["id"]: m.get("name", m["id"]) for m in models}
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="List free OpenRouter models, ranked by priority, "
+        "filtered to remove inappropriate models.",
+        add_help=False,
+    )
+    parser.add_argument(
+        "-h",
+        "--human",
+        action="store_true",
+        help="Output human-readable format: 'Human Name (free): developer/slug:free'",
+    )
+    parser.add_argument(
+        "--help",
+        action="help",
+        help="Show this help message and exit.",
+    )
+    parser.add_argument(
+        "--include-blocklist",
+        action="store_true",
+        help="Include blocklisted and inappropriate models in the output.",
+    )
+    args = parser.parse_args()
+
+    models = fetch_free_models()
+    names = load_names_map(models)
+    ranked = rank_models(models, include_blocked=args.include_blocklist)
+
+    if args.human:
+        for id_ in ranked:
+            name = names[id_]
+            if "(free)" not in name.lower():
+                name = f"{name} (free)"
+            print(f"{name}: {id_}")
+    else:
+        for id_ in ranked:
+            print(id_)
+
+
+if __name__ == "__main__":
+    main()
