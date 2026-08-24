@@ -2,7 +2,7 @@ approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 
 notify = ["/Users/johnprince/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended", "--previous-notify", "[\"kitty-agent-attention\"]"]
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
 
 [features]
 hooks = true
@@ -49,6 +49,7 @@ NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunc
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/johnprince/.codex/plugins/cache/openai-bundled/browser/26.814.41957/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
 [mcp_servers.computer-use]
@@ -56,6 +57,7 @@ command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.
 args = ["mcp"]
 cwd = "."
 enabled = false
+
 [marketplaces.openai-bundled]
 source_type = "local"
 source = "/Users/johnprince/.codex/.tmp/bundled-marketplaces/openai-bundled"
@@ -94,8 +96,10 @@ enabled = true
 [plugins."template-creator@openai-primary-runtime"]
 enabled = true
 
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
 [shell_environment_policy.set]
-BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 
 [desktop]
 conversationDetailMode = "STEPS_COMMANDS"

@@ -4,5 +4,14 @@ brew upgrade
 
 echo "forcing node@22 for cavemem. Eventually want to upgrade that."
 brew link --overwrite --force node@22   # re-assert LTS as default `node`
-node -p 'process.versions.modules' | grep -qx 127 \
-	|| echo "⚠️  node ABI != 127 — cavemem may need: (cd /opt/homebrew/lib/node_modules/cavemem && npm rebuild better-sqlite3)"
+
+# Distinguish "node won't launch" (broken dyld linkage) from a real ABI change.
+# A node that can't start fails the ABI grep identically, which sends you at
+# `npm rebuild` when the actual fix is a reinstall/relink.
+if ! abi=$(node -p 'process.versions.modules' 2>/dev/null); then
+	echo "❌ node cannot launch — broken linkage, not an ABI problem."
+	echo "   Try: brew reinstall node@22 && brew link --overwrite --force node@22"
+	node -p 'process.versions.modules' 2>&1 | sed 's/^/   /' | head -5
+elif [ "$abi" != 127 ]; then
+	echo "⚠️  node ABI $abi != 127 — cavemem needs: (cd /opt/homebrew/lib/node_modules/cavemem && npm rebuild better-sqlite3)"
+fi
