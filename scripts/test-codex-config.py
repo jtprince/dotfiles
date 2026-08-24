@@ -156,7 +156,10 @@ def test_installer_dry_run() -> None:
     assert ".codex/config.toml" in output
     assert ".codex/hooks.json" in output
     assert ".codex/rules/default.rules" in output
+    assert ".claude/skills/clear-technical-prose" in output
+    assert ".codex/skills/clear-technical-prose" in output
     assert (ROOT / "config/agent/skills/link-check/SKILL.md").is_file()
+    assert (ROOT / "config/agent/skills/clear-technical-prose/SKILL.md").is_file()
 
 
 def main() -> None:

@@ -129,6 +129,14 @@ EXPLICIT_GENERAL: list[Symlink] = [
         REPO_CONFIG / "agent/skills/link-check",
         link=HOME / ".codex/skills/link-check",
     ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/clear-technical-prose",
+        link=HOME / ".claude/skills/clear-technical-prose",
+    ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/clear-technical-prose",
+        link=HOME / ".codex/skills/clear-technical-prose",
+    ),
     Symlink(REPO_CONFIG / "claude/hooks", link=HOME / ".claude/hooks"),
     Symlink(REPO_CONFIG / "claude/CLAUDE.md", link=HOME / ".claude/CLAUDE.md"),
     Symlink(REPO_CONFIG / "codex/AGENTS.md", link=HOME / ".codex/AGENTS.md"),
