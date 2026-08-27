@@ -1,0 +1,858 @@
+#!/usr/bin/env python3
+"""Read a Thermo Xcalibur ``.sld`` sequence file and write out its rows.
+
+Standalone by design: one file, Python 3.9+ standard library only, so it can be
+copied anywhere and run without installing anything.
+
+Layout sources
+--------------
+* File header (1356 bytes) and the row record come from ``Finnigan::FileHeader``,
+  ``Finnigan::AuditTag``, ``Finnigan::InjectionData`` and ``Finnigan::SeqRow`` in
+  Gene Selkov's unfinnigan Perl distribution -- the same structures the princelab
+  ``Xcalibur::Sld`` Ruby gem ports (that gem stops after the header and never
+  populates its rows).
+* The sequence preamble that sits between the header and the rows is described in
+  neither project; it was derived by inspecting Xcalibur 4.x (version 66) files.
+
+Row records are variable length with no index or delimiters, so a single bad
+length prefix desynchronises everything after it. The row count in the preamble
+is authoritative: files are not truncated when rows are deleted, and trailing
+fragments of a previous, longer sequence are common.
+"""
+
+import argparse
+import csv
+import json
+import struct
+import sys
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple
+
+PROG = "sld-read"
+
+# --------------------------------------------------------------------------
+# Layout constants
+# --------------------------------------------------------------------------
+
+MAGIC = 0xA101
+SIGNATURE = "Finnigan"
+FILE_HEADER_SIZE = 1356
+AUDIT_TAG_SIZE = 112
+N_COLUMNS = 21
+PREAMBLE_GAP = 60  # zero bytes between the tray string and the row count
+MAX_STRING_CHARS = 4096  # sanity bound on a Pascal string's character count
+FILETIME_EPOCH = datetime(1601, 1, 1, tzinfo=timezone.utc)
+
+# InjectionData: three longs, a fixed-width vial, then five doubles (64 bytes).
+INJECTION_LONGS = ("unknown_long_1", "injection_n", "unknown_long_2")
+VIAL_FIXED_BYTES = 12
+DOUBLE_FIELDS = ("inj_vol", "sample_wt", "sample_vol", "istd_amount", "dil_factor")
+
+# SeqRow common fields: 13 Pascal strings, every version.
+COMMON_STRING_FIELDS = (
+    "text_a",
+    "text_b",  # holds Sample Name in Xcalibur 4.x files
+    "sample_id",
+    "comment",
+    "user_label_1",
+    "user_label_2",
+    "user_label_3",
+    "user_label_4",
+    "user_label_5",
+    "instrument_method",
+    "process_method",
+    "file_name",
+    "path",
+)
+
+# SeqRow version-specific tail. ("str", name) is a Pascal string, ("u32", name) a long.
+_EXTRA_47: Tuple[Tuple[str, str], ...] = (
+    ("str", "position"),  # the real vial/well; the fixed-width one is usually empty
+    ("str", "text_c"),
+    ("str", "text_d"),
+    ("u32", "unknown_long"),
+)
+_EXTRA_60: Tuple[Tuple[str, str], ...] = _EXTRA_47 + tuple(
+    ("str", "text_" + letter) for letter in "efghijklmnopqrs"
+)
+
+VERSION_EXTRAS: Dict[int, Tuple[Tuple[str, str], ...]] = {
+    8: (),
+    47: _EXTRA_47,
+    57: _EXTRA_47,
+    60: _EXTRA_60,
+    62: _EXTRA_60,
+    63: _EXTRA_60,
+    64: _EXTRA_60,
+    66: _EXTRA_60,
+}
+
+# Friendly names for slots whose canonical Finnigan name is opaque.
+ALIASES = {
+    "sample_name": "text_b",
+    "extension_json": "text_s",  # .NET SampleExtensionInfo blob, Xcalibur 4.x
+}
+
+DEFAULT_COLUMNS = (
+    "row",
+    "position",
+    "sample_name",
+    "sample_id",
+    "file_name",
+    "path",
+    "instrument_method",
+    "process_method",
+    "comment",
+    "inj_vol",
+    "sample_wt",
+    "sample_vol",
+    "istd_amount",
+    "dil_factor",
+    "original_raw_file",
+    "display_row",
+)
+
+EXTRA_COLUMNS = (
+    "vial",  # fixed-width InjectionData vial
+    "injection_n",  # stored row number; unreliable before version 64
+    "user_label_1",
+    "user_label_2",
+    "user_label_3",
+    "user_label_4",
+    "user_label_5",
+    "text_a",
+    "text_c",
+    "text_d",
+    "unknown_long",
+) + tuple("text_" + letter for letter in "efghijklmnopqr")
+
+DERIVED_COLUMNS = ("row", "source_file", "original_raw_file", "display_row")
+
+EXTENSIONS = {
+    "csv": ".csv",
+    "tsv": ".tsv",
+    "table": ".txt",
+    "json": ".json",
+    "jsonl": ".jsonl",
+}
+
+
+class SldError(Exception):
+    """A .sld file did not match the expected layout."""
+
+
+# --------------------------------------------------------------------------
+# Byte reader -- the only place that touches struct
+# --------------------------------------------------------------------------
+
+
+class Reader:
+    """Little-endian cursor over a bytes object."""
+
+    def __init__(self, data: bytes, name: str = "<bytes>", offset: int = 0):
+        self.data = data
+        self.name = name
+        self.pos = offset
+
+    # -- primitives ------------------------------------------------------
+    def _take(self, size: int) -> bytes:
+        end = self.pos + size
+        if end > len(self.data):
+            raise SldError(
+                "need %d bytes at offset 0x%x but only %d remain"
+                % (size, self.pos, len(self.data) - self.pos)
+            )
+        chunk = self.data[self.pos : end]
+        self.pos = end
+        return chunk
+
+    def u16(self) -> int:
+        return struct.unpack("<H", self._take(2))[0]
+
+    def i16(self) -> int:
+        return struct.unpack("<h", self._take(2))[0]
+
+    def u32(self) -> int:
+        return struct.unpack("<I", self._take(4))[0]
+
+    def u64(self) -> int:
+        return struct.unpack("<Q", self._take(8))[0]
+
+    def f64(self) -> float:
+        return struct.unpack("<d", self._take(8))[0]
+
+    def wchar(self, nbytes: int) -> str:
+        """Fixed-width UTF-16LE field, truncated at the first NUL."""
+        text = self._take(nbytes).decode("utf-16-le", "replace")
+        return text.split("\x00", 1)[0]
+
+    def pstring(self) -> str:
+        """PascalStringWin32: uint32 character count, then that many UTF-16LE units."""
+        at = self.pos
+        nchars = self.u32()
+        if nchars > MAX_STRING_CHARS:
+            raise SldError(
+                "implausible string length %d at offset 0x%x (stream out of sync)"
+                % (nchars, at)
+            )
+        return self._take(2 * nchars).decode("utf-16-le", "replace")
+
+    def skip(self, nbytes: int) -> bytes:
+        return self._take(nbytes)
+
+    @property
+    def tell(self) -> int:
+        return self.pos
+
+    @property
+    def remaining(self) -> int:
+        return len(self.data) - self.pos
+
+
+def filetime_to_datetime(value: int) -> Optional[datetime]:
+    """Windows FILETIME (100 ns ticks since 1601-01-01 UTC) -> aware datetime."""
+    if value == 0:
+        return None
+    return FILETIME_EPOCH + timedelta(microseconds=value // 10)
+
+
+# --------------------------------------------------------------------------
+# Model
+# --------------------------------------------------------------------------
+
+
+@dataclass
+class AuditTag:
+    time: Optional[datetime]
+    tag_1: str
+    tag_2: str
+    unknown_long: int
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {
+            "time": self.time.isoformat() if self.time else None,
+            "tag_1": self.tag_1,
+            "tag_2": self.tag_2,
+        }
+
+
+@dataclass
+class FileHeader:
+    version: int
+    audit_start: AuditTag
+    audit_end: AuditTag
+    tag: str
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {
+            "version": self.version,
+            "created": self.audit_start.as_dict(),
+            "modified": self.audit_end.as_dict(),
+            "tag": self.tag,
+        }
+
+
+@dataclass
+class Preamble:
+    count: int
+    column_widths: List[int]
+    column_order: List[int]
+    user_labels: List[str]
+    tray: str
+    unknown_a: int
+
+    @property
+    def hidden_columns(self) -> List[int]:
+        return [i for i, w in enumerate(self.column_widths) if w < 0]
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {
+            "count": self.count,
+            "user_labels": self.user_labels,
+            "tray": self.tray,
+            "column_widths": self.column_widths,
+            "column_order": self.column_order,
+            "hidden_columns": self.hidden_columns,
+        }
+
+
+@dataclass
+class Sample:
+    row: int  # 1-based position in the file (authoritative)
+    fields: Dict[str, Any]
+    _extension: Optional[Tuple[Optional[str], Optional[int]]] = None
+
+    def raw(self, name: str) -> Any:
+        return self.fields.get(ALIASES.get(name, name))
+
+    def extension(self) -> Tuple[Optional[str], Optional[int]]:
+        if self._extension is None:
+            self._extension = decode_extension(self.raw("extension_json"))
+        return self._extension
+
+    def value(self, column: str) -> Any:
+        if column == "row":
+            return self.row
+        if column == "original_raw_file":
+            return self.extension()[0]
+        if column == "display_row":
+            return self.extension()[1]
+        return self.raw(column)
+
+
+@dataclass
+class Sld:
+    path: Optional[Path]
+    header: FileHeader
+    preamble: Preamble
+    samples: List[Sample]
+    trailing_bytes: int = 0
+    warnings: List[str] = field(default_factory=list)
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {
+            "file": str(self.path) if self.path else None,
+            "header": self.header.as_dict(),
+            "sequence": self.preamble.as_dict(),
+            "trailing_bytes": self.trailing_bytes,
+            "warnings": self.warnings,
+        }
+
+
+def decode_extension(blob: Any) -> Tuple[Optional[str], Optional[int]]:
+    """Pull the reinject fields out of the .NET SampleExtensionInfo JSON blob.
+
+    Xcalibur clears ``file_name`` on some saved sequences, and this blob is then
+    the only surviving record of the acquired raw file name.
+    """
+    if not blob or not isinstance(blob, str):
+        return (None, None)
+    try:
+        obj = json.loads(blob)
+    except (ValueError, TypeError):
+        return (None, None)
+    if not isinstance(obj, dict):
+        return (None, None)
+    capability = obj.get("CapabilityData")
+    reinject = capability.get("ReInject") if isinstance(capability, dict) else None
+    if not isinstance(reinject, dict):
+        return (None, None)
+    name = reinject.get("OriginalRawFileNameWithoutExtension")
+    row = reinject.get("DisplayRowNumber")
+    return (
+        name if isinstance(name, str) else None,
+        row if isinstance(row, int) else None,
+    )
+
+
+# --------------------------------------------------------------------------
+# Parsers
+# --------------------------------------------------------------------------
+
+
+def parse_audit_tag(reader: Reader) -> AuditTag:
+    start = reader.tell
+    tag = AuditTag(
+        time=filetime_to_datetime(reader.u64()),
+        tag_1=reader.wchar(50),
+        tag_2=reader.wchar(50),
+        unknown_long=reader.u32(),
+    )
+    consumed = reader.tell - start
+    if consumed != AUDIT_TAG_SIZE:  # pragma: no cover - guards the constants
+        raise SldError(
+            "audit tag consumed %d bytes, expected %d" % (consumed, AUDIT_TAG_SIZE)
+        )
+    return tag
+
+
+def parse_file_header(reader: Reader) -> FileHeader:
+    start = reader.tell
+    magic = reader.u16()
+    if magic != MAGIC:
+        raise SldError(
+            "bad magic 0x%04x at offset 0x%x, expected 0x%04x -- not an .sld/.raw file"
+            % (magic, start, MAGIC)
+        )
+    signature = reader.wchar(18)
+    if signature != SIGNATURE:
+        raise SldError(
+            "bad signature %r at offset 0x%x, expected %r"
+            % (signature, start + 2, SIGNATURE)
+        )
+    reader.skip(16)  # unknown_long[1..4]
+    version = reader.u32()
+    audit_start = parse_audit_tag(reader)
+    audit_end = parse_audit_tag(reader)
+    reader.u32()  # unknown_long[5]
+    reader.skip(60)  # unknown_area
+    tag = reader.wchar(1028)
+    consumed = reader.tell - start
+    if consumed != FILE_HEADER_SIZE:  # pragma: no cover - guards the constants
+        raise SldError(
+            "file header consumed %d bytes, expected %d" % (consumed, FILE_HEADER_SIZE)
+        )
+    return FileHeader(
+        version=version, audit_start=audit_start, audit_end=audit_end, tag=tag
+    )
+
+
+def parse_preamble(reader: Reader, warnings: List[str]) -> Preamble:
+    """Sequence preamble: column layout, user labels, tray, then the row count.
+
+    Variable length -- the label strings differ between files -- so it must be
+    walked, never addressed by a fixed offset.
+    """
+    unknown_a = reader.u32()  # equals the row count in Xcalibur 4.x, 0 in older files
+    reader.u32()  # constant 4
+    reader.u32()  # constant 0
+    widths = [reader.i16() for _ in range(N_COLUMNS)]
+    order = [reader.i16() for _ in range(N_COLUMNS)]
+    reader.u32()
+    labels = [reader.pstring() for _ in range(5)]
+    tray = reader.pstring()
+    gap_at = reader.tell
+    gap = reader.skip(PREAMBLE_GAP)
+    if gap.strip(b"\x00"):
+        warnings.append("preamble gap at offset 0x%x is not all zero" % gap_at)
+    count = reader.u32()
+    if unknown_a not in (0, count):
+        warnings.append(
+            "preamble row-count hint %d disagrees with the row count %d"
+            % (unknown_a, count)
+        )
+    return Preamble(
+        count=count,
+        column_widths=widths,
+        column_order=order,
+        user_labels=labels,
+        tray=tray,
+        unknown_a=unknown_a,
+    )
+
+
+def parse_sample(reader: Reader, version: int, row: int) -> Sample:
+    fields: Dict[str, Any] = {}
+    for name in INJECTION_LONGS:
+        fields[name] = reader.u32()
+    fields["vial"] = reader.wchar(VIAL_FIXED_BYTES)
+    for name in DOUBLE_FIELDS:
+        fields[name] = reader.f64()
+    for name in COMMON_STRING_FIELDS:
+        fields[name] = reader.pstring()
+    for kind, name in VERSION_EXTRAS[version]:
+        fields[name] = reader.pstring() if kind == "str" else reader.u32()
+    return Sample(row=row, fields=fields)
+
+
+def parse_sld(
+    data: bytes, path: Optional[Path] = None, assume_version: Optional[int] = None
+) -> Sld:
+    name = str(path) if path else "<bytes>"
+    try:
+        return _parse_sld(data, path, name, assume_version)
+    except SldError as exc:
+        raise SldError("%s: %s" % (name, exc)) from None
+
+
+def _parse_sld(
+    data: bytes, path: Optional[Path], name: str, assume_version: Optional[int]
+) -> Sld:
+    reader = Reader(data, name=name)
+    warnings: List[str] = []
+
+    header = parse_file_header(reader)
+    version = assume_version if assume_version is not None else header.version
+    if assume_version is not None and assume_version != header.version:
+        warnings.append(
+            "parsing rows as version %d; the file says %d"
+            % (assume_version, header.version)
+        )
+    if version not in VERSION_EXTRAS:
+        raise SldError(
+            "unsupported sequence version %d (known: %s). Row records are "
+            "variable length with no delimiters, so guessing a layout would "
+            "silently corrupt every row -- retry with --assume-version."
+            % (version, ", ".join(str(v) for v in sorted(VERSION_EXTRAS)))
+        )
+
+    preamble = parse_preamble(reader, warnings)
+    samples: List[Sample] = []
+    for row in range(1, preamble.count + 1):
+        at = reader.tell
+        try:
+            samples.append(parse_sample(reader, version, row))
+        except SldError as exc:
+            raise SldError("row %d starting at offset 0x%x: %s" % (row, at, exc))
+
+    trailing = reader.remaining
+    stored = [s.fields["injection_n"] for s in samples]
+    if stored and stored != list(range(1, len(stored) + 1)) and len(set(stored)) > 1:
+        warnings.append("stored injection numbers are not sequential")
+
+    return Sld(
+        path=path,
+        header=header,
+        preamble=preamble,
+        samples=samples,
+        trailing_bytes=trailing,
+        warnings=warnings,
+    )
+
+
+def read_sld(path: Path, assume_version: Optional[int] = None) -> Sld:
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise SldError("%s: %s" % (path, exc.strerror or exc))
+    return parse_sld(data, path=path, assume_version=assume_version)
+
+
+# --------------------------------------------------------------------------
+# Column selection and flattening
+# --------------------------------------------------------------------------
+
+
+def available_columns() -> List[str]:
+    seen: List[str] = []
+    for name in (
+        list(DEFAULT_COLUMNS) + list(EXTRA_COLUMNS) + ["extension_json", "source_file"]
+    ):
+        if name not in seen:
+            seen.append(name)
+    return seen
+
+
+def select_columns(args: argparse.Namespace, multi_source: bool) -> List[str]:
+    if args.columns:
+        columns = [c.strip() for c in args.columns.split(",") if c.strip()]
+        unknown = [c for c in columns if c not in available_columns()]
+        if unknown:
+            raise SldError(
+                "unknown column(s): %s (see --list-columns)" % ", ".join(unknown)
+            )
+    else:
+        columns = list(DEFAULT_COLUMNS)
+        if args.all_fields:
+            columns += [c for c in EXTRA_COLUMNS if c not in columns]
+        if args.raw_extension and "extension_json" not in columns:
+            columns.append("extension_json")
+    if multi_source and "source_file" not in columns:
+        columns.insert(0, "source_file")
+    return columns
+
+
+def flatten(
+    sample: Sample, columns: Sequence[str], source: Optional[Path]
+) -> Dict[str, Any]:
+    row: Dict[str, Any] = {}
+    for column in columns:
+        if column == "source_file":
+            row[column] = source.name if source else None
+        else:
+            row[column] = sample.value(column)
+    return row
+
+
+def render(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, float):
+        return repr(value)
+    return str(value)
+
+
+# --------------------------------------------------------------------------
+# Writers -- one per format, identical signature, registered in WRITERS
+# --------------------------------------------------------------------------
+
+
+def write_separated(documents, rows, columns, stream, args, delimiter):
+    writer = csv.writer(stream, delimiter=delimiter, lineterminator="\n")
+    if not args.no_header:
+        writer.writerow(columns)
+    for row in rows:
+        writer.writerow([render(row[c]) for c in columns])
+
+
+def write_csv(documents, rows, columns, stream, args):
+    write_separated(documents, rows, columns, stream, args, ",")
+
+
+def write_tsv(documents, rows, columns, stream, args):
+    write_separated(documents, rows, columns, stream, args, "\t")
+
+
+def write_table(documents, rows, columns, stream, args):
+    cells = [[render(row[c]) for c in columns] for row in rows]
+    widths = [len(c) if not args.no_header else 0 for c in columns]
+    for line in cells:
+        for i, text in enumerate(line):
+            widths[i] = max(widths[i], len(text))
+
+    def emit(values):
+        stream.write(
+            "  ".join(v.ljust(widths[i]) for i, v in enumerate(values)).rstrip() + "\n"
+        )
+
+    if not args.no_header:
+        emit(list(columns))
+        stream.write("  ".join("-" * w for w in widths).rstrip() + "\n")
+    for line in cells:
+        emit(line)
+
+
+def write_json(documents, rows, columns, stream, args):
+    payload = []
+    for doc, doc_rows in documents:
+        entry = doc.as_dict()
+        entry["samples"] = [
+            {c: r[c] for c in columns if c != "source_file"} for r in doc_rows
+        ]
+        payload.append(entry)
+    json.dump(
+        payload if len(payload) != 1 else payload[0], stream, indent=2, default=str
+    )
+    stream.write("\n")
+
+
+def write_jsonl(documents, rows, columns, stream, args):
+    for row in rows:
+        json.dump({c: row[c] for c in columns}, stream, default=str)
+        stream.write("\n")
+
+
+WRITERS = {
+    "csv": write_csv,
+    "tsv": write_tsv,
+    "table": write_table,
+    "json": write_json,
+    "jsonl": write_jsonl,
+}
+
+
+def write_header_summary(documents, stream, as_json: bool):
+    if as_json:
+        payload = [doc.as_dict() for doc, _ in documents]
+        json.dump(
+            payload if len(payload) != 1 else payload[0], stream, indent=2, default=str
+        )
+        stream.write("\n")
+        return
+    for index, (doc, _) in enumerate(documents):
+        if index:
+            stream.write("\n")
+        created = doc.header.audit_start.time
+        modified = doc.header.audit_end.time
+        stream.write("file:        %s\n" % (doc.path if doc.path else "<stdin>"))
+        stream.write("version:     %d\n" % doc.header.version)
+        stream.write("rows:        %d\n" % doc.preamble.count)
+        stream.write("created:     %s\n" % (created.isoformat() if created else ""))
+        stream.write("modified:    %s\n" % (modified.isoformat() if modified else ""))
+        stream.write("created by:  %s\n" % doc.header.audit_start.tag_1)
+        stream.write("tray:        %s\n" % doc.preamble.tray)
+        stream.write("user labels: %s\n" % ", ".join(doc.preamble.user_labels))
+        hidden = doc.preamble.hidden_columns
+        stream.write(
+            "hidden cols: %s\n"
+            % (", ".join(str(h) for h in hidden) if hidden else "none")
+        )
+        if doc.header.tag:
+            stream.write(
+                "tag:         %s\n"
+                % doc.header.tag.replace("\r\n", " | ").replace("\n", " | ")
+            )
+        if doc.trailing_bytes:
+            stream.write(
+                "trailing:    %d unparsed bytes after the last row\n"
+                % doc.trailing_bytes
+            )
+
+
+# --------------------------------------------------------------------------
+# CLI
+# --------------------------------------------------------------------------
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog=PROG,
+        description="Read a Thermo Xcalibur .sld sequence file and write out its rows.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "examples:\n"
+            "  %(prog)s seq.sld                       # ASCII table on stdout\n"
+            "  %(prog)s -f csv seq.sld > seq.csv\n"
+            "  %(prog)s -f csv --auto-name seq.sld    # writes ./seq.csv\n"
+            "  %(prog)s -f jsonl --all-fields seq.sld\n"
+            "  %(prog)s --header-only *.sld\n"
+        ),
+    )
+    parser.add_argument(
+        "files", nargs="*", type=Path, metavar="FILE", help="one or more .sld files"
+    )
+    parser.add_argument(
+        "-f",
+        "--format",
+        choices=sorted(WRITERS),
+        default="table",
+        help="output format (default: table)",
+    )
+    parser.add_argument(
+        "-o",
+        "--outpath",
+        type=Path,
+        default=None,
+        help="write to PATH instead of stdout ('-' means stdout)",
+    )
+    parser.add_argument(
+        "--auto-name",
+        action="store_true",
+        help="write <dir>/<basename>.<ext> beside each input file",
+    )
+    parser.add_argument(
+        "--columns",
+        metavar="LIST",
+        help="explicit comma-separated column list and order",
+    )
+    parser.add_argument(
+        "--all-fields",
+        action="store_true",
+        help="also emit the empty/unidentified SeqRow slots",
+    )
+    parser.add_argument(
+        "--raw-extension",
+        action="store_true",
+        help="emit the raw SampleExtensionInfo JSON as a column",
+    )
+    parser.add_argument(
+        "--header-only",
+        action="store_true",
+        help="print file metadata and row counts, no rows",
+    )
+    parser.add_argument(
+        "--no-header",
+        action="store_true",
+        help="omit the header line (csv, tsv, table)",
+    )
+    parser.add_argument(
+        "--assume-version",
+        type=int,
+        metavar="N",
+        help="parse rows with version N's layout instead of the stored one",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="treat warnings (trailing bytes, odd counts) as errors",
+    )
+    parser.add_argument(
+        "--list-columns",
+        action="store_true",
+        help="list the column names available to --columns and exit",
+    )
+    return parser
+
+
+def open_output(path: Optional[Path]):
+    if path is None or str(path) == "-":
+        return sys.stdout, False
+    handle = path.open("w", encoding="utf-8", newline="")
+    return handle, True
+
+
+def emit(documents, args, stream) -> None:
+    if args.header_only:
+        write_header_summary(
+            documents, stream, as_json=args.format in ("json", "jsonl")
+        )
+        return
+    multi = len(documents) > 1
+    columns = select_columns(args, multi_source=multi)
+    per_doc = [
+        (doc, [flatten(s, columns, doc.path) for s in doc.samples])
+        for doc, _ in documents
+    ]
+    rows = [row for _, doc_rows in per_doc for row in doc_rows]
+    WRITERS[args.format](per_doc, rows, columns, stream, args)
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+
+    if args.list_columns:
+        print("default columns:")
+        for name in DEFAULT_COLUMNS:
+            print("  %s" % name)
+        print("\nadditional columns (--all-fields, or name them with --columns):")
+        for name in EXTRA_COLUMNS + ("extension_json", "source_file"):
+            print("  %s" % name)
+        return 0
+
+    if not args.files:
+        parser.error("no input files (use --list-columns for column names)")
+    if args.auto_name and args.outpath:
+        parser.error("--auto-name and --outpath are mutually exclusive")
+
+    try:
+        documents = [(read_sld(path, args.assume_version), path) for path in args.files]
+    except SldError as exc:
+        print("%s: error: %s" % (PROG, exc), file=sys.stderr)
+        return 1
+
+    problems: List[str] = []
+    for doc, path in documents:
+        for warning in doc.warnings:
+            problems.append("%s: %s" % (path, warning))
+        if doc.trailing_bytes:
+            problems.append(
+                "%s: %d bytes after the last row were not parsed (deleted rows leave "
+                "fragments behind; the row count is authoritative)"
+                % (path, doc.trailing_bytes)
+            )
+    for problem in problems:
+        print("%s: warning: %s" % (PROG, problem), file=sys.stderr)
+    if problems and args.strict:
+        print(
+            "%s: error: --strict and %d warning(s)" % (PROG, len(problems)),
+            file=sys.stderr,
+        )
+        return 1
+
+    try:
+        if args.auto_name:
+            suffix = EXTENSIONS[args.format]
+            for doc, path in documents:
+                out = path.with_suffix(suffix)
+                if out.resolve() == path.resolve():
+                    raise SldError("%s: refusing to overwrite the input file" % path)
+                stream, close = open_output(out)
+                try:
+                    emit([(doc, path)], args, stream)
+                finally:
+                    if close:
+                        stream.close()
+                print("%s: wrote %s" % (PROG, out), file=sys.stderr)
+        else:
+            stream, close = open_output(args.outpath)
+            try:
+                emit(documents, args, stream)
+            finally:
+                if close:
+                    stream.close()
+    except SldError as exc:
+        print("%s: error: %s" % (PROG, exc), file=sys.stderr)
+        return 1
+    except BrokenPipeError:  # e.g. piping into head
+        return 0
+    except OSError as exc:
+        print("%s: error: %s" % (PROG, exc), file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
