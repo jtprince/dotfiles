@@ -137,6 +137,22 @@ EXPLICIT_GENERAL: list[Symlink] = [
         REPO_CONFIG / "agent/skills/clear-technical-prose",
         link=HOME / ".codex/skills/clear-technical-prose",
     ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/scientific-document-voice",
+        link=HOME / ".claude/skills/scientific-document-voice",
+    ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/scientific-document-voice",
+        link=HOME / ".codex/skills/scientific-document-voice",
+    ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/scientific-writing-voice",
+        link=HOME / ".claude/skills/scientific-writing-voice",
+    ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/scientific-writing-voice",
+        link=HOME / ".codex/skills/scientific-writing-voice",
+    ),
     Symlink(REPO_CONFIG / "claude/hooks", link=HOME / ".claude/hooks"),
     Symlink(REPO_CONFIG / "claude/CLAUDE.md", link=HOME / ".claude/CLAUDE.md"),
     Symlink(REPO_CONFIG / "codex/AGENTS.md", link=HOME / ".codex/AGENTS.md"),
