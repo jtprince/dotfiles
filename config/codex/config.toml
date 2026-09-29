@@ -34,6 +34,12 @@ args = ["serve"]
 command = "cavemem"
 args = ["mcp"]
 
+[mcp_servers.computer-use]
+command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+args = ["mcp"]
+cwd = "."
+enabled = false
+
 [mcp_servers.node_repl]
 args = []
 command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
@@ -50,15 +56,9 @@ NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = ""
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/johnprince/.codex/plugins/cache/openai-bundled/browser/26.917.51856/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/johnprince/.codex/plugins/cache/openai-bundled/browser/26.924.20706/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
 SKY_CUA_SERVICE_PATH = "/Users/johnprince/.codex/computer-use/Codex Computer Use.app"
-CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
-
-[mcp_servers.computer-use]
-command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
-args = ["mcp"]
-cwd = "."
-enabled = false
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
 
 [marketplaces.openai-bundled]
 source_type = "local"
@@ -67,9 +67,6 @@ source = "/Users/johnprince/.codex/.tmp/bundled-marketplaces/openai-bundled"
 [marketplaces.openai-primary-runtime]
 source_type = "local"
 source = "/Users/johnprince/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
-
-[plugins."browser@openai-bundled"]
-enabled = true
 
 [plugins."visualize@openai-bundled"]
 enabled = true
@@ -98,10 +95,13 @@ enabled = true
 [plugins."codex-app-tools@openai-bundled"]
 enabled = true
 
-[plugins."computer-use@openai-bundled"]
+[plugins."browser@openai-bundled"]
 enabled = true
 
 [plugins."unified-computer-use@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
 enabled = true
 
 [shell_environment_policy.set]

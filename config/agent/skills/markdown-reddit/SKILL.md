@@ -1,9 +1,9 @@
 ---
 name: markdown-reddit
 description: >
-  Reddit post and comment formatting ("Reddit markdown"). Use whenever writing
-  text the user will paste into a Reddit post, comment, or reply, or a file meant
-  for Reddit.
+  Reddit post and comment formatting ("Reddit markdown" or "reddit flavored
+  markdown"). Use whenever writing text the user will paste into a Reddit post,
+  comment, or reply, or a file meant for Reddit.
 ---
 
 # markdown-reddit
