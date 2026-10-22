@@ -189,6 +189,8 @@ def test_every_exempt_invariant_still_exists():
             lambda: [t for t, *_ in task_entries()], id="tasks", marks=full_only
         ),
         pytest.param(open_question_ids, id="open-questions", marks=full_only),
+        pytest.param(lambda: [d for d, _ in entries(DATA_MODEL)], id="data-model", marks=full_only),
+        pytest.param(lambda: [i for i, _ in entries(INTERFACES)], id="interfaces", marks=full_only),
     ],
 )
 def test_every_id_is_defined_once(ids):
