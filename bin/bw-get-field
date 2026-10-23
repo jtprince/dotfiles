@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import json
+import sys
+
+parser = argparse.ArgumentParser(
+    description="Retrieve fields from a Bitwarden item.")
+parser.add_argument("name", help="the name of the login/item")
+parser.add_argument(
+    "fields", nargs="+", help="the fields to retrieve (outputs value, one per line in order)"
+)
+args = parser.parse_args()
+
+base_cli = ["bw", "get", "item"]
+
+try:
+    # Execute the Bitwarden CLI command
+    result = subprocess.run(
+        base_cli + [args.name],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+except subprocess.CalledProcessError as e:
+    print(f"Error executing Bitwarden CLI: {
+          e.stderr.strip()}", file=sys.stderr)
+    sys.exit(1)
+except FileNotFoundError:
+    print("Error: 'bw' command not found. Ensure the Bitwarden CLI is installed and in your PATH.", file=sys.stderr)
+    sys.exit(1)
+
+try:
+    data = json.loads(result.stdout)
+except json.JSONDecodeError:
+    print("Error: Failed to parse JSON output from Bitwarden CLI.", file=sys.stderr)
+    sys.exit(1)
+
+
+def get_field_value(item_data, field_name):
+    # 1. Check custom fields array (matching your jq selector logic)
+    custom_fields = item_data.get("fields", [])
+    if isinstance(custom_fields, list):
+        for f in custom_fields:
+            if isinstance(f, dict) and f.get("name") == field_name:
+                return f.get("value")
+
+    # 2. Check standard login object fields (e.g., username, password)
+    login_info = item_data.get("login", {})
+    if isinstance(login_info, dict) and field_name in login_info:
+        return login_info.get(field_name)
+
+    # 3. Check root-level item properties (e.g., name, notes)
+    if field_name in item_data:
+        return item_data.get(field_name)
+
+    return None
+
+
+# Retrieve and print each requested field value
+for field in args.fields:
+    val = get_field_value(data, field)
+    if val is not None:
+        print(val)
+    else:
+        print()  # Print an empty line if the field is not found

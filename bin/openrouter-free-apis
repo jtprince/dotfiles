@@ -178,21 +178,28 @@ def main():
         action="store_true",
         help="Include blocklisted and inappropriate models in the output.",
     )
+    parser.add_argument(
+        "--no-openrouter-prefix",
+        action="store_true",
+        help="Do not prepend 'openrouter/' to model IDs in output.",
+    )
     args = parser.parse_args()
 
     models = fetch_free_models()
     names = load_names_map(models)
     ranked = rank_models(models, include_blocked=args.include_blocklist)
 
+    prefix = "" if args.no_openrouter_prefix else "openrouter/"
+
     if args.human:
         for id_ in ranked:
             name = names[id_]
             if "(free)" not in name.lower():
                 name = f"{name} (free)"
-            print(f"{name}: {id_}")
+            print(f"{name}: {prefix}{id_}")
     else:
         for id_ in ranked:
-            print(id_)
+            print(f"{prefix}{id_}")
 
 
 if __name__ == "__main__":
