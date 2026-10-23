@@ -137,6 +137,36 @@ EXPLICIT_GENERAL: list[Symlink] = [
         REPO_CONFIG / "agent/skills/clear-technical-prose",
         link=HOME / ".codex/skills/clear-technical-prose",
     ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/scientific-document-voice",
+        link=HOME / ".claude/skills/scientific-document-voice",
+    ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/scientific-document-voice",
+        link=HOME / ".codex/skills/scientific-document-voice",
+    ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/scientific-writing-voice",
+        link=HOME / ".claude/skills/scientific-writing-voice",
+    ),
+    Symlink(
+        REPO_CONFIG / "agent/skills/scientific-writing-voice",
+        link=HOME / ".codex/skills/scientific-writing-voice",
+    ),
+    *(
+        Symlink(
+            REPO_CONFIG / f"agent/skills/{name}", link=HOME / f".{tool}/skills/{name}"
+        )
+        for name in (
+            "markdown-slack",
+            "markdown-reddit",
+            "markdown-github",
+            "markdown-discord",
+            "markdown-obsidian",
+            "plain-spec",
+        )
+        for tool in ("claude", "codex")
+    ),
     Symlink(REPO_CONFIG / "claude/hooks", link=HOME / ".claude/hooks"),
     Symlink(REPO_CONFIG / "claude/CLAUDE.md", link=HOME / ".claude/CLAUDE.md"),
     Symlink(REPO_CONFIG / "codex/AGENTS.md", link=HOME / ".codex/AGENTS.md"),
@@ -187,7 +217,7 @@ ENSURE_DIRS_LINUX = [
 # ---------------------------------------------------------------------------
 
 GIT_FILTERS: dict[str, str] = {
-    "claude-settings.clean": 'jq "del(.model, .effortLevel)"',
+    "claude-settings.clean": 'jq "del(.model, .effortLevel, .modelSettings)"',
     "codex-config.clean": "python3 config/codex/clean-config.py",
     # `required` guards the clean side so machine-local state can never slip
     # into the object store silently. It also makes git refuse to smudge unless

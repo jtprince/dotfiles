@@ -2,8 +2,10 @@
 
 ## Writing style
 
-For durable prose written into files, apply the `clear-technical-prose` skill. This rule
-does not govern chat or terminal updates.
+For durable prose written into files, apply the `clear-technical-prose` skill. For
+reports, analyses, protocols, and memos, also apply `scientific-document-voice`. For
+scientific manuscripts and results write-ups, also apply `scientific-writing-voice`. These
+rules do not govern chat or terminal updates.
 
 Preserve facts, citations, technical terms, quotations, and calibrated uncertainty. Prefer
 concrete subjects, active verbs, consistent terminology, and the shortest wording that
