@@ -50,6 +50,11 @@ AGENTS_MAX_LINES = 240
 #: The whole of spec/, as a ratchet. Set it a little above the current size when the spec is written.
 SPEC_BYTE_BUDGET = 50_000
 
+#: Full form: the contract (data model, interfaces, invariants) must stay above this share of spec/.
+#: The tasks, open questions, and bug log grow every session, and a spec where they bury the contract
+#: has stopped doing its job; one such spec fell to a 16% contract share before this check existed.
+MIN_CONTRACT_SHARE = 0.30
+
 #: A resolved question leaves spec/open-questions.md.
 RESOLUTION_MARKERS = ("RESOLVED", "CLOSED", "ANSWERED")
 
@@ -189,8 +194,16 @@ def test_every_exempt_invariant_still_exists():
             lambda: [t for t, *_ in task_entries()], id="tasks", marks=full_only
         ),
         pytest.param(open_question_ids, id="open-questions", marks=full_only),
-        pytest.param(lambda: [d for d, _ in entries(DATA_MODEL)], id="data-model", marks=full_only),
-        pytest.param(lambda: [i for i, _ in entries(INTERFACES)], id="interfaces", marks=full_only),
+        pytest.param(
+            lambda: [d for d, _ in entries(DATA_MODEL)],
+            id="data-model",
+            marks=full_only,
+        ),
+        pytest.param(
+            lambda: [i for i, _ in entries(INTERFACES)],
+            id="interfaces",
+            marks=full_only,
+        ),
     ],
 )
 def test_every_id_is_defined_once(ids):
@@ -374,6 +387,20 @@ def test_the_spec_stays_within_its_budget():
     assert size <= SPEC_BYTE_BUDGET, (
         f"spec/ is {size:,} bytes, over the {SPEC_BYTE_BUDGET:,} budget. Trim history, or raise the budget "
         f"with a dated comment that gives the reason."
+    )
+
+
+@full_only
+def test_the_contract_is_the_majority_of_the_spec():
+    contract_files = [DATA_MODEL, INTERFACES, *INVARIANTS_DIR.glob("*.md")]
+    contract = sum(p.stat().st_size for p in contract_files if p.is_file())
+    history_files = [TASKS, OPEN_QUESTIONS, BUGS]
+    history = sum(p.stat().st_size for p in history_files if p.is_file())
+    share = contract / max(contract + history, 1)
+    assert share > MIN_CONTRACT_SHARE, (
+        f"the contract is {100 * share:.0f}% of spec/, at or below "
+        f"{100 * MIN_CONTRACT_SHARE:.0f}%. Shorten done tasks, retire answered questions, "
+        f"and trim bug entries rather than lowering this bar."
     )
 
 

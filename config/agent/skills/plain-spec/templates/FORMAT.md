@@ -62,5 +62,7 @@ lands in the contract if it changed the contract, or in `docs/` if it is a findi
 | `docs/*.md` | the narrative: what was measured, what it means, how the code works |
 | `git log` | the reasons: the commit that closed a task is that task's record |
 
-The size limits in `tests/test_spec_hygiene.py` keep history out of the specification. Raising a
-limit is allowed; raise it with a dated reason beside the constant.
+The size limits in `tests/test_spec_hygiene.py` keep history out of the specification. In the full
+form, the contract (data model, interfaces, and invariants) must also stay above
+`MIN_CONTRACT_SHARE` of `spec/`, so that tasks, questions, and bugs cannot bury it. Raising a limit
+is allowed; raise it with a dated reason beside the constant.

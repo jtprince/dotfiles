@@ -138,7 +138,7 @@ Copy `templates/AGENTS-spec-section.md` into the repository's `AGENTS.md`. Its r
    `AGENTS.md` already states them. Undecided questions become open questions.
 2. Copy `templates/FORMAT.md` to the repository root and `templates/test_spec_hygiene.py` to
    `tests/`. Set the constants at the top of the test: `FORM`, `MIN_CONSTRAINTS`, the size limits,
-   and the test-level marker if the repository uses one.
+   `MIN_CONTRACT_SHARE` (full form), and the test-level marker if the repository uses one.
 3. Write invariants for the behaviour that exists or that the first task delivers. An invariant
    with no test yet goes into `UNTESTED_INVARIANTS` with a reason of more than 40 characters, for
    example "Test arrives with §T.2, which builds the fixture."
