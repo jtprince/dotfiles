@@ -71,14 +71,6 @@
       {
         "hooks": [
           {
-            "command": "cavemem hook run post-tool-use --ide claude-code",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
             "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PostToolUse; : # __keepresso_hook",
             "timeout": 5,
             "type": "command"
@@ -130,14 +122,6 @@
       {
         "hooks": [
           {
-            "command": "cavemem hook run session-end --ide claude-code",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
             "command": "serena-hooks cleanup --client=claude-code",
             "type": "command"
           }
@@ -159,14 +143,6 @@
         "hooks": [
           {
             "command": "$HOME/.claude/hooks/strip-rtk-hook.sh",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "cavemem hook run session-start --ide claude-code",
             "type": "command"
           }
         ]
@@ -202,14 +178,6 @@
       {
         "hooks": [
           {
-            "command": "cavemem hook run stop --ide claude-code",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
             "command": "kitty-agent-attention",
             "type": "command"
           }
@@ -229,14 +197,6 @@
       {
         "hooks": [
           {
-            "command": "cavemem hook run user-prompt-submit --ide claude-code",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
             "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook UserPromptSubmit; : # __keepresso_hook",
             "timeout": 5,
             "type": "command"
@@ -244,14 +204,6 @@
         ]
       }
     ]
-  },
-  "mcpServers": {
-    "cavemem": {
-      "args": [
-        "mcp"
-      ],
-      "command": "cavemem"
-    }
   },
   "permissions": {
     "defaultMode": "auto"

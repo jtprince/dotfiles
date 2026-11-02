@@ -15,14 +15,6 @@
       {
         "hooks" : [
           {
-            "command" : "cavemem hook run post-tool-use --ide codex",
-            "type" : "command"
-          }
-        ]
-      },
-      {
-        "hooks" : [
-          {
             "command" : "c='\/Applications\/Keepresso.app\/Contents\/Helpers\/keepresso'; [ -x \"$c\" ] || c=\/Applications\/Keepresso.app\/Contents\/Helpers\/keepresso; \"$c\" codex-hook PostToolUse; : # __keepresso_codex_hook",
             "timeout" : 5,
             "type" : "command"
@@ -73,10 +65,6 @@
       {
         "hooks" : [
           {
-            "command" : "cavemem hook run session-start --ide codex",
-            "type" : "command"
-          },
-          {
             "command" : "serena-hooks activate --client=codex",
             "type" : "command"
           }
@@ -96,14 +84,6 @@
       {
         "hooks" : [
           {
-            "command" : "cavemem hook run stop --ide codex",
-            "type" : "command"
-          }
-        ]
-      },
-      {
-        "hooks" : [
-          {
             "command" : "c='\/Applications\/Keepresso.app\/Contents\/Helpers\/keepresso'; [ -x \"$c\" ] || c=\/Applications\/Keepresso.app\/Contents\/Helpers\/keepresso; \"$c\" codex-hook Stop; : # __keepresso_codex_hook",
             "timeout" : 5,
             "type" : "command"
@@ -112,14 +92,6 @@
       }
     ],
     "UserPromptSubmit" : [
-      {
-        "hooks" : [
-          {
-            "command" : "cavemem hook run user-prompt-submit --ide codex",
-            "type" : "command"
-          }
-        ]
-      },
       {
         "hooks" : [
           {

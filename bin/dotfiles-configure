@@ -185,9 +185,6 @@ EXPLICIT_GENERAL: list[Symlink] = [
 
 EXPLICIT_MAC: list[Symlink] = [
     Symlink(REPO_CONFIG / "mac/hammerspoon", link=HOME / ".hammerspoon"),
-    Symlink(
-        REPO_CONFIG / "cavemem/settings.json", link=HOME / ".cavemem/settings.json"
-    ),
     Symlink(REPO_CONFIG / "claude/settings.json", link=HOME / ".claude/settings.json"),
 ]
 

@@ -46,7 +46,6 @@ def test_config() -> None:
         "serena",
         "headroom",
         "tokensave",
-        "cavemem",
     }
     assert config["mcp_servers"]["serena"]["args"] == [
         "start-mcp-server",

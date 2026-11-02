@@ -30,10 +30,6 @@ args = ["mcp", "serve"]
 command = "tokensave"
 args = ["serve"]
 
-[mcp_servers.cavemem]
-command = "cavemem"
-args = ["mcp"]
-
 [mcp_servers.computer-use]
 command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
 args = ["mcp"]
