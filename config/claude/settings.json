@@ -1,78 +1,68 @@
 {
-  "permissions": {
-    "defaultMode": "auto"
+  "agentPushNotifEnabled": true,
+  "enabledPlugins": {
+    "caveman@caveman": false,
+    "code-review@claude-plugins-official": true,
+    "context-mode@context-mode": true,
+    "enveda-databricks@enveda-ai-plugin-marketplace": true,
+    "enveda-documentation@enveda-ai-plugin-marketplace": true,
+    "enveda-kr-posts@enveda-ai-plugin-marketplace": true,
+    "enveda-peptidomics@peptidomics-ai-plugin-marketplace": true,
+    "enveda-prefect@enveda-ai-plugin-marketplace": true,
+    "enveda-python@enveda-ai-plugin-marketplace": true,
+    "enveda-reusable-workflows@enveda-ai-plugin-marketplace": true,
+    "enveda-setup@enveda-ai-plugin-marketplace": true,
+    "enveda-ui-ux@enveda-ai-plugin-marketplace": true,
+    "enveda-vibe-coding@enveda-ai-plugin-marketplace": true,
+    "frontend-design@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "repo": "JuliusBrussee/caveman",
+        "source": "github"
+      }
+    },
+    "context-mode": {
+      "source": {
+        "repo": "mksglu/context-mode",
+        "source": "github"
+      }
+    },
+    "peptidomics-ai-plugin-marketplace": {
+      "source": {
+        "path": "/Users/johnprince/projects/peptidomics-ai-plugin-marketplace",
+        "source": "directory"
+      }
+    }
   },
   "hooks": {
-    "PreToolUse": [
+    "Notification": [
       {
-        "matcher": "Bash",
         "hooks": [
           {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/no-blanket-git-add.sh"
+            "command": "kitty-agent-attention",
+            "type": "command"
           }
         ]
       },
       {
-        "matcher": "",
         "hooks": [
           {
-            "type": "command",
-            "command": "serena-hooks remind --client=claude-code"
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__serena__*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "serena-hooks auto-approve --client=claude-code"
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook Notification; : # __keepresso_hook",
+            "timeout": 5,
+            "type": "command"
           }
         ]
       }
     ],
-    "SessionStart": [
+    "PermissionRequest": [
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/strip-rtk-hook.sh"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cavemem hook run session-start --ide claude-code"
-          }
-        ]
-      },
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "serena-hooks activate --client=claude-code"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"/Users/johnprince/.claude/hooks/context-mode-cache-heal.mjs\""
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cavemem hook run user-prompt-submit --ide claude-code"
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PermissionRequest; : # __keepresso_hook",
+            "timeout": 5,
+            "type": "command"
           }
         ]
       }
@@ -81,8 +71,129 @@
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "cavemem hook run post-tool-use --ide claude-code"
+            "command": "cavemem hook run post-tool-use --ide claude-code",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PostToolUse; : # __keepresso_hook",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/.claude/hooks/no-blanket-git-add.sh",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "serena-hooks remind --client=claude-code",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      },
+      {
+        "hooks": [
+          {
+            "command": "serena-hooks auto-approve --client=claude-code",
+            "type": "command"
+          }
+        ],
+        "matcher": "mcp__serena__*"
+      },
+      {
+        "hooks": [
+          {
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PreToolUse; : # __keepresso_hook",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "cavemem hook run session-end --ide claude-code",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "serena-hooks cleanup --client=claude-code",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      },
+      {
+        "hooks": [
+          {
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook SessionEnd; : # __keepresso_hook",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/.claude/hooks/strip-rtk-hook.sh",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "cavemem hook run session-start --ide claude-code",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "serena-hooks activate --client=claude-code",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      },
+      {
+        "hooks": [
+          {
+            "command": "\"/Users/johnprince/.claude/hooks/context-mode-cache-heal.mjs\"",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook SessionStart; : # __keepresso_hook",
+            "timeout": 5,
+            "type": "command"
           }
         ]
       }
@@ -91,97 +202,64 @@
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "cavemem hook run stop --ide claude-code"
+            "command": "cavemem hook run stop --ide claude-code",
+            "type": "command"
           }
         ]
       },
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "kitty-agent-attention"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kitty-agent-attention"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cavemem hook run session-end --ide claude-code"
+            "command": "kitty-agent-attention",
+            "type": "command"
           }
         ]
       },
       {
-        "matcher": "",
         "hooks": [
           {
-            "type": "command",
-            "command": "serena-hooks cleanup --client=claude-code"
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook Stop; : # __keepresso_hook",
+            "timeout": 5,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "cavemem hook run user-prompt-submit --ide claude-code",
+            "type": "command"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook UserPromptSubmit; : # __keepresso_hook",
+            "timeout": 5,
+            "type": "command"
           }
         ]
       }
     ]
   },
-  "enabledPlugins": {
-    "caveman@caveman": false,
-    "frontend-design@claude-plugins-official": true,
-    "enveda-databricks@enveda-ai-plugin-marketplace": true,
-    "enveda-python@enveda-ai-plugin-marketplace": true,
-    "enveda-prefect@enveda-ai-plugin-marketplace": true,
-    "enveda-documentation@enveda-ai-plugin-marketplace": true,
-    "enveda-kr-posts@enveda-ai-plugin-marketplace": true,
-    "enveda-reusable-workflows@enveda-ai-plugin-marketplace": true,
-    "code-review@claude-plugins-official": true,
-    "enveda-ui-ux@enveda-ai-plugin-marketplace": true,
-    "enveda-vibe-coding@enveda-ai-plugin-marketplace": true,
-    "context-mode@context-mode": true
-  },
-  "extraKnownMarketplaces": {
-    "caveman": {
-      "source": {
-        "source": "github",
-        "repo": "JuliusBrussee/caveman"
-      }
-    },
-    "cavekit-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "juliusbrussee/cavekit"
-      }
-    },
-    "context-mode": {
-      "source": {
-        "source": "github",
-        "repo": "mksglu/context-mode"
-      }
-    }
-  },
-  "promptSuggestionEnabled": false,
-  "tui": "fullscreen",
-  "skipDangerousModePermissionPrompt": true,
-  "verbose": true,
-  "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
   "mcpServers": {
     "cavemem": {
-      "command": "cavemem",
       "args": [
         "mcp"
-      ]
+      ],
+      "command": "cavemem"
     }
-  }
+  },
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "promptSuggestionEnabled": false,
+  "remoteControlAtStartup": true,
+  "skipAutoPermissionPrompt": true,
+  "skipDangerousModePermissionPrompt": true,
+  "tui": "fullscreen",
+  "verbose": true
 }
