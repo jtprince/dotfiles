@@ -23,3 +23,6 @@ export HOMEBREW_VERIFY_ATTESTATIONS=1       # verify homebrew/core bottle build 
 if [ -f "$HOME/.cargo/env" ]; then
   . "$HOME/.cargo/env"
 fi
+
+# ── Azure VM (bin/work/vm-manage) ──
+export VM_MANAGE_DEFAULT_VM="john-highmem"

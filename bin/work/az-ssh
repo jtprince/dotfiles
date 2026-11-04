@@ -1,0 +1,440 @@
+#!/usr/bin/env bash
+# az-ssh: ssh into an Azure VM by name, signing in with your Entra ID (Azure AD)
+# account instead of a hand-managed key. Run `az-ssh --help` for usage.
+#
+# How it works: the VM name is looked up in a local index (name -> resource
+# group, subscription) built from `az vm list`. `az ssh config` then writes a
+# short-lived ssh config and certificate for that VM, and plain `ssh -F <config>`
+# does the rest, so every normal ssh option works. az-scp reuses this script.
+#
+# Runs on the bash 3.2 that ships with macOS.
+
+set -uo pipefail
+
+prog="az-ssh"
+cfg_dir="${HOME}/.ssh/azure-ephemeral"
+index_file="${cfg_dir}/.vm-index.tsv"
+# Rebuild the index once it is older than this many seconds.
+index_ttl="${AZ_SSH_VM_INDEX_TTL:-86400}"
+# Floor between rebuilds triggered by an unknown host, so typos stay cheap.
+index_miss_ttl="${AZ_SSH_VM_INDEX_MISS_TTL:-60}"
+# Regenerate a VM's ssh config and certificate once it is older than this.
+cfg_ttl=300
+read -r -a subscriptions <<<"${AZ_SSH_SUBSCRIPTIONS:-sub-enveda-data-dev-01}"
+# Defaults give roughly 2 hours before the client gives up on an idle session.
+keepalive_interval="${AZ_SSH_SERVER_ALIVE_INTERVAL:-60}"
+keepalive_countmax="${AZ_SSH_SERVER_ALIVE_COUNT_MAX:-120}"
+
+# Make az fail instead of showing an invisible install prompt (its output is
+# captured) when the `ssh` extension is missing.
+export AZURE_EXTENSION_USE_DYNAMIC_INSTALL=no
+
+err() { printf '%s: %s\n' "$prog" "$*" >&2; }
+
+usage() {
+  cat <<EOF
+Usage:
+  az-ssh [ssh options] <vm-name> [command]
+  az-scp [scp options] <source>... <target>     (use <vm-name>:<path> for the VM side)
+  az-ssh --list | --refresh | --keepalive-help | --help
+
+Connects to an Azure VM by name using your Entra ID login. Any ssh/scp option
+works as usual. The VM is reached on its private IP, so you need the VPN.
+
+Examples:
+  az-ssh my-vm                              interactive shell
+  az-ssh my-vm nvidia-smi                   run one command
+  az-ssh my-vm -L 8888:localhost:8888       forward a port (e.g. Jupyter)
+  az-scp results.csv my-vm:~/               copy a file to the VM
+  az-scp -r my-vm:~/outputs ./outputs       copy a directory from the VM
+
+Options:
+  --list                    list VMs this tool knows about (builds the list if needed)
+  --refresh                 rebuild the VM list now (e.g. after creating a VM)
+  --keepalive-help          show settings for keeping idle sessions alive
+  --inject-kitty-terminfo   use kitty's ssh kitten (default inside kitty windows)
+  --no-kitty-terminfo       use plain ssh even inside kitty
+
+Environment:
+  AZ_SSH_SUBSCRIPTIONS            space-separated subscriptions to search
+                                  (default: sub-enveda-data-dev-01)
+  AZ_SSH_VM_INDEX_TTL             seconds before the VM list is rebuilt (default: 86400)
+  AZ_SSH_SERVER_ALIVE_INTERVAL    ssh ServerAliveInterval (default: 60)
+  AZ_SSH_SERVER_ALIVE_COUNT_MAX   ssh ServerAliveCountMax (default: 120)
+
+Prerequisites: the Azure CLI (az), its ssh extension (az extension add --name ssh),
+a login (az login), and a "Virtual Machine User Login" or "Virtual Machine
+Administrator Login" role on the VM.
+
+Files are kept in ${cfg_dir}.
+EOF
+}
+
+keepalive_help() {
+  cat <<'EOF'
+Client defaults used by az-ssh:
+
+  AZ_SSH_SERVER_ALIVE_INTERVAL=60
+  AZ_SSH_SERVER_ALIVE_COUNT_MAX=120
+
+This gives the client roughly 2 hours before it gives up on a dead peer.
+
+Recommended server-side /etc/ssh/sshd_config settings:
+
+  ClientAliveInterval 60
+  ClientAliveCountMax 120
+  TCPKeepAlive yes
+
+After updating sshd_config:
+
+  sudo sshd -t
+  sudo systemctl reload ssh
+
+On Ubuntu 24 LTS, the OpenSSH server unit is typically `ssh`, not `sshd`.
+
+If your distro uses a different service name:
+
+  sudo systemctl reload sshd
+
+Also check for non-sshd idle killers such as:
+
+  - shell TMOUT
+  - firewall / VPN idle timeout
+  - cloud gateway / bastion timeout
+EOF
+}
+
+require_az() {
+  command -v az >/dev/null 2>&1 && return 0
+  err "Azure CLI (az) not found. Install it: https://aka.ms/azcli"
+  exit 127
+}
+
+# Print a login hint when az output looks like an authentication failure.
+login_hint() {
+  case "$1" in
+    *"az login"* | *AADSTS* | *expired* | *"not logged in"* | *"refresh token"*)
+      err "hint: your Azure login looks missing or expired; run: az-login (or az login)"
+      ;;
+  esac
+}
+
+# Print `name` from `user@name`, skipping ssh options and their values.
+extract_ssh_host() {
+  local prev="" arg
+  for arg in "$@"; do
+    case "$prev" in
+      -b | -c | -D | -E | -e | -F | -I | -i | -J | -L | -l | -m | -O | -o | -p | -Q | -R | -S | -W | -w)
+        prev=""
+        continue
+        ;;
+    esac
+    case "$arg" in
+      --)
+        prev=""
+        continue
+        ;;
+      -*)
+        prev="$arg"
+        continue
+        ;;
+      *)
+        printf '%s\n' "${arg#*@}"
+        return 0
+        ;;
+    esac
+  done
+  return 1
+}
+
+# Print the host from the first `[user@]host:path` argument.
+extract_scp_host() {
+  local arg hostpart
+  for arg in "$@"; do
+    case "$arg" in
+      -*) continue ;;
+      *:*)
+        hostpart="${arg%%:*}"
+        if [[ "$hostpart" != */* && -n "$hostpart" ]]; then
+          printf '%s\n' "${hostpart#*@}"
+          return 0
+        fi
+        ;;
+    esac
+  done
+  return 1
+}
+
+file_is_fresh() {
+  local file="$1" max_age="$2" now mtime
+  [[ -f "$file" ]] || return 1
+  now=$(date +%s)
+  mtime=$(stat -f %m "$file" 2>/dev/null || stat -c %Y "$file" 2>/dev/null) || return 1
+  ((now - mtime < max_age))
+}
+
+# Rebuild the name -> resource-group, subscription index from Azure.
+index_refresh() {
+  local sub out tmp rc=0
+  mkdir -p "$cfg_dir" 2>/dev/null || return 1
+  tmp="$(mktemp "${index_file}.XXXXXX")" || return 1
+
+  for sub in "${subscriptions[@]}"; do
+    if ! out="$(
+      az vm list \
+        --subscription "$sub" \
+        --only-show-errors \
+        --query '[].[name,resourceGroup]' \
+        -o tsv 2>&1
+    )"; then
+      err "could not list VMs in subscription ${sub}: ${out}"
+      login_hint "$out"
+      rc=1
+      continue
+    fi
+    # Lower-case the resource group to match the directory layout that
+    # `az ssh config` uses under az_ssh_config/ (see harden_cfg_permissions).
+    # `sub` is an awk builtin, so the awk variable is named `s`.
+    printf '%s\n' "$out" |
+      awk -F'\t' -v s="$sub" 'NF >= 2 { print $1 "\t" tolower($2) "\t" s }' >>"$tmp"
+  done
+
+  # Never clobber a usable index with an empty one.
+  if [[ ! -s "$tmp" ]]; then
+    rm -f "$tmp"
+    return 1
+  fi
+
+  mv "$tmp" "$index_file" || {
+    rm -f "$tmp"
+    return 1
+  }
+  chmod 600 "$index_file" 2>/dev/null || true
+  return $rc
+}
+
+index_get() {
+  [[ -f "$index_file" ]] || return 1
+  awk -F'\t' -v h="$1" '$1 == h { print $2 "|" $3; exit }' "$index_file"
+}
+
+# Print `resource-group|subscription` for a VM name, refreshing the index when
+# it is stale, or once (rate-limited) when the name is missing from it.
+vm_lookup() {
+  local host="$1" meta refreshed=0
+  [[ -n "$host" ]] || return 1
+
+  if ! file_is_fresh "$index_file" "$index_ttl"; then
+    index_refresh || true
+    refreshed=1
+  fi
+  meta="$(index_get "$host")"
+
+  # The VM may have been created since the last rebuild.
+  if [[ -z "$meta" ]] && ((!refreshed)) &&
+    ! file_is_fresh "$index_file" "$index_miss_ttl"; then
+    index_refresh || true
+    meta="$(index_get "$host")"
+  fi
+
+  [[ -n "$meta" ]] || return 1
+  printf '%s\n' "$meta"
+}
+
+vm_suggest() {
+  local host="$1" stem matches
+  [[ -f "$index_file" ]] || return 0
+  stem="${host%%-*}"
+  matches="$(
+    awk -F'\t' -v s="$stem" 'length(s) >= 3 && index($1, s) { print "  " $1 }' \
+      "$index_file" 2>/dev/null | sort -u | head -10
+  )"
+  [[ -n "$matches" ]] || return 0
+  printf 'did you mean:\n%s\n' "$matches" >&2
+}
+
+harden_cfg_permissions() {
+  local cfg="$1" rg="$2" host="$3" key_root key_dir
+  [[ -f "$cfg" ]] || return 1
+
+  key_root="${cfg_dir}/az_ssh_config"
+  key_dir="${key_root}/${rg}-${host}"
+
+  chmod 700 "$cfg_dir" 2>/dev/null || return 1
+  [[ -d "$key_root" ]] && chmod 700 "$key_root" 2>/dev/null
+  if [[ -d "$key_dir" ]]; then
+    chmod 700 "$key_dir" 2>/dev/null || return 1
+    [[ -f "$key_dir/id_rsa" ]] && chmod 600 "$key_dir/id_rsa" 2>/dev/null
+    [[ -f "$key_dir/id_rsa.pub" ]] && chmod 644 "$key_dir/id_rsa.pub" 2>/dev/null
+    [[ -f "$key_dir/id_rsa.pub-aadcert.pub" ]] && chmod 644 "$key_dir/id_rsa.pub-aadcert.pub" 2>/dev/null
+  fi
+  chmod 600 "$cfg" 2>/dev/null || return 1
+}
+
+# Add the VM name to the config's first Host line, so `ssh -F cfg <vm-name>`
+# matches even though `az ssh config` names the entry after its IP.
+ensure_cfg_alias() {
+  local host="$1" cfg="$2" tmp
+  [[ -f "$cfg" ]] || return 1
+  tmp="$(mktemp "${cfg}.tmp.XXXXXX")" || return 1
+
+  awk -v logical_host="$host" '
+    BEGIN { updated = 0 }
+    !updated && tolower($1) == "host" {
+      found = 0
+      for (i = 2; i <= NF; i++) {
+        if ($i == logical_host) { found = 1; break }
+      }
+      if (!found) { print $0 " " logical_host } else { print }
+      updated = 1
+      next
+    }
+    { print }
+  ' "$cfg" >"$tmp" && mv "$tmp" "$cfg"
+}
+
+# Print the path of a fresh ssh config for the VM, regenerating it if needed.
+refresh_cfg() {
+  local host="$1" meta="$2"
+  local rg="${meta%%|*}" sub="${meta#*|}"
+  local cfg="${cfg_dir}/${host}.config"
+  local key_dir="${cfg_dir}/az_ssh_config/${rg}-${host}"
+  local output
+
+  if ! file_is_fresh "$cfg" "$cfg_ttl"; then
+    rm -rf "$key_dir" "$cfg"
+    if ! output="$(
+      az ssh config \
+        --name "$host" \
+        --resource-group "$rg" \
+        --subscription "$sub" \
+        --prefer-private-ip \
+        --overwrite \
+        --yes \
+        --only-show-errors \
+        -o none \
+        --file "$cfg" 2>&1
+    )"; then
+      [[ -n "$output" ]] && printf '%s\n' "$output" >&2
+      if ! az extension show --name ssh -o none >/dev/null 2>&1; then
+        err "the Azure CLI ssh extension is not installed; run: az extension add --name ssh"
+      fi
+      login_hint "$output"
+      return 1
+    fi
+  fi
+
+  ensure_cfg_alias "$host" "$cfg" || return 1
+  harden_cfg_permissions "$cfg" "$rg" "$host" || return 1
+  printf '%s\n' "$cfg"
+}
+
+list_vms() {
+  if [[ ! -f "$index_file" ]]; then
+    index_refresh || {
+      err "could not build the VM list"
+      return 1
+    }
+  fi
+  awk -F'\t' '{ printf "%-40s %s\n", $1, $3 }' "$index_file" | sort
+}
+
+main() {
+  local mode=ssh use_kitty=0 kitty_forced="" host meta cfg arg
+  local -a args=()
+
+  if [[ "${1:-}" == "--scp-mode" ]]; then
+    mode=scp
+    prog="az-scp"
+    shift
+  fi
+
+  case "${1:-}" in
+    "")
+      usage >&2
+      return 2
+      ;;
+    -h | --help)
+      usage
+      return 0
+      ;;
+    --keepalive-help)
+      keepalive_help
+      return 0
+      ;;
+    --list)
+      require_az
+      list_vms
+      return
+      ;;
+    --refresh)
+      require_az
+      index_refresh || {
+        err "refresh failed"
+        return 1
+      }
+      list_vms
+      return
+      ;;
+  esac
+
+  require_az
+
+  if [[ "$mode" == scp ]]; then
+    args=("$@")
+    host="$(extract_scp_host "$@")" || {
+      err "could not find a remote side; write it as <vm-name>:<path>"
+      return 2
+    }
+  else
+    for arg in "$@"; do
+      case "$arg" in
+        --inject-kitty-terminfo) kitty_forced=1 ;;
+        --no-kitty-terminfo) kitty_forced=0 ;;
+        *) args+=("$arg") ;;
+      esac
+    done
+    if [[ -n "$kitty_forced" ]]; then
+      use_kitty=$kitty_forced
+    elif [[ -n "${KITTY_WINDOW_ID:-}" && -t 0 ]] && command -v kitty >/dev/null 2>&1; then
+      # Already inside an interactive kitty window: inject terminfo by default.
+      use_kitty=1
+    fi
+    host="$(extract_ssh_host ${args[@]+"${args[@]}"})" || {
+      err "could not determine the VM name"
+      return 2
+    }
+  fi
+
+  meta="$(vm_lookup "$host")" || {
+    err "unknown Azure VM: ${host} (searched: ${subscriptions[*]})"
+    vm_suggest "$host"
+    err "see all VMs with: az-ssh --list"
+    return 2
+  }
+
+  cfg="$(refresh_cfg "$host" "$meta")" || return 1
+
+  local -a ssh_opts=(
+    -o IdentitiesOnly=yes
+    -o ServerAliveInterval="$keepalive_interval"
+    -o ServerAliveCountMax="$keepalive_countmax"
+    -F "$cfg"
+  )
+
+  if [[ "$mode" == scp ]]; then
+    exec scp "${ssh_opts[@]}" "${args[@]}"
+  elif ((use_kitty)); then
+    command -v kitty >/dev/null 2>&1 || {
+      err "kitty not found on PATH"
+      return 127
+    }
+    [[ -n "${KITTY_WINDOW_ID:-}" ]] ||
+      err "warning: not inside a kitty window; terminfo injection needs the local terminal to be kitty"
+    exec kitty +kitten ssh "${ssh_opts[@]}" "${args[@]}"
+  else
+    exec ssh "${ssh_opts[@]}" "${args[@]}"
+  fi
+}
+
+main "$@"

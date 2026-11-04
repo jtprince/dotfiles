@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# az-scp: scp to or from an Azure VM by name. All logic lives in az-ssh;
+# run `az-scp --help` for usage.
+
+here="$(cd "$(dirname "$0")" && pwd)"
+if [[ -x "$here/az-ssh" ]]; then
+  exec "$here/az-ssh" --scp-mode "$@"
+elif command -v az-ssh >/dev/null 2>&1; then
+  exec az-ssh --scp-mode "$@"
+fi
+echo "az-scp: az-ssh not found; put it next to az-scp or on your PATH" >&2
+exit 127

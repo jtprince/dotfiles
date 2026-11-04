@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
+# vm-manage: start, stop, and check an Azure VM by name. Run `vm-manage --help`.
 set -euo pipefail
 
 # --- Config ---
-DEFAULT_VM_NAME="jtprince-32-256"
-RESOURCE_GROUP="data-science-dev-ncus-rg-01"
 SUBSCRIPTION="${VM_MANAGE_SUBSCRIPTION:-sub-enveda-data-dev-01}"
-
-VM_NAME="${2:-$DEFAULT_VM_NAME}"
+CMD="${1:-}"
+VM_NAME="${2:-${VM_MANAGE_DEFAULT_VM:-}}"
+RESOURCE_GROUP="${VM_MANAGE_RESOURCE_GROUP:-}"
 
 # --- Helpers ---
 err() { printf "ERROR: %s\n" "$*" >&2; }
@@ -16,6 +16,30 @@ require_az() {
   if ! command -v az >/dev/null 2>&1; then
     err "Azure CLI (az) not found. Install from https://aka.ms/azcli"
     exit 127
+  fi
+}
+
+# Check a VM name was given, then find its resource group unless one was set.
+require_vm() {
+  if [[ -z "$VM_NAME" ]]; then
+    err "no VM name; pass one (vm-manage $CMD <vm-name>) or set VM_MANAGE_DEFAULT_VM"
+    err "list VMs with: vm-manage list"
+    exit 2
+  fi
+  [[ -n "$RESOURCE_GROUP" ]] && return 0
+  RESOURCE_GROUP="$(
+    az vm list \
+      --subscription "$SUBSCRIPTION" \
+      --only-show-errors \
+      --query "[?name=='$VM_NAME'].resourceGroup | [0]" \
+      -o tsv
+  )" || {
+    err "could not list VMs in $SUBSCRIPTION; are you logged in? (az-login or az login)"
+    exit 1
+  }
+  if [[ -z "$RESOURCE_GROUP" ]]; then
+    err "VM '$VM_NAME' not found in subscription $SUBSCRIPTION; list VMs with: vm-manage list"
+    exit 2
   fi
 }
 
@@ -52,9 +76,10 @@ wait_for_state() {
 
 usage() {
   cat <<USAGE
-Usage: $(basename "$0") {login|logout|start|stop|stop-only|deallocate|status} [VM-NAME]
+Usage: $(basename "$0") {list|login|logout|start|stop|stop-only|deallocate|status} [VM-NAME]
 
 Commands:
+  list                  List VMs in the subscription with their power state
   login                 az login (resource manager scope)
   logout                az logout
   start                 Start VM
@@ -62,32 +87,52 @@ Commands:
   stop-only             Power off without deallocating (still billed for compute)
   deallocate            Deallocate explicitly (alias to 'stop' behavior)
   status                Show power state and IPs
+
+Environment:
+  VM_MANAGE_DEFAULT_VM       VM to use when VM-NAME is omitted
+  VM_MANAGE_SUBSCRIPTION     Subscription (default: sub-enveda-data-dev-01)
+  VM_MANAGE_RESOURCE_GROUP   Resource group (default: looked up from the VM name)
 USAGE
 }
 
 # --- Entry ---
+case "$CMD" in
+  ""|-h|--help|help)
+    usage
+    exit 0
+    ;;
+esac
+
 require_az
 
-if [[ -n "${1:-}" && "$1" == "login" ]]; then
-  # If device code is preferred, uncomment the next line and comment the one after.
-  # az login --scope "https://management.core.windows.net//.default" --use-device-code
-  az login --scope "https://management.core.windows.net//.default"
-  exit 0
-fi
+case "$CMD" in
+  login)
+    # If device code is preferred, uncomment the next line and comment the one after.
+    # az login --scope "https://management.core.windows.net//.default" --use-device-code
+    az login --scope "https://management.core.windows.net//.default"
+    ;;
 
-if [[ -n "${1:-}" && "$1" == "logout" ]]; then
-  az logout
-  exit 0
-fi
+  logout)
+    az logout
+    ;;
 
-case "${1:-}" in
+  list)
+    az vm list -d \
+      --subscription "$SUBSCRIPTION" \
+      --only-show-errors \
+      --query "sort_by([], &name)[].{Name:name, ResourceGroup:resourceGroup, Power:powerState}" \
+      -o table
+    ;;
+
   start)
+    require_vm
     log "Starting VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
     az vm start --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --subscription "$SUBSCRIPTION" >/dev/null
     wait_for_state "VM running" 600
     ;;
 
-  stop)
+  stop|deallocate)
+    require_vm
     log "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
     # 'deallocate' is enough; it transitions to 'VM deallocated'
     az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --subscription "$SUBSCRIPTION" >/dev/null
@@ -95,18 +140,14 @@ case "${1:-}" in
     ;;
 
   stop-only)
+    require_vm
     log "Powering off (NOT deallocating) VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
     az vm stop --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --subscription "$SUBSCRIPTION" >/dev/null
     wait_for_state "VM stopped" 600
     ;;
 
-  deallocate)
-    log "Deallocating VM '$VM_NAME' in resource group '$RESOURCE_GROUP' (releases compute resources)..."
-    az vm deallocate --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --subscription "$SUBSCRIPTION" >/dev/null
-    wait_for_state "VM deallocated" 900
-    ;;
-
   status)
+    require_vm
     log "Checking status of VM '$VM_NAME' in resource group '$RESOURCE_GROUP'..."
     az vm get-instance-view \
       --resource-group "$RESOURCE_GROUP" \
@@ -120,11 +161,6 @@ case "${1:-}" in
       --subscription "$SUBSCRIPTION" \
       --query "[].{PublicIP:virtualMachine.network.publicIpAddresses[0].ipAddress, PrivateIP:virtualMachine.network.privateIpAddresses[0]}" \
       --output table
-    ;;
-
-  ""|-h|--help|help)
-    usage
-    exit 0
     ;;
 
   *)
