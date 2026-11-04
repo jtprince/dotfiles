@@ -7,6 +7,10 @@ reports, analyses, protocols, and memos, also apply `scientific-document-voice`.
 scientific manuscripts and results write-ups, also apply `scientific-writing-voice`. These
 rules do not govern chat or terminal updates.
 
+Apply the `quoted-response` skill when drafting a reply the user will send to another
+person, and in chat when the user's message asks several questions or raises several
+points that each need an answer.
+
 Preserve facts, citations, technical terms, quotations, and calibrated uncertainty. Prefer
 concrete subjects, active verbs, consistent terminology, and the shortest wording that
 preserves meaning. Follow the target repository's established conventions when they

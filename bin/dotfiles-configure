@@ -164,6 +164,7 @@ EXPLICIT_GENERAL: list[Symlink] = [
             "markdown-discord",
             "markdown-obsidian",
             "plain-spec",
+            "quoted-response",
         )
         for tool in ("claude", "codex")
     ),
