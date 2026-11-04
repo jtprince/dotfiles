@@ -128,5 +128,5 @@ alias qview="open -a qview"
 alias ack="rg"
 
 CLAUDE_SYSTEM_PROMPT="$HOME/dotfiles/config/claude/append-system-prompt.md"
-alias claude="headroom wrap claude --append-system-prompt-file $CLAUDE_SYSTEM_PROMPT"
-alias claude-bare="headroom wrap claude"
+alias claude="claude --dangerously-skip-permissions --append-system-prompt-file $CLAUDE_SYSTEM_PROMPT"
+alias claude-bare="command claude"

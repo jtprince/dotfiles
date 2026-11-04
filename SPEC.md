@@ -33,7 +33,7 @@ V2: workspace edits auto-run; sandbox escape + sensitive commands → approval
 V3: `git commit`, `git push`, `gh pr create`, `gh pr merge`, `gh release create`, blanket `git add` → prompt
 V4: `git add <path>`, `git add -u`, `git add -p` ≠ blanket rule match
 V5: Git blob excludes root `model`, `[projects.*]`, `[tui.model_availability_nux]`; live file retains them
-V6: MCP set = `serena`, `headroom`, `tokensave`; Serena args include `--context=codex --project-from-cwd`
+V6: MCP set = `serena`, `tokensave`; Serena args include `--context=codex --project-from-cwd`
 V7: hooks use Codex-supported overlap only: `SessionStart`, `PreToolUse`, `UserPromptSubmit`, `PostToolUse`, `Stop`
 V8: RTK cleanup, context-mode repair, Claude `SessionEnd`/`Notification` hooks ∉ Codex config
 V9: `link-check` single client-neutral source → Claude + Codex skill links

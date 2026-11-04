@@ -44,7 +44,6 @@ def test_config() -> None:
     assert config["notify"] == ["kitty-agent-attention"]
     assert set(config["mcp_servers"]) == {
         "serena",
-        "headroom",
         "tokensave",
     }
     assert config["mcp_servers"]["serena"]["args"] == [
