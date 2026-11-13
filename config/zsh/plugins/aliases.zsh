@@ -130,3 +130,6 @@ alias ack="rg"
 CLAUDE_SYSTEM_PROMPT="$HOME/dotfiles/config/claude/append-system-prompt.md"
 alias claude="claude --dangerously-skip-permissions --append-system-prompt-file $CLAUDE_SYSTEM_PROMPT"
 alias claude-bare="command claude"
+
+alias claude-personal="CLAUDE_CONFIG_DIR=~/.claude-personal claude --dangerously-skip-permissions --append-system-prompt-file $CLAUDE_SYSTEM_PROMPT"
+

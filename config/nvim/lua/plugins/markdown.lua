@@ -1,5 +1,10 @@
 -- Markdown: markview (in-buffer preview) + markdown-preview.nvim (browser).
 
+-- markview copies nvim-cmp's global sources into a markdown-only override when
+-- it registers its own source. Load the cmp config first so that copy includes
+-- buffer/lsp/path/luasnip instead of an empty list.
+require("plugins.cmp")
+
 require("markview").setup({
 	auto_start = false,
 	auto_close = false,

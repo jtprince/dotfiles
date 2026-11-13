@@ -1,5 +1,176 @@
 {
-  "agentPushNotifEnabled": true,
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kitty-agent-attention"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook Notification; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PermissionRequest; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PostToolUse; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/no-blanket-git-add.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks remind --client=claude-code"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__serena__*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks auto-approve --client=claude-code"
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PreToolUse; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks cleanup --client=claude-code"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook SessionEnd; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/strip-rtk-hook.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks activate --client=claude-code"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"/Users/johnprince/.claude/hooks/context-mode-cache-heal.mjs\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook SessionStart; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kitty-agent-attention"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook Stop; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook UserPromptSubmit; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "caveman@caveman": false,
     "code-review@claude-plugins-official": true,
@@ -19,199 +190,28 @@
   "extraKnownMarketplaces": {
     "caveman": {
       "source": {
-        "repo": "JuliusBrussee/caveman",
-        "source": "github"
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
       }
     },
     "context-mode": {
       "source": {
-        "repo": "mksglu/context-mode",
-        "source": "github"
+        "source": "github",
+        "repo": "mksglu/context-mode"
       }
     },
     "peptidomics-ai-plugin-marketplace": {
       "source": {
-        "path": "/Users/johnprince/projects/peptidomics-ai-plugin-marketplace",
-        "source": "directory"
+        "source": "directory",
+        "path": "/Users/johnprince/projects/peptidomics-ai-plugin-marketplace"
       }
     }
   },
-  "hooks": {
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "command": "kitty-agent-attention",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook Notification; : # __keepresso_hook",
-            "timeout": 5,
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "hooks": [
-          {
-            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PermissionRequest; : # __keepresso_hook",
-            "timeout": 5,
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PostToolUse; : # __keepresso_hook",
-            "timeout": 5,
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
-      }
-    ],
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "$HOME/.claude/hooks/no-blanket-git-add.sh",
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash"
-      },
-      {
-        "hooks": [
-          {
-            "command": "serena-hooks remind --client=claude-code",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      },
-      {
-        "hooks": [
-          {
-            "command": "serena-hooks auto-approve --client=claude-code",
-            "type": "command"
-          }
-        ],
-        "matcher": "mcp__serena__*"
-      },
-      {
-        "hooks": [
-          {
-            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook PreToolUse; : # __keepresso_hook",
-            "timeout": 5,
-            "type": "command"
-          }
-        ],
-        "matcher": "*"
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "command": "serena-hooks cleanup --client=claude-code",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      },
-      {
-        "hooks": [
-          {
-            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook SessionEnd; : # __keepresso_hook",
-            "timeout": 5,
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "command": "$HOME/.claude/hooks/strip-rtk-hook.sh",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "serena-hooks activate --client=claude-code",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      },
-      {
-        "hooks": [
-          {
-            "command": "\"/Users/johnprince/.claude/hooks/context-mode-cache-heal.mjs\"",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook SessionStart; : # __keepresso_hook",
-            "timeout": 5,
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "command": "kitty-agent-attention",
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook Stop; : # __keepresso_hook",
-            "timeout": 5,
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook UserPromptSubmit; : # __keepresso_hook",
-            "timeout": 5,
-            "type": "command"
-          }
-        ]
-      }
-    ]
-  },
-  "permissions": {
-    "defaultMode": "auto"
-  },
   "promptSuggestionEnabled": false,
-  "remoteControlAtStartup": true,
-  "skipAutoPermissionPrompt": true,
-  "skipDangerousModePermissionPrompt": true,
   "tui": "fullscreen",
-  "verbose": true
+  "skipDangerousModePermissionPrompt": true,
+  "verbose": true,
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true
 }
