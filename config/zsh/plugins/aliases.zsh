@@ -105,9 +105,6 @@ alias chromeproxy="$GOOGLE_CHROME --proxy-bypass-list=localhost,10.0.0.0/8,127.0
 
 alias libreoffice_to_pdf="libreoffice --headless --convert-to pdf"
 
-# not using right now
-alias tmux="tmux -f $HOME/.config/tmux/config"
-
 # clear the screen (so no scrollback)
 alias clearscreen="echo -ne '\033c'"
 

@@ -159,6 +159,17 @@
         ]
       }
     ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "c='/Applications/Keepresso.app/Contents/Helpers/keepresso'; [ -x \"$c\" ] || c=/Applications/Keepresso.app/Contents/Helpers/keepresso; \"$c\" agent-hook StopFailure; : # __keepresso_hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [

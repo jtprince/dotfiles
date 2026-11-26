@@ -1,25 +1,37 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
-dotfiles-configure — idempotent symlink manager for macOS and Linux (Arch/Manjaro).
+dotfiles-configure — idempotent symlink manager for macOS and Linux.
 
 Detects the current platform and creates the appropriate set of symlinks from
-this dotfiles repo into $HOME and $HOME/.config.
+this dotfiles repo into $HOME and $HOME/.config. Platforms:
+
+    mac        macOS laptop
+    linux      personal Linux laptop (Arch/Manjaro)
+    azure-vm   Azure work VM (Ubuntu); detected from the DMI chassis asset tag
 
 Claude config (skills, hooks, CLAUDE.md) goes into ~/.claude and ~/.claude-personal
-on macOS, and only into ~/.claude-personal on Linux. settings.json is linked on macOS only.
+on macOS, ~/.claude-personal on Linux, and ~/.claude on an Azure VM. settings.json
+is linked on macOS only.
+
+On an Azure VM the run ends by printing the packages and installers still missing
+and the command that switches the login shell to zsh.
 
 Usage:
     dotfiles-configure              # apply links for current platform
     dotfiles-configure --dry        # preview without changing anything
+    dotfiles-configure --platform azure-vm  # override platform detection
+    dotfiles-configure --next-steps # Azure VM: print install steps only
     dotfiles-configure --clean-broken  # remove dangling symlinks in ~/.config
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 import platform
 import shutil
 import subprocess
+import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -34,16 +46,36 @@ HOME_CONFIG = HOME / ".config"
 DOT_LOCAL = HOME / ".local"
 CLOUD_ENV = HOME / "Dropbox" / "env"
 
-IS_MAC = platform.system() == "Darwin"
-IS_LINUX = platform.system() == "Linux"
+PLATFORMS = ("mac", "linux", "azure-vm")
+
+# Every Azure VM reports this fixed DMI chassis asset tag. Local Hyper-V guests
+# share the "Microsoft Corporation" vendor string but not this tag.
+AZURE_ASSET_TAG = "7783-7084-3265-9085-8269-3286-77"
+DMI_ASSET_TAG = Path("/sys/class/dmi/id/chassis_asset_tag")
+
+
+def detect_platform() -> str:
+    system = platform.system()
+    if system == "Darwin":
+        return "mac"
+    if system == "Linux":
+        try:
+            if DMI_ASSET_TAG.read_text().strip() == AZURE_ASSET_TAG:
+                return "azure-vm"
+        except OSError:
+            pass
+        return "linux"
+    raise SystemExit(f"unsupported platform: {system}")
+
 
 # macOS hosts both work (~/.claude) and personal (~/.claude-personal, used via the
-# `claude-personal` alias) Claude config dirs; Linux hosts only personal.
-CLAUDE_DIRS = (
-    [HOME / ".claude", HOME / ".claude-personal"]
-    if IS_MAC
-    else [HOME / ".claude-personal"]
-)
+# `claude-personal` alias) Claude config dirs. The Linux laptop hosts only
+# personal, and an Azure VM only work.
+CLAUDE_DIRS: dict[str, list[Path]] = {
+    "mac": [HOME / ".claude", HOME / ".claude-personal"],
+    "linux": [HOME / ".claude-personal"],
+    "azure-vm": [HOME / ".claude"],
+}
 
 # ---------------------------------------------------------------------------
 # Data model
@@ -112,6 +144,19 @@ CONFIG_LINUX = [
     "linux/uv",
 ]
 
+# Azure VM: work-relevant, terminal-only configs. Replaces CONFIG_GENERAL.
+CONFIG_AZURE_VM = [
+    "cheat",
+    "git",
+    "ipython",
+    "nvim",
+    "sheldon",
+    "starship.toml",
+    "tmux",
+    "zsh",
+    "linux/uv",
+]
+
 # ---------------------------------------------------------------------------
 # Home dotfiles — symlinked as ~/.<name>
 # ---------------------------------------------------------------------------
@@ -140,14 +185,20 @@ AGENT_SKILLS = [
     "quoted-response",
 ]
 
-EXPLICIT_GENERAL: list[Symlink] = [
+EXPLICIT_SHELL: list[Symlink] = [
     Symlink(REPO_ROOT / "bin", link=HOME / "bin"),
     Symlink(REPO_CONFIG / "zsh/dot-zshenv", link=HOME / ".zshenv"),
     Symlink(REPO_CONFIG / "zsh/dot-zshrc", link=HOME / ".zshrc"),
     Symlink(REPO_CONFIG / "zsh/dot-zprofile", link=HOME / ".zprofile"),
+]
+
+EXPLICIT_GENERAL: list[Symlink] = [
+    *EXPLICIT_SHELL,
     Symlink(REPO_CONFIG / "pandoc/data_dir", link=DOT_LOCAL / "share/pandoc"),
     *(
-        Symlink(REPO_CONFIG / f"agent/skills/{name}", link=HOME / f".codex/skills/{name}")
+        Symlink(
+            REPO_CONFIG / f"agent/skills/{name}", link=HOME / f".codex/skills/{name}"
+        )
         for name in AGENT_SKILLS
     ),
     Symlink(REPO_CONFIG / "codex/AGENTS.md", link=HOME / ".codex/AGENTS.md"),
@@ -164,25 +215,31 @@ EXPLICIT_GENERAL: list[Symlink] = [
     ),
 ]
 
-# Claude config, linked into every dir in CLAUDE_DIRS.
-EXPLICIT_CLAUDE: list[Symlink] = [
-    link
-    for claude_dir in CLAUDE_DIRS
-    for link in (
-        *(
-            Symlink(REPO_CONFIG / f"agent/skills/{name}", link=claude_dir / "skills" / name)
-            for name in AGENT_SKILLS
-        ),
-        Symlink(REPO_CONFIG / "claude/hooks", link=claude_dir / "hooks"),
-        Symlink(REPO_CONFIG / "claude/CLAUDE.md", link=claude_dir / "CLAUDE.md"),
-    )
-]
+
+def claude_links(claude_dirs: list[Path]) -> list[Symlink]:
+    """Claude config (skills, hooks, CLAUDE.md), linked into every dir given."""
+    return [
+        link
+        for claude_dir in claude_dirs
+        for link in (
+            *(
+                Symlink(
+                    REPO_CONFIG / f"agent/skills/{name}",
+                    link=claude_dir / "skills" / name,
+                )
+                for name in AGENT_SKILLS
+            ),
+            Symlink(REPO_CONFIG / "claude/hooks", link=claude_dir / "hooks"),
+            Symlink(REPO_CONFIG / "claude/CLAUDE.md", link=claude_dir / "CLAUDE.md"),
+        )
+    ]
+
 
 EXPLICIT_MAC: list[Symlink] = [
     Symlink(REPO_CONFIG / "mac/hammerspoon", link=HOME / ".hammerspoon"),
     *(
         Symlink(REPO_CONFIG / "claude/settings.json", link=claude_dir / "settings.json")
-        for claude_dir in CLAUDE_DIRS
+        for claude_dir in CLAUDE_DIRS["mac"]
     ),
 ]
 
@@ -204,6 +261,166 @@ ENSURE_DIRS_LINUX = [
     "npm",
     ".local/share/applications",
 ]
+
+ENSURE_DIRS_AZURE_VM = [
+    ".local/bin",
+]
+
+
+# ---------------------------------------------------------------------------
+# Per-platform plan
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PlatformLinks:
+    dirs: list[str]
+    config: list[str]
+    home: list[str]
+    explicit: list[Symlink]
+
+
+def links_for(plat: str) -> PlatformLinks:
+    claude = claude_links(CLAUDE_DIRS[plat])
+    if plat == "mac":
+        return PlatformLinks(
+            dirs=list(ENSURE_DIRS_GENERAL),
+            config=CONFIG_GENERAL + CONFIG_MAC,
+            home=[],
+            explicit=EXPLICIT_GENERAL + claude + EXPLICIT_MAC,
+        )
+    if plat == "linux":
+        return PlatformLinks(
+            dirs=ENSURE_DIRS_GENERAL + ENSURE_DIRS_LINUX,
+            config=CONFIG_GENERAL + CONFIG_LINUX,
+            home=list(HOME_DOTFILES_LINUX),
+            explicit=EXPLICIT_GENERAL + claude + EXPLICIT_LINUX,
+        )
+    return PlatformLinks(
+        dirs=ENSURE_DIRS_GENERAL + ENSURE_DIRS_AZURE_VM,
+        config=list(CONFIG_AZURE_VM),
+        home=[],
+        explicit=EXPLICIT_SHELL + claude,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Azure VM next steps — packages and installers still missing
+# ---------------------------------------------------------------------------
+
+# apt package -> a command it provides (None: always list it).
+APT_PACKAGES: dict[str, str | None] = {
+    "zsh": "zsh",
+    "tmux": "tmux",
+    "kitty-terminfo": None,
+    "git-delta": "delta",
+    "ripgrep": "rg",
+    "fd-find": "fdfind",
+    "fzf": "fzf",
+    "jq": "jq",
+    "direnv": "direnv",
+    "python3-argcomplete": "register-python-argcomplete",
+    "curl": "curl",
+    "unzip": "unzip",
+    "build-essential": "make",
+}
+
+KITTY_TERMINFO = Path("/usr/share/terminfo/x/xterm-kitty")
+
+NVIM_ARCH = {
+    "x86_64": "x86_64",
+    "amd64": "x86_64",
+    "aarch64": "arm64",
+    "arm64": "arm64",
+}
+
+LOCAL_INSTALLERS: dict[str, str] = {
+    "uv": "curl -LsSf https://astral.sh/uv/install.sh | sh",
+    "sheldon": (
+        "curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh"
+        " | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin"
+    ),
+    "starship": "curl -sS https://starship.rs/install.sh | sh -s -- -y -b ~/.local/bin",
+    "nvim": (
+        "curl -fsSL https://github.com/neovim/neovim/releases/latest/download/"
+        "nvim-linux-{arch}.tar.gz | tar -xz -C ~/.local --strip-components=1"
+    ),
+    "claude": "curl -fsSL https://claude.ai/install.sh | bash",
+}
+
+BASHRC_FALLBACK = """\
+# Start zsh for interactive shells (chsh is unavailable for this login).
+if [[ $- == *i* && -z $ZSH_VERSION ]] && command -v zsh >/dev/null; then
+  exec zsh -l
+fi"""
+
+
+def have(cmd: str) -> bool:
+    return shutil.which(cmd) is not None or (DOT_LOCAL / "bin" / cmd).exists()
+
+
+def login_shell() -> tuple[str | None, bool]:
+    """Return (login shell, whether the user is listed in /etc/passwd)."""
+    import pwd
+
+    try:
+        entry = pwd.getpwuid(os.getuid())
+    except KeyError:
+        return None, False
+    user, shell = entry.pw_name, entry.pw_shell
+    try:
+        local = any(
+            line.split(":", 1)[0] == user
+            for line in Path("/etc/passwd").read_text().splitlines()
+        )
+    except OSError:
+        local = False
+    return shell, local
+
+
+def print_next_steps() -> None:
+    print("\nNext steps (Azure VM) …")
+    step = 0
+
+    apt = [
+        pkg
+        for pkg, cmd in APT_PACKAGES.items()
+        if (not have(cmd) if cmd else not KITTY_TERMINFO.exists())
+    ]
+    if apt:
+        step += 1
+        print(f"\n{step}. System packages:\n")
+        print("   sudo apt-get update && sudo apt-get install -y " + " ".join(apt))
+
+    arch = NVIM_ARCH.get(platform.machine().lower(), "x86_64")
+    local = [
+        cmd.format(arch=arch)
+        for name, cmd in LOCAL_INSTALLERS.items()
+        if not have(name)
+    ]
+    if local:
+        step += 1
+        print(f"\n{step}. User-local tools (no sudo):\n")
+        print("   mkdir -p ~/.local/bin")
+        for cmd in local:
+            print(f"   {cmd}")
+
+    shell, in_passwd = login_shell()
+    if not (shell or "").endswith("/zsh"):
+        step += 1
+        print(f"\n{step}. Make zsh the login shell, then log out and back in:\n")
+        if in_passwd:
+            print('   sudo chsh -s "$(command -v zsh)" "$USER"')
+        else:
+            print("   This login is not in /etc/passwd (Entra ID), so chsh will fail.")
+            print("   Append this to ~/.bashrc instead:\n")
+            print(textwrap.indent(BASHRC_FALLBACK, "   "))
+
+    if not step:
+        print("  (nothing missing)")
+    else:
+        print("\nThen start work with: tmux new -As default")
+
 
 # ---------------------------------------------------------------------------
 # Git filters — strip ephemeral keys (e.g. Claude's `model` picker) from
@@ -318,9 +535,19 @@ def clean_broken_symlinks(dry: bool = False) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Idempotent dotfile symlink manager (macOS + Linux).",
+        description="Idempotent dotfile symlink manager (macOS + Linux + Azure VM).",
     )
     parser.add_argument("--dry", action="store_true", help="preview without changes")
+    parser.add_argument(
+        "--platform",
+        choices=PLATFORMS,
+        help="override platform detection",
+    )
+    parser.add_argument(
+        "--next-steps",
+        action="store_true",
+        help="Azure VM: print missing packages and installers, then exit",
+    )
     parser.add_argument(
         "--clean-broken",
         action="store_true",
@@ -345,40 +572,37 @@ def main() -> None:
         clean_broken_symlinks(dry=args.dry)
         return
 
+    plat = args.platform or detect_platform()
+
+    if args.next_steps:
+        print_next_steps()
+        return
+
+    print(f"{prefix}Platform: {plat}")
+    plan = links_for(plat)
+
     configure_git_filters(dry=args.dry)
 
     # -- Directories --------------------------------------------------------
-    all_dirs = list(ENSURE_DIRS_GENERAL)
-    if IS_LINUX:
-        all_dirs += ENSURE_DIRS_LINUX
-    if all_dirs:
+    if plan.dirs:
         print(f"{prefix}Ensuring directories …")
-        linker.ensure_dirs(all_dirs)
+        linker.ensure_dirs(plan.dirs)
 
     # -- ~/.config links ----------------------------------------------------
-    config_names = list(CONFIG_GENERAL)
-    if IS_MAC:
-        config_names += CONFIG_MAC
-    elif IS_LINUX:
-        config_names += CONFIG_LINUX
-
     print(f"\n{prefix}Linking into ~/.config …")
-    linker.link_into_config(config_names)
+    linker.link_into_config(plan.config)
 
     # -- ~/.<name> home dotfiles --------------------------------------------
-    if IS_LINUX and HOME_DOTFILES_LINUX:
+    if plan.home:
         print(f"\n{prefix}Linking home dotfiles …")
-        linker.link_into_home(HOME_DOTFILES_LINUX)
+        linker.link_into_home(plan.home)
 
     # -- Explicit symlinks --------------------------------------------------
-    explicit = list(EXPLICIT_GENERAL) + EXPLICIT_CLAUDE
-    if IS_MAC:
-        explicit += EXPLICIT_MAC
-    elif IS_LINUX:
-        explicit += EXPLICIT_LINUX
-
     print(f"\n{prefix}Explicit symlinks …")
-    linker.ensure_links(explicit)
+    linker.ensure_links(plan.explicit)
+
+    if plat == "azure-vm":
+        print_next_steps()
 
 
 if __name__ == "__main__":

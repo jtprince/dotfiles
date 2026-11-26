@@ -22,8 +22,10 @@ fi
 
 # Sheldon plugins (interactive-only; PATH is set by .zprofile).
 # Invalidate when plugins.toml changes.
-_cached_eval "$_zsh_cache_dir/sheldon.zsh" \
-  "${SHELDON_CONFIG_DIR:-$HOME/.config/sheldon}/plugins.toml" sheldon source
+if command -v sheldon &>/dev/null; then
+  _cached_eval "$_zsh_cache_dir/sheldon.zsh" \
+    "${SHELDON_CONFIG_DIR:-$HOME/.config/sheldon}/plugins.toml" sheldon source
+fi
 
 # Starship prompt.
 if command -v starship &>/dev/null; then
