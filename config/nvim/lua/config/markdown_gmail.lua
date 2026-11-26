@@ -54,7 +54,13 @@ local function markdown_copy_gmail_html()
 			html_path,
 		}, { text = true }):wait()
 	elseif vim.env.WAYLAND_DISPLAY and vim.fn.executable("wl-copy") == 1 then
-		copy_result = vim.system({ "wl-copy", "--type", "text/html" }, { stdin = html, text = true }):wait()
+		-- wl-copy forks a child that keeps serving the clipboard and inherits
+		-- stdout/stderr. vim.system():wait() blocks until those pipes hit EOF,
+		-- so capturing them hangs Neovim until the clipboard changes owner.
+		copy_result = vim.system(
+			{ "wl-copy", "--type", "text/html" },
+			{ stdin = html, stdout = false, stderr = false }
+		):wait(5000)
 	else
 		vim.notify("MarkdownCopyGmailHtml: no supported HTML clipboard tool found", vim.log.levels.ERROR)
 		return
