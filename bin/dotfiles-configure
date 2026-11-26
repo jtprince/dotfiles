@@ -351,7 +351,7 @@ LOCAL_INSTALLERS: dict[str, str] = {
 BASHRC_FALLBACK = """\
 # Start zsh for interactive shells (chsh is unavailable for this login).
 if [[ $- == *i* && -z $ZSH_VERSION ]] && command -v zsh >/dev/null; then
-  exec zsh -l
+  SHELL="$(command -v zsh)" exec zsh -l
 fi"""
 
 
